@@ -25,6 +25,7 @@ env:
 
 branches:
   only:
+    - master
     - dev
     
 before_install:
@@ -37,5 +38,6 @@ before_install:
 
 script:
   - dotnet restore
+  - dotnet test ./test/Certes.Tests/project.json
   - dotnet pack -c release -o ./build/nuget ./src/Certes/project.json
   - dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/project.json

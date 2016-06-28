@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.0-beta1-*",
   "buildOptions": {
     "emitEntryPoint": true
@@ -10,7 +10,7 @@
       "type": "platform",
       "version": "1.0.0"
     },
-    "System.CommandLine": "0.1.0-e160625-1"
+    "System.CommandLine": "0.1.0-e160628-1"
   },
 
   "frameworks": {
