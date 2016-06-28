@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0-beta1-*",
+  "title": "Certes ACME Client",
+  "description": "A client implantation for the Automated Certificate Management Environment (ACME) protocol",
+  "dependencies": {
+    "NETStandard.Library": "1.6.0",
+    "Newtonsoft.Json": "9.0.1",
+    "Portable.BouncyCastle": "1.8.1",
+    "System.Runtime.Serialization.Primitives": "4.1.1",
+    "System.Security.Cryptography.Csp": "4.0.0"
+  },
+  "frameworks": {
+    "netstandard1.5": {
+      "imports": "dnxcore50"
+    }
+  },
+  "buildOptions": {
+    "embed": [
+      "Resources/**/*.*"
+    ]
+  },
+  "compilationOptions": {
+    "warningsAsErrors": true
+  },
+  "packOptions": {
+    "projectUrl": "https://github.com/fszlin/certes",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/fszlin/certes"
+    },
+    "summary": "Certes is a client implantation for the Automated Certificate Management Environment (ACME) protocol, build on .NET Core. It is aimed to provide a easy to use API for managing certificates using scripts during build process.",
+    "owners": [ "Certes Contributors" ],
+    "licenseUrl": "https://github.com/fszlin/certes/blob/master/LICENSE",
+    "requireLicenseAcceptance": false,
+    "tags": [ "Certes", "letsencrypt", "ACME", "HTTPS", "SSL", "Certificate" ]
+  }
+}
