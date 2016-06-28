@@ -1,0 +1,43 @@
+language: generic
+
+sudo: required
+dist: trusty
+
+os:
+  - linux
+
+addons:
+  apt:
+    packages:
+    - gettext
+    - libcurl4-openssl-dev
+    - libicu-dev
+    - libssl-dev
+    - libunwind8
+    - zlib1g
+
+env:
+  matrix:
+    - CLI_VERSION=Latest
+  global:
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: 0
+
+branches:
+  only:
+    - master
+    - dev
+    
+before_install:
+  - export DOTNET_INSTALL_DIR="$PWD/.dotnetcli"
+  - curl -L --create-dirs https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/dotnet-install.sh -o ./scripts/obtain/install-dotnet.sh
+  - find ./scripts -name "*.sh" -exec chmod +x {} \;
+  - sudo bash ./scripts/obtain/install-dotnet.sh --version "$CLI_VERSION" --install-dir "$DOTNET_INSTALL_DIR" --no-path
+  # add dotnet to PATH
+  - export PATH="$DOTNET_INSTALL_DIR:$PATH"
+
+script:
+  - dotnet restore
+  - dotnet test ./test/Certes.Tests/project.json
+  - dotnet pack -c release -o ./build/nuget ./src/Certes/project.json
+  - dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/project.json
