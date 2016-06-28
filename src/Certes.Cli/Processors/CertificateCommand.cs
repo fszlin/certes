@@ -133,7 +133,11 @@ namespace Certes.Cli.Processors
                 var text = await FileUtil.ReadAllText(Options.ValuesFile);
 
                 var names = text.Split(NameValueSeparator);
-                values = values.Union(names).Distinct().ToArray();
+                values = values.Union(names)
+                    .Where(n => !string.IsNullOrWhiteSpace(n))
+                    .Distinct()
+                    .Select(n => n.Trim())
+                    .ToArray();
             }
 
             return values;
