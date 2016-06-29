@@ -8,5 +8,5 @@ dotnet restore ./src/Certes.Cli/project.json
 dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/project.json
 
 @echo off
-echo dotnet ./bin/Certes.Cli.dll %%^* > ./build/cli/certes.bat
+echo dotnet %%^~dp0/bin/Certes.Cli.dll %%^* > ./build/cli/certes.bat
 @echo on
