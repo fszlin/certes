@@ -88,11 +88,19 @@ namespace Certes.Cli
 
                 return true;
             }
+            catch (AggregateException ex)
+            {
+                foreach (var err in ex.InnerExceptions)
+                {
+                    consoleLogger.Error(err, err.Message);
+                }
+            }
             catch (Exception ex)
             {
-                consoleLogger.Error(ex.Message);
-                return false;
+                consoleLogger.Error(ex, ex.Message);
             }
+
+            return false;
         }
 
         private static LoggingConfiguration ConfigureConsoleLogger()
