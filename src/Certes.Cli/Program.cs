@@ -37,7 +37,7 @@ namespace Certes.Cli
                 var logger = factory.GetLogger(ConsoleLoggerName);
                 var tsk = new Program(logger).Process(args);
                 tsk.Wait();
-                return tsk.Result ? 1 : 0;
+                return tsk.Result ? 0 : 1;
             }
         }
 
