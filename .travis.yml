@@ -1,20 +1,16 @@
 language: generic
-
 deploy:
   provider: releases
-  api_key: "78bae4f33bf7c4f452ae8b0bea37e573b1af1714"
+  secure: YKw5yW3BPUsgeZj3ffOxs8/ILQfM+p4eCFc7mu5YdxE7kP9KnvCmr834w39v7TrqyTOMFnhBlA8MhF+QM/i4QXiS+MMZ7KCb9I2M+f00unW+JN63FIat8xzJVwdBk55SnavP2EyZ2IMIGV10fMRQWc4wvIeRWpDiUDE3f4ZEkPzKzNM3/cA3e7V+ahDztZIKnesBRj2qh9pbL+YESya+3m1BzGR/Mwors7rNaOfTnp0NJ3TIRhtCqCnFalDZTx8pPhlor2nIcAMYQqHRUiltNmYF6rnQJli3mcHbrLitNlwbuL1uwTGkqDDyBZ0/FjOypzlR0EFJKigNWdaWjwa8p6omLDNTCDD9C5ZeXAY77dFNiv7/W48Mh29tWfuVezfpeBZjnGccBEx0xuDchK4hzvVHTaYX2keePcZdAAbhZQNjdRXg9bi+PFwbo4RgfzPlEokPSKWK7j32elK+UD5p5weoiQC8ndqqIBJIGtLUKKzMW0IVFTdDTG9aPWnSQQZXwOr/1ySx98ZOcSB4DjSVxkMt/QY4WJMYt/4AmXdhD9ReDDgmutnDlzvtEHRRjd/NQyhKkGYpYyootVXHKoypX5+AOTvYMZnCQLVmJvQLNZ4eCc4kNEBjThLg/5xOCFE8J+R04zEEWDZN5pCVW7WsmtPjQ8TZxgX4XqUwuVmkY6A=
   file:
-    - cretes-cli.zip
+  - cretes-cli.zip
   skip_cleanup: true
   on:
     tags: true
-
 sudo: required
 dist: trusty
-
 os:
-  - linux
-
+- linux
 addons:
   apt:
     packages:
@@ -24,32 +20,28 @@ addons:
     - libssl-dev
     - libunwind8
     - zlib1g
-
 env:
   matrix:
-    - CLI_VERSION=Latest
+  - CLI_VERSION=Latest
   global:
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-    DOTNET_CLI_TELEMETRY_OPTOUT: 0
-
+  - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  - DOTNET_CLI_TELEMETRY_OPTOUT: 0
 branches:
   only:
-    - master
-    - dev
-    
+  - master
+  - dev
 before_install:
-  - export DOTNET_INSTALL_DIR="$PWD/.dotnetcli"
-  - curl -L --create-dirs https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/dotnet-install.sh -o ./scripts/obtain/install-dotnet.sh
-  - find ./scripts -name "*.sh" -exec chmod +x {} \;
-  - sudo bash ./scripts/obtain/install-dotnet.sh --version "$CLI_VERSION" --install-dir "$DOTNET_INSTALL_DIR" --no-path
-  # add dotnet to PATH
-  - export PATH="$DOTNET_INSTALL_DIR:$PATH"
-
+- export DOTNET_INSTALL_DIR="$PWD/.dotnetcli"
+- curl -L --create-dirs https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/dotnet-install.sh
+  -o ./scripts/obtain/install-dotnet.sh
+- find ./scripts -name "*.sh" -exec chmod +x {} \;
+- sudo bash ./scripts/obtain/install-dotnet.sh --version "$CLI_VERSION" --install-dir
+  "$DOTNET_INSTALL_DIR" --no-path
+- export PATH="$DOTNET_INSTALL_DIR:$PATH"
 script:
-  - dotnet restore
-  - dotnet test ./test/Certes.Tests/project.json
-  - dotnet pack -c release -o ./build/nuget ./src/Certes/project.json
-  - dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/project.json
-  # zip cli for release
-  - find ./build/cli -path '*/.*' -prune -o -type f -print | zip "$TRAVIS_BUILD_DIR/cretes-cli.zip" -@
-
+- dotnet restore
+- dotnet test ./test/Certes.Tests/project.json
+- dotnet pack -c release -o ./build/nuget ./src/Certes/project.json
+- dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/project.json
+- find ./build/cli -path '*/.*' -prune -o -type f -print | zip "$TRAVIS_BUILD_DIR/cretes-cli.zip"
+  -@
