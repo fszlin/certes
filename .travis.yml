@@ -1,7 +1,7 @@
 language: generic
 deploy:
   provider: releases
-  secure: VhTwD77Rzi1LraW39GB8D8oCIQmB1f34cm7G0l9JsbMAOTR8wXPtPeFgNXV18WAok/n1hgaco4EyO/EWG+VHJnNHAeZuIrVcxkG+8R5H2DP+OOdvU2zmU5/Hi7VH6Vs/Y0qmi3TFs1Lep2UCsGpLwMAUZNXFaP/ORmO8MszbHoXNG1Ldz3B9UaipKPpI2AcLdaCSykl9D9sVaaXUzaF78sr1uvzTx+4Yi7VN3TXXOWBqDPyPR8LmEgV3Ix4MAVsF8cAosoBzPJO9NcOc3JL2ptiAnDerbnH3REC0TSwl4OuzyrPorzWFff5FTQ7RdwRoLyqHkWwJvnfLuL9KsWeoHvF7ktDkrLM4nzQw64jYd4GQbpayNsfQc5f8q2H+pv9eLf+L3EDaoNqyCAoFu60MbJkssnpgd5hjR9LuM1joieYNfZgSAx2cw0kIYltwKFEq/QA+hzzZVQp5Q4QtahP5rlXkcjcbS2aSKqUpI9y2541+LR0te4Qw9ozpxGa+zGF/KPX/ubL3x2iTx4yQAcTk3HgIEOJjZ6iLO5xtZXTP6fY7V2rf43ZYw//99fO+VtzYPiPj/DGcVqBZNz0gHO93I+p7dYMDEp6Nexw2gfJyF2LPcthmKVtQeSYd+12ivEwzYdX1NArZ30+f3LqD7XBLzCHCT0+gykAWFUWXs/qiCQg=
+  api_key: "GITHUB OAUTH TOKEN"
   file:
   - cretes-cli.zip
   skip_cleanup: true
