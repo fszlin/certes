@@ -30,16 +30,18 @@ namespace Certes.Cli
             this.consoleLogger = consoleLogger;
         }
 
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
             using (var factory = new LogFactory(ConfigureConsoleLogger()))
             {
                 var logger = factory.GetLogger(ConsoleLoggerName);
-                new Program(logger).Process(args).Wait();
+                var tsk = new Program(logger).Process(args);
+                tsk.Wait();
+                return tsk.Result ? 1 : 0;
             }
         }
 
-        public async Task Process(string[] args)
+        public async Task<bool> Process(string[] args)
         {
             try
             {
@@ -68,7 +70,7 @@ namespace Certes.Cli
 #if DEBUG
             formatting = Formatting.Indented;
 #endif
-
+            
             try
             {
                 switch (command)
@@ -83,10 +85,13 @@ namespace Certes.Cli
                         await this.ProcessCommand<CertificateCommand, CertificateOptions>(new CertificateCommand(certificateOptions, this.consoleLogger));
                         break;
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
                 consoleLogger.Error(ex.Message);
+                return false;
             }
         }
 

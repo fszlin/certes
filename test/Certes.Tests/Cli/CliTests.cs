@@ -107,7 +107,8 @@ namespace Certes.Cli
             using (var factory = new LogFactory(config))
             {
                 var logger = factory.GetLogger("logger");
-                await new Program(logger).Process(args);
+                var succeed = await new Program(logger).Process(args);
+                Assert.True(succeed);
             }
 
             return memoryTarget.Logs;
