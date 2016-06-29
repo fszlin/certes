@@ -1,5 +1,14 @@
 language: generic
 
+deploy:
+  provider: releases
+  api_key: "78bae4f33bf7c4f452ae8b0bea37e573b1af1714"
+  file:
+    - cretes-cli.zip
+  skip_cleanup: true
+  on:
+    tags: true
+
 sudo: required
 dist: trusty
 
@@ -41,3 +50,6 @@ script:
   - dotnet test ./test/Certes.Tests/project.json
   - dotnet pack -c release -o ./build/nuget ./src/Certes/project.json
   - dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/project.json
+  # zip cli
+  - find ./build/cli -path '*/.*' -prune -o -type f -print | zip "$TRAVIS_BUILD_DIR/cretes-cli.zip" -@
+

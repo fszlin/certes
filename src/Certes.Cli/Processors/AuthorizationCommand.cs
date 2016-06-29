@@ -66,7 +66,7 @@ namespace Certes.Cli.Processors
 
                 var names = text.Split(NameValueSeparator);
                 values = values.Union(names)
-                    .Where(n=> !string.IsNullOrWhiteSpace(n))
+                    .Where(n => !string.IsNullOrWhiteSpace(n))
                     .Distinct()
                     .Select(n => n.Trim())
                     .ToArray();
