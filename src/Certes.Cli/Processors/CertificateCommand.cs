@@ -1,6 +1,7 @@
 ﻿using Certes.Acme;
 using Certes.Cli.Options;
 using Certes.Pkcs;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,8 +13,9 @@ namespace Certes.Cli.Processors
     internal class CertificateCommand : CommandBase<CertificateOptions>
     {
         private static readonly char[] NameValueSeparator = new[] { '\r', '\n', ' ', ';', ',' };
-        public CertificateCommand(CertificateOptions options)
-            : base(options)
+
+        public CertificateCommand(CertificateOptions options, ILogger consoleLogger)
+            : base(options, consoleLogger)
         {
         }
 
