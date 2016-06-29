@@ -26,6 +26,11 @@ namespace Certes.Cli.Processors
                 throw new Exception("Account not specified.");
             }
 
+            if ( string.IsNullOrWhiteSpace(Options.Name ))
+            {
+                throw new Exception("Certificate name not specficied.");
+            }
+
             if (context.Certificates == null)
             {
                 context.Certificates = new Dictionary<string, AcmeCertificate>();
