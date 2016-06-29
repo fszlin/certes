@@ -6,6 +6,5 @@
         public bool AgreeTos = false;
         public bool Update = false;
         public bool Thumbprint = false;
-        public string FromKey = "";
     }
 }
