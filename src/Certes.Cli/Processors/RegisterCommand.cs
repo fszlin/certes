@@ -54,6 +54,7 @@ namespace Certes.Cli.Processors
                 };
             }
 
+            ConsoleLogger.Info("Registration created.");
             return context;
         }
 
@@ -84,6 +85,7 @@ namespace Certes.Cli.Processors
                 }
             }
 
+            ConsoleLogger.Info("Registration updated.");
             return context;
         }
         
