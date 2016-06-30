@@ -1,5 +1,6 @@
 ﻿using Certes.Acme;
 using Certes.Cli.Options;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,8 +12,8 @@ namespace Certes.Cli.Processors
     internal class AuthorizationCommand : CommandBase<AuthorizationOptions>
     {
         private static readonly char[] NameValueSeparator = new[] { '\r', '\n', ' ', ';', ',' };
-        public AuthorizationCommand(AuthorizationOptions options)
-            : base(options)
+        public AuthorizationCommand(AuthorizationOptions options, ILogger ConsoleLogger)
+            : base(options, ConsoleLogger)
         {
         }
 
@@ -58,14 +59,14 @@ namespace Certes.Cli.Processors
             {
                 if (!File.Exists(Options.ValuesFile))
                 {
-                    throw new Exception($"{Options.ValuesFile} not exist.");
+                    throw new Exception($"{Options.ValuesFile} not found.");
                 }
 
                 var text = await FileUtil.ReadAllText(Options.ValuesFile);
 
                 var names = text.Split(NameValueSeparator);
                 values = values.Union(names)
-                    .Where(n=> !string.IsNullOrWhiteSpace(n))
+                    .Where(n => !string.IsNullOrWhiteSpace(n))
                     .Distinct()
                     .Select(n => n.Trim())
                     .ToArray();
@@ -83,12 +84,29 @@ namespace Certes.Cli.Processors
 
             var authorizations = context.Authorizations[Options.Type] =
                 context.Authorizations.TryGet(Options.Type) ?? new Dictionary<string, AcmeResult<Authorization>>();
+            
+            var errors = new List<Exception>();
             using (var client = new AcmeClient(Options.Server))
             {
                 client.Use(context.Account.Key);
 
                 foreach (var name in values)
                 {
+                    if (!Options.Force)
+                    {
+                        var auth = authorizations.TryGet(name);
+                        if (auth != null)
+                        {
+                            if (auth.Data.Status == EntityStatus.Pending ||
+                                auth.Data.Status == EntityStatus.Processing ||
+                                auth.Data.Status == EntityStatus.Valid && auth.Data.Expires > DateTimeOffset.Now)
+                            {
+                                ConsoleLogger.Warn("Authorization for identifier {0} {1} already exists, use --force option to create a new authorization.", auth.Data.Identifier.Type, auth.Data.Identifier.Value);
+                                continue;
+                            }
+                        }
+                    }
+
                     var id = new AuthorizationIdentifier()
                     {
                         Type = Options.Type,
@@ -98,15 +116,25 @@ namespace Certes.Cli.Processors
                     try
                     {
                         var auth = await client.NewAuthorization(id);
-                        Console.WriteLine("{0} {1}", name, auth.Data.Status);
-
                         authorizations[auth.Data.Identifier.Value] = auth;
+
+                        ConsoleLogger.Info("Authorization for identifier {0} {1} created", auth.Data.Identifier.Type, auth.Data.Identifier.Value);
+                        foreach (var challenge in auth.Data.Challenges ?? Array.Empty<Challenge>())
+                        {
+                            challenge.KeyAuthorization = client.ComputeKeyAuthorization(challenge);
+                            ConsoleLogger.Info("{0}: {1}", challenge.Type, challenge.KeyAuthorization);
+                        }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("{0} Error - {1}", name, ex.Message);
+                        errors.Add(ex);
                     }
                 }
+            }
+
+            if (errors.Count > 0)
+            {
+                throw new AggregateException(errors);
             }
         }
 
@@ -129,7 +157,7 @@ namespace Certes.Cli.Processors
 
                     if (challenge == null)
                     {
-                        Console.WriteLine("{0} NotFound", name);
+                        ConsoleLogger.Warn("{0} NotFound", name);
                     }
                     else
                     {
@@ -138,7 +166,7 @@ namespace Certes.Cli.Processors
                             challenge.KeyAuthorization = client.ComputeKeyAuthorization(challenge);
                         }
 
-                        Console.WriteLine("{0} {1}", name, challenge.KeyAuthorization);
+                        ConsoleLogger.Info("{0} {1}", name, challenge.KeyAuthorization);
                     }
                 }
             }
@@ -164,7 +192,7 @@ namespace Certes.Cli.Processors
                             .Where(c => c.Type == Options.Refresh)
                             .FirstOrDefault();
 
-                        Console.WriteLine("{0} {1}", name, challenge.Status);
+                        ConsoleLogger.Info("{0} {1}", name, challenge.Status);
                     }
                 }
             }
@@ -189,7 +217,7 @@ namespace Certes.Cli.Processors
 
                     if (challenge == null)
                     {
-                        Console.WriteLine("{0} NotFound", name);
+                        ConsoleLogger.Warn("{0} NotFound", name);
                     }
                     else
                     {
@@ -200,7 +228,7 @@ namespace Certes.Cli.Processors
                             .Where(c => c.Type != challenge.Type)
                             .Union(new[] { challenge })
                             .ToArray();
-                        Console.WriteLine("{0} {1}", name, challenge.Status);
+                        ConsoleLogger.Info("{0} {1}", name, challenge.Status);
                     }
                 }
             }

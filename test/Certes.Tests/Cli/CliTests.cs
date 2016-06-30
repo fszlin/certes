@@ -1,6 +1,9 @@
 ﻿using Certes.Acme;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -84,12 +87,31 @@ namespace Certes.Cli
             return ctx["authorizations"]["dns"][Host]["data"].Value<string>("status") == EntityStatus.Pending;
         }
 
-        private async Task RunCommand(string cmd, Dictionary<string, string> placeHolders = null)
+        private async Task<IList<string>> RunCommand(string cmd, Dictionary<string, string> placeHolders = null)
         {
+            var config = new LoggingConfiguration();
+            var memoryTarget = new MemoryTarget()
+            {
+                Layout = @"${message}"
+            };
+
+            config.AddTarget("logger", memoryTarget);
+
+            var consoleRule = new LoggingRule("*", LogLevel.Debug, memoryTarget);
+            config.LoggingRules.Add(consoleRule);
+            
             var args = cmd.Split(' ')
                 .Select(s => placeHolders?.ContainsKey(s) == true ? placeHolders[s] : s)
                 .ToArray();
-            await new Program().Process(args);
+
+            using (var factory = new LogFactory(config))
+            {
+                var logger = factory.GetLogger("logger");
+                var succeed = await new Program(logger).Process(args);
+                Assert.True(succeed);
+            }
+
+            return memoryTarget.Logs;
         }
 
         private void InjectTestKey()
