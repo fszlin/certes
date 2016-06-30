@@ -17,13 +17,25 @@ namespace Certes.Pkcs
         {
             var keyPair = privateKeyInfo.CreateKeyPair();
 
-            var certParser = new X509CertificateParser();
-            var certChain = FindChain(certificate);
-            var certChainEntries = certChain.Select(c => new X509CertificateEntry(c)).ToArray();
-
             var store = new Pkcs12StoreBuilder().Build();
-            store.SetCertificateEntry(friendlyName, new X509CertificateEntry(certChain.Last()));
-            store.SetKeyEntry(friendlyName, new AsymmetricKeyEntry(keyPair.Private), certChainEntries);
+
+            if (fullChain)
+            {
+                var certChain = FindChain(certificate);
+                var certChainEntries = certChain.Select(c => new X509CertificateEntry(c)).ToArray();
+
+                store.SetCertificateEntry(friendlyName, certChainEntries.Last());
+                store.SetKeyEntry(friendlyName, new AsymmetricKeyEntry(keyPair.Private), certChainEntries);
+            }
+            else
+            {
+                var certParser = new X509CertificateParser();
+                var targetCert = certParser.ReadCertificate(certificate);
+                var entry = new X509CertificateEntry(targetCert);
+
+                store.SetCertificateEntry(friendlyName, entry);
+                store.SetKeyEntry(friendlyName, new AsymmetricKeyEntry(keyPair.Private), new[] { entry });
+            }
 
             using (var buffer = new MemoryStream())
             {
