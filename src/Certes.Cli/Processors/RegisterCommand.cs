@@ -1,6 +1,7 @@
 ﻿using Certes.Acme;
 using Certes.Cli.Options;
 using Certes.Jws;
+using NLog;
 using System;
 using System.Threading.Tasks;
 
@@ -8,8 +9,8 @@ namespace Certes.Cli.Processors
 {
     internal class RegisterCommand : CommandBase<RegisterOptions>
     {
-        public RegisterCommand(RegisterOptions options)
-            : base(options)
+        public RegisterCommand(RegisterOptions options, ILogger consoleLogger)
+            : base(options, consoleLogger)
         {
         }
         
@@ -53,6 +54,7 @@ namespace Certes.Cli.Processors
                 };
             }
 
+            ConsoleLogger.Info("Registration created.");
             return context;
         }
 
@@ -83,14 +85,15 @@ namespace Certes.Cli.Processors
                 }
             }
 
+            ConsoleLogger.Info("Registration updated.");
             return context;
         }
         
-        private static void ShowThumbprint(AcmeContext context)
+        private void ShowThumbprint(AcmeContext context)
         {
             var account = new AccountKey(context.Account.Key);
             var thumbprint = JwsConvert.ToBase64String(account.GenerateThumbprint());
-            Console.WriteLine(thumbprint);
+            ConsoleLogger.Info(thumbprint);
         }
     }
 }

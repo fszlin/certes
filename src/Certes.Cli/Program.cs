@@ -3,6 +3,9 @@ using Certes.Cli.Processors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 using System;
 using System.CommandLine;
 using System.IO;
@@ -12,6 +15,9 @@ namespace Certes.Cli
 {
     public class Program
     {
+        internal const string ConsoleLoggerName = "certes-cli-console-logger";
+        private readonly ILogger consoleLogger;
+
         private JsonSerializerSettings jsonSettings;
         private Command command = Command.Undefined;
         private RegisterOptions registerOptions;
@@ -19,20 +25,39 @@ namespace Certes.Cli
         private AuthorizationOptions authorizationOptions;
         private CertificateOptions certificateOptions;
 
-        public static void Main(string[] args)
+        public Program(ILogger consoleLogger)
         {
-            new Program().Process(args).Wait();
+            this.consoleLogger = consoleLogger;
         }
 
-        public async Task Process(string[] args)
+        public static int Main(string[] args)
         {
-            ArgumentSyntax.Parse(args, syntax =>
+            using (var factory = new LogFactory(ConfigureConsoleLogger()))
             {
-                registerOptions = DefineRegisterCommand(syntax);
-                authorizationOptions = DefineAuthorizationCommand(syntax);
-                certificateOptions = DefineCertificateCommand(syntax);
+                var logger = factory.GetLogger(ConsoleLoggerName);
+                var tsk = new Program(logger).Process(args);
+                tsk.Wait();
+                return tsk.Result ? 0 : 1;
+            }
+        }
 
-            });
+        public async Task<bool> Process(string[] args)
+        {
+            try
+            {
+                ArgumentSyntax.Parse(args, syntax =>
+                {
+                    syntax.HandleErrors = false;
+                    registerOptions = DefineRegisterCommand(syntax);
+                    authorizationOptions = DefineAuthorizationCommand(syntax);
+                    certificateOptions = DefineCertificateCommand(syntax);
+
+                });
+            }
+            catch (ArgumentSyntaxException ex)
+            {
+                consoleLogger.Error(ex.Message);
+            }
 
             jsonSettings = new JsonSerializerSettings
             {
@@ -45,26 +70,53 @@ namespace Certes.Cli
 #if DEBUG
             formatting = Formatting.Indented;
 #endif
-
+            
             try
             {
                 switch (command)
                 {
                     case Command.Register:
-                        await this.ProcessCommand<RegisterCommand, RegisterOptions>(new RegisterCommand(registerOptions));
+                        await this.ProcessCommand<RegisterCommand, RegisterOptions>(new RegisterCommand(registerOptions, this.consoleLogger));
                         break;
                     case Command.Authorization:
-                        await this.ProcessCommand<AuthorizationCommand, AuthorizationOptions>(new AuthorizationCommand(authorizationOptions));
+                        await this.ProcessCommand<AuthorizationCommand, AuthorizationOptions>(new AuthorizationCommand(authorizationOptions, this.consoleLogger));
                         break;
                     case Command.Certificate:
-                        await this.ProcessCommand<CertificateCommand, CertificateOptions>(new CertificateCommand(certificateOptions));
+                        await this.ProcessCommand<CertificateCommand, CertificateOptions>(new CertificateCommand(certificateOptions, this.consoleLogger));
                         break;
+                }
+
+                return true;
+            }
+            catch (AggregateException ex)
+            {
+                foreach (var err in ex.InnerExceptions)
+                {
+                    consoleLogger.Error(err, err.Message);
                 }
             }
             catch (Exception ex)
             {
-                await Console.Error.WriteLineAsync(ex.Message);
+                consoleLogger.Error(ex, ex.Message);
             }
+
+            return false;
+        }
+
+        private static LoggingConfiguration ConfigureConsoleLogger()
+        {
+            var config = new LoggingConfiguration();
+            var consoleTarget = new ColoredConsoleTarget
+            {
+                Layout = @"${message}"
+            };
+
+            config.AddTarget(ConsoleLoggerName, consoleTarget);
+
+            var consoleRule = new LoggingRule("*", LogLevel.Debug, consoleTarget);
+            config.LoggingRules.Add(consoleRule);
+
+            return config;
         }
 
         private CertificateOptions DefineCertificateCommand(ArgumentSyntax syntax)

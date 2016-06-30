@@ -1,6 +1,7 @@
 ﻿using Certes.Acme;
 using Certes.Cli.Options;
 using Certes.Pkcs;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,8 +13,9 @@ namespace Certes.Cli.Processors
     internal class CertificateCommand : CommandBase<CertificateOptions>
     {
         private static readonly char[] NameValueSeparator = new[] { '\r', '\n', ' ', ';', ',' };
-        public CertificateCommand(CertificateOptions options)
-            : base(options)
+
+        public CertificateCommand(CertificateOptions options, ILogger consoleLogger)
+            : base(options, consoleLogger)
         {
         }
 
@@ -22,6 +24,11 @@ namespace Certes.Cli.Processors
             if (context?.Account == null)
             {
                 throw new Exception("Account not specified.");
+            }
+
+            if ( string.IsNullOrWhiteSpace(Options.Name ))
+            {
+                throw new Exception("Certificate name not specficied.");
             }
 
             if (context.Certificates == null)
@@ -133,7 +140,11 @@ namespace Certes.Cli.Processors
                 var text = await FileUtil.ReadAllText(Options.ValuesFile);
 
                 var names = text.Split(NameValueSeparator);
-                values = values.Union(names).Distinct().ToArray();
+                values = values.Union(names)
+                    .Where(n => !string.IsNullOrWhiteSpace(n))
+                    .Distinct()
+                    .Select(n => n.Trim())
+                    .ToArray();
             }
 
             return values;
