@@ -64,7 +64,7 @@ namespace Certes.Cli.Processors
                     throw new Exception($"Certificate {Options.Name} not ready.");
                 }
 
-                var pfx = X509Util.BuildPfx(cert.Raw, context.Account.Key, Options.Name, Options.Password, !Options.NoChain);
+                var pfx = X509Util.BuildPfx(cert.Raw, cert.Key, Options.Name, Options.Password, !Options.NoChain);
                 File.WriteAllBytes(Options.ExportPfx, pfx);
             }
             else if (!string.IsNullOrWhiteSpace(Options.ExportKey))
