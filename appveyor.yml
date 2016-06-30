@@ -9,9 +9,13 @@ branches:
     - dev
 
 install:
-  # by default, all script lines are interpreted as batch
+
+build_script:
   - dotnet restore
-  # to run script as a PowerShell command prepend it with ps:
-  #- ps: Write-Host 'This is PowerShell'
+  - dotnet test
+  - dotnet pack -c release -o ./build/nuget ./src/Certes/project.json
+  - dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/project.json
+
+test: off
 
 configuration: Release
