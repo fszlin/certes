@@ -1,0 +1,17 @@
+version: 1.0.{build}
+build:
+  verbosity: minimal
+
+branches:
+  # whitelist
+  only:
+    - master
+    - dev
+
+install:
+  # by default, all script lines are interpreted as batch
+  - dotnet restore
+  # to run script as a PowerShell command prepend it with ps:
+  #- ps: Write-Host 'This is PowerShell'
+
+configuration: Release

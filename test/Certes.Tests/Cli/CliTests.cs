@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -108,7 +109,7 @@ namespace Certes.Cli
             {
                 var logger = factory.GetLogger("logger");
                 var succeed = await new Program(logger).Process(args);
-                Assert.True(succeed);
+                Assert.True(succeed, string.Join(Environment.NewLine, memoryTarget.Logs));
             }
 
             return memoryTarget.Logs;
