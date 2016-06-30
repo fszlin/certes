@@ -1,6 +1,7 @@
 # Certes ACME Client
 
 [![Build Status](https://travis-ci.org/fszlin/certes.svg)](https://travis-ci.org/fszlin/certes)
+[![Build status](https://ci.appveyor.com/api/projects/status/4wwiivqs8rl0l63q?svg=true)](https://ci.appveyor.com/project/fszlin/certes)
 
 Certes is a client implantation for the Automated Certificate Management
 Environment (ACME) protocol, build on .NET Core. It is aimed to provide a easy
