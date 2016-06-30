@@ -33,7 +33,7 @@ namespace Certes.Pkcs
             }
         }
 
-        internal static KeyInfo Export(this AsymmetricCipherKeyPair keyPair, SignatureAlgorithm algorithm)
+        internal static KeyInfo Export(this AsymmetricCipherKeyPair keyPair)
         {
             var privateKey = PrivateKeyInfoFactory.CreatePrivateKeyInfo(keyPair.Private);
 

@@ -14,7 +14,8 @@
       "version": "1.0.0"
     },
     "Moq": "4.6.25-alpha",
-    "System.Diagnostics.TraceSource": "4.0.0"
+    "System.Diagnostics.TraceSource": "4.0.0",
+    "Portable.BouncyCastle": "1.8.1.1"
   },
 
   "frameworks": {

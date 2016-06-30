@@ -73,7 +73,7 @@ namespace Certes.Pkcs
         
         public KeyInfo Export()
         {
-            return this.KeyPair.Export(this.Algorithm);
+            return this.KeyPair.Export();
         }
 
         private Pkcs10CertificationRequest GeneratePkcs10()

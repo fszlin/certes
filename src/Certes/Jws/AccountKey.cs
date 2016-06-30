@@ -78,7 +78,7 @@ namespace Certes.Jws
 
         public KeyInfo Export()
         {
-            return this.keyPair.Export(this.Algorithm);
+            return this.keyPair.Export();
         }
 
         public class JsonWebKey
