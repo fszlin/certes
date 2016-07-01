@@ -3,6 +3,7 @@ using Certes.Jws;
 using Certes.Pkcs;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -202,6 +203,30 @@ namespace Certes
                 Location = result.Location,
                 ContentType = result.ContentType
             };
+
+            var currentCert = cert;
+            while (true)
+            {
+                var upLink = currentCert.Links?.Where(l => l.Rel == "up").FirstOrDefault();
+                if (upLink == null)
+                {
+                    break;
+                }
+                else
+                {
+                    var issuerResult = await this.handler.Get<AcmeCertificate>(upLink.Uri);
+                    currentCert.Issuer = new AcmeCertificate
+                    {
+                        Raw = issuerResult.Raw,
+                        Key = csrProvider.Export(),
+                        Links = issuerResult.Links,
+                        Location = issuerResult.Location,
+                        ContentType = issuerResult.ContentType
+                    };
+
+                    currentCert = currentCert.Issuer;
+                }
+            }
 
             return cert;
         }

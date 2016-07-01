@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,25 +41,8 @@ namespace Certes.Acme
         public async Task<AcmeRespone<T>> Get<T>(Uri uri)
         {
             var resp = await http.GetAsync(uri);
-
-            if (resp.StatusCode == HttpStatusCode.OK)
-            {
-                var json = await resp.Content.ReadAsStringAsync();
-                var obj = JsonConvert.DeserializeObject<T>(json, jsonSettings);
-                var data = new AcmeRespone<T>
-                {
-                    Data = obj
-                };
-
-                ParseHeaders(data, resp);
-
-                this.nonce = data.ReplayNonce;
-                return data;
-            }
-            else
-            {
-                throw new Exception();
-            }
+            var result = await ReadResponse<T>(resp);
+            return result;
         }
 
         public async Task<AcmeRespone<T>> Post<T>(Uri uri, T entity, IAccountKey keyPair)
@@ -68,7 +52,7 @@ namespace Certes.Acme
 
             var content = GenerateRequestContent(entity, keyPair);
             var resp = await http.PostAsync(uri, content);
-            var result = await ReadResponse<T>(entity.Resource, resp);
+            var result = await ReadResponse<T>(resp, entity.Resource);
             return result;
         }
 
@@ -118,8 +102,7 @@ namespace Certes.Acme
             return new StringContent(bodyJson, Encoding.ASCII, MimeJson);
         }
 
-        private async Task<AcmeRespone<T>> ReadResponse<T>(string resourceType, HttpResponseMessage response) 
-            where T : EntityBase
+        private async Task<AcmeRespone<T>> ReadResponse<T>(HttpResponseMessage response, string resourceType = null)
         {
             var data = new AcmeRespone<T>();
             if (IsJsonMedia(response.Content.Headers.ContentType.MediaType))
@@ -129,9 +112,10 @@ namespace Certes.Acme
                 if (response.IsSuccessStatusCode)
                 {
                     data.Data = JsonConvert.DeserializeObject<T>(json, jsonSettings);
-                    if (string.IsNullOrWhiteSpace(data.Data.Resource))
+                    var entity = data.Data as EntityBase;
+                    if (resourceType != null && entity != null && string.IsNullOrWhiteSpace(entity.Resource))
                     {
-                        data.Data.Resource = resourceType;
+                        entity.Resource = resourceType;
                     }
                 }
                 else

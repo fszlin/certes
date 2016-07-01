@@ -93,7 +93,7 @@ namespace Certes.Cli
             var config = new LoggingConfiguration();
             var memoryTarget = new MemoryTarget()
             {
-                Layout = @"${message}"
+                Layout = @"${message}${onexception:${exception:format=tostring}}"
             };
 
             config.AddTarget("logger", memoryTarget);
