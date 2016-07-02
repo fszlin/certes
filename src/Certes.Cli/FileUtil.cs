@@ -15,5 +15,13 @@ namespace Certes.Cli
                 }
             }
         }
+
+        internal static async Task WriteAllBytes(string path, byte[] data)
+        {
+            using (var stream = File.Create(path))
+            {
+                await stream.WriteAsync(data, 0, data.Length);
+            }
+        }
     }
 }

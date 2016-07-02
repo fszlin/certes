@@ -49,7 +49,7 @@ namespace Certes.Cli.Processors
                     throw new Exception($"Certificate {Options.Name} not ready.");
                 }
 
-                File.WriteAllBytes(Options.ExportCer, cert.Raw);
+                await FileUtil.WriteAllBytes(Options.ExportCer, cert.Raw);
             }
             else if (!string.IsNullOrWhiteSpace(Options.ExportPfx))
             {
@@ -73,7 +73,7 @@ namespace Certes.Cli.Processors
                 }
 
                 var pfx = pfxBuilder.Build(Options.Name, Options.Password);
-                File.WriteAllBytes(Options.ExportPfx, pfx);
+                await FileUtil.WriteAllBytes(Options.ExportPfx, pfx);
             }
             else if (!string.IsNullOrWhiteSpace(Options.ExportKey))
             {
