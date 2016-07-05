@@ -1,7 +1,9 @@
 # Certes ACME Client
 
-[![Build Status](https://travis-ci.org/fszlin/certes.svg)](https://travis-ci.org/fszlin/certes)
-[![Build status](https://ci.appveyor.com/api/projects/status/4wwiivqs8rl0l63q?svg=true)](https://ci.appveyor.com/project/fszlin/certes)
+[![Travis](https://travis-ci.org/fszlin/certes.svg)](https://travis-ci.org/fszlin/certes)
+[![AppVeyor](https://ci.appveyor.com/api/projects/status/4wwiivqs8rl0l63q?svg=true)](https://ci.appveyor.com/project/fszlin/certes)
+[![NuGet](https://buildstats.info/nuget/certes)](https://www.nuget.org/packages/certes/)
+[![MyGet](https://buildstats.info/myget/dymetis/certes?includePreReleases=true)](https://www.myget.org/feed/dymetis/package/nuget/certes)
 
 Certes is a client implantation for the Automated Certificate Management
 Environment (ACME) protocol, build on .NET Core. It is aimed to provide a easy

@@ -80,3 +80,15 @@ deploy:
     skip_symbols: true
     symbol_server:           # remove to push symbols to SymbolSource.org
     artifact: nupkg
+    on:
+      branch: master
+
+  - provider: NuGet
+    server: https://www.myget.org/F/dymetis/api/v2/package
+    api_key:
+      secure: RSdqUIwRSn8DI5xaa4iWBzOtYU6y3K9JRh07myQpAIRf5IhlwsZpFsnQOpCg1g7J
+    skip_symbols: true
+    symbol_server:           # remove to push symbols to SymbolSource.org
+    artifact: nupkg
+    on:
+      branch: dev
