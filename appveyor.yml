@@ -2,9 +2,6 @@ version: 1.0.0-{build}
 build:
   verbosity: minimal
 
-environment:
-  DOTNET_BUILD_VERSION: {build}
-
 branches:
   # whitelist
   only:
@@ -14,6 +11,7 @@ branches:
 install:
 
 build_script:
+  - cmd: SET DOTNET_BUILD_VERSION={build}
   - dotnet restore
   - dotnet test ./test/Certes.Tests/project.json
   - dotnet pack -c release -o ./build/nuget ./src/Certes/project.json
