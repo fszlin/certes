@@ -36,6 +36,8 @@ build_script:
   - dotnet test ./test/Certes.Tests/project.json
   - dotnet pack -c release -o ./build/nuget ./src/Certes/project.json
   - dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/project.json
+  - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\build\cli\certes.bat'
+  - 7z a build\certes-cli.zip .\build\cli\*.* -r
 
 test: off
 
@@ -44,6 +46,9 @@ configuration: Release
 artifacts:
     - path: build\nuget\Certes.$(CERTES_PACKAGE_VERSION).nupkg
       name: nupkg
+      
+    - path: build\certes-cli.zip
+      name: cli
 
 deploy:
   - provider: GitHub
@@ -51,7 +56,7 @@ deploy:
     description: 'Certes v$(CERTES_PACKAGE_VERSION)'
     auth_token:
       secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-    artifact: nupkg
+    artifact: nupkg,cli
     draft: false
     prerelease: false
     on:
@@ -62,7 +67,7 @@ deploy:
     description: 'Certes v$(CERTES_PACKAGE_VERSION)'
     auth_token:
       secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-    artifact: nupkg
+    artifact: nupkg,cli
     draft: false
     prerelease: true
     on:
