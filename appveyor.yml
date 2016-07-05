@@ -17,16 +17,16 @@ install:
 
 build_script:
   - ps: $packageVersion = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "$($env:appveyor_build_version)" } else { "$($env:appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)" }
-  - ps: "Update Certes package version to $($packageVersion)"
+  - ps: echo "Update Certes package version to $($packageVersion)"
   - ps: $packageJson = Get-Content -Raw .\src\Certes\project.json | ConvertFrom-Json
   - ps: $packageJson.version = $packageVersion
   - ps: $packageJson | ConvertTo-Json | Set-Content .\src\Certes\project.json
-  - ps: "Update Certes.Cli package version to $($packageVersion)"
+  - ps: echo "Update Certes.Cli package version to $($packageVersion)"
   - ps: $packageJson = Get-Content -Raw .\src\Certes.Cli\project.json | ConvertFrom-Json
   - ps: $packageJson.version = $packageVersion
   - ps: $packageJson.dependencies.Certes = $packageVersion
   - ps: $packageJson | ConvertTo-Json | Set-Content .\src\Certes.Cli\project.json
-  - ps: "Update dependency versions for Certes.Tests"
+  - ps: echo "Update dependency versions for Certes.Tests"
   - ps: $packageJson = Get-Content -Raw .\test\Certes.Tests\project.json | ConvertFrom-Json
   - ps: $packageJson.dependencies.Certes = $packageVersion
   - ps: $packageJson.dependencies.'Certes.Cli' = $packageVersion
