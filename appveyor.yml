@@ -46,24 +46,21 @@ artifacts:
 deploy:
   release: certes-v$(appveyor_build_version)
   description: 'Certes v$(appveyor_build_version)'
-  provider: GitHub
-  auth_token:
-    secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-  artifact: /.*\.nupkg/
-  draft: false
-  prerelease: false
-  on:
-    branch: master
-    #appveyor_repo_tag: true
 
-deploy:
-  release: certes-v$(appveyor_build_version)
-  description: 'Certes v$(appveyor_build_version)'
-  provider: GitHub
-  auth_token:
-    secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-  artifact: /.*\.nupkg/
-  draft: false
-  prerelease: true
-  on:
-    branch: dev
+  - provider: GitHub
+    auth_token:
+      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
+    artifact: /.*\.nupkg/
+    draft: false
+    prerelease: false
+    on:
+      branch: master
+
+  - provider: GitHub
+    auth_token:
+      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
+    artifact: /.*\.nupkg/
+    draft: false
+    prerelease: true
+    on:
+      branch: dev
