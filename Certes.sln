@@ -19,6 +19,12 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Certes.Cli", "src\Certes.Cl
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Certes.Tests", "test\Certes.Tests\Certes.Tests.xproj", "{9FDD9052-506D-460D-BF4A-142DAB517524}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E420B696-0E51-40E1-B534-96E66C2C27F5}"
+	ProjectSection(SolutionItems) = preProject
+		.travis.yml = .travis.yml
+		appveyor.yml = appveyor.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

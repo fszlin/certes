@@ -19,3 +19,16 @@ build_script:
 test: off
 
 configuration: Release
+
+deploy:
+  release: certes-v$(appveyor_build_version)
+  description: 'Certes v$(appveyor_build_version)'
+  provider: GitHub
+  auth_token:
+    secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
+  artifact: /.*\.nupkg/             # upload all NuGet packages to release assets
+  draft: false
+  prerelease: false
+  on:
+    branch: dev                     # release from master branch only
+    appveyor_repo_tag: true         # deploy on tag push only
