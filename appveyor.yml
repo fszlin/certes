@@ -42,7 +42,8 @@ test: off
 configuration: Release
 
 artifacts:
-    - path: '**\*.nupkg'
+    - path: build\nuget\Certes.$(CERTES_PACKAGE_VERSION).nupkg
+      name: nupkg
 
 deploy:
   - provider: GitHub
@@ -50,7 +51,7 @@ deploy:
     description: 'Certes v$(appveyor_build_version)'
     auth_token:
       secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-    artifact: /.*\\Certes.$(CERTES_PACKAGE_VERSION)\.nupkg/
+    artifact: nupkg
     draft: false
     prerelease: false
     on:
@@ -61,7 +62,7 @@ deploy:
     description: 'Certes v$(appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)'
     auth_token:
       secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-    artifact: /.*\\Certes.$(CERTES_PACKAGE_VERSION)\.nupkg/
+    artifact: nupkg
     draft: false
     prerelease: true
     on:
@@ -73,4 +74,4 @@ deploy:
       secure: enjdo7AiXKaGhj8NC2k3wjQ9mGlU1jxABzG6tuphpM7dNaazlrSlvwR2H1kC4kr+
     skip_symbols: true
     symbol_server:           # remove to push symbols to SymbolSource.org
-    artifact: Certes.$(CERTES_PACKAGE_VERSION).nupkg
+    artifact: nupkg
