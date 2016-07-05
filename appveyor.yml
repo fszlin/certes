@@ -2,6 +2,9 @@ version: 1.0.0-{build}
 build:
   verbosity: minimal
 
+environment:
+  DOTNET_BUILD_VERSION: {build}
+
 branches:
   # whitelist
   only:
@@ -20,13 +23,16 @@ test: off
 
 configuration: Release
 
+artifacts:
+    - path: '**\*.nupkg'
+
 deploy:
   release: certes-v$(appveyor_build_version)
   description: 'Certes v$(appveyor_build_version)'
   provider: GitHub
   auth_token:
     secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-  artifact: /build\/nuget\/.*\.nupkg/
+  artifact: /.*\.nupkg/
   draft: false
   prerelease: false
   on:
