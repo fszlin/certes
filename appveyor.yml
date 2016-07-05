@@ -1,4 +1,4 @@
-version: 1.0.{build}
+version: 1.0.0-{build}
 build:
   verbosity: minimal
 
@@ -26,8 +26,10 @@ deploy:
   provider: GitHub
   auth_token:
     secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-  artifact: /.*\.nupkg/             # upload all NuGet packages to release assets
+  artifact:
+    - /build\/nuget\/.*\.nupkg/
   draft: false
   prerelease: false
   on:
-    appveyor_repo_tag: true         # deploy on tag push only
+    branch: master
+    #appveyor_repo_tag: true
