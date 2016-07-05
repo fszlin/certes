@@ -14,9 +14,9 @@ init:
 install:
 
 build_script:
-  - $packageJson = Get-Content -Raw .\src\Certes\project.json | ConvertFrom-Json
-  - $packageJson.version = $env:appveyor_build_version
-  - $packageJson | ConvertTo-Json | Set-Content .\src\Certes\project.json
+  - ps: $packageJson = Get-Content -Raw .\src\Certes\project.json | ConvertFrom-Json
+  - ps: $packageJson.version = $env:appveyor_build_version
+  - ps: $packageJson | ConvertTo-Json | Set-Content .\src\Certes\project.json
   - dotnet restore
   - dotnet test ./test/Certes.Tests/project.json
   - dotnet pack -c release -o ./build/nuget ./src/Certes/project.json
