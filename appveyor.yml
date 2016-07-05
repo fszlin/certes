@@ -1,6 +1,8 @@
-version: 1.0.{build}
+version: 1.0.0.{build}
 build:
   verbosity: minimal
+
+skip_tags: true
 
 branches:
   # whitelist
@@ -8,9 +10,28 @@ branches:
     - master
     - dev
 
+init:
+  - git config --global core.autocrlf input
+
 install:
 
 build_script:
+  - ps: $packageVersion = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "$($env:appveyor_build_version)" } else { "$($env:appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)" }
+  - ps: $env:CERTES_PACKAGE_VERSION = $packageVersion
+  - ps: echo "Update Certes package version to $($packageVersion)"
+  - ps: $packageJson = Get-Content -Raw .\src\Certes\project.json | ConvertFrom-Json
+  - ps: $packageJson.version = $packageVersion
+  - ps: $packageJson | ConvertTo-Json | Set-Content .\src\Certes\project.json
+  - ps: echo "Update Certes.Cli package version to $($packageVersion)"
+  - ps: $packageJson = Get-Content -Raw .\src\Certes.Cli\project.json | ConvertFrom-Json
+  - ps: $packageJson.version = $packageVersion
+  - ps: $packageJson.dependencies.Certes = $packageVersion
+  - ps: $packageJson | ConvertTo-Json | Set-Content .\src\Certes.Cli\project.json
+  - ps: echo "Update dependency versions for Certes.Tests"
+  - ps: $packageJson = Get-Content -Raw .\test\Certes.Tests\project.json | ConvertFrom-Json
+  - ps: $packageJson.dependencies.Certes = $packageVersion
+  - ps: $packageJson.dependencies.'Certes.Cli' = $packageVersion
+  - ps: $packageJson | ConvertTo-Json | Set-Content .\test\Certes.Tests\project.json
   - dotnet restore
   - dotnet test ./test/Certes.Tests/project.json
   - dotnet pack -c release -o ./build/nuget ./src/Certes/project.json
@@ -20,15 +41,37 @@ test: off
 
 configuration: Release
 
+artifacts:
+    - path: build\nuget\Certes.$(CERTES_PACKAGE_VERSION).nupkg
+      name: nupkg
+
 deploy:
-  release: certes-v$(appveyor_build_version)
-  description: 'Certes v$(appveyor_build_version)'
-  provider: GitHub
-  auth_token:
-    secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-  artifact: /.*\.nupkg/             # upload all NuGet packages to release assets
-  draft: false
-  prerelease: false
-  on:
-    branch: dev                     # release from master branch only
-    appveyor_repo_tag: true         # deploy on tag push only
+  - provider: GitHub
+    release: v$(appveyor_build_version)
+    description: 'Certes v$(appveyor_build_version)'
+    auth_token:
+      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
+    artifact: nupkg
+    draft: false
+    prerelease: false
+    on:
+      branch: master
+
+  - provider: GitHub
+    release: v$(appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)
+    description: 'Certes v$(appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)'
+    auth_token:
+      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
+    artifact: nupkg
+    draft: false
+    prerelease: true
+    on:
+      branch: dev
+
+  - provider: NuGet
+    #server: http://www.nuget.org/api/v2/package                  # remove to push to NuGet.org
+    api_key:
+      secure: enjdo7AiXKaGhj8NC2k3wjQ9mGlU1jxABzG6tuphpM7dNaazlrSlvwR2H1kC4kr+
+    skip_symbols: true
+    symbol_server:           # remove to push symbols to SymbolSource.org
+    artifact: nupkg

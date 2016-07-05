@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-beta1-*",
+  "version": "1.0.0-*",
   "title": "Certes ACME Client",
   "description": "A client implantation for the Automated Certificate Management Environment (ACME) protocol",
   "dependencies": {
@@ -29,9 +29,18 @@
       "url": "https://github.com/fszlin/certes"
     },
     "summary": "Certes is a client implantation for the Automated Certificate Management Environment (ACME) protocol, build on .NET Core. It is aimed to provide a easy to use API for managing certificates using scripts during build process.",
-    "owners": [ "Certes Contributors" ],
+    "owners": [
+      "Certes Contributors"
+    ],
     "licenseUrl": "https://github.com/fszlin/certes/blob/master/LICENSE",
     "requireLicenseAcceptance": false,
-    "tags": [ "Certes", "letsencrypt", "ACME", "HTTPS", "SSL", "Certificate" ]
+    "tags": [
+      "Certes",
+      "letsencrypt",
+      "ACME",
+      "HTTPS",
+      "SSL",
+      "Certificate"
+    ]
   }
 }
