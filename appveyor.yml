@@ -47,8 +47,8 @@ artifacts:
 
 deploy:
   - provider: GitHub
-    release: v$(appveyor_build_version)
-    description: 'Certes v$(appveyor_build_version)'
+    release: v$(CERTES_PACKAGE_VERSION)
+    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
     auth_token:
       secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
     artifact: nupkg
@@ -58,8 +58,8 @@ deploy:
       branch: master
 
   - provider: GitHub
-    release: v$(appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)
-    description: 'Certes v$(appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)'
+    release: v$(CERTES_PACKAGE_VERSION)
+    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
     auth_token:
       secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
     artifact: nupkg
