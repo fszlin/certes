@@ -46,7 +46,7 @@ artifacts:
 
 deploy:
   - provider: GitHub
-    release: certes-v$(appveyor_build_version)
+    release: v$(appveyor_build_version)
     description: 'Certes v$(appveyor_build_version)'
     auth_token:
       secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
@@ -57,8 +57,8 @@ deploy:
       branch: master
 
   - provider: GitHub
-    release: certes-v$(appveyor_build_version)
-    description: 'Certes v$(appveyor_build_version)'
+    release: v$(appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)
+    description: 'Certes v$(appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)'
     auth_token:
       secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
     artifact: /.*\Certes.$(CERTES_PACKAGE_VERSION).nupkg/
@@ -68,9 +68,9 @@ deploy:
       branch: dev
 
   - provider: NuGet
-    server: http://www.nuget.org/api/v2/package                  # remove to push to NuGet.org
+    #server: http://www.nuget.org/api/v2/package                  # remove to push to NuGet.org
     api_key:
       secure: enjdo7AiXKaGhj8NC2k3wjQ9mGlU1jxABzG6tuphpM7dNaazlrSlvwR2H1kC4kr+
-    skip_symbols: false
+    skip_symbols: true
     symbol_server:           # remove to push symbols to SymbolSource.org
-    artifact: /.*\Certes.$(CERTES_PACKAGE_VERSION).nupkg/
+    artifact: Certes.$(CERTES_PACKAGE_VERSION).nupkg
