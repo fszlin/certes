@@ -17,7 +17,7 @@ certificates using .NET or command line, and it is **free**.
 
 Install [.NET Core](https://www.microsoft.com/net/core)
 
-Donwload the [latest release](https://github.com/fszlin/certes/releases), 
+Download the [latest release](https://github.com/fszlin/certes/releases), 
    and extract the files
 
 Run these commands to start the authorization process
