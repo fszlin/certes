@@ -10,8 +10,8 @@
       "type": "platform",
       "version": "1.0.0"
     },
-    "NLog": "4.4.0-beta12",
-    "System.CommandLine": "0.1.0-e160629-1"
+    "NLog": "4.4.0-beta13",
+    "System.CommandLine": "0.1.0-e160706-1"
   },
 
   "frameworks": {

@@ -7,28 +7,50 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
+using Authz = Certes.Acme.Authorization;
+
 namespace Certes
 {
+    /// <summary>
+    /// Represents a ACME client.
+    /// </summary>
     public class AcmeClient : IDisposable
     {
         private readonly AcmeHttpHandler handler;
         private IAccountKey key;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AcmeClient"/> class.
+        /// </summary>
+        /// <param name="serverUri">The ACME server URI.</param>
         public AcmeClient(Uri serverUri)
             : this(new AcmeHttpHandler(serverUri))
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AcmeClient"/> class.
+        /// </summary>
+        /// <param name="handler">The ACME handler.</param>
         public AcmeClient(AcmeHttpHandler handler)
         {
             this.handler = handler;
         }
 
+        /// <summary>
+        /// Uses the specified account key data.
+        /// </summary>
+        /// <param name="keyData">The account key data.</param>
         public void Use(KeyInfo keyData)
         {
             this.key = new AccountKey(keyData);
         }
 
+        /// <summary>
+        /// Creates a new registraton.
+        /// </summary>
+        /// <param name="contact">The contact method, e.g. <c>mailto:admin@example.com</c>.</param>
+        /// <returns>The ACME account created.</returns>
         public async Task<AcmeAccount> NewRegistraton(params string[] contact)
         {
             if (this.key == null)
@@ -44,10 +66,7 @@ namespace Certes
 
             var uri = await this.handler.GetResourceUri(registration.Resource);
             var result = await this.handler.Post(uri, registration, key);
-            if (result.Error != null)
-            {
-                throw new Exception($"{ result.Error.Type}: {result.Error.Detail} ({result.Error.Status})");
-            }
+            ThrowIfError(result);
 
             var account = new AcmeAccount
             {
@@ -61,6 +80,12 @@ namespace Certes
             return account;
         }
 
+        /// <summary>
+        /// Updates the registration.
+        /// </summary>
+        /// <param name="account">The account to update.</param>
+        /// <returns>The updated ACME account.</returns>
+        /// <exception cref="InvalidOperationException">If the account key is missing.</exception>
         public async Task<AcmeAccount> UpdateRegistration(AcmeAccount account)
         {
             if (this.key == null)
@@ -71,23 +96,26 @@ namespace Certes
             var registration = account.Data;
 
             var result = await this.handler.Post(account.Location, registration, key);
-            if (result.Error != null)
-            {
-                throw new Exception($"{result.Error.Type}: {result.Error.Detail} ({result.Error.Status})");
-            }
+            ThrowIfError(result);
 
             account.Data = result.Data;
             return account;
         }
 
-        public async Task<AcmeResult<Authorization>> NewAuthorization(AuthorizationIdentifier identifier)
+        /// <summary>
+        /// Create a new authorization.
+        /// </summary>
+        /// <param name="identifier">The identifier to be authorized.</param>
+        /// <returns>The authorization created.</returns>
+        /// <exception cref="InvalidOperationException">If the account key is missing.</exception>
+        public async Task<AcmeResult<Authz>> NewAuthorization(AuthorizationIdentifier identifier)
         {
             if (this.key == null)
             {
                 throw new InvalidOperationException();
             }
 
-            var auth = new Authorization
+            var auth = new Authz
             {
                 Identifier = identifier,
                 Resource = ResourceTypes.NewAuthorization
@@ -95,21 +123,15 @@ namespace Certes
 
             var uri = await this.handler.GetResourceUri(ResourceTypes.NewAuthorization);
             var result = await this.handler.Post(uri, auth, key);
-            if (result.Error != null)
-            {
-                throw new Exception($"{result.Error.Type}: {result.Error.Detail} ({result.Error.Status})");
-            }
+            ThrowIfError(result);
 
             if (result.HttpStatus == HttpStatusCode.SeeOther) // An authentication with the same identifier exists.
             {
-                result = await this.handler.Get<Authorization>(result.Location);
-                if (result.Error != null)
-                {
-                    throw new Exception($"{result.Error.Type}: {result.Error.Detail} ({result.Error.Status})");
-                }
+                result = await this.handler.Get<Authz>(result.Location);
+                ThrowIfError(result);
             }
 
-            return new AcmeResult<Authorization>
+            return new AcmeResult<Authz>
             {
                 Data = result.Data,
                 Links = result.Links,
@@ -117,16 +139,18 @@ namespace Certes
                 ContentType = result.ContentType
             };
         }
-        
-        public async Task<AcmeResult<Authorization>> RefreshAuthorization(Uri location)
-        {
-            var result = await this.handler.Get<Authorization>(location);
-            if (result.Error != null)
-            {
-                throw new Exception($"{ result.Error.Type}: {result.Error.Detail} ({result.Error.Status})");
-            }
 
-            return new AcmeResult<Authorization>
+        /// <summary>
+        /// Gets the authorization from <paramref name="location"/>.
+        /// </summary>
+        /// <param name="location">The authorization location URI.</param>
+        /// <returns>The authorization retrieved.</returns>
+        public async Task<AcmeResult<Authz>> GetAuthorization(Uri location)
+        {
+            var result = await this.handler.Get<Authz>(location);
+            ThrowIfError(result);
+
+            return new AcmeResult<Authz>
             {
                 Data = result.Data,
                 Links = result.Links,
@@ -134,7 +158,12 @@ namespace Certes
                 ContentType = result.ContentType
             };
         }
-        
+
+        /// <summary>
+        /// Computes the key authorization string for <paramref name="challenge"/>.
+        /// </summary>
+        /// <param name="challenge">The challenge.</param>
+        /// <returns>The key authorization string.</returns>
         public string ComputeKeyAuthorization(Challenge challenge)
         {
             var jwkThumbprint = this.key.GenerateThumbprint();
@@ -144,6 +173,12 @@ namespace Certes
 
         }
 
+        /// <summary>
+        /// Submits the challenge for the ACME server to validate.
+        /// </summary>
+        /// <param name="authChallenge">The authentication challenge.</param>
+        /// <returns>The challenge updated.</returns>
+        /// <exception cref="InvalidOperationException">If the account key is missing.</exception>
         public async Task<AcmeResult<Challenge>> CompleteChallenge(Challenge authChallenge)
         {
             if (this.key == null)
@@ -158,10 +193,7 @@ namespace Certes
             };
 
             var result = await this.handler.Post(authChallenge.Uri, challenge, key);
-            if (result.Error != null)
-            {
-                throw new Exception($"{ result.Error.Type}: {result.Error.Detail} ({result.Error.Status})");
-            }
+            ThrowIfError(result);
 
             return new AcmeResult<Challenge>
             {
@@ -172,6 +204,11 @@ namespace Certes
             };
         }
 
+        /// <summary>
+        /// Creates a new certificate.
+        /// </summary>
+        /// <param name="csrProvider">The certificate signing request (CSR) provider.</param>
+        /// <returns>The certificate issued.</returns>
         public async Task<AcmeCertificate> NewCertificate(ICertificationRequestBuilder csrProvider)
         {
             var csrBytes = csrProvider.Generate();
@@ -184,10 +221,7 @@ namespace Certes
 
             var uri = await this.handler.GetResourceUri(ResourceTypes.NewCertificate);
             var result = await this.handler.Post(uri, payload, key);
-            if (result.Error != null)
-            {
-                throw new Exception($"{ result.Error.Type}: {result.Error.Detail} ({result.Error.Status})");
-            }
+            ThrowIfError(result);
 
             byte[] pem;
             using (var buffer = new MemoryStream())
@@ -231,6 +265,11 @@ namespace Certes
             return cert;
         }
 
+        /// <summary>
+        /// Revokes the certificate.
+        /// </summary>
+        /// <param name="certificate">The certificate.</param>
+        /// <returns>The certificate revoked.</returns>
         public async Task<AcmeCertificate> RevokeCertificate(AcmeCertificate certificate)
         {
             var payload = new RevokeCertificate
@@ -241,18 +280,38 @@ namespace Certes
 
             var uri = await this.handler.GetResourceUri(ResourceTypes.RevokeCertificate);
             var result = await this.handler.Post(uri, payload, key);
-            if (result.Error != null)
-            {
-                throw new Exception($"{ result.Error.Type}: {result.Error.Detail} ({result.Error.Status})");
-            }
+            ThrowIfError(result);
 
             certificate.Revoked = true;
             return certificate;
         }
 
+        /// <summary>
+        /// Gets the authorization from <paramref name="location"/>.
+        /// </summary>
+        /// <param name="location">The authorization location URI.</param>
+        /// <returns>The authorization retrieved.</returns>
+        [Obsolete("Use GetAuthorization(Uri) instead.")]
+        public Task<AcmeResult<Authz>> RefreshAuthorization(Uri location)
+        {
+            return GetAuthorization(location);
+        }
+
+        private void ThrowIfError<T>(AcmeRespone<T> response)
+        {
+            if (response.Error != null)
+            {
+                throw new Exception($"{ response.Error.Type}: {response.Error.Detail} ({response.Error.Status})");
+            }
+        }
+
         #region IDisposable Support
         private bool disposedValue = false;
 
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -266,7 +325,10 @@ namespace Certes
                 disposedValue = true;
             }
         }
-        
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);

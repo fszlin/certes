@@ -5,13 +5,19 @@
   "dependencies": {
     "NETStandard.Library": "1.6.0",
     "Newtonsoft.Json": "9.0.1",
-    "Portable.BouncyCastle": "1.8.1.1",
-    "System.Runtime.Serialization.Primitives": "4.1.1",
-    "System.Security.Cryptography.Csp": "4.0.0"
+    "Portable.BouncyCastle": "1.8.1.1"
   },
   "frameworks": {
     "netstandard1.5": {
-      "imports": "dnxcore50"
+      "imports": "dnxcore50",
+      "dependencies": {
+        "System.Runtime.Serialization.Primitives": "4.1.1",
+        "System.Security.Cryptography.Csp": "4.0.0"
+      }
+    },
+    "net45": {
+      "frameworkAssemblies": {
+      }
     }
   },
   "buildOptions": {
@@ -20,7 +26,8 @@
     ]
   },
   "compilationOptions": {
-    "warningsAsErrors": true
+    "warningsAsErrors": true,
+    "xmlDoc": true
   },
   "packOptions": {
     "projectUrl": "https://github.com/fszlin/certes",

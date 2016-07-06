@@ -1,7 +1,9 @@
 # Certes ACME Client
 
-[![Build Status](https://travis-ci.org/fszlin/certes.svg)](https://travis-ci.org/fszlin/certes)
-[![Build status](https://ci.appveyor.com/api/projects/status/4wwiivqs8rl0l63q?svg=true)](https://ci.appveyor.com/project/fszlin/certes)
+[![Travis](https://travis-ci.org/fszlin/certes.svg)](https://travis-ci.org/fszlin/certes)
+[![AppVeyor](https://ci.appveyor.com/api/projects/status/4wwiivqs8rl0l63q?svg=true)](https://ci.appveyor.com/project/fszlin/certes)
+[![NuGet](https://buildstats.info/nuget/certes)](https://www.nuget.org/packages/certes/)
+[![MyGet](https://buildstats.info/myget/dymetis/certes?includePreReleases=true)](https://www.myget.org/feed/dymetis/package/nuget/certes)
 
 Certes is a client implantation for the Automated Certificate Management
 Environment (ACME) protocol, build on .NET Core. It is aimed to provide a easy
@@ -15,7 +17,7 @@ certificates using .NET or command line, and it is **free**.
 
 Install [.NET Core](https://www.microsoft.com/net/core)
 
-Donwload the [latest release](https://github.com/fszlin/certes/releases), 
+Download the [latest release](https://github.com/fszlin/certes/releases), 
    and extract the files
 
 Run these commands to start the authorization process
@@ -94,3 +96,46 @@ More...
 
 You can get Certes by grabbing the latest
 [NuGet package](https://www.nuget.org/packages/Certes).
+
+```C#
+    // Create new registration
+    var account = await client.NewRegistraton("mailto:test@example.com");
+
+    // Accept terms of services
+    account.Data.Agreement = account.GetTermsOfServiceUri();
+    account = await client.UpdateRegistration(account);
+
+    // Initialize authorization
+    var authz = await client.NewAuthorization(new AuthorizationIdentifier
+    {
+        Type = "dns",
+        Value = "www.my_domain.com"
+    });
+
+    // Comptue key authorization for http-01
+    var httpChallengeInfo = authz.Data.Challenges.Where(c => c.Type == "http-01").First();
+    var keyAuthString = client.ComputeKeyAuthorization(httpChallengeInfo);
+
+    var httpChallenge = await client.CompleteChallenge(httpChallengeInfo);
+
+    // Check authorization status
+    authz = await client.GetAuthorization(httpChallenge.Location);
+    while (authz.Data.Status == "pending")
+    {
+        await Task.Delay(500);
+        authz = await client.GetAuthorization(httpChallenge.Location);
+    }
+
+    // Create certificate
+    var csr = new CertificationRequestBuilder();
+    csr.AddName("CN", "www.my_domain.com");
+    var cert = await client.NewCertificate(csr);
+
+    // Export Pfx
+    var pfxBuilder = cert.ToPfx();
+    var pfx = pfxBuilder.Build("my-free-cert", "abcd1234");
+    File.WriteAllBytes("./my-free-cert.pfx", pfx);
+    
+    // Revoke certificate
+    await client.RevokeCertificate(cert);
+```

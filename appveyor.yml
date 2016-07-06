@@ -1,4 +1,4 @@
-version: 1.0.0.{build}
+version: 1.0.1.{build}
 build:
   verbosity: minimal
 
@@ -9,6 +9,11 @@ branches:
   only:
     - master
     - dev
+
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: "1.0"
 
 init:
   - git config --global core.autocrlf input
@@ -32,10 +37,13 @@ build_script:
   - ps: $packageJson.dependencies.Certes = $packageVersion
   - ps: $packageJson.dependencies.'Certes.Cli' = $packageVersion
   - ps: $packageJson | ConvertTo-Json | Set-Content .\test\Certes.Tests\project.json
+  - dotnet --info
   - dotnet restore
   - dotnet test ./test/Certes.Tests/project.json
   - dotnet pack -c release -o ./build/nuget ./src/Certes/project.json
   - dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/project.json
+  - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\build\cli\certes.bat'
+  - 7z a build\certes-cli.zip .\build\cli\*.* -r
 
 test: off
 
@@ -44,25 +52,28 @@ configuration: Release
 artifacts:
     - path: build\nuget\Certes.$(CERTES_PACKAGE_VERSION).nupkg
       name: nupkg
+      
+    - path: build\certes-cli.zip
+      name: cli
 
 deploy:
   - provider: GitHub
-    release: v$(appveyor_build_version)
-    description: 'Certes v$(appveyor_build_version)'
+    release: v$(CERTES_PACKAGE_VERSION)
+    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
     auth_token:
       secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-    artifact: nupkg
+    artifact: nupkg,cli
     draft: false
     prerelease: false
     on:
       branch: master
 
   - provider: GitHub
-    release: v$(appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)
-    description: 'Certes v$(appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)'
+    release: v$(CERTES_PACKAGE_VERSION)
+    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
     auth_token:
       secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-    artifact: nupkg
+    artifact: nupkg,cli
     draft: false
     prerelease: true
     on:
@@ -75,3 +86,15 @@ deploy:
     skip_symbols: true
     symbol_server:           # remove to push symbols to SymbolSource.org
     artifact: nupkg
+    on:
+      branch: master
+
+  - provider: NuGet
+    server: https://www.myget.org/F/dymetis/api/v2/package
+    api_key:
+      secure: RSdqUIwRSn8DI5xaa4iWBzOtYU6y3K9JRh07myQpAIRf5IhlwsZpFsnQOpCg1g7J
+    skip_symbols: true
+    symbol_server:           # remove to push symbols to SymbolSource.org
+    artifact: nupkg
+    on:
+      branch: dev

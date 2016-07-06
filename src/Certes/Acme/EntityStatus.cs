@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace Certes.Acme
+﻿namespace Certes.Acme
 {
     public static class EntityStatus
     {
