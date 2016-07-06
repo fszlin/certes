@@ -3,6 +3,7 @@
   "title": "Certes ACME Client",
   "description": "A client implantation for the Automated Certificate Management Environment (ACME) protocol",
   "dependencies": {
+    "NETStandard.Library": "1.6.0",
     "Newtonsoft.Json": "9.0.1",
     "Portable.BouncyCastle": "1.8.1.1"
   },
@@ -10,13 +11,13 @@
     "netstandard1.5": {
       "imports": "dnxcore50",
       "dependencies": {
-        "NETStandard.Library": "1.6.0",
         "System.Runtime.Serialization.Primitives": "4.1.1",
         "System.Security.Cryptography.Csp": "4.0.0"
       }
     },
     "net45": {
-      "frameworkAssemblies": { "System.Net.Http": "" }
+      "frameworkAssemblies": {
+      }
     }
   },
   "buildOptions": {
