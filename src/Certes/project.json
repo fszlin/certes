@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.2.0.99",
   "title": "Certes ACME Client",
   "description": "A client implantation for the Automated Certificate Management Environment (ACME) protocol",
   "dependencies": {
