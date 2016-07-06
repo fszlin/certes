@@ -115,27 +115,35 @@ You can get Certes by grabbing the latest
     // Comptue key authorization for http-01
     var httpChallengeInfo = authz.Data.Challenges.Where(c => c.Type == "http-01").First();
     var keyAuthString = client.ComputeKeyAuthorization(httpChallengeInfo);
+    
+    // Do something to meet the challenge,
+    // e.g. upload key auth string to well known path, or make changes to DNS
 
+    // Info ACME server to validate the identifier
     var httpChallenge = await client.CompleteChallenge(httpChallengeInfo);
 
     // Check authorization status
     authz = await client.GetAuthorization(httpChallenge.Location);
     while (authz.Data.Status == "pending")
     {
-        await Task.Delay(500);
+        // Wait for ACME server to validate the identifier
+        await Task.Delay(10000);
         authz = await client.GetAuthorization(httpChallenge.Location);
     }
 
-    // Create certificate
-    var csr = new CertificationRequestBuilder();
-    csr.AddName("CN", "www.my_domain.com");
-    var cert = await client.NewCertificate(csr);
+    if (authz.Data.Status == "valid")
+    {
+        // Create certificate
+        var csr = new CertificationRequestBuilder();
+        csr.AddName("CN", "cert-test.dymetis.com");
+        var cert = await client.NewCertificate(csr);
 
-    // Export Pfx
-    var pfxBuilder = cert.ToPfx();
-    var pfx = pfxBuilder.Build("my-free-cert", "abcd1234");
-    File.WriteAllBytes("./my-free-cert.pfx", pfx);
-    
-    // Revoke certificate
-    await client.RevokeCertificate(cert);
+        // Export Pfx
+        var pfxBuilder = cert.ToPfx();
+        var pfx = pfxBuilder.Build("my-free-cert", "abcd1234");
+        File.WriteAllBytes("./my-free-cert.pfx", pfx);
+
+        // Revoke certificate
+        await client.RevokeCertificate(cert);
+    }
 ```

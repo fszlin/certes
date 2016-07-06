@@ -4,6 +4,10 @@ build:
 
 skip_tags: true
 
+skip_commits:
+  files:
+  - '*.md'
+
 branches:
   # whitelist
   only:
