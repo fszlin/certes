@@ -135,7 +135,7 @@ You can get Certes by grabbing the latest
     {
         // Create certificate
         var csr = new CertificationRequestBuilder();
-        csr.AddName("CN", "cert-test.dymetis.com");
+        csr.AddName("CN", "www.my_domain.com");
         var cert = await client.NewCertificate(csr);
 
         // Export Pfx
