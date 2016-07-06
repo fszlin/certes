@@ -39,7 +39,7 @@ Make changes to your site so that it serves the **key authorization string**
     of the registration key, in form of `<token>.<thumbprint>`
   * You can simply save the **key authorization string** in a text file, and
     upload it to `http://my_domain.com/.well-known/acme-challenge/<token>`
-  * For testing purpuse, if you are hosting an ASP.NET Core app, you can add
+  * For testing purposes, if you are hosting an ASP.NET Core app, you can add
     the following to ```Configure``` method of ```Startup``` class
 
 ```C#
