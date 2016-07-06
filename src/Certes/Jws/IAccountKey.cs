@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Serialization;
+﻿using Certes.Pkcs;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Text;
-using Certes.Pkcs;
 
 namespace Certes.Jws
 {
