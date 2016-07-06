@@ -293,9 +293,7 @@ namespace Certes
         /// <returns>The authorization retrieved.</returns>
         [Obsolete("Use GetAuthorization(Uri) instead.")]
         public Task<AcmeResult<Authz>> RefreshAuthorization(Uri location)
-        {
-            return GetAuthorization(location);
-        }
+            => GetAuthorization(location);
 
         private void ThrowIfError<T>(AcmeRespone<T> response)
         {
