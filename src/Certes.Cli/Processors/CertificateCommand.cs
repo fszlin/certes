@@ -64,14 +64,7 @@ namespace Certes.Cli.Processors
                     throw new Exception($"Certificate {Options.Name} not ready.");
                 }
 
-                var pfxBuilder = new PfxBuilder(cert.Raw, cert.Key);
-                var issuer = cert.Issuer;
-                while (issuer != null)
-                {
-                    pfxBuilder.AddIssuer(issuer.Raw);
-                    issuer = issuer.Issuer;
-                }
-
+                var pfxBuilder = cert.ToPfx();
                 var pfx = pfxBuilder.Build(Options.Name, Options.Password);
                 await FileUtil.WriteAllBytes(Options.ExportPfx, pfx);
             }

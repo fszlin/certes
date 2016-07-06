@@ -96,3 +96,46 @@ More...
 
 You can get Certes by grabbing the latest
 [NuGet package](https://www.nuget.org/packages/Certes).
+
+```C#
+    // Create new registration
+    var account = await client.NewRegistraton("mailto:test@example.com");
+
+    // Accept terms of services
+    account.Data.Agreement = account.GetTermsOfServiceUri();
+    account = await client.UpdateRegistration(account);
+
+    // Initialize authorization
+    var authz = await client.NewAuthorization(new AuthorizationIdentifier
+    {
+        Type = "dns",
+        Value = "www.my_domain.com"
+    });
+
+    // Comptue key authorization for http-01
+    var httpChallengeInfo = authz.Data.Challenges.Where(c => c.Type == "http-01").First();
+    var keyAuthString = client.ComputeKeyAuthorization(httpChallengeInfo);
+
+    var httpChallenge = await client.CompleteChallenge(httpChallengeInfo);
+
+    // Check authorization status
+    authz = await client.GetAuthorization(httpChallenge.Location);
+    while (authz.Data.Status == "pending")
+    {
+        await Task.Delay(500);
+        authz = await client.GetAuthorization(httpChallenge.Location);
+    }
+
+    // Create certificate
+    var csr = new CertificationRequestBuilder();
+    csr.AddName("CN", "www.my_domain.com");
+    var cert = await client.NewCertificate(csr);
+
+    // Export Pfx
+    var pfxBuilder = cert.ToPfx();
+    var pfx = pfxBuilder.Build("my-free-cert", "abcd1234");
+    File.WriteAllBytes("./my-free-cert.pfx", pfx);
+    
+    // Revoke certificate
+    await client.RevokeCertificate(cert);
+```
