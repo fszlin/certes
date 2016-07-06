@@ -20,7 +20,8 @@
     ]
   },
   "compilationOptions": {
-    "warningsAsErrors": true
+    "warningsAsErrors": true,
+    "xmlDoc": true
   },
   "packOptions": {
     "projectUrl": "https://github.com/fszlin/certes",

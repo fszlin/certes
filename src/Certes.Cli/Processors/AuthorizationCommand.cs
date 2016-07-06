@@ -184,7 +184,7 @@ namespace Certes.Cli.Processors
                     var auth = authorizations?.TryGet(name);
                     if (auth != null)
                     {
-                        auth = authorizations[name] = await client.RefreshAuthorization(auth.Location);
+                        auth = authorizations[name] = await client.GetAuthorization(auth.Location);
 
                         var challenge = auth?
                             .Data?
