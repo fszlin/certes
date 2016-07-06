@@ -7,6 +7,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
+using Authz = Certes.Acme.Authorization;
+
 namespace Certes
 {
     /// <summary>
@@ -106,14 +108,14 @@ namespace Certes
         /// <param name="identifier">The identifier to be authorized.</param>
         /// <returns>The authorization created.</returns>
         /// <exception cref="InvalidOperationException">If the account key is missing.</exception>
-        public async Task<AcmeResult<Authorization>> NewAuthorization(AuthorizationIdentifier identifier)
+        public async Task<AcmeResult<Authz>> NewAuthorization(AuthorizationIdentifier identifier)
         {
             if (this.key == null)
             {
                 throw new InvalidOperationException();
             }
 
-            var auth = new Authorization
+            var auth = new Authz
             {
                 Identifier = identifier,
                 Resource = ResourceTypes.NewAuthorization
@@ -125,11 +127,11 @@ namespace Certes
 
             if (result.HttpStatus == HttpStatusCode.SeeOther) // An authentication with the same identifier exists.
             {
-                result = await this.handler.Get<Authorization>(result.Location);
+                result = await this.handler.Get<Authz>(result.Location);
                 ThrowIfError(result);
             }
 
-            return new AcmeResult<Authorization>
+            return new AcmeResult<Authz>
             {
                 Data = result.Data,
                 Links = result.Links,
@@ -143,12 +145,12 @@ namespace Certes
         /// </summary>
         /// <param name="location">The authorization location URI.</param>
         /// <returns>The authorization retrieved.</returns>
-        public async Task<AcmeResult<Authorization>> GetAuthorization(Uri location)
+        public async Task<AcmeResult<Authz>> GetAuthorization(Uri location)
         {
-            var result = await this.handler.Get<Authorization>(location);
+            var result = await this.handler.Get<Authz>(location);
             ThrowIfError(result);
 
-            return new AcmeResult<Authorization>
+            return new AcmeResult<Authz>
             {
                 Data = result.Data,
                 Links = result.Links,
@@ -290,7 +292,7 @@ namespace Certes
         /// <param name="location">The authorization location URI.</param>
         /// <returns>The authorization retrieved.</returns>
         [Obsolete("Use GetAuthorization(Uri) instead.")]
-        public Task<AcmeResult<Authorization>> RefreshAuthorization(Uri location)
+        public Task<AcmeResult<Authz>> RefreshAuthorization(Uri location)
         {
             return GetAuthorization(location);
         }
