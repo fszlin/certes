@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Certes.Acme;
+using System;
 
 namespace Certes.Cli.Options
 {
     internal class OptionsBase
     {
 #if DEBUG
-        public Uri Server = new Uri("https://acme-v01.api.letsencrypt.org/directory");
+        public Uri Server = WellKnownServers.LetsEncryptStaging;
 #else
-        public Uri Server = new Uri("https://acme-v01.api.letsencrypt.org/directory");
+        public Uri Server = WellKnownServers.LetsEncrypt;
 #endif
         public string Path = "./data.json";
         public bool Force = false;
