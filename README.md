@@ -98,6 +98,8 @@ You can get Certes by grabbing the latest
 [NuGet package](https://www.nuget.org/packages/Certes).
 
 ```C#
+using (var client = new AcmeClient(WellKnownServers.LetsEncrypt))
+{
     // Create new registration
     var account = await client.NewRegistraton("mailto:test@example.com");
 
@@ -108,15 +110,15 @@ You can get Certes by grabbing the latest
     // Initialize authorization
     var authz = await client.NewAuthorization(new AuthorizationIdentifier
     {
-        Type = "dns",
+        Type = AuthorizationIdentifierTypes.Dns,
         Value = "www.my_domain.com"
     });
 
     // Comptue key authorization for http-01
-    var httpChallengeInfo = authz.Data.Challenges.Where(c => c.Type == "http-01").First();
+    var httpChallengeInfo = authz.Data.Challenges.Where(c => c.Type == ChallengeTypes.Http01).First();
     var keyAuthString = client.ComputeKeyAuthorization(httpChallengeInfo);
     
-    // Do something to meet the challenge,
+    // Do something to fullfill the challenge,
     // e.g. upload key auth string to well known path, or make changes to DNS
 
     // Info ACME server to validate the identifier
@@ -124,14 +126,14 @@ You can get Certes by grabbing the latest
 
     // Check authorization status
     authz = await client.GetAuthorization(httpChallenge.Location);
-    while (authz.Data.Status == "pending")
+    while (authz.Data.Status == EntityStatus.Pending)
     {
         // Wait for ACME server to validate the identifier
         await Task.Delay(10000);
         authz = await client.GetAuthorization(httpChallenge.Location);
     }
 
-    if (authz.Data.Status == "valid")
+    if (authz.Data.Status == EntityStatus.Valid)
     {
         // Create certificate
         var csr = new CertificationRequestBuilder();
@@ -146,4 +148,5 @@ You can get Certes by grabbing the latest
         // Revoke certificate
         await client.RevokeCertificate(cert);
     }
+}
 ```
