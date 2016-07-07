@@ -9,11 +9,22 @@ using System;
 
 namespace Certes.Jws
 {
+    /// <summary>
+    /// Represents a JSON Web Signature (JWS) key pair.
+    /// </summary>
+    /// <seealso cref="Certes.Jws.IAccountKey" />
     public class AccountKey : IAccountKey
     {
         private AsymmetricCipherKeyPair keyPair;
         private object jwk;
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountKey"/> class.
+        /// </summary>
+        /// <param name="keyInfo">The key information.</param>
+        /// <exception cref="System.NotSupportedException">
+        /// If the provided key is not one of the supported <seealso cref="SignatureAlgorithm"/>.
+        /// </exception>
         public AccountKey(KeyInfo keyInfo = null)
         {
             if (keyInfo == null)
@@ -35,8 +46,20 @@ namespace Certes.Jws
             }
         }
 
+        /// <summary>
+        /// Gets the signing algorithm.
+        /// </summary>
+        /// <value>
+        /// The signing algorithm.
+        /// </value>
         public SignatureAlgorithm Algorithm { get; }
 
+        /// <summary>
+        /// Gets the JSON web key.
+        /// </summary>
+        /// <value>
+        /// The JSON web key.
+        /// </value>
         public object Jwk
         {
             get
@@ -56,6 +79,11 @@ namespace Certes.Jws
             }
         }
 
+        /// <summary>
+        /// Computes the hash for given data.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns>The hash.</returns>
         public byte[] ComputeHash(byte[] data)
         {
             var sha256 = new Sha256Digest();
@@ -67,6 +95,11 @@ namespace Certes.Jws
             return hashed;
         }
 
+        /// <summary>
+        /// Signs the data.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns>The signature.</returns>
         public byte[] SignData(byte[] data)
         {
             var signer = SignerUtilities.GetSigner(PkcsObjectIdentifiers.Sha256WithRsaEncryption);
@@ -76,12 +109,16 @@ namespace Certes.Jws
             return signature;
         }
 
+        /// <summary>
+        /// Exports the key pair.
+        /// </summary>
+        /// <returns>The key pair.</returns>
         public KeyInfo Export()
         {
             return this.keyPair.Export();
         }
 
-        public class JsonWebKey
+        private class JsonWebKey
         {
             [JsonProperty("e", Order = 0)]
             public string Exponent { get; set; }

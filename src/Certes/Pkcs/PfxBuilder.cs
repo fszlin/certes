@@ -12,6 +12,9 @@ using System.Reflection;
 
 namespace Certes.Pkcs
 {
+    /// <summary>
+    /// Supports generating PFX from the certificate and key pair.
+    /// </summary>
     public class PfxBuilder
     {
         private static X509Certificate[] embeddedIssuers;
@@ -20,6 +23,12 @@ namespace Certes.Pkcs
         private readonly Dictionary<X509Name, X509Certificate> issuers = EmbeddedIssuers.ToDictionary(c => c.SubjectDN, c => c);
         private readonly X509CertificateParser certParser = new X509CertificateParser();
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to include the full certificate chain in the PFX.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if include the full certificate chain in the PFX; otherwise, <c>false</c>.
+        /// </value>
         public bool FullChain { get; set; } = true;
 
         private static X509Certificate[] EmbeddedIssuers
@@ -47,18 +56,33 @@ namespace Certes.Pkcs
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PfxBuilder"/> class.
+        /// </summary>
+        /// <param name="certificate">The certificate.</param>
+        /// <param name="privateKeyInfo">The private key information.</param>
         public PfxBuilder(byte[] certificate, KeyInfo privateKeyInfo)
         {
             this.certificate = certParser.ReadCertificate(certificate);
             this.privateKeyInfo = privateKeyInfo;
         }
 
+        /// <summary>
+        /// Adds an issuer certificate.
+        /// </summary>
+        /// <param name="certificate">The issuer certificate.</param>
         public void AddIssuer(byte[] certificate)
         {
             var cert = certParser.ReadCertificate(certificate);
             this.issuers[cert.SubjectDN] = cert;
         }
 
+        /// <summary>
+        /// Builds the PFX with specified friendly name.
+        /// </summary>
+        /// <param name="friendlyName">The friendly name.</param>
+        /// <param name="password">The password.</param>
+        /// <returns>The PFX data.</returns>
         public byte[] Build(string friendlyName, string password)
         {
             var keyPair = privateKeyInfo.CreateKeyPair();

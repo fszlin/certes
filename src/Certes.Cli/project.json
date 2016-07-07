@@ -3,6 +3,7 @@
   "buildOptions": {
     "emitEntryPoint": true,
     "warningsAsErrors": true,
+    "nowarn": [ "CS1591" ],
     "xmlDoc": true
   },
 

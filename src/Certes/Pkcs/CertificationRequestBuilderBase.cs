@@ -10,23 +10,53 @@ using System.Linq;
 
 namespace Certes.Pkcs
 {
+    /// <summary>
+    /// Supports building Certificate Signing Request (CSR).
+    /// </summary>
+    /// <seealso cref="Certes.Pkcs.ICertificationRequestBuilder" />
     public abstract class CertificationRequestBuilderBase : ICertificationRequestBuilder
     {
         private string commonName;
         private List<Tuple<DerObjectIdentifier, string>> attributes = new List<Tuple<DerObjectIdentifier, string>>();
 
+        /// <summary>
+        /// Gets the algorithm.
+        /// </summary>
+        /// <value>
+        /// The algorithm.
+        /// </value>
         protected abstract SignatureAlgorithm Algorithm { get; }
+
+        /// <summary>
+        /// Gets the key pair.
+        /// </summary>
+        /// <value>
+        /// The key pair.
+        /// </value>
         protected abstract AsymmetricCipherKeyPair KeyPair { get; }
 
-        public List<string> SubjectAlternativeNames { get; } = new List<string>();
+        /// <summary>
+        /// Gets the subject alternative names.
+        /// </summary>
+        /// <value>
+        /// The subject alternative names.
+        /// </value>
+        public IList<string> SubjectAlternativeNames { get; } = new List<string>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CertificationRequestBuilderBase"/> class.
+        /// </summary>
         public CertificationRequestBuilderBase()
         {
         }
 
-        public void AddName(string distinguishednName)
+        /// <summary>
+        /// Adds the distinguished name as certificate subject.
+        /// </summary>
+        /// <param name="distinguishedName">The distinguished name.</param>
+        public void AddName(string distinguishedName)
         {
-            var name = new X509Name(distinguishednName);
+            var name = new X509Name(distinguishedName);
 
             var oidList = name.GetOidList();
             var valueList = name.GetValueList();
@@ -44,6 +74,12 @@ namespace Certes.Pkcs
             }
         }
 
+        /// <summary>
+        /// Adds the name.
+        /// </summary>
+        /// <param name="keyOrCommonName">Name of the key or common.</param>
+        /// <param name="value">The value.</param>
+        /// <exception cref="System.ArgumentException"></exception>
         public void AddName(string keyOrCommonName, string value)
         {
             DerObjectIdentifier id;
@@ -63,12 +99,24 @@ namespace Certes.Pkcs
             }
         }
 
+        /// <summary>
+        /// Generates the CSR.
+        /// </summary>
+        /// <returns>
+        /// The CSR data.
+        /// </returns>
         public byte[] Generate()
         {
             var csr = GeneratePkcs10();
             return csr.GetDerEncoded();
         }
-        
+
+        /// <summary>
+        /// Exports the key used to generate the CSR.
+        /// </summary>
+        /// <returns>
+        /// The key data.
+        /// </returns>
         public KeyInfo Export()
         {
             return this.KeyPair.Export();

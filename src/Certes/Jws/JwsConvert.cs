@@ -3,20 +3,35 @@
 namespace Certes.Jws
 {
 
+    /// <summary>
+    /// Base64 URL encoding without padding.
+    /// </summary>
+    /// <remarks>See RFC 7515 Appendix C.</remarks>
     public static class JwsConvert
     {
-        public static string ToBase64String(byte[] arg)
+        /// <summary>
+        /// Encodes the data to the base64 string without padding.
+        /// </summary>
+        /// <param name="data">The data to encoded.</param>
+        /// <returns>The encoded data.</returns>
+        public static string ToBase64String(byte[] data)
         {
-            string s = Convert.ToBase64String(arg); // Regular base64 encoder
+            string s = Convert.ToBase64String(data); // Regular base64 encoder
             s = s.Split('=')[0]; // Remove any trailing '='s
             s = s.Replace('+', '-'); // 62nd char of encoding
             s = s.Replace('/', '_'); // 63rd char of encoding
             return s;
         }
 
-        public static byte[] FromBase64String(string arg)
+        /// <summary>
+        /// Decodes the base64 string without padding.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns>The decoded data.</returns>
+        /// <exception cref="System.Exception">If <paramref name="data"/> is illegal base64 URL string.</exception>
+        public static byte[] FromBase64String(string data)
         {
-            string s = arg;
+            string s = data;
             s = s.Replace('-', '+'); // 62nd char of encoding
             s = s.Replace('_', '/'); // 63rd char of encoding
             switch (s.Length % 4) // Pad with trailing '='s
