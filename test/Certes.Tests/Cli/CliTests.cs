@@ -26,7 +26,7 @@ namespace Certes.Cli
         public async Task RunStaging()
         {
             // Create new Registration
-            cmd = $"register --email dev@example.com --agree-tos --server {Server} --path {AccountPath} --force";
+            cmd = $"register --register-unsafely-without-email --agree-tos --server {Server} --path {AccountPath} --force";
             await RunCommand(cmd);
 
             InjectTestKey();
