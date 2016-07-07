@@ -1,7 +1,7 @@
 # Certes ACME Client
 
-[![Travis](https://travis-ci.org/fszlin/certes.svg)](https://travis-ci.org/fszlin/certes)
-[![AppVeyor](https://ci.appveyor.com/api/projects/status/4wwiivqs8rl0l63q?svg=true)](https://ci.appveyor.com/project/fszlin/certes)
+[![Build Status](https://travis-ci.org/fszlin/certes.svg?branch=master)](https://travis-ci.org/fszlin/certes)
+[![Build status](https://ci.appveyor.com/api/projects/status/4wwiivqs8rl0l63q/branch/master?svg=true)](https://ci.appveyor.com/project/fszlin/certes/branch/master)
 [![NuGet](https://buildstats.info/nuget/certes)](https://www.nuget.org/packages/certes/)
 [![MyGet](https://buildstats.info/myget/dymetis/certes?includePreReleases=true)](https://www.myget.org/feed/dymetis/package/nuget/certes)
 
