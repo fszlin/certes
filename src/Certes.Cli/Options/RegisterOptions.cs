@@ -6,5 +6,6 @@
         public bool AgreeTos = false;
         public bool Update = false;
         public bool Thumbprint = false;
+        public bool NoEmail = false;
     }
 }

@@ -12,6 +12,10 @@ using AcmeDirectory = System.Collections.Generic.Dictionary<string, System.Uri>;
 
 namespace Certes.Acme
 {
+    /// <summary>
+    /// Represents the HTTP handler for communicating with ACME server.
+    /// </summary>
+    /// <seealso cref="System.IDisposable" />
     public class AcmeHttpHandler : IDisposable
     {
         private const string MimeJson = "application/json";
@@ -23,19 +27,35 @@ namespace Certes.Acme
         private AcmeDirectory directory;
 
         private readonly JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AcmeHttpHandler"/> class.
+        /// </summary>
+        /// <param name="serverUri">The server URI.</param>
+        /// <param name="httpMessageHandler">The HTTP message handler.</param>
         public AcmeHttpHandler(Uri serverUri, HttpMessageHandler httpMessageHandler = null)
         {
             this.http = httpMessageHandler == null ? new HttpClient() : new HttpClient(httpMessageHandler);
             this.serverUri = serverUri;
         }
 
+        /// <summary>
+        /// Gets the ACME resource URI.
+        /// </summary>
+        /// <param name="resourceType">Type of the ACME resource.</param>
+        /// <returns>The ACME resource URI</returns>
         public async Task<Uri> GetResourceUri(string resourceType)
         {
             await FetchDirectory(false);
             return this.directory[resourceType];
         }
 
+        /// <summary>
+        /// Performs HTTP GET to <paramref name="uri"/>.
+        /// </summary>
+        /// <typeparam name="T">The resource entity type.</typeparam>
+        /// <param name="uri">The URI.</param>
+        /// <returns>The ACME response.</returns>
         public async Task<AcmeRespone<T>> Get<T>(Uri uri)
         {
             var resp = await http.GetAsync(uri);
@@ -43,6 +63,14 @@ namespace Certes.Acme
             return result;
         }
 
+        /// <summary>
+        /// Performs HTTP POST to <paramref name="uri"/>.
+        /// </summary>
+        /// <typeparam name="T">The resource entity type.</typeparam>
+        /// <param name="uri">The URI.</param>
+        /// <param name="entity">The entity.</param>
+        /// <param name="keyPair">The signing key pair.</param>
+        /// <returns>The ACME response.</returns>
         public async Task<AcmeRespone<T>> Post<T>(Uri uri, T entity, IAccountKey keyPair)
             where T : EntityBase
         {
@@ -188,6 +216,10 @@ namespace Certes.Acme
         #region IDisposable Support
         private bool disposedValue = false;
 
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -200,7 +232,10 @@ namespace Certes.Acme
                 disposedValue = true;
             }
         }
-        
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);

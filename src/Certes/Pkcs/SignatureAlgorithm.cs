@@ -8,21 +8,36 @@ using System;
 
 namespace Certes.Pkcs
 {
+    /// <summary>
+    /// The supported algorithms.
+    /// </summary>
     public enum SignatureAlgorithm
     {
+        /// <summary>
+        /// SHA256 hash with RSA encryption.
+        /// </summary>
         Sha256WithRsaEncryption
     }
 
+    /// <summary>
+    /// Helper methods for <see cref="SignatureAlgorithm"/>.
+    /// </summary>
     public static class SignatureAlgorithmExtensions
     {
-        public static string ToJwsAlgorithm(this SignatureAlgorithm algo)
+        /// <summary>
+        /// Get the JWS name of the <paramref name="algorithm"/>.
+        /// </summary>
+        /// <param name="algorithm">The algorithm.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentException">If the <paramref name="algorithm"/> is not supported.</exception>
+        public static string ToJwsAlgorithm(this SignatureAlgorithm algorithm)
         {
-            if (algo == SignatureAlgorithm.Sha256WithRsaEncryption)
+            if (algorithm == SignatureAlgorithm.Sha256WithRsaEncryption)
             {
                 return "RS256";
             }
 
-            throw new ArgumentException(nameof(algo));
+            throw new ArgumentException(nameof(algorithm));
         }
 
         internal static AsymmetricCipherKeyPair Create(this SignatureAlgorithm algo)

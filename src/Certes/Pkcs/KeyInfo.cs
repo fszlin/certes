@@ -9,14 +9,41 @@ using System.IO;
 
 namespace Certes.Pkcs
 {
+    /// <summary>
+    /// Represents a key pair.
+    /// </summary>
     public class KeyInfo
     {
+        /// <summary>
+        /// Gets or sets the private key information.
+        /// </summary>
+        /// <value>
+        /// The private key information.
+        /// </value>
         [JsonProperty("der")]
         public byte[] PrivateKeyInfo { get; set; }
     }
 
+    /// <summary>
+    /// Helper methods for <see cref="KeyInfo"/>.
+    /// </summary>
     public static class KeyInfoExtensions
     {
+        /// <summary>
+        /// Saves the key pair to the specified stream.
+        /// </summary>
+        /// <param name="keyInfo">The key information.</param>
+        /// <param name="stream">The stream.</param>
+        public static void Save(this KeyInfo keyInfo, Stream stream)
+        {
+            var keyPair = keyInfo.CreateKeyPair();
+            using (var writer = new StreamWriter(stream))
+            {
+                var pemWriter = new PemWriter(writer);
+                pemWriter.WriteObject(keyPair);
+            }
+        }
+
         internal static AsymmetricCipherKeyPair CreateKeyPair(this KeyInfo keyInfo)
         {
             var keyParam = PrivateKeyFactory.CreateKey(keyInfo.PrivateKeyInfo);
@@ -41,16 +68,6 @@ namespace Certes.Pkcs
             {
                 PrivateKeyInfo = privateKey.GetDerEncoded()
             };
-        }
-
-        public static void Save(this KeyInfo keyInfo, Stream stream)
-        {
-            var keyPair = keyInfo.CreateKeyPair();
-            using (var writer = new StreamWriter(stream))
-            {
-                var pemWriter = new PemWriter(writer);
-                pemWriter.WriteObject(keyPair);
-            }
         }
     }
 }

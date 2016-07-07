@@ -41,7 +41,9 @@ namespace Certes.Cli.Processors
 
             using (var client = new AcmeClient(Options.Server))
             {
-                var account = await client.NewRegistraton($"mailto:{Options.Email}");
+                var account = Options.NoEmail ? 
+                    await client.NewRegistraton() : 
+                    await client.NewRegistraton($"mailto:{Options.Email}");
                 if (Options.AgreeTos)
                 {
                     account.Data.Agreement = account.GetTermsOfServiceUri();

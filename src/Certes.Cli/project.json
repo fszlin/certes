@@ -1,7 +1,10 @@
 {
   "version": "1.0.0-*",
   "buildOptions": {
-    "emitEntryPoint": true
+    "emitEntryPoint": true,
+    "warningsAsErrors": true,
+    "nowarn": [ "CS1591" ],
+    "xmlDoc": true
   },
 
   "dependencies": {
@@ -11,7 +14,7 @@
       "version": "1.0.0"
     },
     "NLog": "4.4.0-beta13",
-    "System.CommandLine": "0.1.0-e160706-1"
+    "System.CommandLine": "0.1.0-e160707-1"
   },
 
   "frameworks": {

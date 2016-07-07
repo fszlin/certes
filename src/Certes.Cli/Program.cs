@@ -170,6 +170,7 @@ namespace Certes.Cli
             syntax.DefineCommand("register", ref command, Command.Register, "Create a new registration.");
 
             syntax.DefineOption("m|email", ref options.Email, "Email used for registration and recovery contact. (default: None)");
+            syntax.DefineOption("register-unsafely-without-email", ref options.NoEmail, "Create registration without email.");
             syntax.DefineOption("agree-tos", ref options.AgreeTos, $"Agree to the ACME Subscriber Agreement (default: {options.AgreeTos})");
             syntax.DefineOption("update-registration", ref options.Update, $"With the register verb, indicates that details associated with an existing registration, such as the e-mail address, should be updated, rather than registering a new account. (default: None)");
             syntax.DefineOption("thumbprint", ref options.Thumbprint, $"Print thumbprint of the account.");

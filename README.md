@@ -1,7 +1,7 @@
 # Certes ACME Client
 
-[![Build Status](https://travis-ci.org/fszlin/certes.svg?branch=master)](https://travis-ci.org/fszlin/certes)
-[![Build status](https://ci.appveyor.com/api/projects/status/4wwiivqs8rl0l63q/branch/master?svg=true)](https://ci.appveyor.com/project/fszlin/certes/branch/master)
+[![Travis](https://travis-ci.org/fszlin/certes.svg?branch=master)](https://travis-ci.org/fszlin/certes)
+[![AppVeyor](https://ci.appveyor.com/api/projects/status/4wwiivqs8rl0l63q/branch/master?svg=true)](https://ci.appveyor.com/project/fszlin/certes/branch/master)
 [![NuGet](https://buildstats.info/nuget/certes)](https://www.nuget.org/packages/certes/)
 [![MyGet](https://buildstats.info/myget/dymetis/certes?includePreReleases=true)](https://www.myget.org/feed/dymetis/package/nuget/certes)
 
@@ -39,7 +39,7 @@ Make changes to your site so that it serves the **key authorization string**
     of the registration key, in form of `<token>.<thumbprint>`
   * You can simply save the **key authorization string** in a text file, and
     upload it to `http://my_domain.com/.well-known/acme-challenge/<token>`
-  * For testing purpuse, if you are hosting an ASP.NET Core app, you can add
+  * For testing purposes, if you are hosting an ASP.NET Core app, you can add
     the following to ```Configure``` method of ```Startup``` class
 
 ```C#
@@ -98,6 +98,8 @@ You can get Certes by grabbing the latest
 [NuGet package](https://www.nuget.org/packages/Certes).
 
 ```C#
+using (var client = new AcmeClient(WellKnownServers.LetsEncrypt))
+{
     // Create new registration
     var account = await client.NewRegistraton("mailto:test@example.com");
 
@@ -108,15 +110,15 @@ You can get Certes by grabbing the latest
     // Initialize authorization
     var authz = await client.NewAuthorization(new AuthorizationIdentifier
     {
-        Type = "dns",
+        Type = AuthorizationIdentifierTypes.Dns,
         Value = "www.my_domain.com"
     });
 
     // Comptue key authorization for http-01
-    var httpChallengeInfo = authz.Data.Challenges.Where(c => c.Type == "http-01").First();
+    var httpChallengeInfo = authz.Data.Challenges.Where(c => c.Type == ChallengeTypes.Http01).First();
     var keyAuthString = client.ComputeKeyAuthorization(httpChallengeInfo);
     
-    // Do something to meet the challenge,
+    // Do something to fullfill the challenge,
     // e.g. upload key auth string to well known path, or make changes to DNS
 
     // Info ACME server to validate the identifier
@@ -124,14 +126,14 @@ You can get Certes by grabbing the latest
 
     // Check authorization status
     authz = await client.GetAuthorization(httpChallenge.Location);
-    while (authz.Data.Status == "pending")
+    while (authz.Data.Status == EntityStatus.Pending)
     {
         // Wait for ACME server to validate the identifier
         await Task.Delay(10000);
         authz = await client.GetAuthorization(httpChallenge.Location);
     }
 
-    if (authz.Data.Status == "valid")
+    if (authz.Data.Status == EntityStatus.Valid)
     {
         // Create certificate
         var csr = new CertificationRequestBuilder();
@@ -146,4 +148,5 @@ You can get Certes by grabbing the latest
         // Revoke certificate
         await client.RevokeCertificate(cert);
     }
+}
 ```
