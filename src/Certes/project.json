@@ -15,17 +15,12 @@
         "System.Security.Cryptography.Csp": "4.0.0"
       }
     },
-    "net45": {
-      "frameworkAssemblies": {
-      }
-    }
+    "net45": {}
   },
   "buildOptions": {
     "embed": [
       "Resources/**/*.*"
-    ]
-  },
-  "compilationOptions": {
+    ],
     "warningsAsErrors": true,
     "xmlDoc": true
   },
