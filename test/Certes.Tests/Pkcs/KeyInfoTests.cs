@@ -1,9 +1,8 @@
 ﻿using Certes;
-using Certes.Pkcs;
 using System;
 using Xunit;
 
-namespace AutoCert.Pkcs
+namespace Certes.Pkcs
 {
     public class KeyInfoTests
     {
