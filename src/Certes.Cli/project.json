@@ -14,7 +14,7 @@
       "version": "1.0.0"
     },
     "NLog": "4.4.0-betaV14",
-    "System.CommandLine": "0.1.0-e160713-1"
+    "System.CommandLine": "0.1.0-e160714-1"
   },
 
   "frameworks": {
