@@ -83,9 +83,10 @@ namespace Certes.Pkcs
         public void AddName(string keyOrCommonName, string value)
         {
             DerObjectIdentifier id;
-            if (X509Name.DefaultLookup.Contains(keyOrCommonName))
+            var lowered = keyOrCommonName.ToLowerInvariant();
+            if (X509Name.DefaultLookup.Contains(lowered))
             {
-                id = (DerObjectIdentifier)X509Name.DefaultLookup[keyOrCommonName.ToLowerInvariant()];
+                id = (DerObjectIdentifier)X509Name.DefaultLookup[lowered];
                 this.attributes.Add(Tuple.Create(id, value));
 
                 if (id == X509Name.CN)
