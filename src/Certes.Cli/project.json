@@ -11,10 +11,10 @@
     "Certes": "1.0.0-*",
     "Microsoft.NETCore.App": {
       "type": "platform",
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
-    "NLog": "4.4.0-betaV15",
-    "System.CommandLine": "0.1.0-e160716-1"
+    "NLog": "5.0.0-beta03-tryoutMutex",
+    "System.CommandLine": "0.1.0-e161104-2"
   },
 
   "frameworks": {
