@@ -1,7 +1,7 @@
 language: csharp
 mono: none
 dotnet: 1.0.0-preview2-003131
-sudo: required
+sudo: false
 dist: trusty
 os:
 - linux
