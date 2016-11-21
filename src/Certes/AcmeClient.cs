@@ -299,7 +299,7 @@ namespace Certes
         {
             if (response.Error != null)
             {
-                throw new Exception($"{ response.Error.Type}: {response.Error.Detail} ({response.Error.Status})");
+                throw new Exception($"{response.Error.Type}: {response.Error.Detail} ({response.Error.Status})");
             }
         }
 
