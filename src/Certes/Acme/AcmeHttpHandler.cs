@@ -40,6 +40,50 @@ namespace Certes.Acme
         }
 
         /// <summary>
+        /// Encodes the specified entity for ACME requests.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <param name="keyPair">The key pair.</param>
+        /// <param name="nonce">The nonce.</param>
+        /// <returns>The encoded JSON.</returns>
+        public static string Encode(EntityBase entity, IAccountKey keyPair, string nonce)
+        {
+            var jsonSettings = JsonUtil.CreateSettings();
+            var unprotectedHeader = new
+            {
+                alg = keyPair.Algorithm.ToJwsAlgorithm(),
+                jwk = keyPair.Jwk
+            };
+
+            var protectedHeader = new
+            {
+                nonce = nonce
+            };
+
+            var entityJson = JsonConvert.SerializeObject(entity, Formatting.None, jsonSettings);
+            var protectedHeaderJson = JsonConvert.SerializeObject(protectedHeader, Formatting.None, jsonSettings);
+
+            var payloadEncoded = JwsConvert.ToBase64String(Encoding.UTF8.GetBytes(entityJson));
+            var protectedHeaderEncoded = JwsConvert.ToBase64String(Encoding.UTF8.GetBytes(protectedHeaderJson));
+
+            var signature = $"{protectedHeaderEncoded}.{payloadEncoded}";
+            var signatureBytes = Encoding.ASCII.GetBytes(signature);
+            var signedSignatureBytes = keyPair.SignData(signatureBytes);
+            var signedSignatureEncoded = JwsConvert.ToBase64String(signedSignatureBytes);
+
+            var body = new
+            {
+                header = unprotectedHeader,
+                @protected = protectedHeaderEncoded,
+                payload = payloadEncoded,
+                signature = signedSignatureEncoded
+            };
+
+            var bodyJson = JsonConvert.SerializeObject(body, Formatting.None, jsonSettings);
+            return bodyJson;
+        }
+
+        /// <summary>
         /// Gets the ACME resource URI.
         /// </summary>
         /// <param name="resourceType">Type of the ACME resource.</param>
@@ -94,37 +138,7 @@ namespace Certes.Acme
 
         private StringContent GenerateRequestContent(EntityBase entity, IAccountKey keyPair)
         {
-            var unprotectedHeader = new
-            {
-                alg = keyPair.Algorithm.ToJwsAlgorithm(),
-                jwk = keyPair.Jwk
-            };
-
-            var protectedHeader = new
-            {
-                nonce = this.nonce
-            };
-
-            var entityJson = JsonConvert.SerializeObject(entity, Formatting.None, jsonSettings);
-            var protectedHeaderJson = JsonConvert.SerializeObject(protectedHeader, Formatting.None, jsonSettings);
-
-            var payloadEncoded = JwsConvert.ToBase64String(Encoding.UTF8.GetBytes(entityJson));
-            var protectedHeaderEncoded = JwsConvert.ToBase64String(Encoding.UTF8.GetBytes(protectedHeaderJson));
-
-            var signature = $"{protectedHeaderEncoded}.{payloadEncoded}";
-            var signatureBytes = Encoding.ASCII.GetBytes(signature);
-            var signedSignatureBytes = keyPair.SignData(signatureBytes);
-            var signedSignatureEncoded = JwsConvert.ToBase64String(signedSignatureBytes);
-
-            var body = new
-            {
-                header = unprotectedHeader,
-                @protected = protectedHeaderEncoded,
-                payload = payloadEncoded,
-                signature = signedSignatureEncoded
-            };
-            
-            var bodyJson = JsonConvert.SerializeObject(body, Formatting.None, jsonSettings);
+            var bodyJson = Encode(entity, keyPair, this.nonce);
             return new StringContent(bodyJson, Encoding.ASCII, MimeJson);
         }
 
