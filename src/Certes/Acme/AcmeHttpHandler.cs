@@ -46,7 +46,7 @@ namespace Certes.Acme
         /// <param name="keyPair">The key pair.</param>
         /// <param name="nonce">The nonce.</param>
         /// <returns>The encoded JSON.</returns>
-        public static string Encode(EntityBase entity, IAccountKey keyPair, string nonce)
+        public static object Encode(EntityBase entity, IAccountKey keyPair, string nonce)
         {
             var jsonSettings = JsonUtil.CreateSettings();
             var unprotectedHeader = new
@@ -79,8 +79,7 @@ namespace Certes.Acme
                 signature = signedSignatureEncoded
             };
 
-            var bodyJson = JsonConvert.SerializeObject(body, Formatting.None, jsonSettings);
-            return bodyJson;
+            return body;
         }
 
         /// <summary>
@@ -138,7 +137,9 @@ namespace Certes.Acme
 
         private StringContent GenerateRequestContent(EntityBase entity, IAccountKey keyPair)
         {
-            var bodyJson = Encode(entity, keyPair, this.nonce);
+            var body = Encode(entity, keyPair, this.nonce);
+            var bodyJson = JsonConvert.SerializeObject(body, Formatting.None, jsonSettings);
+
             return new StringContent(bodyJson, Encoding.ASCII, MimeJson);
         }
 
