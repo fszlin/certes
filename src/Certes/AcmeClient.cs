@@ -1,12 +1,10 @@
 ﻿using Certes.Acme;
 using Certes.Jws;
 using Certes.Pkcs;
-using Org.BouncyCastle.Crypto.Digests;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 using Authz = Certes.Acme.Authorization;
@@ -168,10 +166,7 @@ namespace Certes
         /// <returns>The key authorization string.</returns>
         public string ComputeKeyAuthorization(Challenge challenge)
         {
-            var jwkThumbprint = this.key.GenerateThumbprint();
-            var jwkThumbprintEncoded = JwsConvert.ToBase64String(jwkThumbprint);
-            var token = challenge.Token;
-            return $"{token}.{jwkThumbprintEncoded}";
+            return challenge.ComputeKeyAuthorization(this.key);
         }
 
         /// <summary>
@@ -187,16 +182,7 @@ namespace Certes
                 throw new InvalidOperationException("The provided challenge is not a DNS challenge.");
             }
 
-            var keyAuthString = ComputeKeyAuthorization(challenge);
-            var keyAuthBytes = Encoding.UTF8.GetBytes(keyAuthString);
-            var sha256 = new Sha256Digest();
-            var hashed = new byte[sha256.GetDigestSize()];
-
-            sha256.BlockUpdate(keyAuthBytes, 0, keyAuthBytes.Length);
-            sha256.DoFinal(hashed, 0);
-
-            var dnsValue = JwsConvert.ToBase64String(hashed);
-            return dnsValue;
+            return challenge.ComputeDnsValue(this.key);
         }
 
         /// <summary>

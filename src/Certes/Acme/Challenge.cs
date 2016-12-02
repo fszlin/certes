@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Certes.Jws;
+using Org.BouncyCastle.Crypto.Digests;
+using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Certes.Acme
 {
@@ -75,4 +78,43 @@ namespace Certes.Acme
         public IList<ChallengeValidation> ValidationRecord { get; set; }
     }
 
+    /// <summary>
+    /// Helper methods for <see cref="Challenge"/>.
+    /// </summary>
+    public static class ChallengeExtensions
+    {
+        /// <summary>
+        /// Computes the key authorization string for <paramref name="challenge"/>.
+        /// </summary>
+        /// <param name="challenge">The challenge.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The key authorization string.</returns>
+        public static string ComputeKeyAuthorization(this Challenge challenge, IAccountKey key)
+        {
+            var jwkThumbprint = key.GenerateThumbprint();
+            var jwkThumbprintEncoded = JwsConvert.ToBase64String(jwkThumbprint);
+            var token = challenge.Token;
+            return $"{token}.{jwkThumbprintEncoded}";
+        }
+
+        /// <summary>
+        /// Computes the DNS value for the <paramref name="challenge"/>.
+        /// </summary>
+        /// <param name="challenge">The challenge.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The value for the text DNS record.</returns>
+        public static string ComputeDnsValue(this Challenge challenge, IAccountKey key)
+        {
+            var keyAuthString = challenge.ComputeKeyAuthorization(key);
+            var keyAuthBytes = Encoding.UTF8.GetBytes(keyAuthString);
+            var sha256 = new Sha256Digest();
+            var hashed = new byte[sha256.GetDigestSize()];
+
+            sha256.BlockUpdate(keyAuthBytes, 0, keyAuthBytes.Length);
+            sha256.DoFinal(hashed, 0);
+
+            var dnsValue = JwsConvert.ToBase64String(hashed);
+            return dnsValue;
+        }
+    }
 }
