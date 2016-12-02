@@ -1,10 +1,12 @@
 ﻿using Certes.Acme;
 using Certes.Jws;
 using Certes.Pkcs;
+using Org.BouncyCastle.Crypto.Digests;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 using Authz = Certes.Acme.Authorization;
@@ -170,7 +172,31 @@ namespace Certes
             var jwkThumbprintEncoded = JwsConvert.ToBase64String(jwkThumbprint);
             var token = challenge.Token;
             return $"{token}.{jwkThumbprintEncoded}";
+        }
 
+        /// <summary>
+        /// Computes the DNS value for the <paramref name="challenge"/>.
+        /// </summary>
+        /// <param name="challenge">The challenge.</param>
+        /// <returns>The value for the text DNS record.</returns>
+        /// <exception cref="System.InvalidOperationException">If the provided challenge is not a DNS challenge.</exception>
+        public string ComputeDnsValue(Challenge challenge)
+        {
+            if (challenge?.Type != ChallengeTypes.Dns01)
+            {
+                throw new InvalidOperationException("The provided challenge is not a DNS challenge.");
+            }
+
+            var keyAuthString = ComputeKeyAuthorization(challenge);
+            var keyAuthBytes = Encoding.UTF8.GetBytes(keyAuthString);
+            var sha256 = new Sha256Digest();
+            var hashed = new byte[sha256.GetDigestSize()];
+
+            sha256.BlockUpdate(keyAuthBytes, 0, keyAuthBytes.Length);
+            sha256.DoFinal(hashed, 0);
+
+            var dnsValue = JwsConvert.ToBase64String(hashed);
+            return dnsValue;
         }
 
         /// <summary>
@@ -299,7 +325,7 @@ namespace Certes
         {
             if (response.Error != null)
             {
-                throw new Exception($"{ response.Error.Type}: {response.Error.Detail} ({response.Error.Status})");
+                throw new Exception($"{response.Error.Type}: {response.Error.Detail} ({response.Error.Status})");
             }
         }
 

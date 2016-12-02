@@ -82,18 +82,16 @@ namespace Certes.Acme
             return result;
         }
 
-        private async Task FetchDirectory(bool force)
+        /// <summary>
+        /// Encodes the specified entity for ACME requests.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <param name="keyPair">The key pair.</param>
+        /// <param name="nonce">The nonce.</param>
+        /// <returns>The encoded JSON.</returns>
+        private static object Encode(EntityBase entity, IAccountKey keyPair, string nonce)
         {
-            if (this.directory == null || this.nonce == null || force)
-            {
-                var uri = serverUri;
-                var resp = await this.Get<AcmeDirectory>(uri);
-                this.directory = resp.Data;
-            }
-        }
-
-        private StringContent GenerateRequestContent(EntityBase entity, IAccountKey keyPair)
-        {
+            var jsonSettings = JsonUtil.CreateSettings();
             var unprotectedHeader = new
             {
                 alg = keyPair.Algorithm.ToJwsAlgorithm(),
@@ -102,7 +100,7 @@ namespace Certes.Acme
 
             var protectedHeader = new
             {
-                nonce = this.nonce
+                nonce = nonce
             };
 
             var entityJson = JsonConvert.SerializeObject(entity, Formatting.None, jsonSettings);
@@ -123,8 +121,25 @@ namespace Certes.Acme
                 payload = payloadEncoded,
                 signature = signedSignatureEncoded
             };
-            
+
+            return body;
+        }
+
+        private async Task FetchDirectory(bool force)
+        {
+            if (this.directory == null || this.nonce == null || force)
+            {
+                var uri = serverUri;
+                var resp = await this.Get<AcmeDirectory>(uri);
+                this.directory = resp.Data;
+            }
+        }
+
+        private StringContent GenerateRequestContent(EntityBase entity, IAccountKey keyPair)
+        {
+            var body = Encode(entity, keyPair, this.nonce);
             var bodyJson = JsonConvert.SerializeObject(body, Formatting.None, jsonSettings);
+
             return new StringContent(bodyJson, Encoding.ASCII, MimeJson);
         }
 
