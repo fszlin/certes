@@ -72,6 +72,8 @@ namespace Certes
             {
                 Links = result.Links,
                 Data = result.Data,
+                Json = result.Json,
+                Raw = result.Raw,
                 Location = result.Location,
                 Key = key.Export(),
                 ContentType = result.ContentType
@@ -134,6 +136,8 @@ namespace Certes
             return new AcmeResult<Authz>
             {
                 Data = result.Data,
+                Json = result.Json,
+                Raw = result.Raw,
                 Links = result.Links,
                 Location = result.Location,
                 ContentType = result.ContentType
@@ -153,6 +157,8 @@ namespace Certes
             return new AcmeResult<Authz>
             {
                 Data = result.Data,
+                Json = result.Json,
+                Raw = result.Raw,
                 Links = result.Links,
                 Location = result.Location ?? location,
                 ContentType = result.ContentType
@@ -210,6 +216,8 @@ namespace Certes
             return new AcmeResult<Challenge>
             {
                 Data = result.Data,
+                Json = result.Json,
+                Raw = result.Raw,
                 Links = result.Links,
                 Location = result.Location,
                 ContentType = result.ContentType
