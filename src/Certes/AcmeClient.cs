@@ -272,7 +272,6 @@ namespace Certes
                     currentCert.Issuer = new AcmeCertificate
                     {
                         Raw = issuerResult.Raw,
-                        Key = csrProvider.Export(),
                         Links = issuerResult.Links,
                         Location = issuerResult.Location,
                         ContentType = issuerResult.ContentType
