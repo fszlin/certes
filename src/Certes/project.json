@@ -4,7 +4,7 @@
   "description": "A client implantation for the Automated Certificate Management Environment (ACME) protocol",
   "dependencies": {
     "Newtonsoft.Json": "9.0.1",
-    "Portable.BouncyCastle": "1.8.1.1",
+    "Portable.BouncyCastle": "1.8.1.2",
     "System.Net.Http": "4.3.0",
     "System.Runtime.InteropServices": "4.3.0"
   },
