@@ -32,9 +32,22 @@ namespace Certes.Pkcs
         /// Initializes a new instance of the <see cref="CertificationRequestBuilder"/> class.
         /// </summary>
         /// <param name="keyInfo">The key information.</param>
+        /// <exception cref="System.NotSupportedException">
+        /// If the provided key is not one of the supported <seealso cref="SignatureAlgorithm"/>.
+        /// </exception>
         public CertificationRequestBuilder(KeyInfo keyInfo)
         {
             this.keyInfo = keyInfo;
+
+            this.KeyPair = keyInfo.CreateKeyPair();
+            if (this.KeyPair.Private is RsaPrivateCrtKeyParameters)
+            {
+                this.Algorithm = SignatureAlgorithm.Sha256WithRsaEncryption;
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         /// <summary>
