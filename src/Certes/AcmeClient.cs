@@ -227,12 +227,10 @@ namespace Certes
         /// <summary>
         /// Creates a new certificate.
         /// </summary>
-        /// <param name="csrProvider">The certificate signing request (CSR) provider.</param>
+        /// <param name="csrBytes">The certificate signing request data.</param>
         /// <returns>The certificate issued.</returns>
-        public async Task<AcmeCertificate> NewCertificate(ICertificationRequestBuilder csrProvider)
+        public async Task<AcmeCertificate> NewCertificate(byte[] csrBytes)
         {
-            var csrBytes = csrProvider.Generate();
-
             var payload = new Certificate
             {
                 Csr = JwsConvert.ToBase64String(csrBytes),
@@ -252,7 +250,6 @@ namespace Certes
             var cert = new AcmeCertificate
             {
                 Raw = result.Raw,
-                Key = csrProvider.Export(),
                 Links = result.Links,
                 Location = result.Location,
                 ContentType = result.ContentType
@@ -281,6 +278,19 @@ namespace Certes
                 }
             }
 
+            return cert;
+        }
+
+        /// <summary>
+        /// Creates a new certificate.
+        /// </summary>
+        /// <param name="csrProvider">The certificate signing request (CSR) provider.</param>
+        /// <returns>The certificate issued.</returns>
+        public async Task<AcmeCertificate> NewCertificate(ICertificationRequestBuilder csrProvider)
+        {
+            var csrBytes = csrProvider.Generate();
+            var cert = await NewCertificate(csrBytes);
+            cert.Key = csrProvider.Export();
             return cert;
         }
 
