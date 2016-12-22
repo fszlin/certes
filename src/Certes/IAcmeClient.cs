@@ -11,6 +11,14 @@ namespace Certes
     public interface IAcmeClient
     {
         /// <summary>
+        /// Gets the HTTP handler.
+        /// </summary>
+        /// <value>
+        /// The HTTP handler.
+        /// </value>
+        IAcmeHttpHandler HttpHandler { get; }
+
+        /// <summary>
         /// Submits the challenge for the ACME server to validate.
         /// </summary>
         /// <param name="authChallenge">The authentication challenge.</param>

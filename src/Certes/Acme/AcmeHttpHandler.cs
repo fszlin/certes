@@ -16,7 +16,7 @@ namespace Certes.Acme
     /// Represents the HTTP handler for communicating with ACME server.
     /// </summary>
     /// <seealso cref="System.IDisposable" />
-    public class AcmeHttpHandler : IDisposable
+    public class AcmeHttpHandler : IAcmeHttpHandler, IDisposable
     {
         private const string MimeJson = "application/json";
 
@@ -27,6 +27,20 @@ namespace Certes.Acme
         private AcmeDirectory directory;
 
         private readonly JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
+
+        /// <summary>
+        /// Gets the ACME server URI.
+        /// </summary>
+        /// <value>
+        /// The ACME server URI.
+        /// </value>
+        public Uri ServerUri
+        {
+            get
+            {
+                return serverUri;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeHttpHandler"/> class.

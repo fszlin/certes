@@ -14,10 +14,25 @@ namespace Certes
     /// <summary>
     /// Represents a ACME client.
     /// </summary>
-    public class AcmeClient : IDisposable
+    public class AcmeClient : IAcmeClient, IDisposable
     {
-        private readonly AcmeHttpHandler handler;
+        private readonly IAcmeHttpHandler handler;
         private IAccountKey key;
+        private readonly bool shouldDisposeHander;
+
+        /// <summary>
+        /// Gets the HTTP handler.
+        /// </summary>
+        /// <value>
+        /// The HTTP handler.
+        /// </value>
+        public IAcmeHttpHandler HttpHandler
+        {
+            get
+            {
+                return handler;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeClient"/> class.
@@ -26,13 +41,14 @@ namespace Certes
         public AcmeClient(Uri serverUri)
             : this(new AcmeHttpHandler(serverUri))
         {
+            shouldDisposeHander = true;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeClient"/> class.
         /// </summary>
         /// <param name="handler">The ACME handler.</param>
-        public AcmeClient(AcmeHttpHandler handler)
+        public AcmeClient(IAcmeHttpHandler handler)
         {
             this.handler = handler;
         }
@@ -57,7 +73,7 @@ namespace Certes
             {
                 this.key = new AccountKey();
             }
-            
+
             var registration = new Registration
             {
                 Contact = contact,
@@ -345,10 +361,14 @@ namespace Certes
             {
                 if (disposing)
                 {
-                    this.handler?.Dispose();
+                    if (shouldDisposeHander)
+                    {
+                        (handler as IDisposable)?.Dispose();
+                    }
+
                     (key as IDisposable)?.Dispose();
                 }
-                
+
                 disposedValue = true;
             }
         }
