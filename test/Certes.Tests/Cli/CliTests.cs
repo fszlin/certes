@@ -100,7 +100,7 @@ namespace Certes.Cli
 
             var consoleRule = new LoggingRule("*", LogLevel.Debug, memoryTarget);
             config.LoggingRules.Add(consoleRule);
-            
+
             var args = cmd.Split(' ')
                 .Select(s => placeHolders?.ContainsKey(s) == true ? placeHolders[s] : s)
                 .ToArray();
