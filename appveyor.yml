@@ -17,11 +17,12 @@ branches:
 assembly_info:
   patch: true
   file: AssemblyInfo.*
-  assembly_version: $($env:CERTES_PACKAGE_VERSION)
-  assembly_file_version: $($env:CERTES_PACKAGE_VERSION)
+  assembly_version: $($env:appveyor_build_version)
+  assembly_file_version: $($env:appveyor_build_version)
 
 init:
   - git config --global core.autocrlf input
+  - ps: $packageVersionSuffix = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "" } else { "$($env:APPVEYOR_REPO_BRANCH)" }
   - ps: $packageVersion = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "$($env:appveyor_build_version)" } else { "$($env:appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)" }
   - ps: $env:CERTES_PACKAGE_VERSION = $packageVersion
 
@@ -30,9 +31,9 @@ install:
 build_script:
   - dotnet --info
   - dotnet restore
-  - dotnet test ./test/Certes.Tests/project.json
-  - dotnet pack -c release -o ./build/nuget ./src/Certes/project.json
-  - dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/project.json
+  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj
+  - dotnet pack -c release -o ./build/nuget ./src/Certes/ --version-suffix "$($packageVersionSuffix)"
+  - dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/ --version-suffix "$($packageVersionSuffix)"
   - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\build\cli\certes.bat'
   - 7z a build\certes-cli.zip .\build\cli\*.* -r
 
