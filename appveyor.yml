@@ -17,8 +17,8 @@ branches:
 assembly_info:
   patch: true
   file: AssemblyInfo.*
-  assembly_version: $($env:appveyor_build_version)
-  assembly_file_version: $($env:appveyor_build_version)
+  assembly_version: $env:appveyor_build_version
+  assembly_file_version: $env:appveyor_build_version
 
 init:
   - git config --global core.autocrlf input
