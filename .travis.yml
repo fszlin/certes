@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-dotnet: 1.0.0
+dotnet: 1.0.0-preview2-003131
 sudo: required
 dist: trusty
 os:
@@ -26,7 +26,7 @@ branches:
   - dev
 script:
 - dotnet restore
-- dotnet test ./test/Certes.Tests/Certes.Tests.csproj
+- dotnet test ./test/Certes.Tests/project.json --framework netcoreapp1.0
 #- dotnet pack -c release -o ./build/nuget ./src/Certes/project.json --framework netcoreapp1.0
 #- dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/project.json
 
