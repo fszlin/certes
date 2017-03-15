@@ -47,7 +47,7 @@ test: off
 configuration: Release
 
 artifacts:
-    - path: build\nuget\Certes.$(CERTES_PACKAGE_VERSION).nupkg
+    - path: src\Certes\bin\$(CONFIGURATION )\Certes.$(CERTES_PACKAGE_VERSION).nupkg
       name: nupkg
 #      
 #    - path: build\certes-cli.zip
