@@ -3,6 +3,7 @@ build:
   verbosity: minimal
 
 skip_tags: true
+image: Visual Studio 2017
 
 skip_commits:
   files:
@@ -23,69 +24,75 @@ init:
   - ps: $packageVersionSuffix = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "" } else { "$($env:APPVEYOR_REPO_BRANCH)" }
   - ps: $packageVersion = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "$($env:appveyor_build_version)" } else { "$($env:appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)" }
   - ps: $env:CERTES_PACKAGE_VERSION = $packageVersion
-  - ps: Update-AppveyorBuild -Message "$env:appveyor_build_version"
+  - ps: Update-AppveyorBuild -Version "$env:appveyor_build_version"
 
 install:
 
-build_script:
-  - dotnet --info
-  - dotnet restore
-  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj
-  - dotnet pack -c release -o ./build/nuget ./src/Certes/ --version-suffix "$($packageVersionSuffix)"
-  - dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/ --version-suffix "$($packageVersionSuffix)"
-  - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\build\cli\certes.bat'
-  - 7z a build\certes-cli.zip .\build\cli\*.* -r
+before_build:
+  - cmd: nuget restore Certes.sln
+  
+build:
+  project: Certes.sln
+
+#build_script:
+#  - dotnet --info
+#  - dotnet restore
+#  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj
+#  - dotnet pack -c release -o ./build/nuget ./src/Certes/ --version-suffix "$($packageVersionSuffix)"
+#  - dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/ --version-suffix "$($packageVersionSuffix)"
+#  - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\build\cli\certes.bat'
+#  - 7z a build\certes-cli.zip .\build\cli\*.* -r
 
 test: off
 
 configuration: Release
 
-artifacts:
-    - path: build\nuget\Certes.$(CERTES_PACKAGE_VERSION).nupkg
-      name: nupkg
-      
-    - path: build\certes-cli.zip
-      name: cli
+#artifacts:
+#    - path: build\nuget\Certes.$(CERTES_PACKAGE_VERSION).nupkg
+#      name: nupkg
+#      
+#    - path: build\certes-cli.zip
+#      name: cli
 
-deploy:
-  - provider: GitHub
-    release: v$(CERTES_PACKAGE_VERSION)
-    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
-    auth_token:
-      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-    artifact: nupkg,cli
-    draft: false
-    prerelease: false
-    on:
-      branch: master
+#deploy:
+#  - provider: GitHub
+#    release: v$(CERTES_PACKAGE_VERSION)
+#    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
+#    auth_token:
+#      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
+#    artifact: nupkg,cli
+#    draft: false
+#    prerelease: false
+#    on:
+#      branch: master
 
-  - provider: GitHub
-    release: v$(CERTES_PACKAGE_VERSION)
-    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
-    auth_token:
-      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-    artifact: nupkg,cli
-    draft: true
-    prerelease: true
-    on:
-      branch: dev
+#  - provider: GitHub
+#    release: v$(CERTES_PACKAGE_VERSION)
+#    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
+#    auth_token:
+#      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
+#    artifact: nupkg,cli
+#    draft: true
+#    prerelease: true
+#    on:
+#      branch: dev
 
-  - provider: NuGet
-    #server: http://www.nuget.org/api/v2/package                  # remove to push to NuGet.org
-    api_key:
-      secure: enjdo7AiXKaGhj8NC2k3wjQ9mGlU1jxABzG6tuphpM7dNaazlrSlvwR2H1kC4kr+
-    skip_symbols: true
-    symbol_server:           # remove to push symbols to SymbolSource.org
-    artifact: nupkg
-    on:
-      branch: master
+#  - provider: NuGet
+#    #server: http://www.nuget.org/api/v2/package                  # remove to push to NuGet.org
+#    api_key:
+#      secure: enjdo7AiXKaGhj8NC2k3wjQ9mGlU1jxABzG6tuphpM7dNaazlrSlvwR2H1kC4kr+
+#    skip_symbols: true
+#    symbol_server:           # remove to push symbols to SymbolSource.org
+#    artifact: nupkg
+#    on:
+#      branch: master
 
-  - provider: NuGet
-    server: https://www.myget.org/F/dymetis/api/v2/package
-    api_key:
-      secure: RSdqUIwRSn8DI5xaa4iWBzOtYU6y3K9JRh07myQpAIRf5IhlwsZpFsnQOpCg1g7J
-    skip_symbols: true
-    symbol_server:           # remove to push symbols to SymbolSource.org
-    artifact: nupkg
-    on:
-      branch: dev
+#  - provider: NuGet
+#    server: https://www.myget.org/F/dymetis/api/v2/package
+#    api_key:
+#      secure: RSdqUIwRSn8DI5xaa4iWBzOtYU6y3K9JRh07myQpAIRf5IhlwsZpFsnQOpCg1g7J
+#    skip_symbols: true
+#    symbol_server:           # remove to push symbols to SymbolSource.org
+#    artifact: nupkg
+#    on:
+#      branch: dev
