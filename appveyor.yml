@@ -24,8 +24,9 @@ init:
   - git config --global core.autocrlf input
   - ps: $packageVersionSuffix = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "" } else { "$($env:APPVEYOR_REPO_BRANCH)" }
   - ps: $packageVersion = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "$($env:appveyor_build_version)" } else { "$($env:appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)" }
-  - ps: $env:CERTES_PACKAGE_VERSION = $packageVersion
   - ps: Update-AppveyorBuild -Version "$env:appveyor_build_version"
+  - ps: $env:CERTES_PACKAGE_VERSION_SUFFIX = $packageVersionSuffix
+  - ps: $env:CERTES_PACKAGE_VERSION = $packageVersion
 
 install:
 
@@ -33,7 +34,7 @@ before_build:
   - cmd: nuget restore Certes.sln
 
 build_script:
-  - msbuild -t:pack -p:VersionSuffix="$($packageVersionSuffix)"
+  - msbuild -t:pack -p:VersionSuffix="$(CERTES_PACKAGE_VERSION_SUFFIX)"
 #  - dotnet --info
 #  - dotnet restore
 #  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj
