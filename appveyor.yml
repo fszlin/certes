@@ -45,7 +45,7 @@ test_script:
 configuration: Release
 
 artifacts:
-    - path: $(APPVEYOR_BUILD_FOLDER)/build/Certes/Certes.$(CERTES_PACKAGE_VERSION).nupkg
+    - path: build/Certes/Certes.$(CERTES_PACKAGE_VERSION).nupkg
       name: nupkg
       
     - path: build\certes-cli.zip
