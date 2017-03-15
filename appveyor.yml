@@ -1,6 +1,7 @@
 version: 1.0.4.{build}
 build:
   verbosity: minimal
+  project: Certes.sln
 
 skip_tags: true
 image: Visual Studio 2017
@@ -30,9 +31,6 @@ install:
 
 before_build:
   - cmd: nuget restore Certes.sln
-  
-build:
-  project: Certes.sln
 
 #build_script:
 #  - dotnet --info
