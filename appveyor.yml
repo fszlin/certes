@@ -33,8 +33,8 @@ before_build:
   - cmd: nuget restore Certes.sln
 
 build_script:
-  - msbuild ./src/Certes/Certes.csproj -t:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%" -p:OutputPath=$(APPVEYOR_BUILD_FOLDER)/build/Certes/
-  - msbuild ./src/Certes.Cli/Certes.Cli.csproj -t:publish -p:PublishDir=$(APPVEYOR_BUILD_FOLDER)/build/Certes.Cli/
+  - msbuild ./src/Certes/Certes.csproj -t:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%" -p:OutputPath=%APPVEYOR_BUILD_FOLDER%/build/Certes/
+  - msbuild ./src/Certes.Cli/Certes.Cli.csproj -t:publish -p:PublishDir=%APPVEYOR_BUILD_FOLDER%/build/Certes.Cli/
   - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\build\Certes.Cli\certes.bat'
   - 7z a build\certes-cli.zip .\build\Certes.Cli\*.* -r
 
