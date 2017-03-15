@@ -25,7 +25,6 @@ init:
   - ps: $packageVersionSuffix = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "" } else { "$($env:APPVEYOR_REPO_BRANCH)" }
   - ps: $packageVersion = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "$($env:appveyor_build_version)" } else { "$($env:appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)" }
   - ps: Update-AppveyorBuild -Version "$env:appveyor_build_version"
-#  - ps: $env:CERTES_PACKAGE_VERSION_SUFFIX = $packageVersionSuffix
   - ps: $env:CERTES_PACKAGE_VERSION = $packageVersion
 
 install:
@@ -34,14 +33,10 @@ before_build:
   - cmd: nuget restore Certes.sln
 
 build_script:
-  - msbuild ./src/Certes/Certes.csproj -t:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%"
-#  - dotnet --info
-#  - dotnet restore
-#  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj
-#  - dotnet pack -c release -o ./build/nuget ./src/Certes/ --version-suffix "$($packageVersionSuffix)"
-#  - dotnet publish -f netcoreapp1.0 -c release -o ./build/cli/bin ./src/Certes.Cli/ --version-suffix "$($packageVersionSuffix)"
-#  - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\build\cli\certes.bat'
-#  - 7z a build\certes-cli.zip .\build\cli\*.* -r
+  - msbuild ./src/Certes/Certes.csproj -t:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%" -p:OutputPath=$(APPVEYOR_BUILD_FOLDER)/build/Certes/
+  - msbuild ./src/Certes.Cli/Certes.Cli.csproj -t:publish -p:PublishDir=$(APPVEYOR_BUILD_FOLDER)/build/Certes.Cli/
+  - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\build\Certes.Cli\certes.bat'
+  - 7z a build\certes-cli.zip .\build\Certes.Cli\*.* -r
 
 #test: off
 test_script:
@@ -50,34 +45,34 @@ test_script:
 configuration: Release
 
 artifacts:
-    - path: src\Certes\bin\$(CONFIGURATION)\Certes.$(CERTES_PACKAGE_VERSION).nupkg
+    - path: $(APPVEYOR_BUILD_FOLDER)/build/Certes/Certes.$(CERTES_PACKAGE_VERSION).nupkg
       name: nupkg
-#      
-#    - path: build\certes-cli.zip
-#      name: cli
+      
+    - path: build\certes-cli.zip
+      name: cli
 
 deploy:
-#  - provider: GitHub
-#    release: v$(CERTES_PACKAGE_VERSION)
-#    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
-#    auth_token:
-#      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-#    artifact: nupkg,cli
-#    draft: false
-#    prerelease: false
-#    on:
-#      branch: master
+  - provider: GitHub
+    release: v$(CERTES_PACKAGE_VERSION)
+    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
+    auth_token:
+      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
+    artifact: nupkg,cli
+    draft: false
+    prerelease: false
+    on:
+      branch: master
 
-#  - provider: GitHub
-#    release: v$(CERTES_PACKAGE_VERSION)
-#    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
-#    auth_token:
-#      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-#    artifact: nupkg,cli
-#    draft: true
-#    prerelease: true
-#    on:
-#      branch: dev
+  - provider: GitHub
+    release: v$(CERTES_PACKAGE_VERSION)
+    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
+    auth_token:
+      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
+    artifact: nupkg,cli
+    draft: true
+    prerelease: true
+    on:
+      branch: dev
 
   - provider: NuGet
     #server: http://www.nuget.org/api/v2/package                  # remove to push to NuGet.org
