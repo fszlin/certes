@@ -13,6 +13,7 @@
     <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate</PackageTags>
     <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
