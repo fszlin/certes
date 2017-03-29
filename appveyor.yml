@@ -25,9 +25,9 @@ assembly_info:
 
 init:
   - git config --global core.autocrlf input
-  - ps: $packageVersionSuffix = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "" } else { "$($env:APPVEYOR_REPO_BRANCH)" }
-  - ps: $packageVersion = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "$($env:appveyor_build_version)" } else { "$($env:appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)" }
-  - ps: $env:CERTES_PACKAGE_VERSION = $packageVersion
+#  - ps: $packageVersion = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "$($env:appveyor_build_version)" } else { "$($env:appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)" }
+#  - ps: $env:CERTES_PACKAGE_VERSION = $packageVersion
+  - ps: $env:CERTES_PACKAGE_VERSION = $env:appveyor_build_version
 
 install:
 
