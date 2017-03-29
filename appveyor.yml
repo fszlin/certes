@@ -26,7 +26,7 @@ assembly_info:
 init:
   - git config --global core.autocrlf input
   - ps: $packageVersionSuffix = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "" } else { "$($env:APPVEYOR_REPO_BRANCH)" }
-  - ps: $packageVersion = $($env:appveyor_build_version)
+  - ps: $packageVersion = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "$($env:appveyor_build_version)" } else { "$($env:appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)" }
   - ps: $env:CERTES_PACKAGE_VERSION = $packageVersion
 
 install:
@@ -35,7 +35,7 @@ before_build:
   - cmd: nuget restore Certes.sln
 
 build_script:
-  - msbuild ./src/Certes/Certes.csproj -p:PackageVersion="%CERTES_PACKAGE_VERSION%"
+  - msbuild ./src/Certes/Certes.csproj -t:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%"
   - msbuild ./src/Certes.Cli/Certes.Cli.csproj -t:publish -p:PublishDir=%APPVEYOR_BUILD_FOLDER%/build/Certes.Cli/
   - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\build\Certes.Cli\certes.bat'
   - 7z a build\certes-cli.zip .\build\Certes.Cli\*.* -r
