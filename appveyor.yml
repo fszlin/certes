@@ -39,8 +39,8 @@ build_script:
   - msbuild -t:src\Certes:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%" -logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - msbuild -t:src\Certes_Cli -logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - msbuild -t:src\Certes_Cli:Publish -logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-  - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\src\Certes.Cli\bin\Debug\netcoreapp1.0\publish\certes.bat'
-  - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\Debug\netcoreapp1.0\publish\*.* -r
+  - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\certes.bat'
+  - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
 
 #test: off
 test_script:
