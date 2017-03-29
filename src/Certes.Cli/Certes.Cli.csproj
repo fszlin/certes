@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.0</TargetFramework>
-    <Version>1.0.5</Version>
+    <Version>1.0.0</Version>
     <Authors>Eddie Lin</Authors>
     <Company />
     <Product>CLI for Certes</Product>
