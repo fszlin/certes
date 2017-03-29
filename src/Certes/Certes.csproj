@@ -19,6 +19,8 @@
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <Authors>Eddie Lin</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <FileVersion>1.0.5.0</FileVersion>
+    <Version>1.0.5</Version>
   </PropertyGroup>
 
   <ItemGroup>
