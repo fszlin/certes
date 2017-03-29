@@ -2,21 +2,23 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <Version>1.0.6</Version>
     <Authors>Eddie Lin</Authors>
     <Company />
-    <Version>1.0.5</Version>
     <Product>Certes ACME Client</Product>
     <Description>A client implantation for the Automated Certificate Management Environment (ACME) protocol</Description>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate</PackageTags>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <AssemblyVersion>1.0.5.0</AssemblyVersion>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-  </PropertyGroup>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  
+</PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard1.3\Certes.xml</DocumentationFile>
@@ -33,6 +35,10 @@
     <None Remove="Resources\Certificates\fake-le-root-x1.cer" />
     <None Remove="Resources\Certificates\lets-encrypt-x3-cross-signed.cer" />
     <None Remove="Resources\Certificates\lets-encrypt-x4-cross-signed.cer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
   </ItemGroup>
 
   <ItemGroup>
