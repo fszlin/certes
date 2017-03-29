@@ -1,36 +1,57 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>A client implantation for the Automated Certificate Management Environment (ACME) protocol</Description>
-    <AssemblyTitle>Certes ACME Client</AssemblyTitle>
     <TargetFramework>netstandard1.3</TargetFramework>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyName>Certes</AssemblyName>
-    <PackageId>Certes</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Eddie Lin</Authors>
+    <Company />
+    <Product>Certes ACME Client</Product>
+    <Description>A client implantation for the Automated Certificate Management Environment (ACME) protocol</Description>
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate</PackageTags>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <Authors>Eddie Lin</Authors>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <FileVersion>1.0.5.0</FileVersion>
-    <Version>1.0.5</Version>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  
+</PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard1.3\Certes.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard1.3\Certes.xml</DocumentationFile>
+    <TreatSpecificWarningsAsErrors />
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\**\*.*" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
+    <None Remove="Resources\Certificates\dst-root-ca-x3.cer" />
+    <None Remove="Resources\Certificates\fake-le-intermediate-x1.cer" />
+    <None Remove="Resources\Certificates\fake-le-root-x1.cer" />
+    <None Remove="Resources\Certificates\lets-encrypt-x3-cross-signed.cer" />
+    <None Remove="Resources\Certificates\lets-encrypt-x4-cross-signed.cer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Certificates\dst-root-ca-x3.cer" />
+    <EmbeddedResource Include="Resources\Certificates\fake-le-intermediate-x1.cer" />
+    <EmbeddedResource Include="Resources\Certificates\fake-le-root-x1.cer" />
+    <EmbeddedResource Include="Resources\Certificates\lets-encrypt-x3-cross-signed.cer" />
+    <EmbeddedResource Include="Resources\Certificates\lets-encrypt-x4-cross-signed.cer" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="Portable.BouncyCastle" Version="1.8.1.2" />
-    <PackageReference Include="System.Net.Http" Version="4.3.1" />
   </ItemGroup>
 
 </Project>

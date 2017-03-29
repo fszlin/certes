@@ -17,14 +17,16 @@ branches:
     - dev
 
 assembly_info:
-  patch: false
-  # file: AssemblyInfo.*
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: $(CERTES_PACKAGE_VERSION)
 
 init:
   - git config --global core.autocrlf input
   - ps: $packageVersionSuffix = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "" } else { "$($env:APPVEYOR_REPO_BRANCH)" }
-  - ps: $packageVersion = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "$($env:appveyor_build_version)" } else { "$($env:appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)" }
-  - ps: Update-AppveyorBuild -Version "$env:appveyor_build_version"
+  - ps: $packageVersion = $($env:appveyor_build_version)
   - ps: $env:CERTES_PACKAGE_VERSION = $packageVersion
 
 install:
