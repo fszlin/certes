@@ -35,10 +35,12 @@ before_build:
   - cmd: nuget restore Certes.sln
 
 build_script:
-  - msbuild ./src/Certes/Certes.csproj -t:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%"
-  - msbuild ./src/Certes.Cli/Certes.Cli.csproj -t:publish -p:PublishDir=%APPVEYOR_BUILD_FOLDER%/build/Certes.Cli/
-  - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\build\Certes.Cli\certes.bat'
-  - 7z a build\certes-cli.zip .\build\Certes.Cli\*.* -r
+  - msbuild -t:src\Certes -logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - msbuild -t:src\Certes:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%" -logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - msbuild -t:src\Certes_Cli -logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - msbuild -t:src\Certes_Cli:Publish -logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\src\Certes.Cli\bin\Debug\netcoreapp1.0\publish\certes.bat'
+  - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\Debug\netcoreapp1.0\publish\*.* -r
 
 #test: off
 test_script:
