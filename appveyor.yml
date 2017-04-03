@@ -20,15 +20,15 @@ assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
   assembly_version: '$(CERTES_ASSEMBLY_VERSION)'
-  assembly_file_version: '$(CERTES_ASSEMBLY_FILE_VERSION)'
-  assembly_informational_version: '$(CERTES_PACKAGE_VERSION)'
+  assembly_file_version: '$(CERTES_ASSEMBLY_VERSION)'
+  assembly_informational_version: '$(CERTES_ASSEMBLY_INFO_VERSION)'
 
 init:
   - git config --global core.autocrlf input
   - ps: $verParts = $($env:appveyor_build_version) -Split '\.'
   - ps: $env:CERTES_ASSEMBLY_VERSION = $verParts[0] + '.' + $verParts[1] + '.' + $verParts[2]
-  - ps: $env:CERTES_ASSEMBLY_FILE_VERSION = $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3]
-  - ps: $env:CERTES_PACKAGE_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { $env:CERTES_ASSEMBLY_FILE_VERSION } else { $env:CERTES_ASSEMBLY_FILE_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH }
+  - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH }
+  - ps: $env:CERTES_PACKAGE_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3] } else { $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3] + '-' + $env:APPVEYOR_REPO_BRANCH }
 
 install:
 
@@ -88,16 +88,6 @@ deploy:
     artifact: nupkg
     on:
       branch: master
-
-  - provider: NuGet
-    #server: http://www.nuget.org/api/v2/package                  # remove to push to NuGet.org
-    api_key:
-      secure: enjdo7AiXKaGhj8NC2k3wjQ9mGlU1jxABzG6tuphpM7dNaazlrSlvwR2H1kC4kr+
-    skip_symbols: true
-    symbol_server:           # remove to push symbols to SymbolSource.org
-    artifact: nupkg
-    on:
-      branch: dev
 
   - provider: NuGet
     server: https://www.myget.org/F/dymetis/api/v2/package
