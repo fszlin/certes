@@ -88,7 +88,7 @@ deploy:
     artifact: nupkg
     on:
       branch: master
-	  
+
   - provider: NuGet
     #server: http://www.nuget.org/api/v2/package                  # remove to push to NuGet.org
     api_key:
