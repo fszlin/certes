@@ -28,7 +28,7 @@ init:
   - ps: $verParts = $($env:appveyor_build_version) -Split '\.'
   - ps: $env:CERTES_ASSEMBLY_VERSION = $verParts[0] + '.' + $verParts[1] + '.' + $verParts[2]
   - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH }
-  - ps: $env:CERTES_PACKAGE_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3] } else { $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3] + '-' + $env:APPVEYOR_REPO_BRANCH }
+  - ps: $env:CERTES_PACKAGE_VERSION = $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3] # if ($env:APPVEYOR_REPO_BRANCH -eq "master") { $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3] } else { $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3] + '-' + $env:APPVEYOR_REPO_BRANCH }
 
 install:
 
