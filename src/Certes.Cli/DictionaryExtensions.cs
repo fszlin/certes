@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Certes.Cli
 {
     public static class DictionaryExtensions
     {
-        internal static TValue TryGet<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
-        {
-            TValue val;
-            return dictionary.TryGetValue(key, out val) ? val : default(TValue);
-        }
+        internal static TValue TryGet<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key) =>
+            dictionary.TryGetValue(key, out TValue val) ? val : default(TValue);
     }
 }

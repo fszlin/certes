@@ -25,7 +25,7 @@ assembly_info:
 
 init:
   - git config --global core.autocrlf input
-#  - ps: $packageVersion = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "$($env:appveyor_build_version)" } else { "$($env:appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)" }
+  - ps: $packageVersion = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "$($env:appveyor_build_version)" } else { "$($env:appveyor_build_version)-$($env:APPVEYOR_REPO_BRANCH)" }
 #  - ps: $env:CERTES_PACKAGE_VERSION = $packageVersion
   - ps: $env:CERTES_PACKAGE_VERSION = $env:appveyor_build_version
 
@@ -35,10 +35,10 @@ before_build:
   - cmd: nuget restore Certes.sln
 
 build_script:
-  - msbuild -t:src\Certes -logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-  - msbuild -t:src\Certes:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%" -logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-  - msbuild -t:src\Certes_Cli -logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-  - msbuild -t:src\Certes_Cli:Publish -logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - msbuild -t:src\Certes
+  - msbuild -t:src\Certes:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%"
+  - msbuild -t:src\Certes_Cli
+  - msbuild -t:src\Certes_Cli:Publish
   - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
   - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
 
