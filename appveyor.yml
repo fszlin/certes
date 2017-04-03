@@ -27,8 +27,8 @@ init:
   - git config --global core.autocrlf input
   - ps: $verParts = $($env:appveyor_build_version) -Split '\.'
   - ps: $env:CERTES_ASSEMBLY_VERSION = $verParts[0] + '.' + $verParts[1] + '.' + $verParts[2]
-  - ps: $env:CERTES_ASSEMBLY_FILE_VERSION = $env:CERTES_ASSEMBLY_VERSION + '.' + {build}
-  - ps: $env:CERTES_PACKAGE_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { $env:CERTES_ASSEMBLY_VERSION + '.' + {build} } else { $env:CERTES_ASSEMBLY_VERSION + '.' + {build} + '-' + $env:APPVEYOR_REPO_BRANCH }
+  - ps: $env:CERTES_ASSEMBLY_FILE_VERSION = $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3]
+  - ps: $env:CERTES_PACKAGE_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { $env:CERTES_ASSEMBLY_FILE_VERSION } else { $env:CERTES_ASSEMBLY_FILE_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH }
 
 install:
 
