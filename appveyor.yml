@@ -1,4 +1,4 @@
-version: 1.0.5.{build}
+version: 1.0.6.{build}
 build:
   verbosity: minimal
   project: Certes.sln
@@ -19,15 +19,16 @@ branches:
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: $(CERTES_PACKAGE_VERSION)
+  assembly_version: '$(CERTES_ASSEMBLY_VERSION)'
+  assembly_file_version: '$(CERTES_ASSEMBLY_VERSION)'
+  assembly_informational_version: '$(CERTES_ASSEMBLY_INFO_VERSION)'
 
 init:
   - git config --global core.autocrlf input
-  - ps: $packageVersionSuffix = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { "" } else { "$($env:APPVEYOR_REPO_BRANCH)" }
-  - ps: $packageVersion = $($env:appveyor_build_version)
-  - ps: $env:CERTES_PACKAGE_VERSION = $packageVersion
+  - ps: $verParts = $($env:appveyor_build_version) -Split '\.'
+  - ps: $env:CERTES_ASSEMBLY_VERSION = $verParts[0] + '.' + $verParts[1] + '.' + $verParts[2]
+  - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "master") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH }
+  - ps: $env:CERTES_PACKAGE_VERSION = $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3] # if ($env:APPVEYOR_REPO_BRANCH -eq "master") { $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3] } else { $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3] + '-' + $env:APPVEYOR_REPO_BRANCH }
 
 install:
 
@@ -35,10 +36,12 @@ before_build:
   - cmd: nuget restore Certes.sln
 
 build_script:
-  - msbuild ./src/Certes/Certes.csproj -p:PackageVersion="%CERTES_PACKAGE_VERSION%"
-  - msbuild ./src/Certes.Cli/Certes.Cli.csproj -t:publish -p:PublishDir=%APPVEYOR_BUILD_FOLDER%/build/Certes.Cli/
-  - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\build\Certes.Cli\certes.bat'
-  - 7z a build\certes-cli.zip .\build\Certes.Cli\*.* -r
+  - msbuild -t:src\Certes
+  - msbuild -t:src\Certes:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%"
+  - msbuild -t:src\Certes_Cli
+  - msbuild -t:src\Certes_Cli:Publish
+  - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
+  - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
 
 #test: off
 test_script:

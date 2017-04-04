@@ -147,7 +147,7 @@ namespace Certes.Cli
         private AuthorizationOptions DefineAuthorizationCommand(ArgumentSyntax syntax)
         {
             var options = new AuthorizationOptions();
-            syntax.DefineCommand("authz", ref command, Command.Authorization, "Authorization");
+            syntax.DefineCommand("authz", ref command, Command.Authorization, "Perform identifier authorization.");
 
             syntax.DefineOption("t|type", ref options.Type, "Type of authorization challenge to process. (default: None)");
             syntax.DefineOptionList("v|value", ref options.Values, $"One or more names for authorization.");
