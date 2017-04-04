@@ -244,3 +244,5 @@ ModelManifest.xml
 
 _test/
 build/
+.certes/
+data.json
