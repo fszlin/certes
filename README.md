@@ -15,19 +15,22 @@ certificates using .NET or command line, and it is **free**.
 
 # Get Certified in 5 Minutes
 
-Download [certes.ps1](https://raw.githubusercontent.com/fszlin/certes/master/scripts/certes.ps1)
+Install [.NET Core](https://www.microsoft.com/net/core)
+
+Download the [latest release](https://github.com/fszlin/certes/releases), 
+   and extract the files
 
 Run these commands to start the authorization process
 
 ```Bash
     # Create new registration on LE, and accept terms of services
-    ./certes.ps1 register --email your_email@my_domain.com --agree-tos
+    certes register --email your_email@my_domain.com --agree-tos
 
     # Initialize authorization for host name(s)
-    ./certes.ps1 authz --v my_domain.com #--v www.my_domain.com --v my_domain2.com
+    certes authz --v my_domain.com #--v www.my_domain.com --v my_domain2.com
 
     # Show the http-01 key authorization for specified host name(s)
-    ./certes.ps1 authz --key-authz http-01 --v my_domain.com #--v www.my_domain.com --v my_domain2.com
+    certes authz --key-authz http-01 --v my_domain.com #--v www.my_domain.com --v my_domain2.com
 ```
 
 Make changes to your site so that it serves the **key authorization string** 
@@ -60,25 +63,25 @@ Continue the authorization process and generate the certificate
 
 ```Bash
     # Complete the http-01 challenge
-    ./certes.ps1 authz --complete-authz http-01 --v my_domain.com #--v www.my_domain.com --v my_domain2.com
+    certes authz --complete-authz http-01 --v my_domain.com #--v www.my_domain.com --v my_domain2.com
 
     # Check the challenge status, wait until it becomes "valid"
-    ./certes.ps1 authz --refresh http-01 --v my_domain.com #--v www.my_domain.com --v my_domain2.com
+    certes authz --refresh http-01 --v my_domain.com #--v www.my_domain.com --v my_domain2.com
 
     # Create a certificate with the distinguished name, and additional SAN names
-    ./certes.ps1 cert --name mycert --distinguished-name "CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN=my_domain.com" #--v www.my_domain.com --v my_domain2.com
+    certes cert --name mycert --distinguished-name "CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN=my_domain.com" #--v www.my_domain.com --v my_domain2.com
 
     # Export the certificate in DER
-    ./certes.ps1 cert --name mycert --export-cer ./mycert.cer
+    certes cert --name mycert --export-cer ./mycert.cer
 
     # Export the certificate's private key in PEM
-    ./certes.ps1 cert --name mycert --export-key ./mycert.key
+    certes cert --name mycert --export-key ./mycert.key
 
     # Export the certificate with private key in PFX
-    ./certes.ps1 cert --name mycert --export-pfx ./mycert.pfx --password abcd1234
+    certes cert --name mycert --export-pfx ./mycert.pfx --password abcd1234
 
     # Revoke the certificate
-    ./certes.ps1 cert --name mycert --revoke
+    certes cert --name mycert --revoke
 ```
 
 Install the certificate on your host server.
