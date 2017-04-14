@@ -49,7 +49,7 @@ build_script:
 
 #test: off
 test_script:
-  - ps: ->
+  - ps: >-
     $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
     & $openCover -register:user -target:"dotnet.exe" -targetargs:"test ./test/Certes.Tests/Certes.Tests.csproj -- -noshadow -appveyor" -oldstyle -output:"./build/coverage.xml" -filter:"+[Certes]* +[Certes.Cli]*" -hideskipped:All
 
