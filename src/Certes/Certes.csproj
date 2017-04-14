@@ -20,6 +20,11 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Certes.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(PdbFull)' == 'True'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Resources\Certificates\dst-root-ca-x3.cer" />
     <None Remove="Resources\Certificates\fake-le-intermediate-x1.cer" />
