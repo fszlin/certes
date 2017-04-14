@@ -49,8 +49,10 @@ build_script:
 
 #test: off
 test_script:
-  - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
-  - ps: & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:test ./test/Certes.Tests/Certes.Tests.csproj -- -noshadow -appveyor" "-oldstyle" "-output:./build/coverage.xml" "-filter:+[Certes]* +[Certes.Cli]*" "-hideskipped:All"
+  - ps: >-
+      $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
+  - ps: >-
+      & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:test ./test/Certes.Tests/Certes.Tests.csproj -- -noshadow -appveyor" "-oldstyle" "-output:./build/coverage.xml" "-filter:+[Certes]* +[Certes.Cli]*" "-hideskipped:All"
 
 after_test:
   - ps: New-Item build -Type directory -Force | Out-Null
