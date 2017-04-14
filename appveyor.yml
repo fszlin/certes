@@ -49,7 +49,7 @@ build_script:
 
 #test: off
 before_test:
-  - msbuild -t:rebuild -p:PdfFull=True
+  - msbuild -t:rebuild -p:DebugType=full;DebugSymbols=True
 
 test_script:
   - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
