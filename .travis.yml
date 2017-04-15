@@ -4,26 +4,27 @@ dotnet: 1.0.0
 sudo: required
 dist: trusty
 os:
-- linux
+  - linux
 addons:
   apt:
     packages:
-    - gettext
-    - libcurl4-openssl-dev
-    - libicu-dev
-    - libssl-dev
-    - libunwind8
-    - zlib1g
+      - gettext
+      - libcurl4-openssl-dev
+      - libicu-dev
+      - libssl-dev
+      - libunwind8
+      - zlib1g
 env:
   matrix:
-  - CLI_VERSION=Latest
+    - CLI_VERSION=Latest
   global:
-  - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  - DOTNET_CLI_TELEMETRY_OPTOUT: 0
+    - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    - DOTNET_CLI_TELEMETRY_OPTOUT: 0
 branches:
   only:
-  - master
-  - dev
+    - master
+    - dev
+    - bld
 script:
-- dotnet restore
-- dotnet test ./test/Certes.Tests/Certes.Tests.csproj
+  - dotnet restore
+  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj
