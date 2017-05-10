@@ -59,7 +59,7 @@ Make changes to your site so that it serves the **key authorization string**
         });
 ```
 
-  * For more details, see [section 7.5.1 of the ACME spec](https://tools.ietf.org/html/draft-ietf-acme-acme-06#section-7.5.1)
+  * For more details, see [section 8 of the ACME spec](https://tools.ietf.org/html/draft-ietf-acme-acme-06#section-8)
 
 Continue the authorization process and generate the certificate
 
