@@ -17,7 +17,7 @@ namespace Certes.Pkcs
     public abstract class CertificationRequestBuilderBase : ICertificationRequestBuilder
     {
         private string commonName;
-        private List<Tuple<DerObjectIdentifier, string>> attributes = new List<Tuple<DerObjectIdentifier, string>>();
+        private readonly List<(DerObjectIdentifier Id, string Value)> attributes = new List<(DerObjectIdentifier, string)>();
 
         /// <summary>
         /// Gets the algorithm.
@@ -65,7 +65,7 @@ namespace Certes.Pkcs
             {
                 var id = (DerObjectIdentifier)oidList[i];
                 var value = valueList[i]?.ToString();
-                attributes.Add(Tuple.Create(id, value));
+                attributes.Add((id, value));
 
                 if (id == X509Name.CN)
                 {
@@ -87,7 +87,7 @@ namespace Certes.Pkcs
             if (X509Name.DefaultLookup.Contains(lowered))
             {
                 id = (DerObjectIdentifier)X509Name.DefaultLookup[lowered];
-                this.attributes.Add(Tuple.Create(id, value));
+                this.attributes.Add((id, value));
 
                 if (id == X509Name.CN)
                 {
@@ -125,7 +125,7 @@ namespace Certes.Pkcs
 
         private Pkcs10CertificationRequest GeneratePkcs10()
         {
-            var x509 = new X509Name(attributes.Select(p => p.Item1).ToArray(), attributes.Select(p => p.Item2).ToArray());
+            var x509 = new X509Name(attributes.Select(p => p.Id).ToArray(), attributes.Select(p => p.Value).ToArray());
 
             if (this.SubjectAlternativeNames.Count == 0)
             {
