@@ -99,15 +99,15 @@ deploy:
         - dev
         - bld
 
-  - provider: NuGet
-    #server: http://www.nuget.org/api/v2/package                  # remove to push to NuGet.org
-    api_key:
-      secure: enjdo7AiXKaGhj8NC2k3wjQ9mGlU1jxABzG6tuphpM7dNaazlrSlvwR2H1kC4kr+
-    skip_symbols: true
-    symbol_server:           # remove to push symbols to SymbolSource.org
-    artifact: nupkg
-    on:
-      branch: master
+#  - provider: NuGet
+#    #server: http://www.nuget.org/api/v2/package                  # remove to push to NuGet.org
+#    api_key:
+#      secure: enjdo7AiXKaGhj8NC2k3wjQ9mGlU1jxABzG6tuphpM7dNaazlrSlvwR2H1kC4kr+
+#    skip_symbols: true
+#    symbol_server:           # remove to push symbols to SymbolSource.org
+#    artifact: nupkg
+#    on:
+#      branch: master
 
   - provider: NuGet
     server: https://www.myget.org/F/dymetis/api/v2/package
