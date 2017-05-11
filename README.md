@@ -3,9 +3,9 @@
 [![NuGet](https://buildstats.info/nuget/certes)](https://www.nuget.org/packages/certes/)
 [![MyGet](https://buildstats.info/myget/dymetis/certes?includePreReleases=true)](https://www.myget.org/feed/dymetis/package/nuget/certes)
 
-[![Travis](http://certes-ci.azurewebsites.net/md?r=https%3A%2F%2Ftravis-ci.org%2Ffszlin%2Fcertes.svg%3Fbranch%3D%7Bmaster%7Cdev%7Cdev-azure%7D)](https://travis-ci.org/fszlin/certes)
-[![AppVeyor](http://certes-ci.azurewebsites.net/md?r=https%3A%2F%2Fci.appveyor.com%2Fapi%2Fprojects%2Fstatus%2F4wwiivqs8rl0l63q%2Fbranch%2F%7Bmaster%7Cdev%7Cdev-azure%7D%3Fsvg%3Dtrue)](http://certes-ci.azurewebsites.net/md?r=https%3A%2F%2Fci.appveyor.com%2Fproject%2Ffszlin%2Fcertes%2Fbranch%2F%7Bmaster%7Cdev%7Cdev-azure%7D)
-[![codecov](http://certes-ci.azurewebsites.net/md?r=https%3A%2F%2Fcodecov.io%2Fgh%2Ffszlin%2Fcertes%2Fbranch%2F%7Bmaster%7Cdev%7Cdev-azure%7D%2Fgraph%2Fbadge.svg)](http://certes-ci.azurewebsites.net/md?r=https%3A%2F%2Fcodecov.io%2Fgh%2Ffszlin%2Fcertes%2Fbranch%2F%7Bmaster%7Cdev%7Cdev-azure%7D%2F)
+[![Travis](https://travis-ci.org/fszlin/certes.svg?branch=dev)](https://travis-ci.org/fszlin/certes)
+[![AppVeyor](https://ci.appveyor.com/api/projects/status/4wwiivqs8rl0l63q/branch/dev?svg=true)](https://ci.appveyor.com/project/fszlin/certes/branch/dev)
+[![codecov](https://codecov.io/gh/fszlin/certes/branch/dev/graph/badge.svg)](https://codecov.io/gh/fszlin/certes)
 
 Certes is a client implantation for the Automated Certificate Management
 Environment (ACME) protocol, build on .NET Core. It is aimed to provide a easy
