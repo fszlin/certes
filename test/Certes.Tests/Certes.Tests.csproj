@@ -2,7 +2,14 @@
 
   <PropertyGroup>    
     <TargetFramework>netcoreapp1.1</TargetFramework>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
