@@ -18,7 +18,8 @@ namespace Certes.Json
             var jsonSettings = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+				MissingMemberHandling = MissingMemberHandling.Ignore
             };
 
             jsonSettings.Converters.Add(new StringEnumConverter());
