@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NLog" Version="5.0.0-beta06" />
-    <PackageReference Include="System.CommandLine" Version="0.1.0-e170401-1" />
+    <PackageReference Include="NLog" Version="5.0.0-beta07" />
+    <PackageReference Include="System.CommandLine" Version="0.1.0-e170510-1" />
   </ItemGroup>
 
   <ItemGroup>
