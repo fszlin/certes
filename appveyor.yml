@@ -1,4 +1,4 @@
-version: 1.0.7.{build}
+version: 1.0.8.{build}
 build:
   verbosity: minimal
   project: Certes.sln
@@ -9,6 +9,7 @@ image: Visual Studio 2017
 skip_commits:
   files:
   - '*.md'
+  - '*.yml'
 
 environment:
   codecov_upload_token:
