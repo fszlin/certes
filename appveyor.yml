@@ -21,7 +21,7 @@ branches:
     - master
     - dev
 
-	assembly_info:
+assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
   assembly_version: '$(CERTES_ASSEMBLY_VERSION)'
