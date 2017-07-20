@@ -44,5 +44,21 @@
         /// The certificate.
         /// </summary>
         public const string Certificate = "cert";
+
+        /// <summary>
+        /// The new account.
+        /// </summary>
+        /// <remarks>
+        /// This is a new resource defined in the spec to replace <see cref="NewRegistration"/>.
+        /// </remarks>
+        public const string NewAccount = "new-account";
+
+        /// <summary>
+        /// The new order.
+        /// </summary>
+        /// <remarks>
+        /// This is a new resource defined in the spec to replace <see cref="NewCertificate"/>.
+        /// </remarks>
+        public const string NewOrder = "new-order";
     }
 }
