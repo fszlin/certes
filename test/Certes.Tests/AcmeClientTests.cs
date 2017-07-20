@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Certes.Json;
 using Xunit;
 
 namespace Certes.Tests
@@ -23,12 +24,20 @@ namespace Certes.Tests
         private const string NonceFormat = "nonce-{0}";
         private readonly Uri server = new Uri("http://example.com/dir");
         private readonly Uri tos = new Uri("http://example.com/tos");
-        private readonly Dictionary<string, Uri> dictData = new Dictionary<string, Uri>
+        private readonly Dictionary<string, Uri> legacyDictData = new Dictionary<string, Uri>
         {
             { "new-authz", new Uri("http://example.com/new-authz") },
             { "new-cert", new Uri("http://example.com/new-cert") },
             { "new-reg", new Uri("http://example.com/new-reg") },
             { "revoke-cert", new Uri("http://example.com/revoke-cert") },
+        };
+        private readonly Dictionary<string, Object> dictData = new Dictionary<string, Object>
+        {
+            { "meta", new Dictionary<string, Object> { { "terms-of-service", "http://example.com/tos.pdf" } } },
+            { "new-authz", "http://example.com/new-authz" },
+            { "new-cert", "http://example.com/new-cert" },
+            { "new-reg", "http://example.com/new-reg" },
+            { "revoke-cert", "http://example.com/revoke-cert" },
         };
 
         private int nonce = 0;
@@ -40,7 +49,7 @@ namespace Certes.Tests
             var regLocation = new Uri("http://example.com/reg/1");
             var mock = MockHttp(async req =>
             {
-                if (req.Method == HttpMethod.Post && req.RequestUri == dictData["new-reg"])
+                if (req.Method == HttpMethod.Post && req.RequestUri == new Uri(dictData["new-reg"] as String))
                 {
                     var payload = await ParsePayload<Registration>(req);
                     Assert.Equal(ResourceTypes.NewRegistration, payload.Resource);
@@ -159,7 +168,7 @@ namespace Certes.Tests
 
             Assert.Equal(signedSignatureEncoded, body.GetValue("signature").Value);
 
-            return JsonConvert.DeserializeObject<T>(payloadJson);
+            return JsonConvert.DeserializeObject<T>(payloadJson, JsonUtil.CreateSettings());
         }
 
         private Mock<HttpMessageHandler> MockHttp(Func<HttpRequestMessage, Task<HttpResponseMessage>> provider)

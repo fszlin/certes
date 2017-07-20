@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-using AcmeDirectory = System.Collections.Generic.Dictionary<string, System.Uri>;
+using AcmeDirectory = System.Collections.Generic.Dictionary<string, System.Object>;
 
 namespace Certes.Acme
 {
@@ -61,7 +61,7 @@ namespace Certes.Acme
         public async Task<Uri> GetResourceUri(string resourceType)
         {
             await FetchDirectory(false);
-            return this.directory[resourceType];
+            return new Uri(this.directory[resourceType] as String);
         }
 
         /// <summary>

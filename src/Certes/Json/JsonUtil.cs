@@ -19,7 +19,7 @@ namespace Certes.Json
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 NullValueHandling = NullValueHandling.Ignore,
-				MissingMemberHandling = MissingMemberHandling.Ignore
+                MissingMemberHandling = MissingMemberHandling.Ignore
             };
 
             jsonSettings.Converters.Add(new StringEnumConverter());
