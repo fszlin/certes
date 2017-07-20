@@ -17,7 +17,7 @@ namespace Certes.Cli
     {
         // TODO: Setup boulder for testing
         private const string Server = "https://acme-staging.api.letsencrypt.org/directory";
-        private const string Host = "cert-test.dymetis.com";
+        private const string Host = "certes-ci.azurewebsites.net";
         private const string OutputPrefix = "./_test/cli-example";
         private readonly string AccountPath = $"{OutputPrefix}/context.json";
         private string cmd;
