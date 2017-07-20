@@ -1,9 +1,11 @@
-﻿namespace Certes.Acme
+﻿using System;
+
+namespace Certes.Acme
 {
     /// <summary>
     /// Represents the identifier for ACME Authorization.
     /// </summary>
-    public class AuthorizationIdentifier
+    public class AuthorizationIdentifier : IEquatable<AuthorizationIdentifier>
     {
         /// <summary>
         /// Gets or sets the type.
@@ -42,7 +44,18 @@
         /// </returns>
         public override bool Equals(object obj)
         {
-            var other = obj as AuthorizationIdentifier;
+            return this.Equals(obj as AuthorizationIdentifier);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="AuthorizationIdentifier" />, is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="AuthorizationIdentifier" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <see cref="AuthorizationIdentifier" /> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Equals(AuthorizationIdentifier other)
+        {
             return other?.Type == this.Type && other?.Value == this.Value;
         }
     }

@@ -8,8 +8,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-using AcmeDirectory = System.Collections.Generic.Dictionary<string, System.Object>;
-
 namespace Certes.Acme
 {
     /// <summary>
@@ -61,7 +59,19 @@ namespace Certes.Acme
         public async Task<Uri> GetResourceUri(string resourceType)
         {
             await FetchDirectory(false);
-            return new Uri(this.directory[resourceType] as String);
+            var resourceUri =
+                ResourceTypes.NewRegistration == resourceType ? this.directory.NewReg :
+                ResourceTypes.NewAuthorization == resourceType ? this.directory.NewAuthz :
+                ResourceTypes.NewCertificate == resourceType ? this.directory.NewCert :
+                ResourceTypes.RevokeCertificate == resourceType ? this.directory.RevokeCert :
+                null;
+
+            if (resourceUri == null)
+            {
+                throw new Exception($"Unsupported resource type '{resourceType}'.");
+            }
+
+            return resourceUri;
         }
 
         /// <summary>

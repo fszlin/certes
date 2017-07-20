@@ -1,18 +1,16 @@
 ﻿using Certes.Acme;
+using Certes.Json;
 using Certes.Jws;
-using Certes.Pkcs;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Certes.Json;
 using Xunit;
 
 namespace Certes.Tests
@@ -24,20 +22,17 @@ namespace Certes.Tests
         private const string NonceFormat = "nonce-{0}";
         private readonly Uri server = new Uri("http://example.com/dir");
         private readonly Uri tos = new Uri("http://example.com/tos");
-        private readonly Dictionary<string, Uri> legacyDictData = new Dictionary<string, Uri>
+
+        private readonly AcmeDirectory acmeDict = new AcmeDirectory
         {
-            { "new-authz", new Uri("http://example.com/new-authz") },
-            { "new-cert", new Uri("http://example.com/new-cert") },
-            { "new-reg", new Uri("http://example.com/new-reg") },
-            { "revoke-cert", new Uri("http://example.com/revoke-cert") },
-        };
-        private readonly Dictionary<string, Object> dictData = new Dictionary<string, Object>
-        {
-            { "meta", new Dictionary<string, Object> { { "terms-of-service", "http://example.com/tos.pdf" } } },
-            { "new-authz", "http://example.com/new-authz" },
-            { "new-cert", "http://example.com/new-cert" },
-            { "new-reg", "http://example.com/new-reg" },
-            { "revoke-cert", "http://example.com/revoke-cert" },
+            Meta = new AcmeDirectory.AcmeDirectoryMeta
+            {
+                TermsOfService = new Uri("http://example.com/tos.pdf")
+            },
+            NewAuthz = new Uri("http://example.com/new-authz"),
+            NewCert = new Uri("http://example.com/new-cert"),
+            NewReg = new Uri("http://example.com/new-reg"),
+            RevokeCert = new Uri("http://example.com/revoke-cert")
         };
 
         private int nonce = 0;
@@ -49,7 +44,7 @@ namespace Certes.Tests
             var regLocation = new Uri("http://example.com/reg/1");
             var mock = MockHttp(async req =>
             {
-                if (req.Method == HttpMethod.Post && req.RequestUri == new Uri(dictData["new-reg"] as String))
+                if (req.Method == HttpMethod.Post && req.RequestUri == acmeDict.NewReg)
                 {
                     var payload = await ParsePayload<Registration>(req);
                     Assert.Equal(ResourceTypes.NewRegistration, payload.Resource);
@@ -183,7 +178,7 @@ namespace Certes.Tests
                     {
                         var resp = new HttpResponseMessage();
                         resp.StatusCode = HttpStatusCode.OK;
-                        resp.Content = new StringContent(JsonConvert.SerializeObject(dictData), Encoding.UTF8, "application/json");
+                        resp.Content = new StringContent(JsonConvert.SerializeObject(acmeDict), Encoding.UTF8, "application/json");
 
                         resp.Headers.Add("Replay-Nonce", string.Format(NonceFormat, ++this.nonce));
                         return resp;
