@@ -2,6 +2,9 @@
 using Certes.Jws;
 using Certes.Pkcs;
 using System;
+using System.Linq.Expressions;
+using System.Reflection;
+using Xunit;
 
 namespace Certes
 {
@@ -24,6 +27,20 @@ namespace Certes
         internal static AccountKey Loadkey()
         {
             return new AccountKey(new KeyInfo { PrivateKeyInfo = Convert.FromBase64String(PrivateKey) });
+        }
+
+        internal static void VerifyGetterSetter<TSource, TProperty>(
+            this TSource source,
+            Expression<Func<TSource, TProperty>> propertyLambda,
+            TProperty value)
+        {
+            var member = propertyLambda.Body as MemberExpression;
+            var propInfo = member.Member as PropertyInfo;
+
+            propInfo.SetValue(source, value);
+            var actualValue = propInfo.GetValue(source);
+
+            Assert.Equal<TProperty>((TProperty)value, (TProperty)actualValue);
         }
     }
 }
