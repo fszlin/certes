@@ -23,17 +23,7 @@ namespace Certes.Tests
         private readonly Uri server = new Uri("http://example.com/dir");
         private readonly Uri tos = new Uri("http://example.com/tos");
 
-        private readonly AcmeDirectory acmeDict = new AcmeDirectory
-        {
-            Meta = new AcmeDirectory.AcmeDirectoryMeta
-            {
-                TermsOfService = new Uri("http://example.com/tos.pdf")
-            },
-            NewAuthz = new Uri("http://example.com/new-authz"),
-            NewCert = new Uri("http://example.com/new-cert"),
-            NewReg = new Uri("http://example.com/new-reg"),
-            RevokeCert = new Uri("http://example.com/revoke-cert")
-        };
+        private readonly AcmeDirectory acmeDir = Helper.AcmeDir;
 
         private int nonce = 0;
         private AccountKey accountKey = Helper.Loadkey();
@@ -44,7 +34,7 @@ namespace Certes.Tests
             var regLocation = new Uri("http://example.com/reg/1");
             var mock = MockHttp(async req =>
             {
-                if (req.Method == HttpMethod.Post && req.RequestUri == acmeDict.NewReg)
+                if (req.Method == HttpMethod.Post && req.RequestUri == acmeDir.NewReg)
                 {
                     var payload = await ParsePayload<Registration>(req);
                     Assert.Equal(ResourceTypes.NewRegistration, payload.Resource);
@@ -178,7 +168,7 @@ namespace Certes.Tests
                     {
                         var resp = new HttpResponseMessage();
                         resp.StatusCode = HttpStatusCode.OK;
-                        resp.Content = new StringContent(JsonConvert.SerializeObject(acmeDict), Encoding.UTF8, "application/json");
+                        resp.Content = new StringContent(JsonConvert.SerializeObject(acmeDir), Encoding.UTF8, "application/json");
 
                         resp.Headers.Add("Replay-Nonce", string.Format(NonceFormat, ++this.nonce));
                         return resp;
