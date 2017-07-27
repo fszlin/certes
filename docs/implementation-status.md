@@ -33,5 +33,5 @@ This document details the ACME resources and flows implemented by *Certes*.
 [spec-02-authz]: https://tools.ietf.org/html/draft-ietf-acme-acme-02#section-6.4
 [spec-02-cert]: https://tools.ietf.org/html/draft-ietf-acme-acme-02#section-6.5
 [spec-02-cert-revoke]: https://tools.ietf.org/html/draft-ietf-acme-acme-02#section-6.6
-[spec-05-key-change]: https://tools.ietf.org/html/draft-ietf-acme-acme-02#section-6.3.3
+[spec-05-key-change]: https://tools.ietf.org/html/draft-ietf-acme-acme-05#section-6.3.3
 [spec-07]: https://tools.ietf.org/html/draft-ietf-acme-acme-07
