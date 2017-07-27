@@ -23,10 +23,10 @@ This document details the ACME resources and flows implemented by *Certes*.
 |               | check status              | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 |               | deactivation              | :heavy_check_mark: | | |
 |               | delete                    | :heavy_multiplication_x: | :heavy_check_mark: | |
-| Order         | new                       | :heavy_check_mark: | | |[spec-02-cert-revoke] |
+| Order         | new                       | :heavy_check_mark: | | | |
 | Certificate   | new                       | :heavy_multiplication_x: | :heavy_check_mark: [draft-02][spec-02-cert] | :heavy_check_mark: [draft-02][spec-02-cert] |
-|               | download                  | :heavy_check_mark: | :heavy_check_mark: [draft-02][spec-02-cert-revoke] | :heavy_check_mark: [draft-02][spec-02-cert] |
-|               | revoke                    | :heavy_multiplication_x: | :heavy_check_mark: [draft-02][spec-02-cert-revoke] | :heavy_check_mark: [draft-02][spec-02-cert] |
+|               | download                  | :heavy_check_mark: | :heavy_check_mark: [draft-02][spec-02-cert-cert | :heavy_check_mark: [draft-02][spec-02-cert] |
+|               | revoke                    | :heavy_multiplication_x: | :heavy_check_mark: [draft-02][spec-02-cert-revoke] | :heavy_check_mark: [draft-02][spec-02-revoke] |
 
 
 [spec-02-reg]: https://tools.ietf.org/html/draft-ietf-acme-acme-02#section-6.3
