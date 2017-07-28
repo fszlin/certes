@@ -1,68 +1,14 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 
 namespace Certes.Acme
 {
     /// <summary>
     /// Represents the ACME directory.
     /// </summary>
-    public class AcmeDirectory
+    [Obsolete("Use Resource.Directory instead.")]
+    public class AcmeDirectory : Resource.Directory
     {
-        /// <summary>
-        /// Gets or sets the new nonce endpoint.
-        /// </summary>
-        /// <value>
-        /// The new nonce endpoint.
-        /// </value>
-        [JsonProperty("new-nonce")]
-        public Uri NewNonce { get; set; }
-
-        /// <summary>
-        /// Gets or sets the new certificate endpoint.
-        /// </summary>
-        /// <value>
-        /// The new certificate endpoint.
-        /// </value>
-        [JsonProperty("new-cert")]
-        public Uri NewCert { get; set; }
-
-        /// <summary>
-        /// Gets or sets the new authorization endpoint.
-        /// </summary>
-        /// <value>
-        /// The new authorization endpoint.
-        /// </value>
-        [JsonProperty("new-authz")]
-        public Uri NewAuthz { get; set; }
-
-        /// <summary>
-        /// Gets or sets the revoke cert.
-        /// </summary>
-        /// <value>
-        /// The revoke cert.
-        /// </value>
-        [JsonProperty("revoke-cert")]
-        public Uri RevokeCert { get; set; }
-
-        /// <summary>
-        /// Gets or sets the key change endpoint.
-        /// </summary>
-        /// <value>
-        /// The key change endpoint.
-        /// </value>
-        [JsonProperty("key-change")]
-        public Uri KeyChange { get; set; }
-
-        /// <summary>
-        /// Gets or sets the new registration endpoint.
-        /// </summary>
-        /// <value>
-        /// The new registration endpoint.
-        /// </value>
-        [JsonProperty("new-reg")]
-        public Uri NewReg { get; set; }
-
         /// <summary>
         /// Gets or sets the metadata.
         /// </summary>
@@ -70,39 +16,44 @@ namespace Certes.Acme
         /// The metadata.
         /// </value>
         [JsonProperty("meta")]
-        public AcmeDirectoryMeta Meta { get; set; }
+        [Obsolete("Use Resource.DirectoryMeta instead.")]
+        public new AcmeDirectoryMeta Meta
+        {
+            get
+            {
+                if (base.Meta == null)
+                {
+                    return null;
+                }
+
+                return new AcmeDirectoryMeta
+                {
+                    CaaIdentities = base.Meta.CaaIdentities,
+                    TermsOfService = base.Meta.TermsOfService,
+                    Website = base.Meta.Website
+                };
+            }
+            set
+            {
+                if (value == null)
+                {
+                    base.Meta = null;
+                }
+                else
+                {
+                    var meta = base.Meta ?? (base.Meta = new Resource.DirectoryMeta());
+                    meta.Website = value.Website;
+                    meta.CaaIdentities = value.CaaIdentities;
+                    meta.TermsOfService = value.TermsOfService;
+                }
+            }
+        }
 
         /// <summary>
         /// Represents the metadata for ACME directory.
         /// </summary>
-        public class AcmeDirectoryMeta
+        public class AcmeDirectoryMeta : Resource.DirectoryMeta
         {
-            /// <summary>
-            /// Gets or sets the terms of service.
-            /// </summary>
-            /// <value>
-            /// The terms of service.
-            /// </value>
-            [JsonProperty("terms-of-service")]
-            public Uri TermsOfService { get; set; }
-
-            /// <summary>
-            /// Gets or sets the website.
-            /// </summary>
-            /// <value>
-            /// The website.
-            /// </value>
-            [JsonProperty("website")]
-            public Uri Website { get; set; }
-
-            /// <summary>
-            /// Gets or sets the caa identities.
-            /// </summary>
-            /// <value>
-            /// The caa identities.
-            /// </value>
-            [JsonProperty("caa-identities")]
-            public IList<string> CaaIdentities { get; set; }
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Certes.Acme
         private readonly Uri serverUri;
 
         private string nonce;
-        private AcmeDirectory directory;
+        private Resource.Directory directory;
 
         private readonly JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
 
@@ -154,7 +154,7 @@ namespace Certes.Acme
             if (this.directory == null || this.nonce == null || force)
             {
                 var uri = serverUri;
-                var resp = await this.Get<AcmeDirectory>(uri);
+                var resp = await this.Get<Resource.Directory>(uri);
                 this.directory = resp.Data;
             }
         }

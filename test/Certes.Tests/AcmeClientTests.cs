@@ -1,4 +1,5 @@
 ﻿using Certes.Acme;
+using Certes.Acme.Resource;
 using Certes.Json;
 using Certes.Jws;
 using Moq;
@@ -23,7 +24,7 @@ namespace Certes.Tests
         private readonly Uri server = new Uri("http://example.com/dir");
         private readonly Uri tos = new Uri("http://example.com/tos");
 
-        private readonly AcmeDirectory acmeDir = Helper.AcmeDir;
+        private readonly Directory acmeDir = Helper.AcmeDir;
 
         private int nonce = 0;
         private AccountKey accountKey = Helper.Loadkey();
