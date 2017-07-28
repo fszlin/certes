@@ -56,20 +56,23 @@ namespace Certes.Tests
                 return null;
             });
 
-            var handler = new AcmeHttpHandler(server, mock.Object);
-            using (var client = new AcmeClient(handler))
+            using (var http = new HttpClient(mock.Object))
+            using (var handler = new AcmeHttpHandler(server, http))
             {
-                client.Use(accountKey.Export());
+                using (var client = new AcmeClient(handler))
+                {
+                    client.Use(accountKey.Export());
 
-                var account = await client.NewRegistraton(email);
+                    var account = await client.NewRegistraton(email);
 
-                Assert.Equal(ResourceTypes.Registration, account.Data.Resource);
-                Assert.Null(account.Data.Agreement);
-                Assert.Equal(regLocation, account.Location);
-                Assert.Equal(tos, account.GetTermsOfServiceUri());
+                    Assert.Equal(ResourceTypes.Registration, account.Data.Resource);
+                    Assert.Null(account.Data.Agreement);
+                    Assert.Equal(regLocation, account.Location);
+                    Assert.Equal(tos, account.GetTermsOfServiceUri());
+                }
+
+                mock.Protected().Verify("Dispose", Times.Never(), true);
             }
-
-            mock.Protected().Verify("Dispose", Times.Never(), true);
         }
 
         [Fact]
@@ -101,29 +104,32 @@ namespace Certes.Tests
                 return null;
             });
 
-            var handler = new AcmeHttpHandler(server, mock.Object);
-            using (var client = new AcmeClient(handler))
+            using (var http = new HttpClient(mock.Object))
+            using (var handler = new AcmeHttpHandler(server, http))
             {
-                client.Use(accountKey.Export());
-
-                var account = new AcmeAccount
+                using (var client = new AcmeClient(handler))
                 {
-                    Location = regLocation,
-                    Data = new Registration
+                    client.Use(accountKey.Export());
+
+                    var account = new AcmeAccount
                     {
-                        Resource = ResourceTypes.Registration,
-                        Contact = new[] { $"another-{email}" },
-                        Agreement = tos
-                    }
-                };
+                        Location = regLocation,
+                        Data = new Registration
+                        {
+                            Resource = ResourceTypes.Registration,
+                            Contact = new[] { $"another-{email}" },
+                            Agreement = tos
+                        }
+                    };
 
-                var result = await client.UpdateRegistration(account);
-                Assert.Equal(ResourceTypes.Registration, result.Data.Resource);
-                Assert.Equal(tos, account.Data.Agreement);
-                Assert.Equal(regLocation, account.Location);
+                    var result = await client.UpdateRegistration(account);
+                    Assert.Equal(ResourceTypes.Registration, result.Data.Resource);
+                    Assert.Equal(tos, account.Data.Agreement);
+                    Assert.Equal(regLocation, account.Location);
+                }
+
+                mock.Protected().Verify("Dispose", Times.Never(), true);
             }
-
-            mock.Protected().Verify("Dispose", Times.Never(), true);
         }
 
         private async Task<T> ParsePayload<T>(HttpRequestMessage message)

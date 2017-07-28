@@ -18,8 +18,10 @@ namespace Certes.Acme
     {
         private const string MimeJson = "application/json";
 
+        private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(() => new HttpClient());
         private readonly HttpClient http;
         private readonly Uri serverUri;
+        private readonly bool shouldDisposeHttp;
 
         private string nonce;
         private Resource.Directory directory;
@@ -44,11 +46,33 @@ namespace Certes.Acme
         /// Initializes a new instance of the <see cref="AcmeHttpHandler"/> class.
         /// </summary>
         /// <param name="serverUri">The server URI.</param>
-        /// <param name="httpMessageHandler">The HTTP message handler.</param>
-        public AcmeHttpHandler(Uri serverUri, HttpMessageHandler httpMessageHandler = null)
+        public AcmeHttpHandler(Uri serverUri)
+            : this(serverUri, SharedHttp.Value)
         {
-            this.http = httpMessageHandler == null ? new HttpClient() : new HttpClient(httpMessageHandler);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AcmeHttpHandler"/> class.
+        /// </summary>
+        /// <param name="serverUri">The server URI.</param>
+        /// <param name="httpMessageHandler">The HTTP message handler.</param>
+        [Obsolete("Use AcmeHttpHandler(Uri, HttpClient) instead.")]
+        public AcmeHttpHandler(Uri serverUri, HttpMessageHandler httpMessageHandler = null)
+            : this(serverUri, httpMessageHandler == null ? SharedHttp.Value : new HttpClient(httpMessageHandler))
+        {
+            this.shouldDisposeHttp = httpMessageHandler != null;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AcmeHttpHandler"/> class.
+        /// </summary>
+        /// <param name="serverUri">The server URI.</param>
+        /// <param name="httpClient">The HTTP client.</param>
+        public AcmeHttpHandler(Uri serverUri, HttpClient httpClient)
+        {
+            this.http = httpClient ?? SharedHttp.Value;
             this.serverUri = serverUri;
+            this.shouldDisposeHttp = false;
         }
 
         /// <summary>
@@ -263,7 +287,7 @@ namespace Certes.Acme
         {
             if (!disposedValue)
             {
-                if (disposing)
+                if (disposing && shouldDisposeHttp)
                 {
                     http?.Dispose();
                 }

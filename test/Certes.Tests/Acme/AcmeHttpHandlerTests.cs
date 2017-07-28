@@ -22,7 +22,8 @@ namespace Certes.Tests.Acme
         [Fact]
         public async Task CanRetrieveResourceUriFromDirectory()
         {
-            using (var handler = new AcmeHttpHandler(server, CreateHttpMock().Object))
+            using (var http = new HttpClient(CreateHttpMock().Object))
+            using (var handler = new AcmeHttpHandler(server, http))
             {
                 Assert.Equal(Helper.AcmeDir.NewReg, await handler.GetResourceUri(ResourceTypes.NewRegistration));
                 Assert.Equal(Helper.AcmeDir.NewAuthz, await handler.GetResourceUri(ResourceTypes.NewAuthorization));
@@ -34,10 +35,29 @@ namespace Certes.Tests.Acme
         [Fact]
         public async Task ShouldFaildWithInvalidResourceType()
         {
-            using (var handler = new AcmeHttpHandler(server, CreateHttpMock().Object))
+            using (var http = new HttpClient(CreateHttpMock().Object))
+            using (var handler = new AcmeHttpHandler(server, http))
             {
                 await Assert.ThrowsAsync<Exception>(async () => await handler.GetResourceUri("invalid-type"));
             }
+        }
+
+        [Fact]
+        public void CanCreateInstance()
+        {
+            using (var handler = new AcmeHttpHandler(WellKnownServers.LetsEncryptStaging)) { }
+
+            using (var http = new HttpClient())
+            {
+                using (var handler = new AcmeHttpHandler(WellKnownServers.LetsEncryptStaging, http)) { }
+            }
+
+            using (var handler = new AcmeHttpHandler(WellKnownServers.LetsEncryptStaging, (HttpClient)null)) { }
+
+#pragma warning disable 0618
+            using (var handler = new AcmeHttpHandler(WellKnownServers.LetsEncryptStaging, (HttpMessageHandler)null)) { }
+            using (var handler = new AcmeHttpHandler(WellKnownServers.LetsEncryptStaging, CreateHttpMock().Object)) { }
+#pragma warning restore 0618
         }
 
         private Mock<HttpMessageHandler> CreateHttpMock()

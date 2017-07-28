@@ -2,7 +2,7 @@
 using System;
 using Xunit;
 
-namespace Certes.Tests
+namespace Certes.Tests.Acme
 {
     public class AcmeDirectoryTests
     {
