@@ -196,7 +196,7 @@ namespace Certes.Acme
         private async Task<AcmeRespone<T>> ReadResponse<T>(HttpResponseMessage response, string resourceType = null)
         {
             var data = new AcmeRespone<T>();
-            if (IsJsonMedia(response.Content.Headers.ContentType.MediaType))
+            if (IsJsonMedia(response.Content?.Headers.ContentType.MediaType))
             {
                 var json = await response.Content.ReadAsStringAsync();
                 data.Json = json;
@@ -214,7 +214,7 @@ namespace Certes.Acme
                     data.Error = JsonConvert.DeserializeObject<AcmeError>(json, jsonSettings);
                 }
             }
-            else if (response.Content.Headers.ContentLength > 0)
+            else if (response.Content?.Headers.ContentLength > 0)
             {
                 data.Raw = await response.Content.ReadAsByteArrayAsync();
             }
@@ -262,7 +262,7 @@ namespace Certes.Acme
                     .ToArray();
             }
 
-            data.ContentType = response.Content.Headers.ContentType.MediaType;
+            data.ContentType = response.Content?.Headers.ContentType.MediaType;
         }
 
         private static bool IsJsonMedia(string mediaType)

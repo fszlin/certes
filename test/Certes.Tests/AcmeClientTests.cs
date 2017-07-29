@@ -76,6 +76,59 @@ namespace Certes.Tests
         }
 
         [Fact]
+        public async Task CanDeleteRegistration()
+        {
+            var regLocation = new Uri("http://example.com/reg/1");
+            var mock = MockHttp(async req =>
+            {
+                if (req.Method == HttpMethod.Post && req.RequestUri == regLocation)
+                {
+                    var payload = await ParsePayload<Registration>(req);
+                    Assert.Equal(ResourceTypes.Registration, payload.Resource);
+                    Assert.Equal(true, payload.Delete);
+
+                    var resp = CreateResponse(null, HttpStatusCode.OK, regLocation);
+                    resp.Headers.Add("Link", $"<{tos}>; rel=\"terms-of-service\"");
+                    return resp;
+                }
+
+                return null;
+            });
+
+            using (var http = new HttpClient(mock.Object))
+            using (var handler = new AcmeHttpHandler(server, http))
+            {
+                using (var client = new AcmeClient(handler))
+                {
+                    var account = new AcmeAccount
+                    {
+                        Location = regLocation,
+                        Data = new Registration
+                        {
+                            Resource = ResourceTypes.Registration,
+                            Contact = new[] { $"another-{email}" },
+                            Agreement = tos
+                        }
+                    };
+
+                    try
+                    {
+                        await client.DeleteRegistration(account);
+                        Assert.False(true);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
+
+                    client.Use(accountKey.Export());
+                    await client.DeleteRegistration(account);
+                }
+
+                mock.Protected().Verify("Dispose", Times.Never(), true);
+            }
+        }
+
+        [Fact]
         public async Task CanUpdateRegistration()
         {
             var regLocation = new Uri("http://example.com/reg/1");
@@ -196,7 +249,11 @@ namespace Certes.Tests
         {
             var resp = new HttpResponseMessage();
             resp.Headers.Location = location;
-            resp.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, JsonContentType);
+            if (payload != null)
+            {
+                resp.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, JsonContentType);
+            }
+
             return resp;
         }
     }

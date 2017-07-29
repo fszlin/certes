@@ -121,6 +121,25 @@ namespace Certes
         }
 
         /// <summary>
+        /// Deletes the registration.
+        /// </summary>
+        /// <returns>The awaitable.</returns>
+        public async Task DeleteRegistration(AcmeAccount account)
+        {
+            if (this.key == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            await this.handler.Post(
+                account.Location,
+                new Registration
+                {
+                    Delete = true
+                }, key);
+        }
+
+        /// <summary>
         /// Create a new authorization.
         /// </summary>
         /// <param name="identifier">The identifier to be authorized.</param>

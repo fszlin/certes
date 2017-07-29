@@ -89,6 +89,12 @@ namespace Certes
         Task<AcmeAccount> UpdateRegistration(AcmeAccount account);
 
         /// <summary>
+        /// Deletes the registration.
+        /// </summary>
+        /// <returns>The awaitable.</returns>
+        Task DeleteRegistration(AcmeAccount account);
+
+        /// <summary>
         /// Uses the specified account key data.
         /// </summary>
         /// <param name="keyData">The account key data.</param>

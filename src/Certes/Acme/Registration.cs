@@ -50,5 +50,13 @@ namespace Certes.Acme
         /// </value>
         /// <remarks>Not being returned from Let's Encrypt servers.</remarks>
         public Uri Certificates { get; set; }
+
+        /// <summary>
+        /// Gets or sets a flag indicating whether to delete the registration.
+        /// </summary>
+        /// <value>
+        /// A flag indicating whether to delete the registration.
+        /// </value>
+        public bool? Delete { get; set; }
     }
 }
