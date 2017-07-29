@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Certes.Acme
@@ -124,7 +125,7 @@ namespace Certes.Acme
         {
             await FetchDirectory(false);
 
-            var content = GenerateRequestContent(entity, keyPair);
+            var content = await GenerateRequestContent(entity, keyPair);
             var resp = await http.PostAsync(uri, content);
             var result = await ReadResponse<T>(resp, entity.Resource);
             return result;
@@ -175,7 +176,7 @@ namespace Certes.Acme
 
         private async Task FetchDirectory(bool force)
         {
-            if (this.directory == null || this.nonce == null || force)
+            if (this.directory == null || force)
             {
                 var uri = serverUri;
                 var resp = await this.Get<Resource.Directory>(uri);
@@ -183,9 +184,10 @@ namespace Certes.Acme
             }
         }
 
-        private StringContent GenerateRequestContent(EntityBase entity, IAccountKey keyPair)
+        private async ValueTask<StringContent> GenerateRequestContent(EntityBase entity, IAccountKey keyPair)
         {
-            var body = Encode(entity, keyPair, this.nonce);
+            var nonce = await this.GetNonce();
+            var body = Encode(entity, keyPair, nonce);
             var bodyJson = JsonConvert.SerializeObject(body, Formatting.None, jsonSettings);
 
             return new StringContent(bodyJson, Encoding.ASCII, MimeJson);
@@ -274,6 +276,17 @@ namespace Certes.Acme
             }
 
             return false;
+        }
+
+        private async ValueTask<string> GetNonce()
+        {
+            var nonce = Interlocked.Exchange(ref this.nonce, null);
+            while (nonce == null)
+            {
+                await this.FetchDirectory(true);
+            }
+
+            return nonce;
         }
 
         #region IDisposable Support
