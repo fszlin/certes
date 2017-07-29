@@ -13,5 +13,5 @@ All notable changes to this project will be documented in this file.
 [Unreleased]: https://github.com/fszlin/certes/compare/v1.0.7...HEAD
 
 [i5]: https://github.com/fszlin/certes/issues/5
-[cs-directory]: blob/master/src/Certes/Acme/Resource/Directory.cs
-[cs-acme-directory]: blob/master/src/Certes/Acme/AcmeDirectory.cs
+[cs-directory]: src/Certes/Acme/Resource/Directory.cs
+[cs-acme-directory]: src/Certes/Acme/AcmeDirectory.cs
