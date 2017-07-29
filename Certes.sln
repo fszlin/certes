@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{E9E7371E-AB81-4ECF-9684-2ACB1EF7FF67}"
 	ProjectSection(SolutionItems) = preProject
 		CHANGELOG.md = CHANGELOG.md
+		docs\CODE_OF_CONDUCT.md = docs\CODE_OF_CONDUCT.md
 		docs\implementation-status.md = docs\implementation-status.md
 		LICENSE = LICENSE
 		README.md = README.md
