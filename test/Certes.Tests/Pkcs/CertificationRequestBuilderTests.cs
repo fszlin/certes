@@ -1,7 +1,6 @@
-﻿using Certes.Pkcs;
-using Xunit;
+﻿using Xunit;
 
-namespace Certes.Tests.Pkcs
+namespace Certes.Pkcs
 {
     public class CertificationRequestBuilderTests
     {

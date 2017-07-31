@@ -1,5 +1,4 @@
-﻿using Certes.Acme;
-using Moq;
+﻿using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
 using System;
@@ -10,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Certes.Tests.Acme
+namespace Certes.Acme
 {
     public class AcmeHttpHandlerTests
     {

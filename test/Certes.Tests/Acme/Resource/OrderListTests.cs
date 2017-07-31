@@ -1,8 +1,7 @@
-﻿using Certes.Acme.Resource;
-using System;
+﻿using System;
 using Xunit;
 
-namespace Certes.Tests.Acme.Resource
+namespace Certes.Acme.Resource
 {
     public class OrderListTests
     {

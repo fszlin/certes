@@ -14,7 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Certes.Tests
+namespace Certes
 {
     public class AcmeClientTests
     {

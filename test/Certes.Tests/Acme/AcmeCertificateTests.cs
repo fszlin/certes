@@ -1,8 +1,7 @@
-﻿using Certes.Acme;
-using System;
+﻿using System;
 using Xunit;
 
-namespace Certes.Tests.Acme
+namespace Certes.Acme
 {
     public class AcmeCertificateTests
     {

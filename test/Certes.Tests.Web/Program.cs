@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using System.IO;
 
-namespace Certes.Tests.Web
+namespace Certes.Web
 {
     public class Program
     {

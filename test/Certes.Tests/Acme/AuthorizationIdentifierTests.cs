@@ -1,7 +1,6 @@
-﻿using Certes.Acme;
-using Xunit;
+﻿using Xunit;
 
-namespace Certes.Tests.Acme
+namespace Certes.Acme
 {
     public class AuthorizationIdentifierTests
     {

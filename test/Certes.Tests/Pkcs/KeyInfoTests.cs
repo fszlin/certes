@@ -1,5 +1,4 @@
-﻿using Certes;
-using System;
+﻿using System;
 using Xunit;
 
 namespace Certes.Pkcs

@@ -1,8 +1,7 @@
-﻿using Certes.Jws;
-using System.Linq;
+﻿using System.Linq;
 using Xunit;
 
-namespace Certes.Tests.Cli
+namespace Certes.Jws
 {
     public class JwsConvertTests
     {
