@@ -17,7 +17,7 @@ This document details the ACME resources and flows implemented by *Certes*.
 | Registration  | new                       | :heavy_multiplication_x: | :heavy_check_mark: [draft-02][spec-02-reg] | :heavy_check_mark: [draft-02][spec-02-reg] |
 |               | update                    | :heavy_multiplication_x: | :heavy_check_mark: [draft-02][spec-02-reg] | :heavy_check_mark: [draft-02][spec-02-reg] |
 |               | key roll-over             | :heavy_multiplication_x: | :heavy_check_mark: [draft-05][spec-05-key-change] | |
-|               | delete                    | :heavy_multiplication_x: | :heavy_check_mark: | |
+|               | delete                    | :heavy_multiplication_x: | :heavy_check_mark: [draft-02][spec-02-reg] | :heavy_check_mark: [draft-02][spec-02-reg] |
 | Authorization | new                       | :heavy_check_mark: | :heavy_check_mark: [draft-02][spec-02-authz] | :heavy_check_mark: [draft-02][spec-02-authz] |
 |               | responding to challenges  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 |               | check status              | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
