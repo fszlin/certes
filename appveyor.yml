@@ -26,6 +26,7 @@ branches:
     - release
     - master
     - dev
+    - gh-pages
 
 assembly_info:
   patch: true
@@ -126,3 +127,14 @@ deploy:
       branch:
         - master
         - dev
+
+on_success:
+  - git config --global credential.helper store
+  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github_access_token):x-oauth-basic@github.com`n"
+  - git config --global user.email %github_email%
+  - git config --global user.name "ci"
+  - git clone https://github.com/MathewSachin/docfx-tmpl.git docfx/tmpl/mathew
+  - msbuild docfx
+  - git add -A
+  - git commit -a
+  - git push
