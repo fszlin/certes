@@ -74,7 +74,8 @@
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
     "template": [
-      "default"
+      "default",
+      "tmpl/mathew/src"
     ],
     "postProcessors": [],
     "noLangKeyword": false,
