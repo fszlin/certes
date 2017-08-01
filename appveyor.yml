@@ -58,7 +58,7 @@ build_script:
   - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
   - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
 
-#test: off
+test: off
 before_test:
   - msbuild -t:rebuild -p:DebugType=full;DebugSymbols=True
 
@@ -137,4 +137,4 @@ on_success:
   - msbuild docfx
   - git add -A
   - git commit -a -m "docfx"
-  - git push
+  - git push origin gh-pages
