@@ -18,6 +18,7 @@ environment:
     secure: MZeiiHM6tnTZKRr0x2MsNUK/kOjSKNMZd/48f2uBs8j5bge+JygXE+flTSI16yxC
   github_email:
     secure: uzXeyS8vwaOneLi5Ie9l20wIsZw8Jnjk0EllrKpsFQo=
+  DOCFX_SOURCE_BRANCH_NAME: master
 
 branches:
   # whitelist
