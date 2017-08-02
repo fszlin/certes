@@ -1,5 +1,4 @@
 ﻿using Certes.Pkcs;
-using Newtonsoft.Json;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
@@ -16,7 +15,7 @@ namespace Certes.Jws
     public class AccountKey : IAccountKey
     {
         private AsymmetricCipherKeyPair keyPair;
-        private object jwk;
+        private JsonWebKey jwk;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountKey"/> class.
@@ -60,7 +59,22 @@ namespace Certes.Jws
         /// <value>
         /// The JSON web key.
         /// </value>
+        [Obsolete]
         public object Jwk
+        {
+            get
+            {
+                return JsonWebKey;
+            }
+        }
+
+        /// <summary>
+        /// Gets the JSON web key.
+        /// </summary>
+        /// <value>
+        /// The JSON web key.
+        /// </value>
+        public JsonWebKey JsonWebKey
         {
             get
             {
@@ -116,18 +130,6 @@ namespace Certes.Jws
         public KeyInfo Export()
         {
             return this.keyPair.Export();
-        }
-
-        private class JsonWebKey
-        {
-            [JsonProperty("e", Order = 0)]
-            public string Exponent { get; set; }
-
-            [JsonProperty("kty", Order = 1)]
-            public string KeyType { get; set; }
-
-            [JsonProperty("n", Order = 2)]
-            public string Modulus { get; set; }
         }
     }
 }

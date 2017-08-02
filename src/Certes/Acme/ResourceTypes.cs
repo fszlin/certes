@@ -44,5 +44,10 @@
         /// The certificate.
         /// </summary>
         public const string Certificate = "cert";
+
+        /// <summary>
+        /// The key change.
+        /// </summary>
+        public const string KeyChange = "key-change";
     }
 }

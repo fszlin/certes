@@ -1,5 +1,6 @@
 ﻿using Certes.Pkcs;
 using Newtonsoft.Json;
+using System;
 using System.Text;
 
 namespace Certes.Jws
@@ -37,7 +38,16 @@ namespace Certes.Jws
         /// <value>
         /// The JSON web key.
         /// </value>
+        [Obsolete("Use JsonWebKey instead.")]
         object Jwk { get; }
+
+        /// <summary>
+        /// Gets the JSON web key.
+        /// </summary>
+        /// <value>
+        /// The JSON web key.
+        /// </value>
+        JsonWebKey JsonWebKey { get; }
 
         /// <summary>
         /// Exports the key pair.
@@ -60,7 +70,7 @@ namespace Certes.Jws
         /// <returns>The thumbprint.</returns>
         public static byte[] GenerateThumbprint(this IAccountKey key)
         {
-            var jwk = key.Jwk;
+            var jwk = key.JsonWebKey;
             var json = JsonConvert.SerializeObject(jwk, Formatting.None, thumbprintSettings);
             var bytes = Encoding.UTF8.GetBytes(json);
             var hashed = key.ComputeHash(bytes);
