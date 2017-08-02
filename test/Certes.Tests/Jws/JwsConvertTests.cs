@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Xunit;
 
 namespace Certes.Jws
@@ -18,6 +19,8 @@ namespace Certes.Jws
             var reverted = JwsConvert.FromBase64String(str);
 
             Assert.Equal(data, reverted);
+
+            Assert.Throws<Exception>(() => JwsConvert.FromBase64String("/not a valid base 64 string/!"));
         }
     }
 }

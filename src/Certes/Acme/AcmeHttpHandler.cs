@@ -1,6 +1,5 @@
 ﻿using Certes.Json;
 using Certes.Jws;
-using Certes.Pkcs;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
@@ -121,13 +120,12 @@ namespace Certes.Acme
         /// <param name="keyPair">The signing key pair.</param>
         /// <returns>The ACME response.</returns>
         public async Task<AcmeRespone<T>> Post<T>(Uri uri, T entity, IAccountKey keyPair)
-            where T : EntityBase
         {
             await FetchDirectory(false);
 
             var content = await GenerateRequestContent(entity, keyPair);
             var resp = await http.PostAsync(uri, content);
-            var result = await ReadResponse<T>(resp, entity.Resource);
+            var result = await ReadResponse<T>(resp, (entity as EntityBase)?.Resource);
             return result;
         }
 
@@ -138,40 +136,10 @@ namespace Certes.Acme
         /// <param name="keyPair">The key pair.</param>
         /// <param name="nonce">The nonce.</param>
         /// <returns>The encoded JSON.</returns>
-        private static object Encode(EntityBase entity, IAccountKey keyPair, string nonce)
+        private static object Encode(object entity, IAccountKey keyPair, string nonce)
         {
-            var jsonSettings = JsonUtil.CreateSettings();
-            var unprotectedHeader = new
-            {
-                alg = keyPair.Algorithm.ToJwsAlgorithm(),
-                jwk = keyPair.Jwk
-            };
-
-            var protectedHeader = new
-            {
-                nonce = nonce
-            };
-
-            var entityJson = JsonConvert.SerializeObject(entity, Formatting.None, jsonSettings);
-            var protectedHeaderJson = JsonConvert.SerializeObject(protectedHeader, Formatting.None, jsonSettings);
-
-            var payloadEncoded = JwsConvert.ToBase64String(Encoding.UTF8.GetBytes(entityJson));
-            var protectedHeaderEncoded = JwsConvert.ToBase64String(Encoding.UTF8.GetBytes(protectedHeaderJson));
-
-            var signature = $"{protectedHeaderEncoded}.{payloadEncoded}";
-            var signatureBytes = Encoding.ASCII.GetBytes(signature);
-            var signedSignatureBytes = keyPair.SignData(signatureBytes);
-            var signedSignatureEncoded = JwsConvert.ToBase64String(signedSignatureBytes);
-
-            var body = new
-            {
-                header = unprotectedHeader,
-                @protected = protectedHeaderEncoded,
-                payload = payloadEncoded,
-                signature = signedSignatureEncoded
-            };
-
-            return body;
+            var encoder = new JwsSigner(keyPair);
+            return encoder.Sign(entity, nonce);
         }
 
         private async Task FetchDirectory(bool force)
@@ -184,7 +152,7 @@ namespace Certes.Acme
             }
         }
 
-        private async ValueTask<StringContent> GenerateRequestContent(EntityBase entity, IAccountKey keyPair)
+        private async ValueTask<StringContent> GenerateRequestContent(object entity, IAccountKey keyPair)
         {
             var nonce = await this.GetNonce();
             var body = Encode(entity, keyPair, nonce);

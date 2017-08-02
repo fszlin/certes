@@ -40,6 +40,6 @@ namespace Certes.Acme
         /// <param name="entity">The entity.</param>
         /// <param name="keyPair">The signing key pair.</param>
         /// <returns>The ACME response.</returns>
-        Task<AcmeRespone<T>> Post<T>(Uri uri, T entity, IAccountKey keyPair) where T : EntityBase;
+        Task<AcmeRespone<T>> Post<T>(Uri uri, T entity, IAccountKey keyPair);
     }
 }
