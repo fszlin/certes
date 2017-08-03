@@ -121,6 +121,40 @@ namespace Certes
         }
 
         /// <summary>
+        /// Changes the registration key.
+        /// </summary>
+        /// <param name="account">The account.</param>
+        /// <param name="newKey">The new registration key.</param>
+        /// <returns>The awaitable.</returns>
+        public async Task ChangeKey(AcmeAccount account, KeyInfo newKey)
+        {
+            var keyPair = new AccountKey(newKey);
+            
+            var body = new
+            {
+                account = account.Location,
+                newKey = keyPair.JsonWebKey,
+            };
+            
+            var jws = new JwsSigner(keyPair);
+            var payload = jws.Sign(body);
+            var payloadWithResourceType = new
+            {
+                payload.Header,
+                payload.Payload,
+                payload.Protected,
+                payload.Signature,
+                Resource = ResourceTypes.KeyChange
+            };
+
+            var uri = await this.handler.GetResourceUri(ResourceTypes.KeyChange);
+            var result = await this.handler.Post(uri, payloadWithResourceType, key);
+            ThrowIfError(result);
+
+            this.key = keyPair;
+        }
+
+        /// <summary>
         /// Deletes the registration.
         /// </summary>
         /// <returns>The awaitable.</returns>

@@ -89,6 +89,14 @@ namespace Certes
         Task<AcmeAccount> UpdateRegistration(AcmeAccount account);
 
         /// <summary>
+        /// Changes the registration key.
+        /// </summary>
+        /// <param name="account">The account.</param>
+        /// <param name="newKey">The new registration key.</param>
+        /// <returns>The awaitable.</returns>
+        Task ChangeKey(AcmeAccount account, KeyInfo newKey);
+
+        /// <summary>
         /// Deletes the registration.
         /// </summary>
         /// <returns>The awaitable.</returns>

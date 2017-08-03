@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add `Directory` to replace `AcmeDirectory`
 - Add support for deleting registration
+- Add support for account key roll-over
 
 ## 1.0.7 - 2017-07-20
 ### Changed

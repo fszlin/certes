@@ -88,6 +88,7 @@ namespace Certes.Acme
                 ResourceTypes.NewAuthorization == resourceType ? this.directory.NewAuthz :
                 ResourceTypes.NewCertificate == resourceType ? this.directory.NewCert :
                 ResourceTypes.RevokeCertificate == resourceType ? this.directory.RevokeCert :
+                ResourceTypes.KeyChange == resourceType ? this.directory.KeyChange :
                 null;
 
             if (resourceUri == null)
