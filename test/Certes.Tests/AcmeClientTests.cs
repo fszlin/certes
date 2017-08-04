@@ -24,7 +24,7 @@ namespace Certes
         private readonly Uri server = new Uri("http://example.com/dir");
         private readonly Uri tos = new Uri("http://example.com/tos");
 
-        private readonly Directory acmeDir = Helper.AcmeDir;
+        private readonly AcmeDirectory acmeDir = Helper.AcmeDir;
 
         private int nonce = 0;
         private AccountKey accountKey = Helper.Loadkey();

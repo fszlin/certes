@@ -63,24 +63,6 @@ namespace Certes.Acme.Resource
         public Uri KeyChange { get; set; }
 
         /// <summary>
-        /// Gets or sets the new registration endpoint.
-        /// </summary>
-        /// <value>
-        /// The new registration endpoint.
-        /// </value>
-        [JsonProperty("new-reg")]
-        public Uri NewReg { get; set; }
-
-        /// <summary>
-        /// Gets or sets the new certificate endpoint.
-        /// </summary>
-        /// <value>
-        /// The new certificate endpoint.
-        /// </value>
-        [JsonProperty("new-cert")]
-        public Uri NewCert { get; set; }
-
-        /// <summary>
         /// Gets or sets the metadata.
         /// </summary>
         /// <value>

@@ -24,7 +24,7 @@ namespace Certes.Acme
         private readonly bool shouldDisposeHttp;
 
         private string nonce;
-        private Resource.Directory directory;
+        private AcmeDirectory directory;
 
         private readonly JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
 
@@ -148,7 +148,7 @@ namespace Certes.Acme
             if (this.directory == null || force)
             {
                 var uri = serverUri;
-                var resp = await this.Get<Resource.Directory>(uri);
+                var resp = await this.Get<AcmeDirectory>(uri);
                 this.directory = resp.Data;
             }
         }
