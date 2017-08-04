@@ -21,7 +21,7 @@ branches:
     - release
     - master
     - dev
-    - vnext
+    #- vnext
 
 assembly_info:
   patch: true

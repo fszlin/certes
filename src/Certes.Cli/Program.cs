@@ -30,14 +30,13 @@ namespace Certes.Cli
             this.consoleLogger = consoleLogger;
         }
 
-        public static int Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
             using (var factory = new LogFactory(ConfigureConsoleLogger()))
             {
                 var logger = factory.GetLogger(ConsoleLoggerName);
-                var tsk = new Program(logger).Process(args);
-                tsk.Wait();
-                return tsk.Result ? 0 : 1;
+                var succeed = await new Program(logger).Process(args);
+                return succeed ? 0 : 1;
             }
         }
 
