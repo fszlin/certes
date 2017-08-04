@@ -8,6 +8,10 @@
     <RootNamespace>Certes</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;0618</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\..\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
   </ItemGroup>
@@ -27,6 +31,12 @@
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\account.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

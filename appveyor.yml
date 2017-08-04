@@ -21,6 +21,7 @@ branches:
     - release
     - master
     - dev
+    - vnext
 
 assembly_info:
   patch: true
@@ -121,3 +122,4 @@ deploy:
       branch:
         - master
         - dev
+        - vnext
