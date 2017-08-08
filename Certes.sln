@@ -1,10 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.26730.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{E9E7371E-AB81-4ECF-9684-2ACB1EF7FF67}"
 	ProjectSection(SolutionItems) = preProject
+		APIv2.md = APIv2.md
 		docs\CHANGELOG.md = docs\CHANGELOG.md
 		docs\CODE_OF_CONDUCT.md = docs\CODE_OF_CONDUCT.md
 		docs\implementation-status.md = docs\implementation-status.md
@@ -62,5 +63,8 @@ Global
 		{B416791A-F073-446B-87B8-0D63049DB1A8} = {7B11358C-CCDB-4A64-8CAF-9AA29AFD7DE3}
 		{67194186-A678-40D3-BEB2-A5572539C423} = {556F2BFB-DE9B-4673-BADC-63C365DA2A55}
 		{DB1230D1-3C6C-4E86-BED0-64FCDEA91F8D} = {556F2BFB-DE9B-4673-BADC-63C365DA2A55}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {219696DE-2A77-452E-B889-DEE271A91632}
 	EndGlobalSection
 EndGlobal
