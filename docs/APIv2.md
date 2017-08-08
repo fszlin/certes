@@ -15,13 +15,14 @@ var context = new AcmeContext(dirUri);
 
 Creating or fetching account.
 ```C#
-var account = await context.Account(key, existing = false);
+var account = await context.Account(new []{ "mailto:certes@example.com" });
+var account = await context.Account(key);
 ```
 
 Accepting terms of service.
 ```C#
 var tosUri = await account.AcceptTermsOfService();
-var accountInfo = await account.Info();
+var accountInfo = await account.Resource();
 ```
 
 Updating account contact.
