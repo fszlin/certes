@@ -253,6 +253,7 @@ namespace Certes.Acme
             while (nonce == null)
             {
                 await this.FetchDirectory(true);
+                nonce = Interlocked.Exchange(ref this.nonce, null);
             }
 
             return nonce;
