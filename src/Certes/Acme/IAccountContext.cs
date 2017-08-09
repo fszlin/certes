@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Certes.Acme
 {
     /// <summary>
-    /// Presents the context for ACME account operations.
+    /// Supports ACME account operations.
     /// </summary>
     public interface IAccountContext
     {

@@ -1,8 +1,9 @@
-﻿using Certes.Pkcs;
+﻿using Certes.Acme;
+using Certes.Pkcs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Certes.Acme
+namespace Certes
 {
     /// <summary>
     /// Helper methods for <see cref="IAccountContext"/>.
