@@ -6,13 +6,13 @@ using Certes.Pkcs;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
-using System.Linq;
-
-using Dict = System.Collections.Generic.Dictionary<string, object>;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using Dict = System.Collections.Generic.Dictionary<string, object>;
 
 namespace Certes
 {
@@ -22,6 +22,7 @@ namespace Certes
     /// <seealso cref="Certes.IAcmeContext" />
     public class AcmeContext : IAcmeContext
     {
+        private const string MimeJson = "application/json";
         private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(() => new HttpClient());
 
         /// <summary>
@@ -70,8 +71,14 @@ namespace Certes
         /// The account fetched from ACME server.
         /// </returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task<IAccountContext> Account(KeyInfo key)
+        public async Task<IAccountContext> Account(KeyInfo key)
         {
+            var dir = await this.GetDirectory();
+            if (dir.NewAccount == null)
+            {
+                throw new InvalidOperationException();
+            }
+
             this.jws = new JwsSigner(new AccountKey(key));
             var payload = this.Sign(
                 new Dict
@@ -79,6 +86,19 @@ namespace Certes
                     { "only-return-existing", true }
                 });
             
+            var bodyJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
+            var content = new StringContent(bodyJson, Encoding.UTF8, MimeJson);
+
+            var response = await SharedHttp.Value.PostAsync(dir.NewAccount, content);
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                throw new Exception();
+            }
+
+            var accountJson = await response.Content.ReadAsStringAsync();
+            var account = JsonConvert.DeserializeObject<Account>(accountJson);
+
             throw new NotImplementedException();
         }
 
@@ -123,14 +143,14 @@ namespace Certes
         private async Task FetchNonce()
         {
             var dir = await GetDirectory();
-            if (dir.NewAccount == null)
+            if (dir.NewNonce == null)
             {
                 throw new InvalidOperationException();
             }
 
             var response = await SharedHttp.Value.SendAsync(new HttpRequestMessage
             {
-                RequestUri = dir.NewAccount,
+                RequestUri = dir.NewNonce,
                 Method = HttpMethod.Head,
             });
 
@@ -153,14 +173,15 @@ namespace Certes
             return nonce;
         }
 
-        private object Sign(object entity)
+        private async Task<JwsPayload> Sign(object entity)
         {
             if (jws == null)
             {
                 throw new InvalidOperationException();
             }
 
-            return jws.Sign(entity, this.nonce);
+            var nonce = await this.ConsumeNonce();
+            return jws.Sign(entity, nonce);
         }
     }
 }
