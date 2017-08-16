@@ -117,17 +117,22 @@ using (var client = new AcmeClient(WellKnownServers.LetsEncrypt))
     });
 
     // Comptue key authorization for http-01
-    var httpChallengeInfo = authz.Data.Challenges.Where(c => c.Type == ChallengeTypes.Http01).First();
+    var httpChallengeInfo = authz.Data.Challenges.First(c => c.Type == ChallengeTypes.Http01);
     var keyAuthString = client.ComputeKeyAuthorization(httpChallengeInfo);
+
+    // Or compute DNS reccord TXT value
+    var dnsChallengeInfo = authz.Data.Challenges.First(c => c.Type == ChallengeTypes.Dns01);
+    var dnsTxtValue = client.ComputeDnsValue(dnsChallengeInfo);
     
     // Do something to fullfill the challenge,
     // e.g. upload key auth string to well known path, or make changes to DNS
 
     // Info ACME server to validate the identifier
     var httpChallenge = await client.CompleteChallenge(httpChallengeInfo);
+    var dnsChallenge = await client.CompleteChallenge(dnsChallengeInfo);
 
-    // Check authorization status
-    authz = await client.GetAuthorization(httpChallenge.Location);
+    // Check authorization status (use the proper challenge to check Authorization State)
+    authz = await client.GetAuthorization(httpChallenge.Location); // or dnsChallenge.Location
     while (authz.Data.Status == EntityStatus.Pending)
     {
         // Wait for ACME server to validate the identifier
