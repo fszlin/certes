@@ -59,7 +59,7 @@ before_test:
 test_script:
   - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
   - ps: >-
-      & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:test ./test/Certes.Tests/Certes.Tests.csproj -- -noshadow -appveyor" "-oldstyle" "-output:./build/coverage.xml" "-filter:+[Certes]* +[Certes.Cli]*" "-hideskipped:All"
+      & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:test ./test/Certes.Tests/Certes.Tests.csproj -- -noshadow -appveyor" "-oldstyle" "-output:./build/coverage.xml" "-filter:+[Certes]* +[Certes.Cli]*" "-hideskipped:All" "-returntargetcode"
 
 after_test:
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
