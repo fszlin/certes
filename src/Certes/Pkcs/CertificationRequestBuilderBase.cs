@@ -41,13 +41,14 @@ namespace Certes.Pkcs
         /// <value>
         /// The subject alternative names.
         /// </value>
-        public IList<string> SubjectAlternativeNames { get; } = new List<string>();
+        public IList<string> SubjectAlternativeNames { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificationRequestBuilderBase"/> class.
         /// </summary>
         public CertificationRequestBuilderBase()
         {
+			SubjectAlternativeNames = new List<string>();
         }
 
         /// <summary>
