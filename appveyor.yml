@@ -22,6 +22,9 @@ branches:
     - master
     - dev
 
+cache:
+  - '%USERPROFILE%\.nuget\packages -> **\*.csproj'
+
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
