@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 - Add support for deleting registration
 - Add support for account key roll-over
 
+### Changed
+- Allow assigning SAN when creating `CertificationRequestBuilder` instances
+
 ## 1.0.7 - 2017-07-20
 ### Changed
 - Fix error when parsing directory resource with *meta* property. ([#5][i5])

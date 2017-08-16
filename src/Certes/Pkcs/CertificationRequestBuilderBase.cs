@@ -18,6 +18,7 @@ namespace Certes.Pkcs
     {
         private string commonName;
         private readonly List<(DerObjectIdentifier Id, string Value)> attributes = new List<(DerObjectIdentifier, string)>();
+        private IList<string> subjectAlternativeNames = new List<string>();
 
         /// <summary>
         /// Gets the algorithm.
@@ -41,14 +42,24 @@ namespace Certes.Pkcs
         /// <value>
         /// The subject alternative names.
         /// </value>
-        public IList<string> SubjectAlternativeNames { get; set; }
+        public IList<string> SubjectAlternativeNames
+        {
+            get
+            {
+                return subjectAlternativeNames;
+            }
+            set
+            {
+                this.subjectAlternativeNames = value ?? 
+                    throw new ArgumentNullException(nameof(SubjectAlternativeNames));
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificationRequestBuilderBase"/> class.
         /// </summary>
         public CertificationRequestBuilderBase()
         {
-			SubjectAlternativeNames = new List<string>();
         }
 
         /// <summary>
