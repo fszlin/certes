@@ -63,8 +63,8 @@ test_script:
 
 after_test:
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
-  - IF NOT "%APPVEYOR_PULL_REQUEST_NUMBER%" == "" pip install codecov
-  - IF NOT "%APPVEYOR_PULL_REQUEST_NUMBER%" == "" codecov -f "./build/coverage.xml" -t %codecov_upload_token%
+  - IF NOT "%codecov_upload_token%" == "" pip install codecov
+  - IF NOT "%codecov_upload_token%" == "" codecov -f "./build/coverage.xml" -t %codecov_upload_token%
 
 configuration: Release
 
