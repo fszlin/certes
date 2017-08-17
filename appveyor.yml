@@ -28,7 +28,7 @@ branches:
     - dev
 
 cache:
-  - '%USERPROFILE%\.nuget\packages -> **\*.csproj'
+  #- '%USERPROFILE%\.nuget\packages -> **\*.csproj'
 
 assembly_info:
   patch: true
