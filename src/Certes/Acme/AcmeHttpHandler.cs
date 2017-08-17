@@ -153,7 +153,7 @@ namespace Certes.Acme
             }
         }
 
-        private async ValueTask<StringContent> GenerateRequestContent(object entity, IAccountKey keyPair)
+        private async Task<StringContent> GenerateRequestContent(object entity, IAccountKey keyPair)
         {
             var nonce = await this.GetNonce();
             var body = Encode(entity, keyPair, nonce);
@@ -247,7 +247,7 @@ namespace Certes.Acme
             return false;
         }
 
-        private async ValueTask<string> GetNonce()
+        private async Task<string> GetNonce()
         {
             var nonce = Interlocked.Exchange(ref this.nonce, null);
             while (nonce == null)

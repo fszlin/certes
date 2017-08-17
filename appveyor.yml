@@ -11,6 +11,10 @@ skip_commits:
   - '*.md'
   #- '*.yml'
 
+clone_depth: 1  
+nuget:  
+  disable_publish_on_pr: true
+
 environment:
   codecov_upload_token:
     secure: DxYtxftZ1rpZhZzixRqY3hHFrlEZlh62XPV4tcO+zxdsRNZWPSEl967VpRevAPSo
@@ -40,7 +44,7 @@ init:
   - ps: $env:CERTES_ASSEMBLY_FILE_VERSION = $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3]
   - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + '-' + $verParts[3] }
   - ps: $env:CERTES_PACKAGE_VERSION = $env:CERTES_ASSEMBLY_INFO_VERSION
-
+  
 install:
 
 before_build:
