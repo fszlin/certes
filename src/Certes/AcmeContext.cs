@@ -117,7 +117,7 @@ namespace Certes
             throw new NotImplementedException();
         }
 
-        private async ValueTask<Directory> GetDirectory()
+        private async Task<Directory> GetDirectory()
         {
             if (this.directory == null)
             {
