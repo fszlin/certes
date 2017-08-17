@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [1.1.0] - 2017-08-17
 ### Added
 - Add `Directory` to replace `AcmeDirectory`
 - Add support for deleting registration
@@ -14,6 +16,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Fix error when parsing directory resource with *meta* property. ([#5][i5])
 
-[Unreleased]: https://github.com/fszlin/certes/compare/v1.0.7...HEAD
+[Unreleased]: https://github.com/fszlin/certes/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/fszlin/certes/compare/v1.0.7...v1.1.0
 
 [i5]: https://github.com/fszlin/certes/issues/5
