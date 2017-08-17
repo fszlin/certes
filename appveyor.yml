@@ -25,7 +25,7 @@ branches:
     - release
     - master
     - dev
-    - vnext
+    #- vnext
 
 cache:
   - '%USERPROFILE%\.nuget\packages -> **\*.csproj'
