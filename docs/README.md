@@ -15,7 +15,7 @@ Before [Let's Encrypt](https://letsencrypt.org), SSL/TLS certificate for HTTPS
 was a privilege for who can afford it. With Certes, you can quickly generate
 certificates using .NET or command line, and it is **free**.
 
-# Get Certified in 5 Minutes
+## Get Certified in 5 Minutes
 
 Install [.NET Core](https://www.microsoft.com/net/core)
 
@@ -94,7 +94,7 @@ More...
   * By default, the account and contextual data are saved in **data.json**, 
     use ```--path``` option to change the location.
 
-# Get Started
+## Get Started
 
 You can get Certes by grabbing the latest
 [NuGet package](https://www.nuget.org/packages/Certes).
@@ -157,3 +157,11 @@ using (var client = new AcmeClient(WellKnownServers.LetsEncrypt))
     }
 }
 ```
+
+Read more about the [supported ACME flows](implementation-status.md).
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/fszlin/certes/tags). 
+
+Also check the [changelog](CHANGELOG.md) to see what's we are working on.
