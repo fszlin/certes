@@ -1,4 +1,4 @@
-version: 1.0.8.{build}
+version: 1.1.1.{build}
 build:
   verbosity: minimal
   project: Certes.sln
@@ -16,6 +16,7 @@ nuget:
   disable_publish_on_pr: true
 
 environment:
+  ver_offset: 318
   codecov_upload_token:
     secure: DxYtxftZ1rpZhZzixRqY3hHFrlEZlh62XPV4tcO+zxdsRNZWPSEl967VpRevAPSo
 
@@ -28,7 +29,7 @@ branches:
     #- vnext
 
 cache:
-  - '%USERPROFILE%\.nuget\packages -> **\*.csproj'
+  #- '%USERPROFILE%\.nuget\packages -> **\*.csproj'
 
 assembly_info:
   patch: true
@@ -42,7 +43,8 @@ init:
   - ps: $verParts = $($env:appveyor_build_version) -Split '\.'
   - ps: $env:CERTES_ASSEMBLY_VERSION = $verParts[0] + '.' + $verParts[1] + '.' + $verParts[2]
   - ps: $env:CERTES_ASSEMBLY_FILE_VERSION = $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3]
-  - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + '.' + $verParts[3] }
+  - ps: $buildVer = $verParts[3] - $env:ver_offset
+  - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + '.' + $buildVer }
   - ps: $env:CERTES_PACKAGE_VERSION = $env:CERTES_ASSEMBLY_INFO_VERSION
 
 before_build:
