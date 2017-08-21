@@ -16,6 +16,8 @@ nuget:
   disable_publish_on_pr: true
 
 environment:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 0
   ver_offset: 318
   codecov_upload_token:
     secure: DxYtxftZ1rpZhZzixRqY3hHFrlEZlh62XPV4tcO+zxdsRNZWPSEl967VpRevAPSo
@@ -28,20 +30,12 @@ branches:
     - dev
     - vnext
 
-cache:
-  - '%USERPROFILE%\.nuget\packages -> **\*.csproj'
-
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
   assembly_version: '$(CERTES_ASSEMBLY_VERSION)'
   assembly_file_version: '$(CERTES_ASSEMBLY_FILE_VERSION)'
   assembly_informational_version: '$(CERTES_ASSEMBLY_INFO_VERSION)'
-
-install:
-  - cmd: curl -O https://dist.nuget.org/win-x86-commandline/v4.3.0/nuget.exe
-  #- cmd: curl -O https://dotnetcli.blob.core.windows.net/dotnet/Sdk/release/2.0.0/dotnet-sdk-latest-win-x64.exe
-  #- cmd: dotnet-sdk-latest-win-x64.exe /install /quiet /norestart /log install.log 
 
 init:
   - git config --global core.autocrlf input
@@ -51,6 +45,9 @@ init:
   - ps: $buildVer = $verParts[3] - $env:ver_offset
   - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + '.' + $buildVer }
   - ps: $env:CERTES_PACKAGE_VERSION = $env:CERTES_ASSEMBLY_INFO_VERSION
+  
+install:
+  - cmd: curl -O https://dist.nuget.org/win-x86-commandline/v4.3.0/nuget.exe
 
 before_build:
   - ps: New-Item build -Type directory -Force | Out-Null
