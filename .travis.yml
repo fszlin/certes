@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-dotnet: 1.0.0
+dotnet: 2.0.0
 sudo: required
 dist: trusty
 os:
@@ -25,6 +25,7 @@ branches:
     - release
     - master
     - dev
+    - vnext
 script:
   - dotnet restore
   - dotnet test ./test/Certes.Tests/Certes.Tests.csproj
