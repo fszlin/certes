@@ -39,8 +39,9 @@ assembly_info:
   assembly_informational_version: '$(CERTES_ASSEMBLY_INFO_VERSION)'
 
 install:
-  - cmd: curl -O https://dotnetcli.blob.core.windows.net/dotnet/Sdk/release/2.0.0/dotnet-sdk-latest-win-x64.exe
-  - cmd: dotnet-sdk-latest-win-x64.exe /install /quiet /norestart /log install.log 
+  - cmd: curl -O https://dist.nuget.org/win-x86-commandline/v4.3.0/nuget.exe
+  #- cmd: curl -O https://dotnetcli.blob.core.windows.net/dotnet/Sdk/release/2.0.0/dotnet-sdk-latest-win-x64.exe
+  #- cmd: dotnet-sdk-latest-win-x64.exe /install /quiet /norestart /log install.log 
 
 init:
   - git config --global core.autocrlf input
