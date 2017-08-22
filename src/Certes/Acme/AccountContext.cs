@@ -1,8 +1,10 @@
 ﻿using Certes.Acme.Resource;
+using Certes.Jws;
 using Certes.Pkcs;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dict = System.Collections.Generic.Dictionary<string, object>;
 
 namespace Certes.Acme
 {
@@ -12,29 +14,48 @@ namespace Certes.Acme
     /// <seealso cref="Certes.Acme.IAccountContext" />
     public class AccountContext : IAccountContext
     {
-        private readonly IAcmeContext context;
+        private readonly AcmeContext context;
+        private readonly JwsSigner jws;
+        private Uri location;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AccountContext"/> class.
+        /// Initializes a new instance of the <see cref="AccountContext" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public AccountContext(IAcmeContext context)
+        /// <param name="key">The key.</param>
+        public AccountContext(AcmeContext context, KeyInfo key = null)
         {
             this.context = context;
+            this.jws = new JwsSigner(new AccountKey(key));
         }
 
         /// <summary>
-        /// Accepts the terms of service.
+        /// Creates the specified contact.
         /// </summary>
-        /// <returns>
-        /// the context.
-        /// </returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public Task<IAccountContext> AcceptTermsOfService()
+        /// <param name="contact">The contact.</param>
+        /// <param name="termsOfServiceAgreed">if set to <c>true</c> [terms of service agreed].</param>
+        /// <returns></returns>
+        public async Task<Account> Create(IList<string> contact, bool termsOfServiceAgreed = false)
         {
-            throw new NotImplementedException();
-        }
+            var endpoint = await this.context.GetResourceEndpoint(ResourceType.NewAccount);
+            if (endpoint == null)
+            {
+                throw new NotSupportedException();
+            }
 
+            var body = new Dict
+            {
+                { "contact", contact },
+                { "terms-of-service-agreed", termsOfServiceAgreed },
+            };
+
+            var payload = this.Sign(body);
+            var (location, account) = await this.context.Post<Account>(endpoint, payload);
+
+            this.location = location;
+            return account;
+        }
+        
         /// <summary>
         /// Changes the account key.
         /// </summary>
@@ -42,10 +63,21 @@ namespace Certes.Acme
         /// <returns>
         /// The account context.
         /// </returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public Task<IAccountContext> ChangeKey(KeyInfo key)
+        public async Task<IAccountContext> ChangeKey(KeyInfo key = null)
         {
-            throw new NotImplementedException();
+            var location = await this.DiscoverLocation();
+
+            var accountKey = new AccountKey(key);
+            var keyChange = new
+            {
+                account = location,
+                newKey = accountKey.JsonWebKey
+            };
+
+            var body = this.jws.Sign(keyChange);
+            var payload = this.Sign(body);
+            await this.context.Post<Account>(location, payload);
+            return this;
         }
 
         /// <summary>
@@ -54,10 +86,12 @@ namespace Certes.Acme
         /// <returns>
         /// The awaitable.
         /// </returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public Task Deactivate()
+        public async Task<Account> Deactivate()
         {
-            throw new NotImplementedException();
+            var location = await this.DiscoverLocation();
+            var payload = this.Sign(new { status = AccountStatus.Deactivated });
+            var (_, account) = await this.context.Post<Account>(location, payload);
+            return account;
         }
 
         /// <summary>
@@ -66,47 +100,68 @@ namespace Certes.Acme
         /// <returns>
         /// The orders.
         /// </returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public Task<IOrderListContext> Orders()
+        public async Task<IOrderListContext> Orders()
         {
-            throw new NotImplementedException();
+            await Task.Yield();
+            return new OrderListContext();
         }
 
         /// <summary>
-        /// Gets the account resource.
+        /// Gets the account 
         /// </summary>
         /// <returns>
-        /// The account resource.
+        /// The account 
         /// </returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public Task<Account> Resource()
+        public async Task<Account> Resource()
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Gets the URI for terms of service.
-        /// </summary>
-        /// <returns>
-        /// The terms of service URI.
-        /// </returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public Task<Uri> TermsOfService()
-        {
-            throw new NotImplementedException();
+            var location = await this.DiscoverLocation();
+            var payload = this.Sign(new { });
+            var (_, account) = await this.context.Post<Account>(location, payload);
+            return account;
         }
 
         /// <summary>
         /// Updates the account.
         /// </summary>
-        /// <param name="contact">The contact.</param>
+        /// <param name="resource">The account </param>
         /// <returns>
         /// The account context.
         /// </returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public Task<IAccountContext> Update(IList<string> contact)
+        public async Task<IAccountContext> Update(Account resource)
         {
-            throw new NotImplementedException();
+            var payload = this.Sign(resource);
+            var (_, account) = await this.context.Post<Account>(this.location, payload);
+            return this;
+        }
+
+        internal async Task<JwsPayload> Sign(object entity)
+        {
+            var nonce = await this.context.ConsumeNonce();
+            return jws.Sign(entity, nonce);
+        }
+
+        private async Task<Uri> DiscoverLocation()
+        {
+            if (this.location == null)
+            {
+                var endpoint = await this.context.GetResourceEndpoint(ResourceType.NewAccount);
+                if (endpoint == null)
+                {
+                    throw new NotSupportedException();
+                }
+
+                var body = new Dict
+                {
+                    { "only-return-existing", true },
+                };
+
+                var payload = this.Sign(body);
+                var (location, account) = await this.context.Post<Account>(endpoint, payload);
+
+                this.location = location;
+            }
+
+            return this.location;
         }
     }
 }
