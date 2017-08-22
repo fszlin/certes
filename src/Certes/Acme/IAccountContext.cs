@@ -1,7 +1,5 @@
 ﻿using Certes.Acme.Resource;
 using Certes.Pkcs;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Certes.Acme
@@ -11,12 +9,6 @@ namespace Certes.Acme
     /// </summary>
     public interface IAccountContext
     {
-        /// <summary>
-        /// Gets the URI for terms of service.
-        /// </summary>
-        /// <returns>The terms of service URI.</returns>
-        Task<Uri> TermsOfService();
-
         /// <summary>
         /// Gets the account resource.
         /// </summary>
@@ -28,20 +20,7 @@ namespace Certes.Acme
         /// </summary>
         /// <returns>The orders.</returns>
         Task<IOrderListContext> Orders();
-
-        /// <summary>
-        /// Accepts the terms of service.
-        /// </summary>
-        /// <returns>the context.</returns>
-        Task<IAccountContext> AcceptTermsOfService();
-
-        /// <summary>
-        /// Updates the account.
-        /// </summary>
-        /// <param name="contact">The contact.</param>
-        /// <returns>The account context.</returns>
-        Task<IAccountContext> Update(IList<string> contact);
-
+        
         /// <summary>
         /// Changes the account key.
         /// </summary>
@@ -53,6 +32,6 @@ namespace Certes.Acme
         /// Deactivates the current account.
         /// </summary>
         /// <returns>The awaitable.</returns>
-        Task Deactivate();
+        Task<Account> Deactivate();
     }
 }
