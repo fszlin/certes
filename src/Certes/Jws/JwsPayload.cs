@@ -4,9 +4,6 @@ namespace Certes.Jws
 {
     internal class JwsPayload
     {
-        [JsonProperty("header")]
-        public JwsUnprotectedHeader Header { get; set; }
-
         [JsonProperty("protected")]
         public string Protected { get; set; }
 

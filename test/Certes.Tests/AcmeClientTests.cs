@@ -193,11 +193,6 @@ namespace Certes
             var json = await content.ReadAsStringAsync();
             dynamic body = JObject.Parse(json);
 
-            Assert.Equal("RS256", body.header?.alg?.Value);
-            Assert.Equal("AQAB", body.header?.jwk?.e?.Value);
-            Assert.Equal("RSA", body.header?.jwk?.kty?.Value);
-            Assert.Equal("maeT6EsXTVHAdwuq3IlAl9uljXE5CnkRpr6uSw_Fk9nQshfZqKFdeZHkSBvIaLirE2ZidMEYy-rpS1O2j-viTG5U6bUSWo8aoeKoXwYfwbXNboEA-P4HgGCjD22XaXAkBHdhgyZ0UBX2z-jCx1smd7nucsi4h4RhC_2cEB1x_mE6XS5VlpvG91Hbcgml4cl0NZrWPtJ4DhFdPNUtQ8q3AYXkOr_OSFZgRKjesRaqfnSdJNABqlO_jEzAx0fgJfPZe1WlRWOfGRVBVopZ4_N5HpR_9lsNDzCZyidFsHwzvpkP6R6HbS8CMrNWgtkTbnz27EVqIhkYdiPVIN2Xkwj0BQ", body.header?.jwk?.n?.Value);
-
             var protectedBase64 = body.GetValue("protected").Value;
             var protectedJson = Encoding.UTF8.GetString(JwsConvert.FromBase64String(protectedBase64));
             dynamic @protected = JObject.Parse(protectedJson);

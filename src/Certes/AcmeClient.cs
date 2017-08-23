@@ -140,7 +140,6 @@ namespace Certes
             var payload = jws.Sign(body);
             var payloadWithResourceType = new
             {
-                payload.Header,
                 payload.Payload,
                 payload.Protected,
                 payload.Signature,
