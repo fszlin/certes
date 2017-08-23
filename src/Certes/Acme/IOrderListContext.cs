@@ -7,7 +7,7 @@ namespace Certes.Acme
     /// <summary>
     /// Presents the context for ACME order list operations.
     /// </summary>
-    public interface IOrderListContext : IEnumerable<IOrderContext>
+    public interface IOrderListContext
     {
         /// <summary>
         /// Creates a new order the specified CSR.

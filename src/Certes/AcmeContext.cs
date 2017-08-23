@@ -94,21 +94,57 @@ namespace Certes
             return nonce;
         }
 
-        internal async Task<(Uri Location, T Resource)> Post<T>(Uri uri, object payload)
+        internal async Task<(Uri Location, T Resource, ILookup<string, Uri> Links)> Get<T>(Uri uri)
+        {
+            var response = await SharedHttp.Value.GetAsync(uri);
+            return await ProcessResponse<T>(response);
+        }
+
+        internal async Task<(Uri Location, T Resource, ILookup<string, Uri> Links)> Post<T>(Uri uri, object payload)
         {
             var payloadJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
             var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
             var response = await SharedHttp.Value.PostAsync(uri, content);
+            return await ProcessResponse<T>(response);
+        }
 
+        private async Task<(Uri Location, T Resource, ILookup<string, Uri> Links)> ProcessResponse<T>(HttpResponseMessage response)
+        {
             var data =
                 (
                     Location: response.Headers.Location,
-                    Resource: default(T)
+                    Resource: default(T),
+                    Links: default(ILookup<string, Uri>)
                 );
 
             if (response.Headers.Contains("Replay-Nonce"))
             {
                 this.nonce = response.Headers.GetValues("Replay-Nonce").Single();
+            }
+
+            if (response.Headers.Contains("Link"))
+            {
+                data.Links = response.Headers.GetValues("Link")?
+                    .Select(h =>
+                    {
+                        var segments = h.Split(';');
+                        var url = segments[0].Substring(1, segments[0].Length - 2);
+                        var rel = segments.Skip(1)
+                            .Select(s => s.Trim())
+                            .Where(s => s.StartsWith("rel=", StringComparison.OrdinalIgnoreCase))
+                            .Select(r =>
+                            {
+                                var relType = r.Split('=')[1];
+                                return relType.Substring(1, relType.Length - 2);
+                            })
+                            .First();
+
+                        return (
+                            Rel: rel,
+                            Uri: new Uri(url)
+                        );
+                    })
+                    .ToLookup(l => l.Rel, l => l.Uri);
             }
 
             if (IsJsonMedia(response.Content?.Headers.ContentType.MediaType))

@@ -1,4 +1,5 @@
 ﻿using Certes.Acme.Resource;
+using Certes.Jws;
 using Certes.Pkcs;
 using System.Threading.Tasks;
 
@@ -33,5 +34,12 @@ namespace Certes.Acme
         /// </summary>
         /// <returns>The awaitable.</returns>
         Task<Account> Deactivate();
+
+        /// <summary>
+        /// Signs the specified entity.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <returns></returns>
+        Task<JwsPayload> Sign(object entity);
     }
 }

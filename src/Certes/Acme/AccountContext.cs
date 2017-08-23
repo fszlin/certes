@@ -50,7 +50,7 @@ namespace Certes.Acme
             };
 
             var payload = this.Sign(body);
-            var (location, account) = await this.context.Post<Account>(endpoint, payload);
+            var (location, account, _) = await this.context.Post<Account>(endpoint, payload);
 
             this.location = location;
             return account;
@@ -90,7 +90,7 @@ namespace Certes.Acme
         {
             var location = await this.DiscoverLocation();
             var payload = this.Sign(new { status = AccountStatus.Deactivated });
-            var (_, account) = await this.context.Post<Account>(location, payload);
+            var (_, account, _) = await this.context.Post<Account>(location, payload);
             return account;
         }
 
@@ -102,8 +102,8 @@ namespace Certes.Acme
         /// </returns>
         public async Task<IOrderListContext> Orders()
         {
-            await Task.Yield();
-            return new OrderListContext();
+            var account = await this.Resource();
+            return new OrderListContext(this.context, this, account.Orders);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace Certes.Acme
         {
             var location = await this.DiscoverLocation();
             var payload = this.Sign(new { });
-            var (_, account) = await this.context.Post<Account>(location, payload);
+            var (_, account, _) = await this.context.Post<Account>(location, payload);
             return account;
         }
 
@@ -130,11 +130,16 @@ namespace Certes.Acme
         public async Task<IAccountContext> Update(Account resource)
         {
             var payload = this.Sign(resource);
-            var (_, account) = await this.context.Post<Account>(this.location, payload);
+            var (_, account, _) = await this.context.Post<Account>(this.location, payload);
             return this;
         }
 
-        internal async Task<JwsPayload> Sign(object entity)
+        /// <summary>
+        /// Signs the specified entity.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <returns></returns>
+        public async Task<JwsPayload> Sign(object entity)
         {
             var nonce = await this.context.ConsumeNonce();
             return jws.Sign(entity, nonce);
@@ -156,7 +161,7 @@ namespace Certes.Acme
                 };
 
                 var payload = this.Sign(body);
-                var (location, account) = await this.context.Post<Account>(endpoint, payload);
+                var (location, _, _) = await this.context.Post<Account>(endpoint, payload);
 
                 this.location = location;
             }

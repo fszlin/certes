@@ -2,17 +2,44 @@
 
 namespace Certes.Jws
 {
-    internal class JwsPayload
+    /// <summary>
+    /// 
+    /// </summary>
+    public class JwsPayload
     {
+        /// <summary>
+        /// Gets or sets the header.
+        /// </summary>
+        /// <value>
+        /// The header.
+        /// </value>
         [JsonProperty("header")]
         public JwsUnprotectedHeader Header { get; set; }
 
+        /// <summary>
+        /// Gets or sets the protected.
+        /// </summary>
+        /// <value>
+        /// The protected.
+        /// </value>
         [JsonProperty("protected")]
         public string Protected { get; set; }
 
+        /// <summary>
+        /// Gets or sets the payload.
+        /// </summary>
+        /// <value>
+        /// The payload.
+        /// </value>
         [JsonProperty("payload")]
         public string Payload { get; set; }
 
+        /// <summary>
+        /// Gets or sets the signature.
+        /// </summary>
+        /// <value>
+        /// The signature.
+        /// </value>
         [JsonProperty("signature")]
         public string Signature { get; set; }
     }

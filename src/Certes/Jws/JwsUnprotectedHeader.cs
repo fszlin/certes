@@ -5,7 +5,7 @@ namespace Certes.Jws
     /// <summary>
     /// Represents the unprotected header.
     /// </summary>
-    internal class JwsUnprotectedHeader
+    public class JwsUnprotectedHeader
     {
         /// <summary>
         /// Gets or sets the algorithm.
