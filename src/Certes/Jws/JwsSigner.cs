@@ -27,15 +27,12 @@ namespace Certes.Jws
         public JwsPayload Sign(object payload, string nonce = null)
         {
             var jsonSettings = JsonUtil.CreateSettings();
-            var unprotectedHeader = new JwsUnprotectedHeader
-            {
-                Algorithm = keyPair.Algorithm.ToJwsAlgorithm(),
-                JsonWebKey = keyPair.JsonWebKey
-            };
 
             var protectedHeader = new
             {
-                nonce = nonce
+                nonce = nonce,
+                alg = keyPair.Algorithm.ToJwsAlgorithm(),
+                jwk = keyPair.JsonWebKey,
             };
 
             var entityJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
@@ -51,7 +48,6 @@ namespace Certes.Jws
 
             var body = new JwsPayload
             {
-                Header = unprotectedHeader,
                 Protected = protectedHeaderEncoded,
                 Payload = payloadEncoded,
                 Signature = signedSignatureEncoded

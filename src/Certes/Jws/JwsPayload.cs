@@ -8,15 +8,6 @@ namespace Certes.Jws
     public class JwsPayload
     {
         /// <summary>
-        /// Gets or sets the header.
-        /// </summary>
-        /// <value>
-        /// The header.
-        /// </value>
-        [JsonProperty("header")]
-        public JwsUnprotectedHeader Header { get; set; }
-
-        /// <summary>
         /// Gets or sets the protected.
         /// </summary>
         /// <value>
