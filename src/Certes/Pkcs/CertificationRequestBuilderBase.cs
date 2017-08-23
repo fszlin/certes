@@ -91,7 +91,9 @@ namespace Certes.Pkcs
         /// </summary>
         /// <param name="keyOrCommonName">Name of the key or common.</param>
         /// <param name="value">The value.</param>
-        /// <exception cref="System.ArgumentException"></exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// If <paramref name="keyOrCommonName"/> is not a valid X509 name.
+        /// </exception>
         public void AddName(string keyOrCommonName, string value)
         {
             DerObjectIdentifier id;
@@ -108,7 +110,7 @@ namespace Certes.Pkcs
             }
             else
             {
-                throw new ArgumentException();
+                throw new ArgumentOutOfRangeException($"{keyOrCommonName} is not a valid X509 name.", nameof(keyOrCommonName));
             }
         }
 
