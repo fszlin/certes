@@ -1,6 +1,7 @@
 ﻿using Certes.Acme.Resource;
 using Certes.Jws;
 using Certes.Pkcs;
+using System;
 using System.Threading.Tasks;
 
 namespace Certes.Acme
@@ -39,7 +40,8 @@ namespace Certes.Acme
         /// Signs the specified entity.
         /// </summary>
         /// <param name="entity">The entity.</param>
+        /// <param name="uri">The URI.</param>
         /// <returns></returns>
-        Task<JwsPayload> Sign(object entity);
+        Task<JwsPayload> Sign(object entity, Uri uri);
     }
 }

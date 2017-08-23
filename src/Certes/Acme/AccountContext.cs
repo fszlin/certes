@@ -49,7 +49,7 @@ namespace Certes.Acme
                 { "terms-of-service-agreed", termsOfServiceAgreed },
             };
 
-            var payload = this.Sign(body);
+            var payload = this.Sign(body, endpoint);
             var (location, account, _) = await this.context.Post<Account>(endpoint, payload);
 
             this.location = location;
@@ -65,6 +65,12 @@ namespace Certes.Acme
         /// </returns>
         public async Task<IAccountContext> ChangeKey(KeyInfo key = null)
         {
+            var endpoint = await this.context.GetResourceEndpoint(ResourceType.KeyChange);
+            if (endpoint == null)
+            {
+                throw new NotSupportedException();
+            }
+
             var location = await this.DiscoverLocation();
 
             var accountKey = new AccountKey(key);
@@ -75,8 +81,8 @@ namespace Certes.Acme
             };
 
             var body = this.jws.Sign(keyChange);
-            var payload = this.Sign(body);
-            await this.context.Post<Account>(location, payload);
+            var payload = this.Sign(body, endpoint);
+            await this.context.Post<Account>(endpoint, payload);
             return this;
         }
 
@@ -89,7 +95,7 @@ namespace Certes.Acme
         public async Task<Account> Deactivate()
         {
             var location = await this.DiscoverLocation();
-            var payload = this.Sign(new { status = AccountStatus.Deactivated });
+            var payload = this.Sign(new { status = AccountStatus.Deactivated }, location);
             var (_, account, _) = await this.context.Post<Account>(location, payload);
             return account;
         }
@@ -115,7 +121,7 @@ namespace Certes.Acme
         public async Task<Account> Resource()
         {
             var location = await this.DiscoverLocation();
-            var payload = this.Sign(new { });
+            var payload = this.Sign(new { }, location);
             var (_, account, _) = await this.context.Post<Account>(location, payload);
             return account;
         }
@@ -129,7 +135,7 @@ namespace Certes.Acme
         /// </returns>
         public async Task<IAccountContext> Update(Account resource)
         {
-            var payload = this.Sign(resource);
+            var payload = this.Sign(resource, location);
             var (_, account, _) = await this.context.Post<Account>(this.location, payload);
             return this;
         }
@@ -138,11 +144,12 @@ namespace Certes.Acme
         /// Signs the specified entity.
         /// </summary>
         /// <param name="entity">The entity.</param>
+        /// <param name="uri">The URI.</param>
         /// <returns></returns>
-        public async Task<JwsPayload> Sign(object entity)
+        public async Task<JwsPayload> Sign(object entity, Uri uri)
         {
             var nonce = await this.context.ConsumeNonce();
-            return jws.Sign(entity, nonce);
+            return jws.Sign(entity, this.location, uri, nonce);
         }
 
         private async Task<Uri> DiscoverLocation()
@@ -160,7 +167,7 @@ namespace Certes.Acme
                     { "only-return-existing", true },
                 };
 
-                var payload = this.Sign(body);
+                var payload = this.Sign(body, endpoint);
                 var (location, _, _) = await this.context.Post<Account>(endpoint, payload);
 
                 this.location = location;

@@ -80,7 +80,7 @@ namespace Certes.Acme
                 { "notAfter", notAfter },
             };
 
-            var payload = this.account.Sign(body);
+            var payload = this.account.Sign(body, endpoint);
             var (location, _, _) = await this.context.Post<Order>(endpoint, payload);
 
             return new OrderContext(this.context, this.account, location);
