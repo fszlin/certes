@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Authz = Certes.Acme.Resource.Authorization;
 
 namespace Certes.Acme
 {
-    internal class AuthorizationContext
+    internal class AuthorizationContext : IAuthorizationContext
     {
         private readonly AcmeContext context;
         private readonly IAccountContext account;
@@ -16,6 +18,12 @@ namespace Certes.Acme
             this.context = context;
             this.account = account;
             this.location = location;
+        }
+
+        public async Task<Authz> Resource()
+        {
+            var (_, authz, _) = await context.Get<Authz>(location);
+            return authz;
         }
     }
 }

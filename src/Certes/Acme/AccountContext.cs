@@ -1,9 +1,10 @@
-﻿using Certes.Acme.Resource;
-using Certes.Jws;
-using Certes.Pkcs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Certes.Acme.Resource;
+using Certes.Jws;
+using Certes.Pkcs;
+using Authz = Certes.Acme.Resource.Authorization;
 using Dict = System.Collections.Generic.Dictionary<string, object>;
 
 namespace Certes.Acme
@@ -138,6 +139,35 @@ namespace Certes.Acme
             var payload = this.Sign(resource, location);
             var (_, account, _) = await this.context.Post<Account>(this.location, payload);
             return this;
+        }
+
+        /// <summary>
+        /// Authorizes the specified value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
+        /// <exception cref="System.NotSupportedException"></exception>
+        public async Task<IAuthorizationContext> Authorize(string value, string type = AuthorizationIdentifierTypes.Dns)
+        {
+            var endpoint = await context.GetResourceEndpoint(ResourceType.NewAuthz);
+            if (endpoint == null)
+            {
+                throw new NotSupportedException();
+            }
+
+            var data = new
+            {
+                identifier = new
+                {
+                    type = type,
+                    value = value
+                }
+            };
+
+            var payload = Sign(data, endpoint);
+            var (url, _, _) = await this.context.Post<Authz>(endpoint, payload);
+            return new AuthorizationContext(this.context, this, url);
         }
 
         /// <summary>
