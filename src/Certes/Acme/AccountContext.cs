@@ -16,8 +16,23 @@ namespace Certes.Acme
     public class AccountContext : IAccountContext
     {
         private readonly AcmeContext context;
+        private readonly IAccountKey key;
         private readonly JwsSigner jws;
         private Uri location;
+
+        /// <summary>
+        /// Gets the key.
+        /// </summary>
+        /// <value>
+        /// The key.
+        /// </value>
+        public IAccountKey Key
+        {
+            get
+            {
+                return key;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountContext" /> class.
@@ -27,7 +42,8 @@ namespace Certes.Acme
         public AccountContext(AcmeContext context, KeyInfo key = null)
         {
             this.context = context;
-            this.jws = new JwsSigner(new AccountKey(key));
+            this.key = new AccountKey(key);
+            this.jws = new JwsSigner(this.key);
         }
 
         /// <summary>

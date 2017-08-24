@@ -12,6 +12,14 @@ namespace Certes.Acme
     public interface IAccountContext
     {
         /// <summary>
+        /// Gets the key.
+        /// </summary>
+        /// <value>
+        /// The key.
+        /// </value>
+        IAccountKey Key { get; }
+
+        /// <summary>
         /// Gets the account resource.
         /// </summary>
         /// <returns>The account resource.</returns>
