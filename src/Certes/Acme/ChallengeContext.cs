@@ -35,9 +35,7 @@ namespace Certes.Acme
         {
             // TODO: cache token
             var challenge = await Resource();
-
-            var jwkThumbprint = this.account.Key.GenerateThumbprint();
-            var jwkThumbprintEncoded = JwsConvert.ToBase64String(jwkThumbprint);
+            var jwkThumbprintEncoded = account.Key.Thumbprint();
             var token = challenge.Token;
             return $"{token}.{jwkThumbprintEncoded}";
         }
