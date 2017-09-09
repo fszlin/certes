@@ -77,6 +77,16 @@ namespace Certes.Jws
 
             return hashed;
         }
-        
+
+        /// <summary>
+        /// Generates the base64 encoded thumbprint for the given account <paramref name="key"/>.
+        /// </summary>
+        /// <param name="key">The account key.</param>
+        /// <returns>The thumbprint.</returns>
+        public static string Thumbprint(this IAccountKey key)
+        {
+            var jwkThumbprint = key.GenerateThumbprint();
+            return JwsConvert.ToBase64String(jwkThumbprint);
+        }
     }
 }

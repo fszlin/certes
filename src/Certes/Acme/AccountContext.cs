@@ -16,8 +16,23 @@ namespace Certes.Acme
     public class AccountContext : IAccountContext
     {
         private readonly AcmeContext context;
+        private readonly IAccountKey key;
         private readonly JwsSigner jws;
         private Uri location;
+
+        /// <summary>
+        /// Gets the key.
+        /// </summary>
+        /// <value>
+        /// The key.
+        /// </value>
+        public IAccountKey Key
+        {
+            get
+            {
+                return key;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountContext" /> class.
@@ -27,7 +42,8 @@ namespace Certes.Acme
         public AccountContext(AcmeContext context, KeyInfo key = null)
         {
             this.context = context;
-            this.jws = new JwsSigner(new AccountKey(key));
+            this.key = new AccountKey(key);
+            jws = new JwsSigner(this.key);
         }
 
         /// <summary>
@@ -38,7 +54,7 @@ namespace Certes.Acme
         /// <returns></returns>
         public async Task<Account> Create(IList<string> contact, bool termsOfServiceAgreed = false)
         {
-            var endpoint = await this.context.GetResourceEndpoint(ResourceType.NewAccount);
+            var endpoint = await context.GetResourceEndpoint(ResourceType.NewAccount);
             if (endpoint == null)
             {
                 throw new NotSupportedException();
@@ -109,8 +125,8 @@ namespace Certes.Acme
         /// </returns>
         public async Task<IOrderListContext> Orders()
         {
-            var account = await this.Resource();
-            return new OrderListContext(this.context, this, account.Orders);
+            var account = await Resource();
+            return new OrderListContext(context, this, account.Orders);
         }
 
         /// <summary>
@@ -136,8 +152,8 @@ namespace Certes.Acme
         /// </returns>
         public async Task<IAccountContext> Update(Account resource)
         {
-            var payload = this.Sign(resource, location);
-            var (_, account, _) = await this.context.Post<Account>(this.location, payload);
+            var payload = Sign(resource, location);
+            var (_, account, _) = await context.Post<Account>(location, payload);
             return this;
         }
 
@@ -166,8 +182,8 @@ namespace Certes.Acme
             };
 
             var payload = Sign(data, endpoint);
-            var (url, _, _) = await this.context.Post<Authz>(endpoint, payload);
-            return new AuthorizationContext(this.context, this, url);
+            var (url, _, _) = await context.Post<Authz>(endpoint, payload);
+            return new AuthorizationContext(context, this, url);
         }
 
         /// <summary>
@@ -178,15 +194,15 @@ namespace Certes.Acme
         /// <returns></returns>
         public async Task<JwsPayload> Sign(object entity, Uri uri)
         {
-            var nonce = await this.context.ConsumeNonce();
-            return jws.Sign(entity, this.location, uri, nonce);
+            var nonce = await context.ConsumeNonce();
+            return jws.Sign(entity, location, uri, nonce);
         }
 
         private async Task<Uri> DiscoverLocation()
         {
-            if (this.location == null)
+            if (location == null)
             {
-                var endpoint = await this.context.GetResourceEndpoint(ResourceType.NewAccount);
+                var endpoint = await context.GetResourceEndpoint(ResourceType.NewAccount);
                 if (endpoint == null)
                 {
                     throw new NotSupportedException();
@@ -197,13 +213,13 @@ namespace Certes.Acme
                     { "only-return-existing", true },
                 };
 
-                var payload = this.Sign(body, endpoint);
-                var (location, _, _) = await this.context.Post<Account>(endpoint, payload);
+                var payload = Sign(body, endpoint);
+                var (location, _, _) = await context.Post<Account>(endpoint, payload);
 
                 this.location = location;
             }
 
-            return this.location;
+            return location;
         }
     }
 }

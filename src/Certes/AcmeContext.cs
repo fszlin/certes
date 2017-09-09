@@ -29,6 +29,7 @@ namespace Certes
 
         private Directory directory;
         private string nonce = null;
+        private readonly HttpClient http;
 
         private JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
 
@@ -46,6 +47,11 @@ namespace Certes
         public AcmeContext(Uri directoryUri)
         {
             this.directoryUri = directoryUri;
+        }
+
+        internal AcmeContext(Uri directoryUrl, HttpClient http)
+        {
+            this.http = http ?? SharedHttp.Value;
         }
 
         /// <summary>
@@ -96,7 +102,7 @@ namespace Certes
 
         internal async Task<(Uri Location, T Resource, ILookup<string, Uri> Links)> Get<T>(Uri uri)
         {
-            var response = await SharedHttp.Value.GetAsync(uri);
+            var response = await http.GetAsync(uri);
             return await ProcessResponse<T>(response);
         }
 
@@ -104,7 +110,7 @@ namespace Certes
         {
             var payloadJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
             var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
-            var response = await SharedHttp.Value.PostAsync(uri, content);
+            var response = await http.PostAsync(uri, content);
             return await ProcessResponse<T>(response);
         }
 
@@ -176,7 +182,7 @@ namespace Certes
 
         private async Task FetchDirectory()
         {
-            var response = await SharedHttp.Value.GetAsync(this.directoryUri);
+            var response = await http.GetAsync(this.directoryUri);
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 throw new Exception();
@@ -195,7 +201,7 @@ namespace Certes
                 throw new InvalidOperationException();
             }
 
-            var response = await SharedHttp.Value.SendAsync(new HttpRequestMessage
+            var response = await http.SendAsync(new HttpRequestMessage
             {
                 RequestUri = dir.NewNonce,
                 Method = HttpMethod.Head,
