@@ -1,4 +1,6 @@
-﻿using Certes.Acme;
+﻿#if NETCOREAPP2_0
+
+using Certes.Acme;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
@@ -124,3 +126,5 @@ namespace Certes.Cli
         }
     }
 }
+
+#endif

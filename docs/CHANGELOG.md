@@ -2,6 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- Add build target for net47
 
 ## [1.1.0] - 2017-08-17
 ### Added
