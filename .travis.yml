@@ -27,4 +27,4 @@ branches:
     - dev
 script:
   - dotnet restore
-  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj
+  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp2.0
