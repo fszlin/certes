@@ -58,7 +58,7 @@ build_script:
   - msbuild -t:src\Certes_Cli
   - msbuild -t:src\Certes_Cli:Publish
   - ps: Get-ChildItem -Path "./src/Certes/**/Certes.$($env:CERTES_PACKAGE_VERSION).nupkg" -Recurse | Move-Item -Destination "./build"
-  - ps: '"dotnet %~dp0bin/Certes.Cli.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
+  - ps: '"dotnet %~dp0Certes.Cli.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
   - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
 
 #test: off
