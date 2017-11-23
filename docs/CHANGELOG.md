@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+## [1.1.3] - 2017-11-23
+### Changed
 - Fix MissingFieldException when running with BouncyCastle v1.8.1.3 ([#22][i22])
 
 ## [1.1.2] - 2017-09-27
