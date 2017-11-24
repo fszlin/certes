@@ -68,7 +68,16 @@ namespace Certes.Pkcs
         /// <param name="distinguishedName">The distinguished name.</param>
         public void AddName(string distinguishedName)
         {
-            var name = new X509Name(distinguishedName);
+            X509Name name;
+            try
+            {
+                name = new X509Name(distinguishedName);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentOutOfRangeException(
+                    $"{distinguishedName} contains an ivalid X509 name.", ex);
+            }
 
             var oidList = name.GetOidList();
             var valueList = name.GetValueList();
@@ -96,22 +105,7 @@ namespace Certes.Pkcs
         /// </exception>
         public void AddName(string keyOrCommonName, string value)
         {
-            DerObjectIdentifier id;
-            var lowered = keyOrCommonName.ToLowerInvariant();
-            if (X509Name.DefaultLookup.Contains(lowered))
-            {
-                id = (DerObjectIdentifier)X509Name.DefaultLookup[lowered];
-                this.attributes.Add((id, value));
-
-                if (id == X509Name.CN)
-                {
-                    this.commonName = value;
-                }
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException($"{keyOrCommonName} is not a valid X509 name.", nameof(keyOrCommonName));
-            }
+            this.AddName($"{keyOrCommonName}={value}");
         }
 
         /// <summary>

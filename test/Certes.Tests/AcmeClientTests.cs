@@ -85,7 +85,7 @@ namespace Certes
                 {
                     var payload = await ParsePayload<Registration>(req);
                     Assert.Equal(ResourceTypes.Registration, payload.Resource);
-                    Assert.Equal(true, payload.Delete);
+                    Assert.True(payload.Delete);
 
                     var resp = CreateResponse(null, HttpStatusCode.OK, regLocation);
                     resp.Headers.Add("Link", $"<{tos}>; rel=\"terms-of-service\"");

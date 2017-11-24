@@ -19,7 +19,7 @@ namespace Certes.Cli
     {
         // TODO: Setup boulder for testing
         private static readonly Uri Server = WellKnownServers.LetsEncryptStaging;
-        private const string Host = "certes-ci.azurewebsites.net";
+        private const string Host = "certes-ci.dymetis.com";
         private const string OutputPrefix = "./_test/cli-example";
         private readonly string AccountPath = $"{OutputPrefix}/context.json";
         private string cmd;
