@@ -65,6 +65,12 @@ namespace Certes.Cli.Processors
                 }
 
                 var pfxBuilder = cert.ToPfx();
+
+                if (Options.NoChain)
+                {
+                    pfxBuilder.FullChain = false;
+                }
+
                 var pfx = pfxBuilder.Build(Options.Name, Options.Password);
                 await FileUtil.WriteAllBytes(Options.ExportPfx, pfx);
             }
