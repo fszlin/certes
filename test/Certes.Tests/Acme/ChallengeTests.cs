@@ -1,11 +1,12 @@
-﻿using Xunit;
+﻿using System.Threading.Tasks;
+using Xunit;
 
 namespace Certes.Acme
 {
     public class ChallengeTests
     {
         [Fact]
-        public void CanComputeDnsKeyAuth()
+        public async Task CanComputeDnsKeyAuth()
         {
             var challenge = new Challenge
             {
@@ -13,7 +14,7 @@ namespace Certes.Acme
                 Type = "dns-01"
             };
 
-            var keyAuth = challenge.ComputeDnsValue(Helper.Loadkey());
+            var keyAuth = challenge.ComputeDnsValue(await Helper.Loadkey());
             Assert.Equal(
                 "_R4B3fDaVztZshDzof1sXQ90V-JlADF_2WFua87u7qU",
                 keyAuth);

@@ -18,7 +18,6 @@ namespace Certes.Cli
     public class CliTests
     {
         // TODO: Setup boulder for testing
-        private static readonly Uri Server = WellKnownServers.LetsEncryptStaging;
         private const string Host = "certes-ci.dymetis.com";
         private const string OutputPrefix = "./_test/cli-example";
         private readonly string AccountPath = $"{OutputPrefix}/context.json";
@@ -27,30 +26,32 @@ namespace Certes.Cli
         [Fact]
         public async Task RunStaging()
         {
+            var server = await Helper.GetStagingServer();
+
             // Create new Registration
-            cmd = $"register --register-unsafely-without-email --agree-tos --server {Server} --path {AccountPath} --force";
+            cmd = $"register --register-unsafely-without-email --agree-tos --server {server} --path {AccountPath} --force";
             await RunCommand(cmd);
 
             InjectTestKey();
 
             // Update registration to accept terms of services
-            cmd = $"register --agree-tos --update-registration --server {Server} --path {AccountPath}";
+            cmd = $"register --agree-tos --update-registration --server {server} --path {AccountPath}";
             await RunCommand(cmd);
 
             // Initialize authorization
-            cmd = $"authz --value {Host} --type dns --server {Server} --path {AccountPath}";
+            cmd = $"authz --value {Host} --type dns --server {server} --path {AccountPath}";
             await RunCommand(cmd);
 
             // Comptue key authorization for http-01
-            cmd = $"authz --value {Host} --type dns --key-authz http-01 --server {Server} --path {AccountPath}";
+            cmd = $"authz --value {Host} --type dns --key-authz http-01 --server {server} --path {AccountPath}";
             await RunCommand(cmd);
 
             // Submit key authorization for http-01
-            cmd = $"authz --value {Host} --type dns --complete-authz http-01 --server {Server} --path {AccountPath}";
+            cmd = $"authz --value {Host} --type dns --complete-authz http-01 --server {server} --path {AccountPath}";
             await RunCommand(cmd);
 
             // Refresh key authorization for http-01
-            cmd = $"authz --value {Host} --type dns --refresh http-01 --server {Server} --path {AccountPath}";
+            cmd = $"authz --value {Host} --type dns --refresh http-01 --server {server} --path {AccountPath}";
             await RunCommand(cmd);
 
             while (IsAuthPending())
@@ -60,7 +61,7 @@ namespace Certes.Cli
             }
 
             // Create a certificate with friendly name
-            cmd = $"cert --value {Host} --name mycert --distinguished-name %dn% --server {Server} --path {AccountPath}";
+            cmd = $"cert --value {Host} --name mycert --distinguished-name %dn% --server {server} --path {AccountPath}";
             await RunCommand(cmd, new Dictionary<string, string>
             {
                 { "%dn%", $"CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN={Host}" }
@@ -75,11 +76,11 @@ namespace Certes.Cli
             await RunCommand(cmd);
 
             // Export pfx
-            cmd = $"cert --name mycert --export-pfx {OutputPrefix}/mycert.pfx --password abcd1234 --path {AccountPath}";
+            cmd = $"cert --name mycert --export-pfx {OutputPrefix}/mycert.pfx --password abcd1234 --path {AccountPath} --full-chain-off";
             await RunCommand(cmd);
 
             // Revoke certificate
-            cmd = $"cert --name mycert --revoke --server {Server} --path {AccountPath}";
+            cmd = $"cert --name mycert --revoke --server {server} --path {AccountPath}";
             await RunCommand(cmd);
         }
 
