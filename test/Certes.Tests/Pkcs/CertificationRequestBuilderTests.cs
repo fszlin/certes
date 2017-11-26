@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Certes.Pkcs
@@ -6,9 +7,9 @@ namespace Certes.Pkcs
     public class CertificationRequestBuilderTests
     {
         [Fact]
-        public void CanCreateCsrWithKey()
+        public async Task CanCreateCsrWithKey()
         {
-            var key = Helper.Loadkey();
+            var key = await Helper.Loadkey();
             new CertificationRequestBuilder(key.Export());
         }
 

@@ -12,7 +12,7 @@ namespace Certes
         [Fact]
         public async Task CanDeleteRegistration()
         {
-            using (var client = new AcmeClient(WellKnownServers.LetsEncryptStaging))
+            using (var client = new AcmeClient(await Helper.GetStagingServer()))
             {
                 var reg = await client.NewRegistraton();
                 await client.DeleteRegistration(reg);
@@ -22,7 +22,7 @@ namespace Certes
         [Fact]
         public async Task CanChangeKey()
         {
-            using (var client = new AcmeClient(WellKnownServers.LetsEncryptStaging))
+            using (var client = new AcmeClient(await Helper.GetStagingServer()))
             {
                 var reg = await client.NewRegistraton();
 
@@ -35,14 +35,15 @@ namespace Certes
         [Fact]
         public async Task CanIssueSan()
         {
+            var accountKey = await Helper.Loadkey();
             var csr = new CertificationRequestBuilder();
             csr.AddName("CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN=www.certes-ci.dymetis.com");
             csr.SubjectAlternativeNames.Add("mail.certes-ci.dymetis.com");
             csr.SubjectAlternativeNames.Add("sso.certes-ci.dymetis.com");
 
-            using (var client = new AcmeClient(WellKnownServers.LetsEncryptStaging))
+            using (var client = new AcmeClient(await Helper.GetStagingServer()))
             {
-                client.Use(Helper.Loadkey().Export());
+                client.Use(accountKey.Export());
 
                 await Task.WhenAll(
                     AuthorizeDns(client, "www.certes-ci.dymetis.com"),
