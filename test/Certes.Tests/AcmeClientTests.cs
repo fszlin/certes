@@ -1,17 +1,16 @@
-﻿using Certes.Acme;
-using Certes.Acme.Resource;
+﻿using System;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Certes.Acme;
 using Certes.Json;
 using Certes.Jws;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Certes
@@ -27,11 +26,11 @@ namespace Certes
         private readonly AcmeDirectory acmeDir = Helper.AcmeDir;
 
         private int nonce = 0;
-        private AccountKey accountKey = Helper.Loadkey();
 
         [Fact]
         public async Task CanCreateRegistration()
         {
+            var accountKey = await Helper.Loadkey();
             var regLocation = new Uri("http://example.com/reg/1");
             var mock = MockHttp(async req =>
             {
@@ -78,6 +77,7 @@ namespace Certes
         [Fact]
         public async Task CanDeleteRegistration()
         {
+            var accountKey = await Helper.Loadkey();
             var regLocation = new Uri("http://example.com/reg/1");
             var mock = MockHttp(async req =>
             {
@@ -131,6 +131,7 @@ namespace Certes
         [Fact]
         public async Task CanUpdateRegistration()
         {
+            var accountKey = await Helper.Loadkey();
             var regLocation = new Uri("http://example.com/reg/1");
             var mock = MockHttp(async req =>
             {
@@ -187,6 +188,7 @@ namespace Certes
 
         private async Task<T> ParsePayload<T>(HttpRequestMessage message)
         {
+            var accountKey = await Helper.Loadkey();
             var content = message.Content;
             Assert.Equal(JsonContentType, content.Headers.ContentType.MediaType);
 

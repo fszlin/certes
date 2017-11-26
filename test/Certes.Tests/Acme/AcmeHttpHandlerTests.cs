@@ -1,12 +1,12 @@
-﻿using Moq;
-using Moq.Protected;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Moq;
+using Moq.Protected;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Certes.Acme
@@ -42,20 +42,20 @@ namespace Certes.Acme
         }
 
         [Fact]
-        public void CanCreateInstance()
+        public async Task CanCreateInstance()
         {
-            using (var handler = new AcmeHttpHandler(WellKnownServers.LetsEncryptStaging)) { }
+            using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer())) { }
 
             using (var http = new HttpClient())
             {
-                using (var handler = new AcmeHttpHandler(WellKnownServers.LetsEncryptStaging, http)) { }
+                using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer(), http)) { }
             }
 
-            using (var handler = new AcmeHttpHandler(WellKnownServers.LetsEncryptStaging, (HttpClient)null)) { }
+            using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer(), (HttpClient)null)) { }
 
 #pragma warning disable 0618
-            using (var handler = new AcmeHttpHandler(WellKnownServers.LetsEncryptStaging, (HttpMessageHandler)null)) { }
-            using (var handler = new AcmeHttpHandler(WellKnownServers.LetsEncryptStaging, CreateHttpMock().Object)) { }
+            using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer(), (HttpMessageHandler)null)) { }
+            using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer(), CreateHttpMock().Object)) { }
 #pragma warning restore 0618
         }
 

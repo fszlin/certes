@@ -1,12 +1,12 @@
-﻿using Certes.Acme;
-using Certes.Cli.Options;
-using Certes.Pkcs;
-using NLog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Certes.Acme;
+using Certes.Cli.Options;
+using Certes.Pkcs;
+using NLog;
 
 namespace Certes.Cli.Processors
 {
@@ -65,6 +65,12 @@ namespace Certes.Cli.Processors
                 }
 
                 var pfxBuilder = cert.ToPfx();
+
+                if (Options.NoChain)
+                {
+                    pfxBuilder.FullChain = false;
+                }
+
                 var pfx = pfxBuilder.Build(Options.Name, Options.Password);
                 await FileUtil.WriteAllBytes(Options.ExportPfx, pfx);
             }
