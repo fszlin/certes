@@ -17,6 +17,7 @@ namespace Certes
         private static Uri[] StagingServers = new[]
         {
             new Uri("http://localhost:4000/directory"),
+            new Uri("http://boulder-certes-ci.dymetis.com:4000/directory"),
             WellKnownServers.LetsEncryptStaging
         };
 
