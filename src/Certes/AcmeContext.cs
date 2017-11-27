@@ -1,230 +1,159 @@
-﻿using Certes.Acme;
-using Certes.Acme.Resource;
-using Certes.Json;
-using Newtonsoft.Json;
-using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Certes.Acme;
+using Certes.Acme.Resource;
+using Certes.Jws;
 
 namespace Certes
 {
     /// <summary>
-    /// Presents the context for ACME operations.
+    /// Represents the context for ACME operations.
     /// </summary>
     /// <seealso cref="Certes.IAcmeContext" />
     public class AcmeContext : IAcmeContext
     {
-        private const string MimeJoseJson = "application/jose+json";
-        private const string MimeJson = "application/json";
-        private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(() => new HttpClient());
-
-        /// <summary>
-        /// The directory URI.
-        /// </summary>
-        private readonly Uri directoryUri;
-
         private Directory directory;
-        private string nonce = null;
-        private readonly HttpClient http;
-
-        private JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
+        private IAccountContext accountContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AcmeContext"/> class.
-        /// </summary>
-        public AcmeContext() : this(WellKnownServers.LetsEncrypt)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AcmeContext"/> class.
+        /// Initializes a new instance of the <see cref="AcmeContext" /> class.
         /// </summary>
         /// <param name="directoryUri">The directory URI.</param>
-        public AcmeContext(Uri directoryUri)
+        /// <param name="accountKey">The account key.</param>
+        /// <param name="http">The HTTP client.</param>
+        /// <exception cref="ArgumentNullException">
+        /// If <paramref name="directoryUri"/> is <c>null</c>.
+        /// </exception>
+        public AcmeContext(Uri directoryUri, IAccountKey accountKey = null, IAcmeHttpClient http = null)
         {
-            this.directoryUri = directoryUri;
-        }
-
-        internal AcmeContext(Uri directoryUrl, HttpClient http)
-        {
-            this.http = http ?? SharedHttp.Value;
+            DirectoryUri = directoryUri ?? throw new ArgumentNullException(nameof(directoryUri));
+            AccountKey = accountKey ?? new AccountKey();
+            HttpClient = http ?? new AcmeHttpClient(directoryUri);
         }
 
         /// <summary>
-        /// Gets the URI for terms of service.
+        /// Gets the account.
+        /// </summary>
+        /// <value>
+        /// The account.
+        /// </value>
+        /// <exception cref="NotImplementedException"></exception>
+        public IAccountContext Account => accountContext ?? (accountContext = new AccountContext(this));
+
+        /// <summary>
+        /// Gets the ACME HTTP client.
+        /// </summary>
+        /// <value>
+        /// The ACME HTTP client.
+        /// </value>
+        /// <exception cref="NotImplementedException"></exception>
+        public IAcmeHttpClient HttpClient { get; }
+
+        /// <summary>
+        /// Gets the directory URI.
+        /// </summary>
+        /// <value>
+        /// The directory URI.
+        /// </value>
+        public Uri DirectoryUri { get; }
+
+        /// <summary>
+        /// Gets the account key.
+        /// </summary>
+        /// <value>
+        /// The account key.
+        /// </value>
+        public IAccountKey AccountKey { get; private set; }
+
+        /// <summary>
+        /// Changes the key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException"></exception>
+        public async Task ChangeKey(AccountKey key = null)
+        {
+            var dir = await GetDirectory();
+            var endpoint = dir.KeyChange;
+            if (endpoint == null)
+            {
+                throw new NotSupportedException();
+            }
+
+            var location = await this.Account.GetLocation();
+
+            var newKey = key ?? new AccountKey();
+            var keyChange = new
+            {
+                account = location,
+                newKey = newKey.JsonWebKey
+            };
+
+            var jws = new JwsSigner(AccountKey);
+            var body = jws.Sign(keyChange);
+            var payload = this.Account.Sign(body, endpoint);
+            await this.HttpClient.Post<Account>(endpoint, payload);
+
+            this.AccountKey = newKey;
+        }
+
+        /// <summary>
+        /// Creates the account.
         /// </summary>
         /// <returns>
-        /// The terms of service URI.
+        /// The account created.
         /// </returns>
-        public async Task<Uri> TermsOfService()
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<Account> CreateAccount(IList<string> contact, bool termsOfServiceAgreed = false)
         {
-            var dir = await this.GetDirectory();
-            return dir.Meta?.TermsOfService;
-        }
-
-        internal async Task<Uri> GetResourceEndpoint(ResourceType type)
-        {
-            var dir = await this.GetDirectory();
-            switch (type)
+            var dir = await GetDirectory();
+            var endpoint = dir.NewAccount;
+            if (endpoint == null)
             {
-                case ResourceType.NewNonce:
-                    return dir.NewNonce;
-                case ResourceType.NewAccount:
-                    return dir.NewAccount;
-                case ResourceType.NewOrder:
-                    return dir.NewOrder;
-                case ResourceType.NewAuthz:
-                    return dir.NewAuthz;
-                case ResourceType.RevokeCert:
-                    return dir.RevokeCert;
-                case ResourceType.KeyChange:
-                    return dir.KeyChange;
+                throw new NotSupportedException();
             }
 
-            throw new ArgumentOutOfRangeException(nameof(type));
+            var body = new Dictionary<string, object>
+            {
+                { "contact", contact },
+                { "terms-of-service-agreed", termsOfServiceAgreed },
+            };
+
+            var jws = new JwsSigner(AccountKey);
+            var payload = jws.Sign(body, url: endpoint, nonce: await HttpClient.ConsumeNonce());
+            var resp = await this.HttpClient.Post<Account>(endpoint, payload);
+            return resp.Resource;
         }
 
-        internal async Task<string> ConsumeNonce()
+        /// <summary>
+        /// Gets the ACME directory.
+        /// </summary>
+        /// <returns>
+        /// The ACME directory.
+        /// </returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<Directory> GetDirectory()
         {
-            var nonce = Interlocked.Exchange(ref this.nonce, null);
-            while (nonce == null)
+            if (directory == null)
             {
-                await this.FetchNonce();
-                nonce = Interlocked.Exchange(ref this.nonce, null);
-            }
-
-            return nonce;
-        }
-
-        internal async Task<(Uri Location, T Resource, ILookup<string, Uri> Links)> Get<T>(Uri uri)
-        {
-            var response = await http.GetAsync(uri);
-            return await ProcessResponse<T>(response);
-        }
-
-        internal async Task<(Uri Location, T Resource, ILookup<string, Uri> Links)> Post<T>(Uri uri, object payload)
-        {
-            var payloadJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
-            var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
-            var response = await http.PostAsync(uri, content);
-            return await ProcessResponse<T>(response);
-        }
-
-        private async Task<(Uri Location, T Resource, ILookup<string, Uri> Links)> ProcessResponse<T>(HttpResponseMessage response)
-        {
-            var data =
-                (
-                    Location: response.Headers.Location,
-                    Resource: default(T),
-                    Links: default(ILookup<string, Uri>)
-                );
-
-            if (response.Headers.Contains("Replay-Nonce"))
-            {
-                this.nonce = response.Headers.GetValues("Replay-Nonce").Single();
-            }
-
-            if (response.Headers.Contains("Link"))
-            {
-                data.Links = response.Headers.GetValues("Link")?
-                    .Select(h =>
-                    {
-                        var segments = h.Split(';');
-                        var url = segments[0].Substring(1, segments[0].Length - 2);
-                        var rel = segments.Skip(1)
-                            .Select(s => s.Trim())
-                            .Where(s => s.StartsWith("rel=", StringComparison.OrdinalIgnoreCase))
-                            .Select(r =>
-                            {
-                                var relType = r.Split('=')[1];
-                                return relType.Substring(1, relType.Length - 2);
-                            })
-                            .First();
-
-                        return (
-                            Rel: rel,
-                            Uri: new Uri(url)
-                        );
-                    })
-                    .ToLookup(l => l.Rel, l => l.Uri);
-            }
-
-            if (IsJsonMedia(response.Content?.Headers.ContentType.MediaType))
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
-                {
-                    data.Resource = JsonConvert.DeserializeObject<T>(json);
-                }
-                else
-                {
-                    var error = JsonConvert.DeserializeObject<AcmeError>(json);
-                    throw new Exception(error.Detail);
-                }
-            }
-
-            return data;
-        }
-
-        private async Task<Directory> GetDirectory()
-        {
-            if (this.directory == null)
-            {
-                await this.FetchDirectory();
+                var resp = await this.HttpClient.Get<Directory>(DirectoryUri);
+                directory = resp.Resource;
             }
 
             return directory;
         }
 
-        private async Task FetchDirectory()
+        /// <summary>
+        /// Revokes the certificate.
+        /// </summary>
+        /// <returns>
+        /// The awaitable.
+        /// </returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public Task RevokeCertificate()
         {
-            var response = await http.GetAsync(this.directoryUri);
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                throw new Exception();
-            }
-
-            var dirJson = await response.Content.ReadAsStringAsync();
-            this.directory = JsonConvert.DeserializeObject<Directory>(dirJson);
-            this.nonce = response.Headers.GetValues("Replay-Nonce").FirstOrDefault();
-        }
-
-        private async Task FetchNonce()
-        {
-            var dir = await GetDirectory();
-            if (dir.NewNonce == null)
-            {
-                throw new InvalidOperationException();
-            }
-
-            var response = await http.SendAsync(new HttpRequestMessage
-            {
-                RequestUri = dir.NewNonce,
-                Method = HttpMethod.Head,
-            });
-
-            this.nonce = response.Headers.GetValues("Replay-Nonce").FirstOrDefault();
-            if (this.nonce == null)
-            {
-                throw new Exception();
-            }
-        }
-
-        private static bool IsJsonMedia(string mediaType)
-        {
-            if (mediaType != null && mediaType.StartsWith("application/"))
-            {
-                return mediaType
-                    .Substring("application/".Length)
-                    .Split('+')
-                    .Any(t => t == "json");
-            }
-
-            return false;
+            throw new NotImplementedException();
         }
     }
 }

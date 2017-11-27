@@ -22,8 +22,8 @@ namespace Certes.Acme
 
         public async Task<Authz> Resource()
         {
-            var (_, authz, _) = await context.Get<Authz>(location);
-            return authz;
+            var resp = await context.HttpClient.Get<Authz>(location);
+            return resp.Resource;
         }
     }
 }

@@ -28,8 +28,8 @@ namespace Certes.Acme
         /// <returns></returns>
         public async Task<Order> Resource()
         {
-            var (_, order, _) = await this.context.Get<Order>(location);
-            return order;
+            var resp = await this.context.HttpClient.Get<Order>(location);
+            return resp.Resource;
         }
 
         /// <summary>

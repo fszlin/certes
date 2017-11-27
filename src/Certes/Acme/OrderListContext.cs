@@ -45,12 +45,12 @@ namespace Certes.Acme
             var next = this.location;
             while (next != null)
             {
-                var (_, orders, links) = await this.context.Get<OrderList>(next);
+                var resp = await this.context.HttpClient.Get<OrderList>(next);
 
                 orderList.AddRange(
-                    orders.Orders.Select(o => new OrderContext(this.context, this.account, o)));
+                    resp.Resource.Orders.Select(o => new OrderContext(this.context, this.account, o)));
 
-                next = links["next"].FirstOrDefault();
+                next = resp.Links["next"].FirstOrDefault();
             }
 
             return orderList;
@@ -67,7 +67,8 @@ namespace Certes.Acme
         /// </returns>
         public async Task<IOrderContext> New(string csr, DateTimeOffset notBefore, DateTimeOffset notAfter)
         {
-            var endpoint = await this.context.GetResourceEndpoint(ResourceType.NewOrder);
+            var dir = await context.GetDirectory();
+            var endpoint = dir.NewOrder;
             if (endpoint == null)
             {
                 throw new NotSupportedException();
@@ -81,9 +82,9 @@ namespace Certes.Acme
             };
 
             var payload = this.account.Sign(body, endpoint);
-            var (location, _, _) = await this.context.Post<Order>(endpoint, payload);
+            var resp = await this.context.HttpClient.Post<Order>(endpoint, payload);
 
-            return new OrderContext(this.context, this.account, location);
+            return new OrderContext(this.context, this.account, resp.Location);
         }
     }
 }

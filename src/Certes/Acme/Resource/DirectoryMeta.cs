@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Certes.Acme.Resource
 {
@@ -34,6 +34,6 @@ namespace Certes.Acme.Resource
         /// The caa identities.
         /// </value>
         [JsonProperty("caa-identities")]
-        public IList<string> CaaIdentities { get; set; }
+        public IReadOnlyList<string> CaaIdentities { get; set; }
     }
 }

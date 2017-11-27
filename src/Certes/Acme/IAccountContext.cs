@@ -11,38 +11,44 @@ namespace Certes.Acme
     /// </summary>
     public interface IAccountContext
     {
-        /// <summary>
-        /// Gets the key.
-        /// </summary>
-        /// <value>
-        /// The key.
-        /// </value>
-        IAccountKey Key { get; }
+        ///// <summary>
+        ///// Gets the key.
+        ///// </summary>
+        ///// <value>
+        ///// The key.
+        ///// </value>
+        //IAccountKey Key { get; }
+
+        ///// <summary>
+        ///// Gets the account resource.
+        ///// </summary>
+        ///// <returns>The account resource.</returns>
+        //Task<Account> Resource();
+
+        ///// <summary>
+        ///// Gets the orders
+        ///// </summary>
+        ///// <returns>The orders.</returns>
+        //Task<IOrderListContext> Orders();
+
+        ///// <summary>
+        ///// Changes the account key.
+        ///// </summary>
+        ///// <param name="key">The new key.</param>
+        ///// <returns>The account context.</returns>
+        //Task<IAccountContext> ChangeKey(KeyInfo key);
+
+        ///// <summary>
+        ///// Deactivates the current account.
+        ///// </summary>
+        ///// <returns>The awaitable.</returns>
+        //Task<Account> Deactivate();
 
         /// <summary>
-        /// Gets the account resource.
+        /// Gets the location.
         /// </summary>
-        /// <returns>The account resource.</returns>
-        Task<Account> Resource();
-
-        /// <summary>
-        /// Gets the orders
-        /// </summary>
-        /// <returns>The orders.</returns>
-        Task<IOrderListContext> Orders();
-        
-        /// <summary>
-        /// Changes the account key.
-        /// </summary>
-        /// <param name="key">The new key.</param>
-        /// <returns>The account context.</returns>
-        Task<IAccountContext> ChangeKey(KeyInfo key);
-
-        /// <summary>
-        /// Deactivates the current account.
-        /// </summary>
-        /// <returns>The awaitable.</returns>
-        Task<Account> Deactivate();
+        /// <returns></returns>
+        Task<Uri> GetLocation();
 
         /// <summary>
         /// Signs the specified entity.
