@@ -74,13 +74,7 @@ namespace Certes
         /// <exception cref="NotSupportedException"></exception>
         public async Task ChangeKey(AccountKey key = null)
         {
-            var dir = await GetDirectory();
-            var endpoint = dir.KeyChange;
-            if (endpoint == null)
-            {
-                throw new NotSupportedException();
-            }
-
+            var endpoint = await this.GetResourceUri(d => d.KeyChange);
             var location = await this.Account.GetLocation();
 
             var newKey = key ?? new AccountKey();
@@ -107,13 +101,7 @@ namespace Certes
         /// <exception cref="NotImplementedException"></exception>
         public async Task<Account> CreateAccount(IList<string> contact, bool termsOfServiceAgreed = false)
         {
-            var dir = await GetDirectory();
-            var endpoint = dir.NewAccount;
-            if (endpoint == null)
-            {
-                throw new NotSupportedException();
-            }
-
+            var endpoint = await this.GetResourceUri(d => d.NewAccount);
             var body = new Dictionary<string, object>
             {
                 { "contact", contact },
@@ -123,6 +111,11 @@ namespace Certes
             var jws = new JwsSigner(AccountKey);
             var payload = jws.Sign(body, url: endpoint, nonce: await HttpClient.ConsumeNonce());
             var resp = await this.HttpClient.Post<Account>(endpoint, payload);
+            if (resp.Error != null)
+            {
+                throw new Exception(resp.Error.Detail);
+            }
+
             return resp.Resource;
         }
 

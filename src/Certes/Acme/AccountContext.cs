@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
 using Certes.Jws;
-using Certes.Pkcs;
 using Authz = Certes.Acme.Resource.Authorization;
 using Dict = System.Collections.Generic.Dictionary<string, object>;
 
@@ -145,6 +144,12 @@ namespace Certes.Acme
                 var jws = new JwsSigner(context.AccountKey);
                 var payload = jws.Sign(body, url: endpoint, nonce: await context.HttpClient.ConsumeNonce());
                 var resp = await context.HttpClient.Post<Account>(endpoint, payload);
+
+                // boulder doesn't support "only-return-existing"
+                if (resp.Error != null && resp.Error.Status != HttpStatusCode.Conflict)
+                {
+                    throw new Exception(resp.Error.Detail);
+                }
 
                 location = resp.Location;
             }

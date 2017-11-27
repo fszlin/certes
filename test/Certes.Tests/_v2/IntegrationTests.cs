@@ -19,7 +19,7 @@ namespace Certes
             Assert.Equal(AccountStatus.Valid, account.Status);
             Assert.False(account.TermsOfServiceAgreed);
 
-            //var location = await ctx.Account.GetLocation();
+            var location = await ctx.Account.GetLocation();
         }
     }
 }
