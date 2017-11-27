@@ -105,7 +105,7 @@ namespace Certes.Acme
         /// <typeparam name="T">The resource entity type.</typeparam>
         /// <param name="uri">The URI.</param>
         /// <returns>The ACME response.</returns>
-        public async Task<AcmeRespone<T>> Get<T>(Uri uri)
+        public async Task<AcmeResponse<T>> Get<T>(Uri uri)
         {
             var resp = await http.GetAsync(uri);
             var result = await ReadResponse<T>(resp);
@@ -120,7 +120,7 @@ namespace Certes.Acme
         /// <param name="entity">The entity.</param>
         /// <param name="keyPair">The signing key pair.</param>
         /// <returns>The ACME response.</returns>
-        public async Task<AcmeRespone<T>> Post<T>(Uri uri, T entity, IAccountKey keyPair)
+        public async Task<AcmeResponse<T>> Post<T>(Uri uri, T entity, IAccountKey keyPair)
         {
             await FetchDirectory(false);
 
@@ -162,9 +162,9 @@ namespace Certes.Acme
             return new StringContent(bodyJson, Encoding.ASCII, MimeJson);
         }
 
-        private async Task<AcmeRespone<T>> ReadResponse<T>(HttpResponseMessage response, string resourceType = null)
+        private async Task<AcmeResponse<T>> ReadResponse<T>(HttpResponseMessage response, string resourceType = null)
         {
-            var data = new AcmeRespone<T>();
+            var data = new AcmeResponse<T>();
             if (IsJsonMedia(response.Content?.Headers.ContentType.MediaType))
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -193,7 +193,7 @@ namespace Certes.Acme
             return data;
         }
 
-        private static void ParseHeaders<T>(AcmeRespone<T> data, HttpResponseMessage response)
+        private static void ParseHeaders<T>(AcmeResponse<T> data, HttpResponseMessage response)
         {
             data.Location = response.Headers.Location;
 

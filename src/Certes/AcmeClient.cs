@@ -392,7 +392,7 @@ namespace Certes
         public Task<AcmeResult<Authz>> RefreshAuthorization(Uri location)
             => GetAuthorization(location);
 
-        private void ThrowIfError<T>(AcmeRespone<T> response)
+        private void ThrowIfError<T>(AcmeResponse<T> response)
         {
             if (response.Error != null)
             {

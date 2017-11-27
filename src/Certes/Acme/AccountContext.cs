@@ -1,10 +1,6 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Certes.Acme.Resource;
-using Certes.Jws;
 using Authz = Certes.Acme.Resource.Authorization;
-using Dict = System.Collections.Generic.Dictionary<string, object>;
 
 namespace Certes.Acme
 {
@@ -15,8 +11,6 @@ namespace Certes.Acme
     public class AccountContext : IAccountContext
     {
         private readonly AcmeContext context;
-        private readonly JwsSigner jws;
-        private Uri location;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountContext" /> class.
@@ -25,7 +19,6 @@ namespace Certes.Acme
         public AccountContext(AcmeContext context)
         {
             this.context = context;
-            jws = new JwsSigner(context.AccountKey);
         }
 
         /// <summary>
@@ -36,9 +29,9 @@ namespace Certes.Acme
         /// </returns>
         public async Task<Account> Deactivate()
         {
-            var location = await this.DiscoverLocation();
-            var payload = this.Sign(new { status = AccountStatus.Deactivated }, location);
-            var resp = await this.context.HttpClient.Post<Account>(location, payload);
+            var location = await context.GetAccountLocation();
+            var payload = await context.Sign(new { status = AccountStatus.Deactivated }, location);
+            var resp = await context.HttpClient.Post<Account>(location, payload, true);
             return resp.Resource;
         }
 
@@ -62,9 +55,9 @@ namespace Certes.Acme
         /// </returns>
         public async Task<Account> Resource()
         {
-            var location = await this.DiscoverLocation();
-            var payload = this.Sign(new { }, location);
-            var resp = await this.context.HttpClient.Post<Account>(location, payload);
+            var location = await context.GetAccountLocation();
+            var payload = await context.Sign(new { }, location);
+            var resp = await context.HttpClient.Post<Account>(location, payload);
             return resp.Resource;
         }
 
@@ -77,7 +70,8 @@ namespace Certes.Acme
         /// </returns>
         public async Task<IAccountContext> Update(Account resource)
         {
-            var payload = Sign(resource, location);
+            var location = await context.GetAccountLocation();
+            var payload = await context.Sign(resource, location);
             await context.HttpClient.Post<Account>(location, payload);
             return this;
         }
@@ -91,12 +85,7 @@ namespace Certes.Acme
         /// <exception cref="System.NotSupportedException"></exception>
         public async Task<IAuthorizationContext> Authorize(string value, string type = AuthorizationIdentifierTypes.Dns)
         {
-            var dir = await context.GetDirectory();
-            var endpoint = dir.NewAuthz;
-            if (endpoint == null)
-            {
-                throw new NotSupportedException();
-            }
+            var endpoint = await context.GetResourceUri(d => d.NewAuthz);
 
             var data = new
             {
@@ -107,63 +96,9 @@ namespace Certes.Acme
                 }
             };
 
-            var payload = Sign(data, endpoint);
+            var payload = await context.Sign(data, endpoint);
             var resp = await context.HttpClient.Post<Authz>(endpoint, payload);
-            return new AuthorizationContext(context, this, resp.Location);
-        }
-
-        /// <summary>
-        /// Signs the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <param name="uri">The URI.</param>
-        /// <returns></returns>
-        public async Task<JwsPayload> Sign(object entity, Uri uri)
-        {
-            var nonce = await context.HttpClient.ConsumeNonce();
-            var location = await this.DiscoverLocation();
-            return jws.Sign(entity, location, uri, nonce);
-        }
-
-        private async Task<Uri> DiscoverLocation()
-        {
-            if (location == null)
-            {
-                var dir = await context.GetDirectory();
-                var endpoint = dir.NewAccount;
-                if (endpoint == null)
-                {
-                    throw new NotSupportedException();
-                }
-
-                var body = new Dict
-                {
-                    { "only-return-existing", true },
-                };
-
-                var jws = new JwsSigner(context.AccountKey);
-                var payload = jws.Sign(body, url: endpoint, nonce: await context.HttpClient.ConsumeNonce());
-                var resp = await context.HttpClient.Post<Account>(endpoint, payload);
-
-                // boulder doesn't support "only-return-existing"
-                if (resp.Error != null && resp.Error.Status != HttpStatusCode.Conflict)
-                {
-                    throw new Exception(resp.Error.Detail);
-                }
-
-                location = resp.Location;
-            }
-
-            return location;
-        }
-
-        /// <summary>
-        /// Gets the location.
-        /// </summary>
-        /// <returns></returns>
-        public Task<Uri> GetLocation()
-        {
-            return this.DiscoverLocation();
+            return new AuthorizationContext(context, resp.Location);
         }
     }
 }

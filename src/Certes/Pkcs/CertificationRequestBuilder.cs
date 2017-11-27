@@ -42,7 +42,7 @@ namespace Certes.Pkcs
             this.KeyPair = keyInfo.CreateKeyPair();
             if (this.KeyPair.Private is RsaPrivateCrtKeyParameters)
             {
-                this.Algorithm = SignatureAlgorithm.Sha256WithRsaEncryption;
+                this.Algorithm = SignatureAlgorithm.RS256;
             }
             else
             {
@@ -55,8 +55,8 @@ namespace Certes.Pkcs
         /// </summary>
         public CertificationRequestBuilder()
         {
-            this.KeyPair = SignatureAlgorithm.Sha256WithRsaEncryption.Create();
-            this.Algorithm = SignatureAlgorithm.Sha256WithRsaEncryption;
+            this.KeyPair = SignatureAlgorithm.RS256.Create();
+            this.Algorithm = SignatureAlgorithm.RS256;
         }
     }
 

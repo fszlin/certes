@@ -8,12 +8,12 @@ namespace Certes.Acme
 {
     internal class OrderContext : IOrderContext
     {
-        private readonly AcmeContext context;
+        private readonly IAcmeContext context;
         private readonly IAccountContext account;
         private readonly Uri location;
 
         public OrderContext(
-            AcmeContext context,
+            IAcmeContext context,
             IAccountContext account,
             Uri location)
         {
@@ -40,7 +40,7 @@ namespace Certes.Acme
         {
             var order = await this.Resource();
             return order.Authorizations
-                .Select(a => new AuthorizationContext(this.context, this.account, a));
+                .Select(a => new AuthorizationContext(this.context, a));
         }
     }
 }

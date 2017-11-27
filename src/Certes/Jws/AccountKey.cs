@@ -28,15 +28,15 @@ namespace Certes.Jws
         {
             if (keyInfo == null)
             {
-                this.keyPair = SignatureAlgorithm.Sha256WithRsaEncryption.Create();
-                this.Algorithm = SignatureAlgorithm.Sha256WithRsaEncryption;
+                this.keyPair = SignatureAlgorithm.RS256.Create();
+                this.Algorithm = SignatureAlgorithm.RS256;
             }
             else
             {
                 this.keyPair = keyInfo.CreateKeyPair();
                 if (this.keyPair.Private is RsaPrivateCrtKeyParameters)
                 {
-                    this.Algorithm = SignatureAlgorithm.Sha256WithRsaEncryption;
+                    this.Algorithm = SignatureAlgorithm.RS256;
                 }
                 else
                 {

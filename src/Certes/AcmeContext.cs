@@ -15,6 +15,7 @@ namespace Certes
     {
         private Directory directory;
         private IAccountContext accountContext;
+        private Uri accountLocation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeContext" /> class.
@@ -75,8 +76,8 @@ namespace Certes
         public async Task ChangeKey(AccountKey key = null)
         {
             var endpoint = await this.GetResourceUri(d => d.KeyChange);
-            var location = await this.Account.GetLocation();
-
+            var location = await this.GetAccountLocation();
+            
             var newKey = key ?? new AccountKey();
             var keyChange = new
             {
@@ -84,12 +85,13 @@ namespace Certes
                 newKey = newKey.JsonWebKey
             };
 
-            var jws = new JwsSigner(AccountKey);
-            var body = jws.Sign(keyChange);
-            var payload = this.Account.Sign(body, endpoint);
-            await this.HttpClient.Post<Account>(endpoint, payload);
+            var jws = new JwsSigner(newKey);
+            var body = jws.Sign(keyChange, url: endpoint);
 
-            this.AccountKey = newKey;
+            var payload = await Sign(body, endpoint);
+            await HttpClient.Post<Account>(endpoint, payload, true);
+
+            AccountKey = newKey;
         }
 
         /// <summary>
@@ -101,21 +103,14 @@ namespace Certes
         /// <exception cref="NotImplementedException"></exception>
         public async Task<Account> CreateAccount(IList<string> contact, bool termsOfServiceAgreed = false)
         {
-            var endpoint = await this.GetResourceUri(d => d.NewAccount);
             var body = new Dictionary<string, object>
             {
                 { "contact", contact },
                 { "terms-of-service-agreed", termsOfServiceAgreed },
             };
 
-            var jws = new JwsSigner(AccountKey);
-            var payload = jws.Sign(body, url: endpoint, nonce: await HttpClient.ConsumeNonce());
-            var resp = await this.HttpClient.Post<Account>(endpoint, payload);
-            if (resp.Error != null)
-            {
-                throw new Exception(resp.Error.Detail);
-            }
-
+            var resp = await NewAccount(body, true);
+            this.accountLocation = resp.Location;
             return resp.Resource;
         }
 
@@ -125,7 +120,6 @@ namespace Certes
         /// <returns>
         /// The ACME directory.
         /// </returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<Directory> GetDirectory()
         {
             if (directory == null)
@@ -147,6 +141,45 @@ namespace Certes
         public Task RevokeCertificate()
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Signs the specified entity.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <param name="uri">The URI.</param>
+        /// <returns></returns>
+        public async Task<JwsPayload> Sign(object entity, Uri uri)
+        {
+            var nonce = await HttpClient.ConsumeNonce();
+            var location = await this.GetAccountLocation();
+            var jws = new JwsSigner(AccountKey);
+            return jws.Sign(entity, location, uri, nonce);
+        }
+
+        /// <summary>
+        /// Gets the account location.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<Uri> GetAccountLocation()
+        {
+            if (this.accountLocation != null)
+            {
+                return this.accountLocation;
+            }
+
+            // boulder doesn't process "only-return-existing", but will still retrun the location with status 409
+            var resp = await NewAccount(new Dictionary<string, object> { { "only-return-existing", true } }, false);
+
+            return resp.Location;
+        }
+
+        private async Task<AcmeHttpResponse<Account>> NewAccount(IDictionary<string, object> body, bool ensureSuccessStatusCode)
+        {
+            var endpoint = await this.GetResourceUri(d => d.NewAccount);
+            var jws = new JwsSigner(AccountKey);
+            var payload = jws.Sign(body, url: endpoint, nonce: await HttpClient.ConsumeNonce());
+            return await HttpClient.Post<Account>(endpoint, payload, ensureSuccessStatusCode);
         }
     }
 }

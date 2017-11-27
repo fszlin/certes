@@ -30,7 +30,7 @@ namespace Certes.Acme
         /// <typeparam name="T">The resource entity type.</typeparam>
         /// <param name="uri">The URI.</param>
         /// <returns>The ACME response.</returns>
-        Task<AcmeRespone<T>> Get<T>(Uri uri);
+        Task<AcmeResponse<T>> Get<T>(Uri uri);
 
         /// <summary>
         /// Performs HTTP POST to <paramref name="uri"/>.
@@ -40,6 +40,6 @@ namespace Certes.Acme
         /// <param name="entity">The entity.</param>
         /// <param name="keyPair">The signing key pair.</param>
         /// <returns>The ACME response.</returns>
-        Task<AcmeRespone<T>> Post<T>(Uri uri, T entity, IAccountKey keyPair);
+        Task<AcmeResponse<T>> Post<T>(Uri uri, T entity, IAccountKey keyPair);
     }
 }

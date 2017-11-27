@@ -58,10 +58,17 @@ namespace Certes.Acme
         /// <returns></returns>
         public async Task<AcmeHttpResponse<T>> Post<T>(Uri uri, object payload)
         {
-            var payloadJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
-            var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
-            var response = await http.Value.PostAsync(uri, content);
-            return await ProcessResponse<T>(response);
+            try
+            {
+                var payloadJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
+                var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
+                var response = await http.Value.PostAsync(uri, content);
+                return await ProcessResponse<T>(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         /// <summary>

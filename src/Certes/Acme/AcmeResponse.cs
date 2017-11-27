@@ -8,7 +8,7 @@ namespace Certes.Acme
     /// </summary>
     /// <typeparam name="T">The entity type.</typeparam>
     /// <seealso cref="Certes.Acme.AcmeResult{T}" />
-    public class AcmeRespone<T> : AcmeResult<T>
+    public class AcmeResponse<T> : AcmeResult<T>
     {
         /// <summary>
         /// Gets or sets the replay nonce.

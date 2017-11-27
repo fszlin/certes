@@ -6,17 +6,14 @@ namespace Certes.Acme
 {
     internal class AuthorizationContext : IAuthorizationContext
     {
-        private readonly AcmeContext context;
-        private readonly IAccountContext account;
+        private readonly IAcmeContext context;
         private readonly Uri location;
 
         public AuthorizationContext(
-            AcmeContext context,
-            IAccountContext account,
+            IAcmeContext context,
             Uri location)
         {
             this.context = context;
-            this.account = account;
             this.location = location;
         }
 

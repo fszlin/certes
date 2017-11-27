@@ -35,4 +35,18 @@ namespace Certes.Acme
         /// <returns></returns>
         Task<AcmeHttpResponse<T>> Get<T>(Uri uri);
     }
+
+    internal static class IAcmeHttpClientExtensions
+    {
+        internal static async Task<AcmeHttpResponse<T>> Post<T>(this IAcmeHttpClient client, Uri uri, object payload, bool ensureSuccessStatusCode)
+        {
+            var resp = await client.Post<T>(uri, payload);
+            if (ensureSuccessStatusCode && resp.Error != null)
+            {
+                throw new Exception(resp.Error.Detail);
+            }
+
+            return resp;
+        }
+    }
 }

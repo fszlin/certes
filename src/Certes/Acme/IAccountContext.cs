@@ -38,24 +38,10 @@ namespace Certes.Acme
         ///// <returns>The account context.</returns>
         //Task<IAccountContext> ChangeKey(KeyInfo key);
 
-        ///// <summary>
-        ///// Deactivates the current account.
-        ///// </summary>
-        ///// <returns>The awaitable.</returns>
-        //Task<Account> Deactivate();
-
         /// <summary>
-        /// Gets the location.
+        /// Deactivates the current account.
         /// </summary>
-        /// <returns></returns>
-        Task<Uri> GetLocation();
-
-        /// <summary>
-        /// Signs the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <param name="uri">The URI.</param>
-        /// <returns></returns>
-        Task<JwsPayload> Sign(object entity, Uri uri);
+        /// <returns>The awaitable.</returns>
+        Task<Account> Deactivate();
     }
 }

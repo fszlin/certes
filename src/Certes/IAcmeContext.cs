@@ -45,6 +45,12 @@ namespace Certes
         Task<Directory> GetDirectory();
 
         /// <summary>
+        /// Gets the account location.
+        /// </summary>
+        /// <returns></returns>
+        Task<Uri> GetAccountLocation();
+
+        /// <summary>
         /// Creates the account.
         /// </summary>
         /// <returns>
@@ -67,12 +73,17 @@ namespace Certes
         /// The awaitable.
         /// </returns>
         Task ChangeKey(AccountKey key = null);
+
+        /// <summary>
+        /// Signs the specified entity.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <param name="uri">The URI.</param>
+        /// <returns></returns>
+        Task<JwsPayload> Sign(object entity, Uri uri);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public static class IAcmeContextExtensions
+    internal static class IAcmeContextExtensions
     {
         internal static async Task<Uri> GetResourceUri(this IAcmeContext context, Func<Directory, Uri> getter, bool optional = false)
         {

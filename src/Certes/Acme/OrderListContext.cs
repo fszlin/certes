@@ -13,7 +13,7 @@ namespace Certes.Acme
     /// <seealso cref="Certes.Acme.IOrderListContext" />
     public class OrderListContext : IOrderListContext
     {
-        private readonly AcmeContext context;
+        private readonly IAcmeContext context;
         private readonly IAccountContext account;
         private readonly Uri location;
 
@@ -24,7 +24,7 @@ namespace Certes.Acme
         /// <param name="account"></param>
         /// <param name="location"></param>
         public OrderListContext(
-            AcmeContext context,
+            IAcmeContext context,
             IAccountContext account,
             Uri location)
         {
@@ -81,7 +81,7 @@ namespace Certes.Acme
                 { "notAfter", notAfter },
             };
 
-            var payload = this.account.Sign(body, endpoint);
+            var payload = await context.Sign(body, endpoint);
             var resp = await this.context.HttpClient.Post<Order>(endpoint, payload);
 
             return new OrderContext(this.context, this.account, resp.Location);
