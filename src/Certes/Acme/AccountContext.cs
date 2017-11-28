@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Certes.Acme.Resource;
 using Authz = Certes.Acme.Resource.Authorization;
 
@@ -10,13 +12,13 @@ namespace Certes.Acme
     /// <seealso cref="Certes.Acme.IAccountContext" />
     public class AccountContext : IAccountContext
     {
-        private readonly AcmeContext context;
+        private readonly IAcmeContext context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountContext" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public AccountContext(AcmeContext context)
+        public AccountContext(IAcmeContext context)
         {
             this.context = context;
         }
@@ -64,15 +66,35 @@ namespace Certes.Acme
         /// <summary>
         /// Updates the account.
         /// </summary>
-        /// <param name="resource">The account </param>
+        /// <param name="agreeTermsOfService">The agree terms of service.</param>
+        /// <param name="contact">The contact.</param>
         /// <returns>
         /// The account context.
         /// </returns>
-        public async Task<IAccountContext> Update(Account resource)
+        public async Task<IAccountContext> Update(bool agreeTermsOfService = false, IEnumerable<string> contact = null)
         {
             var location = await context.GetAccountLocation();
-            var payload = await context.Sign(resource, location);
-            await context.HttpClient.Post<Account>(location, payload);
+            var account = new Dictionary<string, object>();
+            if (contact != null)
+            {
+                account["contact"] = contact.ToArray();
+            }
+
+            if (agreeTermsOfService)
+            {
+                account["terms-of-service-agreed"] = true;
+
+                // boulder specific
+                var dict = await context.GetDirectory();
+                var tosUri = dict.Meta?.TermsOfService;
+                if (tosUri != null)
+                {
+                    account["Agreement"] = tosUri;
+                }
+            }
+
+            var payload = await context.Sign(account, location);
+            await context.HttpClient.Post<Account>(location, payload, true);
             return this;
         }
 
