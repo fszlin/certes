@@ -1,10 +1,7 @@
-﻿using Certes.Pkcs;
-using Org.BouncyCastle.Asn1.Pkcs;
+﻿using System;
+using Certes.Pkcs;
 using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Security;
-using System;
 
 namespace Certes.Jws
 {
@@ -14,9 +11,11 @@ namespace Certes.Jws
     /// <seealso cref="Certes.Jws.IAccountKey" />
     public class AccountKey : IAccountKey
     {
-        private AsymmetricCipherKeyPair keyPair;
+        private readonly AsymmetricCipherKeyPair keyPair;
         private JsonWebKey jwk;
 
+        private Lazy<IJsonWebAlgorithm> jwa;
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountKey"/> class.
         /// </summary>
@@ -28,21 +27,23 @@ namespace Certes.Jws
         {
             if (keyInfo == null)
             {
-                this.keyPair = SignatureAlgorithm.Sha256WithRsaEncryption.Create();
-                this.Algorithm = SignatureAlgorithm.Sha256WithRsaEncryption;
+                this.keyPair = SignatureAlgorithm.RS256.CreateKeyPair();
+                this.Algorithm = SignatureAlgorithm.RS256;
             }
             else
             {
                 this.keyPair = keyInfo.CreateKeyPair();
                 if (this.keyPair.Private is RsaPrivateCrtKeyParameters)
                 {
-                    this.Algorithm = SignatureAlgorithm.Sha256WithRsaEncryption;
+                    this.Algorithm = SignatureAlgorithm.RS256;
                 }
                 else
                 {
                     throw new NotSupportedException();
                 }
             }
+
+            this.jwa = new Lazy<IJsonWebAlgorithm>(() => Algorithm.CreateJwa(keyPair));
         }
 
         /// <summary>
@@ -83,13 +84,7 @@ namespace Certes.Jws
                     return jwk;
                 }
 
-                var parameters = (RsaPrivateCrtKeyParameters)keyPair.Private;
-                return jwk = new JsonWebKey
-                {
-                    Exponent = JwsConvert.ToBase64String(parameters.PublicExponent.ToByteArrayUnsigned()),
-                    KeyType = "RSA",
-                    Modulus = JwsConvert.ToBase64String(parameters.Modulus.ToByteArrayUnsigned())
-                };
+                return jwk = jwa.Value.JsonWebKey;
             }
         }
 
@@ -98,30 +93,14 @@ namespace Certes.Jws
         /// </summary>
         /// <param name="data">The data.</param>
         /// <returns>The hash.</returns>
-        public byte[] ComputeHash(byte[] data)
-        {
-            var sha256 = new Sha256Digest();
-            var hashed = new byte[sha256.GetDigestSize()];
-
-            sha256.BlockUpdate(data, 0, data.Length);
-            sha256.DoFinal(hashed, 0);
-
-            return hashed;
-        }
+        public byte[] ComputeHash(byte[] data) => jwa.Value.ComputeHash(data);
 
         /// <summary>
         /// Signs the data.
         /// </summary>
         /// <param name="data">The data.</param>
         /// <returns>The signature.</returns>
-        public byte[] SignData(byte[] data)
-        {
-            var signer = SignerUtilities.GetSigner(PkcsObjectIdentifiers.Sha256WithRsaEncryption);
-            signer.Init(true, keyPair.Private);
-            signer.BlockUpdate(data, 0, data.Length);
-            var signature = signer.GenerateSignature();
-            return signature;
-        }
+        public byte[] SignData(byte[] data) => jwa.Value.SignData(data);
 
         /// <summary>
         /// Exports the key pair.

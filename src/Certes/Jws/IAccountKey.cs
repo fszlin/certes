@@ -1,7 +1,8 @@
-﻿using Certes.Pkcs;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Text;
+using Certes.Json;
+using Certes.Pkcs;
+using Newtonsoft.Json;
 
 namespace Certes.Jws
 {
@@ -61,7 +62,7 @@ namespace Certes.Jws
     /// </summary>
     public static class AccountKeyExtensions
     {
-        private static readonly JsonSerializerSettings thumbprintSettings = new JsonSerializerSettings();
+        private static readonly JsonSerializerSettings thumbprintSettings = JsonUtil.CreateSettings();
 
         /// <summary>
         /// Generates the thumbprint for the given account <paramref name="key"/>.
