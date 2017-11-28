@@ -1,31 +1,31 @@
 ﻿using System.IO;
+using Org.BouncyCastle.Asn1.Sec;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Math;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 
 namespace Certes.Jws
 {
-    internal class RS256 : IJsonWebAlgorithm
+    internal class ES256 : IJsonWebAlgorithm
     {
         private readonly AsymmetricCipherKeyPair keyPair;
-
         public JsonWebKey JsonWebKey
         {
             get
             {
-                var parameters = (RsaKeyParameters)keyPair.Public;
-                return new RsaJsonWebKey
+                var parameters = (ECPublicKeyParameters)keyPair.Public;
+                return new EcJsonWebKey
                 {
-                    Exponent = JwsConvert.ToBase64String(parameters.Exponent.ToByteArrayUnsigned()),
-                    KeyType = "RSA",
-                    Modulus = JwsConvert.ToBase64String(parameters.Modulus.ToByteArrayUnsigned())
+                    KeyType = "EC",
+                    Curve = "P-256",
+                    X = JwsConvert.ToBase64String(parameters.Q.AffineXCoord.GetEncoded()),
+                    Y = JwsConvert.ToBase64String(parameters.Q.AffineYCoord.GetEncoded())
                 };
             }
         }
 
-        public RS256(AsymmetricCipherKeyPair keyPair)
+        public ES256(AsymmetricCipherKeyPair keyPair)
         {
             this.keyPair = keyPair;
         }
@@ -37,14 +37,9 @@ namespace Certes.Jws
         /// <returns>The hash.</returns>
         public byte[] ComputeHash(byte[] data) => DigestUtilities.CalculateDigest("SHA256", data);
 
-        /// <summary>
-        /// Signs the data.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        /// <returns>The signature.</returns>
         public byte[] SignData(byte[] data)
         {
-            var signer = SignerUtilities.GetSigner("SHA-256withRSA");
+            var signer = SignerUtilities.GetSigner("SHA-256withECDSA");
             signer.Init(true, keyPair.Private);
             signer.BlockUpdate(data, 0, data.Length);
             var signature = signer.GenerateSignature();
@@ -62,9 +57,8 @@ namespace Certes.Jws
 
         public static AsymmetricCipherKeyPair CreateKeyPair()
         {
-            var generator = GeneratorUtilities.GetKeyPairGenerator("RSA");
-            var generatorParams = new RsaKeyGenerationParameters(
-                BigInteger.ValueOf(0x10001), new SecureRandom(), 2048, 128);
+            var generator = GeneratorUtilities.GetKeyPairGenerator("ECDSA");
+            var generatorParams = new ECKeyGenerationParameters(SecObjectIdentifiers.SecP256r1, new SecureRandom());
             generator.Init(generatorParams);
             var keyPair = generator.GenerateKeyPair();
             return keyPair;

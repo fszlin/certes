@@ -37,6 +37,10 @@ namespace Certes.Jws
                 {
                     this.Algorithm = SignatureAlgorithm.RS256;
                 }
+                else if (keyPair.Private is ECPrivateKeyParameters)
+                {
+                    this.Algorithm = SignatureAlgorithm.ES256;
+                }
                 else
                 {
                     throw new NotSupportedException();
@@ -61,13 +65,7 @@ namespace Certes.Jws
         /// The JSON web key.
         /// </value>
         [Obsolete]
-        public object Jwk
-        {
-            get
-            {
-                return JsonWebKey;
-            }
-        }
+        public object Jwk => JsonWebKey;
 
         /// <summary>
         /// Gets the JSON web key.
@@ -75,18 +73,7 @@ namespace Certes.Jws
         /// <value>
         /// The JSON web key.
         /// </value>
-        public JsonWebKey JsonWebKey
-        {
-            get
-            {
-                if (jwk != null)
-                {
-                    return jwk;
-                }
-
-                return jwk = jwa.Value.JsonWebKey;
-            }
-        }
+        public JsonWebKey JsonWebKey => jwk ?? (jwk = jwa.Value.JsonWebKey);
 
         /// <summary>
         /// Computes the hash for given data.
@@ -106,9 +93,6 @@ namespace Certes.Jws
         /// Exports the key pair.
         /// </summary>
         /// <returns>The key pair.</returns>
-        public KeyInfo Export()
-        {
-            return this.keyPair.Export();
-        }
+        public KeyInfo Export() => keyPair.Export();
     }
 }

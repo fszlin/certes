@@ -56,6 +56,8 @@ namespace Certes.Pkcs
             {
                 case SignatureAlgorithm.RS256:
                     return RS256.CreateKeyPair();
+                case SignatureAlgorithm.ES256:
+                    return ES256.CreateKeyPair();
             }
             
             throw new ArgumentException(nameof(algo));
@@ -67,6 +69,8 @@ namespace Certes.Pkcs
             {
                 case SignatureAlgorithm.RS256:
                     return new RS256(keyPair);
+                case SignatureAlgorithm.ES256:
+                    return new ES256(keyPair);
             }
 
             throw new ArgumentException(nameof(algo));
