@@ -27,11 +27,11 @@ namespace Certes
         private readonly Directory acmeDir = Helper.AcmeDir;
 
         private int nonce = 0;
-        private AccountKey accountKey = Helper.Loadkey();
 
         [Fact]
         public async Task CanCreateRegistration()
         {
+            var accountKey = await Helper.Loadkey();
             var regLocation = new Uri("http://example.com/reg/1");
             var mock = MockHttp(async req =>
             {
@@ -78,6 +78,7 @@ namespace Certes
         [Fact]
         public async Task CanDeleteRegistration()
         {
+            var accountKey = await Helper.Loadkey();
             var regLocation = new Uri("http://example.com/reg/1");
             var mock = MockHttp(async req =>
             {
@@ -131,6 +132,7 @@ namespace Certes
         [Fact]
         public async Task CanUpdateRegistration()
         {
+            var accountKey = await Helper.Loadkey();
             var regLocation = new Uri("http://example.com/reg/1");
             var mock = MockHttp(async req =>
             {
@@ -187,6 +189,7 @@ namespace Certes
 
         private async Task<T> ParsePayload<T>(HttpRequestMessage message)
         {
+            var accountKey = await Helper.Loadkey();
             var content = message.Content;
             Assert.Equal(JsonContentType, content.Headers.ContentType.MediaType);
 
