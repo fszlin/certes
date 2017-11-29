@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Sec;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -19,8 +20,8 @@ namespace Certes.Jws
                 {
                     KeyType = "EC",
                     Curve = "P-256",
-                    X = JwsConvert.ToBase64String(parameters.Q.AffineXCoord.GetEncoded()),
-                    Y = JwsConvert.ToBase64String(parameters.Q.AffineYCoord.GetEncoded())
+                    X = JwsConvert.ToBase64String(parameters.Q.AffineXCoord.ToBigInteger().ToByteArrayUnsigned()),
+                    Y = JwsConvert.ToBase64String(parameters.Q.AffineYCoord.ToBigInteger().ToByteArrayUnsigned()),
                 };
             }
         }
@@ -43,7 +44,19 @@ namespace Certes.Jws
             signer.Init(true, keyPair.Private);
             signer.BlockUpdate(data, 0, data.Length);
             var signature = signer.GenerateSignature();
-            return signature;
+
+            var sequence = (Asn1Sequence)Asn1Object.FromByteArray(signature);
+            using (var buffer = new MemoryStream())
+            {
+                foreach (Asn1Object obj in sequence)
+                {
+                    var derInt = (DerInteger)obj.ToAsn1Object();
+                    var intBytes = derInt.Value.ToByteArrayUnsigned();
+                    buffer.Write(intBytes, 0, intBytes.Length);
+                }
+
+                return buffer.ToArray();
+            }
         }
 
         public void Save(Stream stream)
