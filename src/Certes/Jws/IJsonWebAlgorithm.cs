@@ -7,6 +7,5 @@ namespace Certes.Jws
         JsonWebKey JsonWebKey { get; }
         byte[] ComputeHash(byte[] data);
         byte[] SignData(byte[] data);
-        void Save(Stream stream);
     }
 }
