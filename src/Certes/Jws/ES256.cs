@@ -59,15 +59,6 @@ namespace Certes.Jws
             }
         }
 
-        public void Save(Stream stream)
-        {
-            using (var writer = new StreamWriter(stream))
-            {
-                var pemWriter = new PemWriter(writer);
-                pemWriter.WriteObject(keyPair);
-            }
-        }
-
         public static AsymmetricCipherKeyPair CreateKeyPair()
         {
             var generator = GeneratorUtilities.GetKeyPairGenerator("ECDSA");
