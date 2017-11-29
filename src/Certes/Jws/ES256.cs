@@ -1,17 +1,16 @@
 ﻿using System.IO;
+using System.Linq;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Sec;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 
 namespace Certes.Jws
 {
-    internal class ES256 : IJsonWebAlgorithm
+    internal sealed class ES256 : JsonWebAlgorithm
     {
-        private readonly AsymmetricCipherKeyPair keyPair;
-        public JsonWebKey JsonWebKey
+        public override JsonWebKey JsonWebKey
         {
             get
             {
@@ -26,32 +25,27 @@ namespace Certes.Jws
             }
         }
 
-        public ES256(AsymmetricCipherKeyPair keyPair)
+        protected override string SigningAlgorithm => "SHA-256withECDSA";
+
+        protected override string HashAlgorithm => "SHA256";
+
+        public ES256(AsymmetricCipherKeyPair keyPair) 
+            : base(keyPair)
         {
-            this.keyPair = keyPair;
         }
 
-        /// <summary>
-        /// Computes the hash for given data.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        /// <returns>The hash.</returns>
-        public byte[] ComputeHash(byte[] data) => DigestUtilities.CalculateDigest("SHA256", data);
-
-        public byte[] SignData(byte[] data)
+        public override byte[] SignData(byte[] data)
         {
-            var signer = SignerUtilities.GetSigner("SHA-256withECDSA");
-            signer.Init(true, keyPair.Private);
-            signer.BlockUpdate(data, 0, data.Length);
-            var signature = signer.GenerateSignature();
-
+            var signature = base.SignData(data);
             var sequence = (Asn1Sequence)Asn1Object.FromByteArray(signature);
             using (var buffer = new MemoryStream())
             {
-                foreach (Asn1Object obj in sequence)
+                foreach (var intBytes in sequence
+                    .OfType<Asn1Object>()
+                    .Select(o => o.ToAsn1Object())
+                    .Cast<DerInteger>()
+                    .Select(i => i.Value.ToByteArrayUnsigned()))
                 {
-                    var derInt = (DerInteger)obj.ToAsn1Object();
-                    var intBytes = derInt.Value.ToByteArrayUnsigned();
                     buffer.Write(intBytes, 0, intBytes.Length);
                 }
 
