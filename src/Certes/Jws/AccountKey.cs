@@ -15,39 +15,49 @@ namespace Certes.Jws
         private JsonWebKey jwk;
 
         private Lazy<IJsonWebAlgorithm> jwa;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountKey"/> class.
         /// </summary>
+        /// <param name="algorithm">The JWS signature algorithm.</param>
+        public AccountKey(SignatureAlgorithm algorithm = SignatureAlgorithm.RS256)
+        {
+            keyPair = algorithm.CreateKeyPair();
+            Algorithm = algorithm;
+
+            jwa = new Lazy<IJsonWebAlgorithm>(() => Algorithm.CreateJwa(keyPair));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountKey" /> class.
+        /// </summary>
         /// <param name="keyInfo">The key information.</param>
-        /// <exception cref="System.NotSupportedException">
-        /// If the provided key is not one of the supported <seealso cref="SignatureAlgorithm"/>.
+        /// <exception cref="ArgumentNullException">keyInfo</exception>
+        /// <exception cref="NotSupportedException">
+        /// If the provided key is not one of the supported <seealso cref="SignatureAlgorithm" />.
         /// </exception>
-        public AccountKey(KeyInfo keyInfo = null)
+        public AccountKey(KeyInfo keyInfo)
         {
             if (keyInfo == null)
             {
-                this.keyPair = SignatureAlgorithm.RS256.CreateKeyPair();
-                this.Algorithm = SignatureAlgorithm.RS256;
+                throw new ArgumentNullException(nameof(keyInfo));
+            }
+
+            keyPair = keyInfo.CreateKeyPair();
+            if (keyPair.Private is RsaPrivateCrtKeyParameters)
+            {
+                Algorithm = SignatureAlgorithm.RS256;
+            }
+            else if (keyPair.Private is ECPrivateKeyParameters)
+            {
+                Algorithm = SignatureAlgorithm.ES256;
             }
             else
             {
-                this.keyPair = keyInfo.CreateKeyPair();
-                if (this.keyPair.Private is RsaPrivateCrtKeyParameters)
-                {
-                    this.Algorithm = SignatureAlgorithm.RS256;
-                }
-                else if (keyPair.Private is ECPrivateKeyParameters)
-                {
-                    this.Algorithm = SignatureAlgorithm.ES256;
-                }
-                else
-                {
-                    throw new NotSupportedException();
-                }
+                throw new NotSupportedException();
             }
 
-            this.jwa = new Lazy<IJsonWebAlgorithm>(() => Algorithm.CreateJwa(keyPair));
+            jwa = new Lazy<IJsonWebAlgorithm>(() => Algorithm.CreateJwa(keyPair));
         }
 
         /// <summary>
