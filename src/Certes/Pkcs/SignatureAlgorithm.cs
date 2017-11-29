@@ -21,6 +21,16 @@ namespace Certes.Pkcs
         ES256,
 
         /// <summary>
+        /// ECDSA using P-384 and SHA-384.
+        /// </summary>
+        ES384,
+
+        /// <summary>
+        /// ECDSA using P-521 and SHA-512.
+        /// </summary>
+        ES512,
+
+        /// <summary>
         /// SHA256 hash with RSA encryption.
         /// </summary>
         [Obsolete("Use RS256 instead.")]
