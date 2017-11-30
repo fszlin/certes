@@ -60,32 +60,6 @@ namespace Certes.Pkcs
             return algo;
         }
 
-        internal static AsymmetricCipherKeyPair CreateKeyPair(this SignatureAlgorithm algo)
-        {
-            switch (algo)
-            {
-                case SignatureAlgorithm.RS256:
-                    return RS256.CreateKeyPair();
-                case SignatureAlgorithm.ES256:
-                    return ES256.CreateKeyPair();
-            }
-            
-            throw new ArgumentException(nameof(algo));
-        }
-
-        internal static IJsonWebAlgorithm CreateJwa(this SignatureAlgorithm algo, AsymmetricCipherKeyPair keyPair)
-        {
-            switch (algo)
-            {
-                case SignatureAlgorithm.RS256:
-                    return new RS256(keyPair);
-                case SignatureAlgorithm.ES256:
-                    return new ES256(keyPair);
-            }
-
-            throw new ArgumentException(nameof(algo));
-        }
-
         internal static string ToPkcsObjectId(this SignatureAlgorithm algo)
         {
             switch (algo)

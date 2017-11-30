@@ -1,6 +1,8 @@
-﻿using Org.BouncyCastle.Crypto;
+﻿using System;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
-using System;
+using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Security;
 
 namespace Certes.Pkcs
 {
@@ -10,8 +12,6 @@ namespace Certes.Pkcs
     /// <seealso cref="Certes.Pkcs.CertificationRequestBuilderBase" />
     public class CertificationRequestBuilder : CertificationRequestBuilderBase
     {
-        private KeyInfo keyInfo;
-
         /// <summary>
         /// Gets the algorithm.
         /// </summary>
@@ -37,16 +37,18 @@ namespace Certes.Pkcs
         /// </exception>
         public CertificationRequestBuilder(KeyInfo keyInfo)
         {
-            this.keyInfo = keyInfo;
+            var keyParam = PrivateKeyFactory.CreateKey(keyInfo.PrivateKeyInfo);
 
-            this.KeyPair = keyInfo.CreateKeyPair();
-            if (this.KeyPair.Private is RsaPrivateCrtKeyParameters)
+            if (keyParam is RsaPrivateCrtKeyParameters)
             {
-                this.Algorithm = SignatureAlgorithm.RS256;
+                var privateKey = (RsaPrivateCrtKeyParameters)keyParam;
+                var publicKey = new RsaKeyParameters(false, privateKey.Modulus, privateKey.PublicExponent);
+                KeyPair = new AsymmetricCipherKeyPair(publicKey, keyParam);
+                Algorithm = SignatureAlgorithm.RS256;
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("Unsupported key");
             }
         }
 
@@ -55,8 +57,12 @@ namespace Certes.Pkcs
         /// </summary>
         public CertificationRequestBuilder()
         {
-            this.KeyPair = SignatureAlgorithm.RS256.CreateKeyPair();
-            this.Algorithm = SignatureAlgorithm.RS256;
+            var generator = GeneratorUtilities.GetKeyPairGenerator("RSA");
+            var generatorParams = new RsaKeyGenerationParameters(
+                BigInteger.ValueOf(0x10001), new SecureRandom(), 2048, 128);
+            generator.Init(generatorParams);
+            KeyPair = generator.GenerateKeyPair();
+            Algorithm = SignatureAlgorithm.RS256;
         }
     }
 
