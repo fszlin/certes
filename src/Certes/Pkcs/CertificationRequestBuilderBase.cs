@@ -104,9 +104,7 @@ namespace Certes.Pkcs
         /// If <paramref name="keyOrCommonName"/> is not a valid X509 name.
         /// </exception>
         public void AddName(string keyOrCommonName, string value)
-        {
-            this.AddName($"{keyOrCommonName}={value}");
-        }
+            => AddName($"{keyOrCommonName}={value}");
 
         /// <summary>
         /// Generates the CSR.

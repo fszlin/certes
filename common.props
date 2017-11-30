@@ -11,8 +11,4 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.4.0" Condition="'$(TargetFramework)' == 'net45' OR '$(TargetFramework)' == 'net47'" />
   </ItemGroup>
-
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <DebugType>Full</DebugType>
-  </PropertyGroup>
 </Project>
