@@ -100,7 +100,6 @@ namespace Certes
         /// <returns>
         /// The account created.
         /// </returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<Account> CreateAccount(IList<string> contact, bool termsOfServiceAgreed = false)
         {
             var body = new Dictionary<string, object>
