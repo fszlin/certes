@@ -68,12 +68,12 @@ before_test:
 test_script:
   - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
   - ps: >-
-      & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:test ./test/Certes.Tests/Certes.Tests.csproj -- -noshadow -appveyor" "-oldstyle" "-output:./build/coverage.xml" "-filter:+[Certes]* +[Certes.Cli]*" "-hideskipped:All" "-returntargetcode"
+      & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:test ./test/Certes.Tests/Certes.Tests.csproj -f netcoreapp2.0 -- -noshadow -appveyor" "-oldstyle" "-output:./build/coverage-netcoreapp2.0.xml" "-filter:+[Certes]* +[Certes.Cli]*" "-hideskipped:All" "-returntargetcode"
 
 after_test:
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
   - IF NOT "%codecov_upload_token%" == "" pip install codecov
-  - IF NOT "%codecov_upload_token%" == "" codecov -f "./build/coverage.xml" -t %codecov_upload_token%
+  - IF NOT "%codecov_upload_token%" == "" codecov -f "./build/coverage-netcoreapp2.0.xml" -t %codecov_upload_token%
 
 configuration: Release
 
