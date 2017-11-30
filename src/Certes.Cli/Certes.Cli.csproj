@@ -33,4 +33,8 @@
     <ProjectReference Include="..\Certes\Certes.csproj" />
   </ItemGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DebugType>Full</DebugType>
+  </PropertyGroup>
+
 </Project>
