@@ -1,12 +1,12 @@
-﻿using Moq;
-using Moq.Protected;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Moq;
+using Moq.Protected;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Certes.Acme
@@ -57,6 +57,15 @@ namespace Certes.Acme
             using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer(), (HttpMessageHandler)null)) { }
             using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer(), CreateHttpMock().Object)) { }
 #pragma warning restore 0618
+        }
+
+        [Fact]
+        public async Task CanGetServerUri()
+        {
+            using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer(), (HttpClient)null))
+            {
+                Assert.Equal(await Helper.GetStagingServer(), handler.ServerUri);
+            }
         }
 
         private Mock<HttpMessageHandler> CreateHttpMock()

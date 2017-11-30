@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System;
+using Xunit;
 
 namespace Certes.Jws
 {
@@ -11,6 +12,12 @@ namespace Certes.Jws
 #pragma warning disable 0612
             Assert.Equal(key.Jwk, key.JsonWebKey);
 #pragma warning restore 0612
+        }
+
+        [Fact]
+        public void CreateWithNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => new AccountKey(null));
         }
     }
 }

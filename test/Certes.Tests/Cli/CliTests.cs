@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP2_0
+﻿#if NETCOREAPP1_0 || NETCOREAPP2_0
 
 using Certes.Acme;
 using Newtonsoft.Json;
