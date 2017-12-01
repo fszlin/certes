@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp1.0;net452;net47</TargetFrameworks>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.4.0" Condition="'$(TargetFramework)' == 'net47' OR '$(TargetFramework)' == 'net45'" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.0" Condition="'$(TargetFramework)' == 'net47' OR '$(TargetFramework)' == 'net452'" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <PackageReference Include="Moq" Version="4.7.145" />
     <PackageReference Include="OpenCover" Version="4.6.519" />
@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Certes.Cli\Certes.Cli.csproj" Condition="'$(TargetFramework)' == 'netcoreapp2.0'" />
+    <ProjectReference Include="..\..\src\Certes.Cli\Certes.Cli.csproj" Condition="'$(TargetFramework)' == 'netcoreapp2.0' OR '$(TargetFramework)' == 'netcoreapp1.0'" />
     <ProjectReference Include="..\..\src\Certes\Certes.csproj" />
   </ItemGroup>
 
