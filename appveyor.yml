@@ -75,7 +75,7 @@ after_test:
   - cd ../../
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
   - IF NOT "%codecov_upload_token%" == "" pip install codecov
-  - IF NOT "%codecov_upload_token%" == "" codecov -f "./build/coverage-netcoreapp2.0.xml" -t %codecov_upload_token%
+  - IF NOT "%codecov_upload_token%" == "" codecov -f "./build/coverage.xml" -t %codecov_upload_token%
 
 configuration: Release
 
