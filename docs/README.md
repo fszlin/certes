@@ -1,9 +1,14 @@
 # Certes ACME Client
 
-[![NuGet](https://buildstats.info/nuget/certes)](https://www.nuget.org/packages/certes/)
+[![NuGet](https://img.shields.io/nuget/v/certes.svg)](https://www.nuget.org/packages/certes/)
+[![NuGet](https://img.shields.io/nuget/dt/certes.svg)](https://www.nuget.org/packages/certes/)
 
-[![Travis](https://travis-ci.org/fszlin/certes.svg?branch=master)](https://travis-ci.org/fszlin/certes)
-[![AppVeyor](https://ci.appveyor.com/api/projects/status/4wwiivqs8rl0l63q/branch/master?svg=true)](https://ci.appveyor.com/project/fszlin/certes/branch/master)
+[![MyGet](https://img.shields.io/myget/certes/v/certes.svg)](https://www.myget.org/feed/certes/package/nuget/Certes)
+[![MyGet](https://img.shields.io/myget/certes/dt/certes.svg)](https://www.myget.org/feed/certes/package/nuget/Certes)
+
+[![Travis](https://img.shields.io/travis/fszlin/certes.svg)](https://travis-ci.org/fszlin/certes)
+[![AppVeyor](https://img.shields.io/appveyor/ci/fszlin/certes.svg)](https://ci.appveyor.com/project/fszlin/certes)
+[![AppVeyor](https://img.shields.io/appveyor/tests/fszlin/certes.svg)](https://ci.appveyor.com/project/fszlin/certes)
 [![codecov](https://codecov.io/gh/fszlin/certes/branch/master/graph/badge.svg)](https://codecov.io/gh/fszlin/certes)
 
 Certes is a client implantation for the Automated Certificate Management
