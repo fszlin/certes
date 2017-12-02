@@ -18,6 +18,11 @@ namespace Certes.Crypto
             var algo = provider.Get(signatureAlgorithm) as EllipticCurveSignatureAlgorithm;
 
             Assert.NotNull(algo);
+
+            var key = algo.GenerateKey();
+            Assert.NotNull(key);
+
+            Assert.NotNull(key.JsonWebKey);
         }
 
         [Fact]
