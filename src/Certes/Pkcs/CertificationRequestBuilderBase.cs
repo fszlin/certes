@@ -85,7 +85,7 @@ namespace Certes.Pkcs
             for (var i = 0; i < len; ++i)
             {
                 var id = (DerObjectIdentifier)oidList[i];
-                var value = valueList[i]?.ToString();
+                var value = valueList[i].ToString();
                 attributes.Add((id, value));
 
                 if (id == X509Name.CN)

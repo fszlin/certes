@@ -54,14 +54,6 @@ namespace Certes.Pkcs
                 var publicKey = new RsaKeyParameters(false, privateKey.Modulus, privateKey.PublicExponent);
                 return new AsymmetricCipherKeyPair(publicKey, keyParam);
             }
-            else if (keyParam is ECPrivateKeyParameters)
-            {
-                var privateKey = (ECPrivateKeyParameters)keyParam;
-                var domain = privateKey.Parameters;
-                var q = domain.G.Multiply(privateKey.D);
-                var publicKey = new ECPublicKeyParameters(q, domain);
-                return new AsymmetricCipherKeyPair(publicKey, keyParam);
-            }
             else
             {
                 throw new NotSupportedException();

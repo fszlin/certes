@@ -50,14 +50,12 @@ namespace Certes.Pkcs
         /// <exception cref="System.ArgumentException">If the <paramref name="algorithm"/> is not supported.</exception>
         public static string ToJwsAlgorithm(this SignatureAlgorithm algorithm)
         {
-            var algo = algorithm.ToString();
-
-            if (string.IsNullOrEmpty(algo))
+            if (!Enum.IsDefined(typeof(SignatureAlgorithm), algorithm))
             {
                 throw new ArgumentException(nameof(algorithm));
             }
 
-            return algo;
+            return algorithm.ToString();
         }
 
         internal static string ToPkcsObjectId(this SignatureAlgorithm algo)

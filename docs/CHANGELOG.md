@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
-- Add support for JSON web signature with ES256
+- Add support for JSON web signature using Elliptic Curve key
 ### Changed
 - Fix `full-chain-off` option for CLI
 
