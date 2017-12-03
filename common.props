@@ -7,8 +7,4 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.4.0" Condition="'$(TargetFramework)' == 'net45' OR '$(TargetFramework)' == 'net47'" />
-  </ItemGroup>
 </Project>
