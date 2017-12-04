@@ -75,6 +75,17 @@ namespace Certes
         Task ChangeKey(AccountKey key = null);
 
         /// <summary>
+        /// Create a bew the order.
+        /// </summary>
+        /// <param name="identifiers">The identifiers.</param>
+        /// <param name="notBefore">The not before.</param>
+        /// <param name="notAfter">The not after.</param>
+        /// <returns>
+        /// TODO
+        /// </returns>
+        Task CreateOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null);
+
+        /// <summary>
         /// Signs the specified entity.
         /// </summary>
         /// <param name="entity">The entity.</param>

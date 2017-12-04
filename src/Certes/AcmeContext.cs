@@ -5,6 +5,10 @@ using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Jws;
 
+using Certificate = Certes.Acme.Resource.Certificate;
+using AuthorizationIdentifier = Certes.Acme.Resource.AuthorizationIdentifier;
+using System.Linq;
+
 namespace Certes
 {
     /// <summary>
@@ -179,6 +183,33 @@ namespace Certes
             var jws = new JwsSigner(AccountKey);
             var payload = jws.Sign(body, url: endpoint, nonce: await HttpClient.ConsumeNonce());
             return await HttpClient.Post<Account>(endpoint, payload, ensureSuccessStatusCode);
+        }
+
+        /// <summary>
+        /// Create a bew the order.
+        /// </summary>
+        /// <param name="identifiers">The identifiers.</param>
+        /// <param name="notBefore">The not before.</param>
+        /// <param name="notAfter">The not after.</param>
+        /// <returns>
+        /// TODO
+        /// </returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task CreateOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null)
+        {
+            var endpoint = await this.GetResourceUri(d => d.NewOrder);
+
+            var body = new Certificate
+            {
+                Identifiers = identifiers
+                    .Select(id => new AuthorizationIdentifier { Type = "dns", Value = id })
+                    .ToArray(),
+                NotBefore = notBefore,
+                NotAfter = notAfter,
+            };
+
+            var payload = await Sign(body, endpoint);
+            var cert = await HttpClient.Post<Certificate>(endpoint, payload, true);
         }
     }
 }

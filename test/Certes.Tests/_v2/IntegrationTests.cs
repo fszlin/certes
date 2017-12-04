@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
 using Certes.Jws;
+using Certes.Pkcs;
 using Xunit;
 
 namespace Certes
@@ -26,18 +27,41 @@ namespace Certes
             await ctx.Account.Update(true);
             await ctx.Account.Update(contact: new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" });
 
-            account = await ctx.Account.Resource();
-
-            //var newKey = new AccountKey();
-            //await ctx.ChangeKey(newKey);
-
-            //var ctxWithNewKey = new AcmeContext(dirUri, newKey);
-            //var locationWithNewKey = await ctxWithNewKey.GetAccountLocation();
-            //Assert.Equal(location, locationWithNewKey);
-
             account = await ctx.Account.Deactivate();
             Assert.NotNull(account);
             Assert.Equal(AccountStatus.Deactivated, account.Status);
+        }
+
+        [Fact(Skip = "server side not implemented")]
+        public async Task CanChangeAccountKey()
+        {
+            var dirUri = await GetAvailableStagingServer();
+
+            var ctx = new AcmeContext(dirUri);
+            var account = await ctx.CreateAccount(new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" });
+            var location = await ctx.GetAccountLocation();
+
+            var newKey = new AccountKey();
+            await ctx.ChangeKey(newKey);
+
+            var ctxWithNewKey = new AcmeContext(dirUri, newKey);
+            var locationWithNewKey = await ctxWithNewKey.GetAccountLocation();
+            Assert.Equal(location, locationWithNewKey);
+        }
+
+        [Fact(Skip = "server side not implemented")]
+        public async Task CanCreateNewOrder()
+        {
+            var ctx = new AcmeContext(await GetAvailableStagingServer(), GetAccountKey());
+            await ctx.CreateOrder(new[] { "www.certes.com" });
+        }
+
+        private const string PrivateKey = "ME0CAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQcEMzAxAgEBBCBePIf6wd4Gob+TzAdwp1/Pyz1tXQT22BoawjhdJRhAUaAKBggqhkjOPQMBBw==";
+
+        private AccountKey GetAccountKey()
+        {
+            var keyInfo = new KeyInfo { PrivateKeyInfo = Convert.FromBase64String(PrivateKey) };
+            return new AccountKey(keyInfo);
         }
 
         private async Task<Uri> GetAvailableStagingServer()
@@ -59,6 +83,16 @@ namespace Certes
                     try
                     {
                         await http.GetStringAsync(uri);
+
+                        try
+                        {
+                            var ctx = new AcmeContext(uri, GetAccountKey());
+                            await ctx.CreateAccount(new[] { "mailto:fszlin@gmail.com" });
+                        }
+                        catch
+                        {
+                        }
+
                         return stagingServer = uri;
                     }
                     catch

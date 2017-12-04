@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Certes.Acme.Resource
 {
@@ -32,7 +32,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The new order endpoint.
         /// </value>
-        [JsonProperty("new-order ")]
+        [JsonProperty("new-order")]
         public Uri NewOrder { get; set; }
 
         /// <summary>
