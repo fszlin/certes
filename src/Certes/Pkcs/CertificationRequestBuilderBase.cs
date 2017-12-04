@@ -85,7 +85,7 @@ namespace Certes.Pkcs
             for (var i = 0; i < len; ++i)
             {
                 var id = (DerObjectIdentifier)oidList[i];
-                var value = valueList[i]?.ToString();
+                var value = valueList[i].ToString();
                 attributes.Add((id, value));
 
                 if (id == X509Name.CN)
@@ -104,9 +104,7 @@ namespace Certes.Pkcs
         /// If <paramref name="keyOrCommonName"/> is not a valid X509 name.
         /// </exception>
         public void AddName(string keyOrCommonName, string value)
-        {
-            this.AddName($"{keyOrCommonName}={value}");
-        }
+            => AddName($"{keyOrCommonName}={value}");
 
         /// <summary>
         /// Generates the CSR.

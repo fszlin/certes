@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.8
+VisualStudioVersion = 15.0.27110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{E9E7371E-AB81-4ECF-9684-2ACB1EF7FF67}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E420B696
 		.travis.yml = .travis.yml
 		appveyor.yml = appveyor.yml
 		codecov.yml = codecov.yml
+		common.props = common.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Certes", "src\Certes\Certes.csproj", "{7AA85BF4-2A4F-42C8-A107-82B22C640C4E}"
@@ -66,6 +67,6 @@ Global
 		{DB1230D1-3C6C-4E86-BED0-64FCDEA91F8D} = {556F2BFB-DE9B-4673-BADC-63C365DA2A55}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {219696DE-2A77-452E-B889-DEE271A91632}
+		SolutionGuid = {1E394B03-F0AB-4024-BDCB-334EE482380C}
 	EndGlobalSection
 EndGlobal

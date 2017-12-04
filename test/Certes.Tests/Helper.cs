@@ -18,7 +18,7 @@ namespace Certes
         {
             new Uri("http://localhost:4000/directory"),
             new Uri("http://boulder-certes-ci.dymetis.com:4000/directory"),
-            WellKnownServers.LetsEncryptStaging
+            WellKnownServers.LetsEncryptStaging,
         };
 
         internal static AcmeDirectory AcmeDir = new AcmeDirectory

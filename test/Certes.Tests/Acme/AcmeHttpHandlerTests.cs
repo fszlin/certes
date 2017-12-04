@@ -59,6 +59,15 @@ namespace Certes.Acme
 #pragma warning restore 0618
         }
 
+        [Fact]
+        public async Task CanGetServerUri()
+        {
+            using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer(), (HttpClient)null))
+            {
+                Assert.Equal(await Helper.GetStagingServer(), handler.ServerUri);
+            }
+        }
+
         private Mock<HttpMessageHandler> CreateHttpMock()
         {
             var mock = new Mock<HttpMessageHandler>();

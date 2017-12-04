@@ -9,21 +9,31 @@ namespace Certes
 {
     public class AcmeClientStagingTests
     {
-        [Fact]
-        public async Task CanDeleteRegistration()
+        [Theory]
+        [InlineData(SignatureAlgorithm.RS256)]
+        [InlineData(SignatureAlgorithm.ES256)]
+        [InlineData(SignatureAlgorithm.ES384)]
+        public async Task CanDeleteRegistration(SignatureAlgorithm algorithm)
         {
+            var key = new AccountKey(algorithm);
             using (var client = new AcmeClient(await Helper.GetStagingServer()))
             {
+                client.Use(key.Export());
                 var reg = await client.NewRegistraton();
                 await client.DeleteRegistration(reg);
             }
         }
 
-        [Fact]
-        public async Task CanChangeKey()
+        [Theory]
+        [InlineData(SignatureAlgorithm.RS256)]
+        [InlineData(SignatureAlgorithm.ES256)]
+        [InlineData(SignatureAlgorithm.ES384)]
+        public async Task CanChangeKey(SignatureAlgorithm algorithm)
         {
+            var key = new AccountKey(algorithm);
             using (var client = new AcmeClient(await Helper.GetStagingServer()))
             {
+                client.Use(key.Export());
                 var reg = await client.NewRegistraton();
 
                 var newKey = new AccountKey().Export();

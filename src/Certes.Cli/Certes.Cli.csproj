@@ -13,11 +13,6 @@
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-    <LangVersion>Latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,5 +27,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Certes\Certes.csproj" />
   </ItemGroup>
+
+  <Import Project="../../common.props" />
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DebugType>Full</DebugType>
+  </PropertyGroup>
 
 </Project>

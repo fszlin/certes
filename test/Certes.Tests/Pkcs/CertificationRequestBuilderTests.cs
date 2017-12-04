@@ -42,5 +42,14 @@ namespace Certes.Pkcs
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 csr.AddName("invalid-name", "omg"));
         }
+
+        [Fact]
+        public void CanBuildCsrWithoutSubjectAlternativeName()
+        {
+            var csr = new CertificationRequestBuilder();
+            csr.AddName("cn", "www.example.com");
+            var csrData = csr.Generate();
+            Assert.NotNull(csrData);
+        }
     }
 }

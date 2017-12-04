@@ -2,11 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;netcoreapp1.0;net452;net47</TargetFrameworks>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     <RootNamespace>Certes</RootNamespace>
-    <LangVersion>Latest</LangVersion>
+    <NoWarn>1701;1702;1705;0618</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,7 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.4.0" Condition="'$(TargetFramework)' == 'net47' OR '$(TargetFramework)' == 'net452'" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.0" />
+    <PackageReference Include="Microsoft.CodeCoverage" Version="1.0.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <PackageReference Include="Moq" Version="4.7.145" />
     <PackageReference Include="OpenCover" Version="4.6.519" />
@@ -28,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Certes.Cli\Certes.Cli.csproj" Condition="'$(TargetFramework)' == 'netcoreapp2.0' OR '$(TargetFramework)' == 'netcoreapp1.0'" />
+    <ProjectReference Include="..\..\src\Certes.Cli\Certes.Cli.csproj" Condition="'$(TargetFramework)' == 'netcoreapp1.0' OR '$(TargetFramework)' == 'netcoreapp2.0'" />
     <ProjectReference Include="..\..\src\Certes\Certes.csproj" />
   </ItemGroup>
 
@@ -51,4 +49,5 @@
     </None>
   </ItemGroup>
 
+  <Import Project="../../common.props" />
 </Project>

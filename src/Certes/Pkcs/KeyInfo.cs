@@ -52,7 +52,7 @@ namespace Certes.Pkcs
             {
                 var privateKey = (RsaPrivateCrtKeyParameters)keyParam;
                 var publicKey = new RsaKeyParameters(false, privateKey.Modulus, privateKey.PublicExponent);
-                return new AsymmetricCipherKeyPair(publicKey, privateKey);
+                return new AsymmetricCipherKeyPair(publicKey, keyParam);
             }
             else
             {

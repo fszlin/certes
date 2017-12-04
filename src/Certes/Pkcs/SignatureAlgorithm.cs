@@ -1,10 +1,7 @@
-﻿using Org.BouncyCastle.Asn1.Pkcs;
+﻿using System;
+using Certes.Jws;
+using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Math;
-using Org.BouncyCastle.Security;
-using System;
 
 namespace Certes.Pkcs
 {
@@ -14,14 +11,30 @@ namespace Certes.Pkcs
     public enum SignatureAlgorithm
     {
         /// <summary>
-        /// RSASSA-PKCS1-v1_5 using SHA-256 .
+        /// RSASSA-PKCS1-v1_5 using SHA-256.
         /// </summary>
         RS256,
 
         /// <summary>
         /// ECDSA using P-256 and SHA-256.
         /// </summary>
-        ES256, // TODO
+        ES256,
+
+        /// <summary>
+        /// ECDSA using P-384 and SHA-384.
+        /// </summary>
+        ES384,
+
+        /// <summary>
+        /// ECDSA using P-521 and SHA-512.
+        /// </summary>
+        ES512,
+
+        /// <summary>
+        /// SHA256 hash with RSA encryption.
+        /// </summary>
+        [Obsolete("Use RS256 instead.")]
+        Sha256WithRsaEncryption = RS256,
     }
 
     /// <summary>
@@ -36,16 +49,12 @@ namespace Certes.Pkcs
         /// <returns></returns>
         public static string ToJwsAlgorithm(this SignatureAlgorithm algorithm)
         {
-            return algorithm.ToString();
-        }
+            if (!Enum.IsDefined(typeof(SignatureAlgorithm), algorithm))
+            {
+                throw new ArgumentException(nameof(algorithm));
+            }
 
-        internal static AsymmetricCipherKeyPair Create(this SignatureAlgorithm algo)
-        {
-            var generator = new RsaKeyPairGenerator();
-            var generatorParams = new RsaKeyGenerationParameters(BigInteger.ValueOf(0x10001), new SecureRandom(), 2048, 128);
-            generator.Init(generatorParams);
-            var keyPair = generator.GenerateKeyPair();
-            return keyPair;
+            return algorithm.ToString();
         }
 
         internal static string ToPkcsObjectId(this SignatureAlgorithm algo)

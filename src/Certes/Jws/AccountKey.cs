@@ -1,10 +1,7 @@
-﻿using Certes.Pkcs;
-using Org.BouncyCastle.Asn1.Pkcs;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Digests;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Security;
-using System;
+﻿using System;
+using System.IO;
+using Certes.Crypto;
+using Certes.Pkcs;
 
 namespace Certes.Jws
 {
@@ -14,35 +11,46 @@ namespace Certes.Jws
     /// <seealso cref="Certes.Jws.IAccountKey" />
     public class AccountKey : IAccountKey
     {
-        private AsymmetricCipherKeyPair keyPair;
+        private static readonly SignatureAlgorithmProvider signatureAlgorithmProvider = new SignatureAlgorithmProvider();
+        
         private JsonWebKey jwk;
+        private readonly ISignatureAlgorithm signatureAlgorithm;
+        private readonly ISignatureKey signatureKey;
+        private readonly ISigner signer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountKey"/> class.
         /// </summary>
+        /// <param name="algorithm">The JWS signature algorithm.</param>
+        public AccountKey(SignatureAlgorithm algorithm = SignatureAlgorithm.RS256)
+        {
+            signatureAlgorithm = signatureAlgorithmProvider.Get(algorithm);
+            signatureKey = signatureAlgorithm.GenerateKey();
+            signer = signatureAlgorithm.CreateSigner(signatureKey);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountKey" /> class.
+        /// </summary>
         /// <param name="keyInfo">The key information.</param>
-        /// <exception cref="System.NotSupportedException">
-        /// If the provided key is not one of the supported <seealso cref="SignatureAlgorithm"/>.
+        /// <exception cref="ArgumentNullException">keyInfo</exception>
+        /// <exception cref="NotSupportedException">
+        /// If the provided key is not one of the supported <seealso cref="SignatureAlgorithm" />.
         /// </exception>
-        public AccountKey(KeyInfo keyInfo = null)
+        public AccountKey(KeyInfo keyInfo)
         {
             if (keyInfo == null)
             {
-                this.keyPair = SignatureAlgorithm.RS256.Create();
-                this.Algorithm = SignatureAlgorithm.RS256;
+                throw new ArgumentNullException(nameof(keyInfo));
             }
-            else
+
+            using (var buffer = new MemoryStream(keyInfo.PrivateKeyInfo))
             {
-                this.keyPair = keyInfo.CreateKeyPair();
-                if (this.keyPair.Private is RsaPrivateCrtKeyParameters)
-                {
-                    this.Algorithm = SignatureAlgorithm.RS256;
-                }
-                else
-                {
-                    throw new NotSupportedException();
-                }
+                signatureKey = signatureAlgorithmProvider.GetKey(buffer);
             }
+
+            signatureAlgorithm = signatureAlgorithmProvider.Get(signatureKey.Algorithm);
+            signer = signatureAlgorithm.CreateSigner(signatureKey);
         }
 
         /// <summary>
@@ -51,7 +59,13 @@ namespace Certes.Jws
         /// <value>
         /// The signing algorithm.
         /// </value>
-        public SignatureAlgorithm Algorithm { get; }
+        public SignatureAlgorithm Algorithm
+        {
+            get
+            {
+                return signatureKey.Algorithm;
+            }
+        }
 
         /// <summary>
         /// Gets the JSON web key.
@@ -60,13 +74,7 @@ namespace Certes.Jws
         /// The JSON web key.
         /// </value>
         [Obsolete]
-        public object Jwk
-        {
-            get
-            {
-                return JsonWebKey;
-            }
-        }
+        public object Jwk => JsonWebKey;
 
         /// <summary>
         /// Gets the JSON web key.
@@ -74,54 +82,21 @@ namespace Certes.Jws
         /// <value>
         /// The JSON web key.
         /// </value>
-        public JsonWebKey JsonWebKey
-        {
-            get
-            {
-                if (jwk != null)
-                {
-                    return jwk;
-                }
-
-                var parameters = (RsaPrivateCrtKeyParameters)keyPair.Private;
-                return jwk = new JsonWebKey
-                {
-                    Exponent = JwsConvert.ToBase64String(parameters.PublicExponent.ToByteArrayUnsigned()),
-                    KeyType = "RSA",
-                    Modulus = JwsConvert.ToBase64String(parameters.Modulus.ToByteArrayUnsigned())
-                };
-            }
-        }
+        public JsonWebKey JsonWebKey => jwk ?? (jwk = signatureKey.JsonWebKey);
 
         /// <summary>
         /// Computes the hash for given data.
         /// </summary>
         /// <param name="data">The data.</param>
         /// <returns>The hash.</returns>
-        public byte[] ComputeHash(byte[] data)
-        {
-            var sha256 = new Sha256Digest();
-            var hashed = new byte[sha256.GetDigestSize()];
-
-            sha256.BlockUpdate(data, 0, data.Length);
-            sha256.DoFinal(hashed, 0);
-
-            return hashed;
-        }
+        public byte[] ComputeHash(byte[] data) => signer.ComputeHash(data);
 
         /// <summary>
         /// Signs the data.
         /// </summary>
         /// <param name="data">The data.</param>
         /// <returns>The signature.</returns>
-        public byte[] SignData(byte[] data)
-        {
-            var signer = SignerUtilities.GetSigner(PkcsObjectIdentifiers.Sha256WithRsaEncryption);
-            signer.Init(true, keyPair.Private);
-            signer.BlockUpdate(data, 0, data.Length);
-            var signature = signer.GenerateSignature();
-            return signature;
-        }
+        public byte[] SignData(byte[] data) => signer.SignData(data);
 
         /// <summary>
         /// Exports the key pair.
@@ -129,7 +104,14 @@ namespace Certes.Jws
         /// <returns>The key pair.</returns>
         public KeyInfo Export()
         {
-            return this.keyPair.Export();
+            using (var buffer = new MemoryStream())
+            {
+                signatureKey.Save(buffer);
+                return new KeyInfo
+                {
+                    PrivateKeyInfo = buffer.ToArray()
+                };
+            }   
         }
     }
 }
