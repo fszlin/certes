@@ -115,7 +115,7 @@ namespace Certes.Cli
             public IList<string> Logs { get; } = new List<string>();
 
             public _ConsoleLogger(string name)
-                : base(name, (category, logLevel) => true, true)
+                : base(name, (category, logLevel) => true, false)
             {
             }
 
