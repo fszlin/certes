@@ -1,7 +1,7 @@
 ﻿using Certes.Acme;
 using Certes.Cli.Options;
 using Certes.Pkcs;
-using NLog;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;

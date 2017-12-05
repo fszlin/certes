@@ -2,12 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp1.0;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp1.0</TargetFrameworks>
+    <AssemblyName>dotnet-acme</AssemblyName>
     <Version>1.0.0</Version>
     <Authors>Eddie Lin</Authors>
     <Company />
     <Product>CLI for Certes</Product>
     <Description>CLI for Certes</Description>
+    <PackageType>DotnetCliTool</PackageType>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate</PackageTags>
@@ -20,12 +22,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NLog" Version="5.0.0-beta11" />
     <PackageReference Include="System.CommandLine" Version="0.1.0-e170926-4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Certes\Certes.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
   </ItemGroup>
 
   <Import Project="../../common.props" />
