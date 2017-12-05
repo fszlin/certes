@@ -135,3 +135,4 @@ deploy:
         - master
         - dev
         - vnext
+        - cli

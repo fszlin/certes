@@ -15,6 +15,7 @@
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
+    <PackageId>Certes.Cli</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
