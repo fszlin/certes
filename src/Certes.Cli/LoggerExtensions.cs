@@ -9,7 +9,7 @@ namespace Certes.Cli
     {
         public static void LogError(this ILogger logger, Exception exception, string message, params object[] args)
         {
-            logger.LogError(exception, message);
+            logger.LogError(new EventId(), exception, message, args);
         }
     }
 }
