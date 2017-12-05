@@ -1,0 +1,37 @@
+{
+    "id": "95e54615-c46e-483b-b2a3-b9d8c4ee90a0",
+    "name": "certes-ssl",
+    "friendlyName": "SSL",
+    "description": "My Task makes tasks great again",
+    "helpMarkDown": "[More Information](https://url.to/yourmarkdown)",
+    "category": "Utility",
+    "visibility": [ "Build", "Release" ],
+    "author": "",
+    "version": {
+      "Major": 1,
+      "Minor": 0,
+      "Patch": 0
+    },
+    "demands": [],
+    "inputs": [
+      {
+        "name": "variable1",
+        "type": "filePath",
+        "label": "Path to Solution File",
+        "defaultValue": "",
+        "required": true
+      },
+      {
+        "name": "variable2",
+        "type": "string",
+        "label": "Sample text variable",
+        "defaultValue": "",
+        "required": false,
+        "helpMarkDown": "This will give you a hover-over tooltip"
+      }
+    ],
+    "instanceNameFormat": "certes-ssl",
+    "execution": {
+      "Node": { "target": "certes-ssl.js" }
+    }
+  }
