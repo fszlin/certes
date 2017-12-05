@@ -29,6 +29,7 @@ branches:
     - master
     - dev
     - vnext
+    - cli
 
 assembly_info:
   patch: true
@@ -56,9 +57,11 @@ before_build:
 build_script:
   - msbuild -t:src\Certes
   - msbuild -t:src\Certes:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%"
+  - msbuild -t:src\Certes_Cli:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%"
   - msbuild -t:src\Certes_Cli
   - msbuild -t:src\Certes_Cli:Publish -p:TargetFramework=netcoreapp1.0
   - ps: Get-ChildItem -Path "./src/Certes/**/Certes.$($env:CERTES_PACKAGE_VERSION).nupkg" -Recurse | Move-Item -Destination "./build"
+  - ps: Get-ChildItem -Path "./src/Certes.Cli/**/Certes.Cli.$($env:CERTES_PACKAGE_VERSION).nupkg" -Recurse | Move-Item -Destination "./build"
   - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
   - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
 
@@ -80,7 +83,7 @@ after_test:
 configuration: Release
 
 artifacts:
-    - path: build/Certes.$(CERTES_PACKAGE_VERSION).nupkg
+    - path: build/*.$(CERTES_PACKAGE_VERSION).nupkg
       name: nupkg
       
     - path: build/certes-cli.zip
