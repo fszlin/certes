@@ -73,13 +73,13 @@ namespace Certes.Cli
                 switch (command)
                 {
                     case Command.Register:
-                        await this.ProcessCommand<RegisterCommand, RegisterOptions>(new RegisterCommand(registerOptions, this.consoleLogger));
+                        await ProcessCommand<RegisterCommand, RegisterOptions>(new RegisterCommand(registerOptions, consoleLogger));
                         break;
                     case Command.Authorization:
-                        await this.ProcessCommand<AuthorizationCommand, AuthorizationOptions>(new AuthorizationCommand(authorizationOptions, this.consoleLogger));
+                        await ProcessCommand<AuthorizationCommand, AuthorizationOptions>(new AuthorizationCommand(authorizationOptions, consoleLogger));
                         break;
                     case Command.Certificate:
-                        await this.ProcessCommand<CertificateCommand, CertificateOptions>(new CertificateCommand(certificateOptions, this.consoleLogger));
+                        await ProcessCommand<CertificateCommand, CertificateOptions>(new CertificateCommand(certificateOptions, consoleLogger));
                         break;
                 }
 
@@ -182,7 +182,7 @@ namespace Certes.Cli
         {
             if (!File.Exists(path))
             {
-                return default(T);
+                return default;
             }
 
             var json = await FileUtil.ReadAllText(path);
