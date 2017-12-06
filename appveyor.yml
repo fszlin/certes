@@ -49,8 +49,6 @@ init:
 
 install:
   - cmd: curl -O https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-  - cmd: npm install -g typescript
-  - cmd: npm install -g tfx-cli
 
 before_build:
   - ps: New-Item build -Type directory -Force | Out-Null
