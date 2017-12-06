@@ -4,7 +4,8 @@
     "gallery-publish": "tfx extension publish --rev-version",
     "clean": "rimraf ./*.vsix",
     "compile": "tsc -p .",
-    "install-task-lib": "cd certes-ssl && npm install --save-dev"
+    "install-task-lib": "cd certes-ssl && npm install --save-dev",
+    "postinstall": "cd certes-ssl && npm install"
   },
   "devDependencies": {
     "@types/node": "^8.0.7",

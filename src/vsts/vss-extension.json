@@ -1,11 +1,11 @@
 {
   "manifestVersion": 1,
   "id": "certes",
-  "version": "0.1.1",
+  "version": "0.1.12",
   "name": "certes",
   "scopes": [],
   "description": "My extension makes hubs great again",
-  "publisher": "certes",
+  "publisher": "certes-3",
   "galleryFlags": [
     "Preview"
   ],
@@ -41,13 +41,13 @@
   },
   "links": {
     "getstarted": {
-      "uri": "https://bit.ly"
+      "uri": "https://github.com/fszlin/certes"
     },
     "support": {
-      "uri": "https://bit.ly"
+      "uri": "https://github.com/fszlin/certes/issues"
     },
     "issues": {
-      "uri": "https://bit.ly"
+      "uri": "https://github.com/fszlin/certes/issues"
     }
   },
   "repository": {

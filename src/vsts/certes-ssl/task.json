@@ -1,37 +1,46 @@
 {
-    "id": "95e54615-c46e-483b-b2a3-b9d8c4ee90a0",
-    "name": "certes-ssl",
-    "friendlyName": "SSL",
-    "description": "My Task makes tasks great again",
-    "helpMarkDown": "[More Information](https://url.to/yourmarkdown)",
-    "category": "Utility",
-    "visibility": [ "Build", "Release" ],
-    "author": "",
-    "version": {
-      "Major": 1,
-      "Minor": 0,
-      "Patch": 0
+  "id": "95e54615-c46e-483b-b2a3-b9d8c4ee90a0",
+  "name": "certes-ssl",
+  "friendlyName": "SSL",
+  "description": "My Task makes tasks great again",
+  "helpMarkDown": "[More Information](https://github.com/fszlin/certes)",
+  "category": "Utility",
+  "visibility": [ "Build", "Release" ],
+  "author": "",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 1
+  },
+  "minimumAgentVersion": "2.0.0",
+  "demands": [],
+  "inputs": [
+    {
+      "name": "connectedServiceNameARM",
+      "type": "connectedService:AzureRM",
+      "label": "Azure subscription",
+      "required": true,
+      "helpMarkDown": "Select an Azure resource manager subscription for the deployment"
     },
-    "demands": [],
-    "inputs": [
-      {
-        "name": "variable1",
-        "type": "filePath",
-        "label": "Path to Solution File",
-        "defaultValue": "",
-        "required": true
-      },
-      {
-        "name": "variable2",
-        "type": "string",
-        "label": "Sample text variable",
-        "defaultValue": "",
-        "required": false,
-        "helpMarkDown": "This will give you a hover-over tooltip"
+    {
+      "name": "indentifiers",
+      "type": "multiLine",
+      "label": "Indentifiers",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "List of host names, one per line",
+      "properties": {
+        "resizable": "true",
+        "rows": "10",
+        "maxLength": "20000"
       }
-    ],
-    "instanceNameFormat": "certes-ssl",
-    "execution": {
-      "Node": { "target": "certes-ssl.js" }
     }
+  ],
+  "instanceNameFormat": "certes-ssl",
+  "execution": {
+    "Node": { "target": "certes-ssl.js" }
+  },
+  "messages": {
+      "AzureSDKNotFound": "Azure CLI 2.x is not installed on this machine."
   }
+}
