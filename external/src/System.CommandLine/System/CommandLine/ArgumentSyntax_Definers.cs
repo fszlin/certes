@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft. All rights reserved.
+﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Globalization;
 
 namespace System.CommandLine
 {
-    public partial class ArgumentSyntax
+    internal partial class ArgumentSyntax
     {
         private static readonly Func<string, string> s_stringParser = v => v;
         private static readonly Func<string, bool> s_booleanParser = v => bool.Parse(v);

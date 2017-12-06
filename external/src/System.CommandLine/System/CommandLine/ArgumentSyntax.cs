@@ -6,7 +6,7 @@ using System.IO;
 
 namespace System.CommandLine
 {
-    public sealed partial class ArgumentSyntax
+    internal sealed partial class ArgumentSyntax
     {
         private readonly IEnumerable<string> _arguments;
         private readonly List<ArgumentCommand> _commands = new List<ArgumentCommand>();

@@ -1,9 +1,9 @@
-// Copyright (c) Microsoft. All rights reserved.
+﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace System.CommandLine
 {
-    public sealed class ArgumentSyntaxException : Exception
+    internal sealed class ArgumentSyntaxException : Exception
     {
         public ArgumentSyntaxException()
         {

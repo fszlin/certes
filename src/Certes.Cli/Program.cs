@@ -29,13 +29,11 @@ namespace Certes.Cli
             this.consoleLogger = consoleLogger;
         }
 
-        public static int Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var logger = new ConsoleLogger(
                 ConsoleLoggerName, (category, logLevel) => true, false);
-            var tsk = new Program(logger).Process(args);
-            tsk.Wait();
-            return tsk.Result ? 0 : 1;
+            await new Program(logger).Process(args);
         }
 
         public async Task<bool> Process(string[] args)

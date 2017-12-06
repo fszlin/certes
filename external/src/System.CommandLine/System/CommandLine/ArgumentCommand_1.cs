@@ -1,9 +1,9 @@
-// Copyright (c) Microsoft. All rights reserved.
+﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace System.CommandLine
 {
-    public sealed class ArgumentCommand<T> : ArgumentCommand
+    internal sealed class ArgumentCommand<T> : ArgumentCommand
     {
         internal ArgumentCommand(string name, T value)
             : base(name)
