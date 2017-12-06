@@ -3,7 +3,7 @@ import ma = require('vsts-task-lib/mock-answer');
 import tmrm = require('vsts-task-lib/mock-run');
 import path = require('path');
 
-let taskPath = path.join(__dirname, '..', 'certes-ssl.js');
+let taskPath = path.join(__dirname, '..', 'certes-ssl.ts');
 let tmr: tmrm.TaskMockRunner = new tmrm.TaskMockRunner(taskPath);
 
 tmr.setInput('identifiers', "www.example.com\nweb.example.com\nnews.example.com\n");

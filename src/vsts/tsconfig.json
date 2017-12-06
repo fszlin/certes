@@ -3,7 +3,6 @@
       "target": "ES6",
       "module": "commonjs"
     },
-    "compileOnSave": true,
     "exclude": [
       "node_modules",
       "certes-ssl/node_modules"

@@ -13,7 +13,7 @@ describe('certes-ssl task tests', function () {
     it('should succeed with simple inputs', (done: MochaDone) => {
         this.timeout(1000);
 
-        let tp = path.join(__dirname, 'success.js');
+        let tp = path.join(__dirname, 'success.ts');
         let tr: ttm.MockTestRunner = new ttm.MockTestRunner(tp);
 
         tr.run();
