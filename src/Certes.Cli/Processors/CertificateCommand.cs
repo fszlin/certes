@@ -1,12 +1,12 @@
-﻿using Certes.Acme;
-using Certes.Cli.Options;
-using Certes.Pkcs;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Certes.Acme;
+using Certes.Cli.Internal;
+using Certes.Cli.Options;
+using Certes.Pkcs;
 
 namespace Certes.Cli.Processors
 {
@@ -14,7 +14,7 @@ namespace Certes.Cli.Processors
     {
         private static readonly char[] NameValueSeparator = new[] { '\r', '\n', ' ', ';', ',' };
 
-        public CertificateCommand(CertificateOptions options, ILogger consoleLogger)
+        public CertificateCommand(CertificateOptions options, IConsole consoleLogger)
             : base(options, consoleLogger)
         {
         }

@@ -1,19 +1,19 @@
-﻿using Certes.Acme;
-using Certes.Cli.Options;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Certes.Acme;
+using Certes.Cli.Internal;
+using Certes.Cli.Options;
 
 namespace Certes.Cli.Processors
 {
     internal class AuthorizationCommand : CommandBase<AuthorizationOptions>
     {
         private static readonly char[] NameValueSeparator = new[] { '\r', '\n', ' ', ';', ',' };
-        public AuthorizationCommand(AuthorizationOptions options, ILogger ConsoleLogger)
-            : base(options, ConsoleLogger)
+        public AuthorizationCommand(AuthorizationOptions options, IConsole consoleLogger)
+            : base(options, consoleLogger)
         {
         }
 

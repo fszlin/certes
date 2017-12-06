@@ -28,14 +28,6 @@
     <ProjectReference Include="..\Certes\Certes.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
-  </ItemGroup>
-
   <Import Project="../../common.props" />
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

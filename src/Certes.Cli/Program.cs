@@ -2,10 +2,9 @@
 using System.CommandLine;
 using System.IO;
 using System.Threading.Tasks;
+using Certes.Cli.Internal;
 using Certes.Cli.Options;
 using Certes.Cli.Processors;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -15,7 +14,7 @@ namespace Certes.Cli
     public class Program
     {
         internal const string ConsoleLoggerName = "certes-cli-console-logger";
-        private readonly ILogger consoleLogger;
+        private readonly IConsole consoleLogger;
 
         private JsonSerializerSettings jsonSettings;
         private Command command = Command.Undefined;
@@ -24,16 +23,14 @@ namespace Certes.Cli
         private AuthorizationOptions authorizationOptions;
         private CertificateOptions certificateOptions;
 
-        public Program(ILogger consoleLogger)
+        internal Program(IConsole consoleLogger)
         {
             this.consoleLogger = consoleLogger;
         }
 
         public static async Task Main(string[] args)
         {
-            var logger = new ConsoleLogger(
-                ConsoleLoggerName, (category, logLevel) => true, false);
-            await new Program(logger).Process(args);
+            await new Program(new DefaultConsole()).Process(args);
         }
 
         public async Task<bool> Process(string[] args)
@@ -51,7 +48,7 @@ namespace Certes.Cli
             }
             catch (ArgumentSyntaxException ex)
             {
-                consoleLogger.LogError(ex.Message);
+                consoleLogger.LogError(ex, ex.Message);
             }
 
             jsonSettings = new JsonSerializerSettings
