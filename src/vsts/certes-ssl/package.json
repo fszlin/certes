@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "package.json for task lib",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha tests/_suite.js"
   },
   "dependencies": {
     "vsts-task-lib": "^2.0.5"
   },
   "devDependencies": {
+    "@types/mocha": "^2.2.44",
     "@types/node": "^8.0.7",
-    "@types/q": "1.0.6"
+    "@types/q": "1.0.6",
+    "mocha": "^4.0.1"
   }
 }

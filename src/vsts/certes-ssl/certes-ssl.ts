@@ -11,8 +11,12 @@ export class CertesAuthzTask {
         try {
             tl.setResourcePath(path.join(__dirname, "task.json"));
 
-            let indentifiers: string = tl.getInput('indentifiers', true);
-            tl.debug('indentifiers:' +indentifiers);
+            const indentifiers = tl.getDelimitedInput('identifiers', '\n', true);
+            
+            tl.debug('indentifiers:');
+            indentifiers.forEach(v => tl.debug(v));
+
+            tl.setResult(tl.TaskResult.Succeeded, tl.loc("ScriptReturnCode", 0));
         } catch (err) {
             tl.setResult(tl.TaskResult.Failed, err.message);
         }

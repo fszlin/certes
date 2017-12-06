@@ -41,6 +41,8 @@
     "Node": { "target": "certes-ssl.js" }
   },
   "messages": {
-      "AzureSDKNotFound": "Azure CLI 2.x is not installed on this machine."
+    "ScriptReturnCode": "Script exited with return code: %d",
+    "ScriptFailed": "Script failed with error: %s",
+    "AzureSDKNotFound": "Azure CLI 2.x is not installed on this machine."
   }
 }
