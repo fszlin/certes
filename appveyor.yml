@@ -46,6 +46,7 @@ init:
   - ps: $buildVer = $verParts[3] - $env:ver_offset
   - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + '.' + $buildVer }
   - ps: $env:CERTES_PACKAGE_VERSION = $env:CERTES_ASSEMBLY_INFO_VERSION
+  - ps: gci *.csproj -recurse | %{ (gc $_) -replace '\<Version\>1.0.0\<\/Version\>', "<Version>$($env:CERTES_PACKAGE_VERSION)</Version>" | sc $_.fullname }
   
 install:
   - cmd: curl -O https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
@@ -55,10 +56,8 @@ before_build:
   - cmd: nuget restore Certes.sln
 
 build_script:
-  - msbuild -t:src\Certes
-  - msbuild -t:src\Certes:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%"
-  - msbuild -t:src\Certes_Cli:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%"
-  - msbuild -t:src\Certes_Cli
+  - msbuild -t:src\Certes:pack
+  - msbuild -t:src\Certes_Cli:pack
   - msbuild -t:src\Certes_Cli:Publish -p:TargetFramework=netcoreapp1.0
   - ps: Get-ChildItem -Path "./src/**/*.nupkg" -Recurse | Move-Item -Destination "./build"
   - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
