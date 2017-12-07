@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs"
+  },
+  "include": [
+    "src/vsts/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
+  

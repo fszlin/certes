@@ -2,37 +2,9 @@
   "name": "task",
   "version": "1.0.0",
   "description": "package.json for task lib",
-  "scripts": {
-    "test": "nyc mocha tests/_suite.ts",
-    "coverage": "nyc report --reporter=text-lcov > ../../../build/coverage.lcov"
-  },
+  "scripts": {},
   "dependencies": {
     "vsts-task-lib": "^2.0.5"
   },
-  "devDependencies": {
-    "@types/mocha": "^2.2.44",
-    "@types/node": "^8.0.7",
-    "@types/q": "1.0.6",
-    "mocha": "^4.0.1",
-    "nyc": "^11.3.0",
-    "source-map-support": "^0.5.0",
-    "ts-node": "^3.3.0"
-  },
-  "nyc": {
-    "include": [
-      "certes-ssl.ts"
-    ],
-    "extension": [
-      ".ts",
-      ".tsx"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
-    "reporter": [
-      "text-summary",
-      "html"
-    ],
-    "all": true
-  }
+  "devDependencies": {}
 }

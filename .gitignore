@@ -247,3 +247,6 @@ build/
 .certes/
 data.json
 gh-pages/
+.taskkey
+.nyc_output/
+/coverage
