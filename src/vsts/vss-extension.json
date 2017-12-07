@@ -3,7 +3,10 @@
   "id": "certes",
   "version": "0.1.12",
   "name": "certes",
-  "scopes": [],
+  "scopes": [
+    "vso.build",
+    "vso.serviceendpoint"
+  ],
   "description": "My extension makes hubs great again",
   "publisher": "certes-3",
   "galleryFlags": [
@@ -72,6 +75,54 @@
       "type": "ms.vss-distributed-task.task",
       "properties": {
         "name": "certes-ssl"
+      }
+    },
+    {
+      "id": "certes-acme-endpoint",
+      "description": "CertesAcmeAuthenticationEndpoint",
+      "type": "ms.vss-endpoint.service-endpoint-type",
+      "targets": [
+        "ms.vss-endpoint.endpoint-types"
+      ],
+      "properties": {
+        "name": "certes-acme",
+        "displayName": "ACME",
+        "url": "https://github.com/fszlin/certes",
+        "inputDescriptors": [],
+        "authenticationSchemes": [
+          {
+            "type": "ms.vss-endpoint.endpoint-auth-scheme-cert",
+            "inputDescriptors": [
+              {
+                "id": "directoryUri",
+                "name": "Directory URI",
+                "description": "Enter the ACME directory URI",
+                "inputMode": "textbox",
+                "isConfidential": false,
+                "validation": {
+                  "isRequired": true,
+                  "dataType": "string"
+                },
+                "values": {
+                  "inputId": "directoryUri",
+                  "isDisabled": false,
+                  "defaultValue": "https://acme-v01.api.letsencrypt.org/directory"
+                }
+              },
+              {
+                "id": "certificate",
+                "name": "Private Key",
+                "description": "Enter the private key in the format: -----BEGIN PRIVATE KEY-----\\nYourPrivateKeyHere\\n-----END PRIVATE KEY-----\\n",
+                "inputMode": "textarea",
+                "isConfidential": true,
+                "validation": {
+                  "isRequired": true,
+                  "dataType": "string"
+                }
+              }
+            ]
+          }
+        ]
       }
     }
   ]
