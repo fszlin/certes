@@ -13,22 +13,7 @@ namespace Certes
         [InlineData(SignatureAlgorithm.RS256)]
         [InlineData(SignatureAlgorithm.ES256)]
         [InlineData(SignatureAlgorithm.ES384)]
-        public async Task CanDeleteRegistration(SignatureAlgorithm algorithm)
-        {
-            var key = new AccountKey(algorithm);
-            using (var client = new AcmeClient(await Helper.GetStagingServer()))
-            {
-                client.Use(key.Export());
-                var reg = await client.NewRegistraton();
-                await client.DeleteRegistration(reg);
-            }
-        }
-
-        [Theory]
-        [InlineData(SignatureAlgorithm.RS256)]
-        [InlineData(SignatureAlgorithm.ES256)]
-        [InlineData(SignatureAlgorithm.ES384)]
-        public async Task CanChangeKey(SignatureAlgorithm algorithm)
+        public async Task RunAccountFlow(SignatureAlgorithm algorithm)
         {
             var key = new AccountKey(algorithm);
             using (var client = new AcmeClient(await Helper.GetStagingServer()))
