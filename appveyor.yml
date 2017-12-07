@@ -80,14 +80,14 @@ test_script:
   - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
   - ps: >-
       & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:xunit --fx-version 2.0.0" "-oldstyle" "-output:./../../build/coverage.xml" "-filter:+[Certes]* +[Certes.Cli]*" "-hideskipped:All" "-returntargetcode"
-  - cd ../../src/vsts
-  - npm test
   - cd ../../
+  - cd src/vsts && npm test && cd ../../
 
 after_test:
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
   - IF NOT "%codecov_upload_token%" == "" pip install codecov
   - IF NOT "%codecov_upload_token%" == "" codecov -f "./build/coverage.xml" -t %codecov_upload_token%
+  - IF NOT "%codecov_upload_token%" == "" cd src/vsts && npm run coverage && cd ../../
 
 configuration: Release
 
