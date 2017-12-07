@@ -81,7 +81,7 @@ test_script:
   - ps: >-
       & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:xunit --fx-version 2.0.0" "-oldstyle" "-output:./../../build/coverage.xml" "-filter:+[Certes]* +[Certes.Cli]*" "-hideskipped:All" "-returntargetcode"
   - cd ../../
-  - cd npm test
+  - npm test
 
 after_test:
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
