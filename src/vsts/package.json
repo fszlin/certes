@@ -7,7 +7,7 @@
     "install-task-lib": "cd certes-ssl && npm install --save-dev",
     "postinstall": "cd certes-ssl && npm install",
     "test": "cd certes-ssl && npm test",
-    "coverage": "cd certes-ssl && npm coverage"
+    "coverage": "cd certes-ssl && npm run coverage"
   },
   "devDependencies": {
     "@types/node": "^8.0.7",
