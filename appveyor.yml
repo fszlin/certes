@@ -49,6 +49,7 @@ init:
 
 install:
   - cmd: curl -O https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+  - npm install
 
 before_build:
   - ps: New-Item build -Type directory -Force | Out-Null
@@ -67,7 +68,6 @@ build_script:
   - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
   - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
   - cd src\vsts
-  - npm install
   - npm run package
   - mv *.vsix ../../build/
   - cd ../../
@@ -81,13 +81,13 @@ test_script:
   - ps: >-
       & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:xunit --fx-version 2.0.0" "-oldstyle" "-output:./../../build/coverage.xml" "-filter:+[Certes]* +[Certes.Cli]*" "-hideskipped:All" "-returntargetcode"
   - cd ../../
-  - cd src/vsts && npm test && cd ../../
+  - cd npm test
 
 after_test:
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
   - IF NOT "%codecov_upload_token%" == "" pip install codecov
   - IF NOT "%codecov_upload_token%" == "" codecov -f "./build/coverage.xml" -t %codecov_upload_token%
-  - IF NOT "%codecov_upload_token%" == "" cd src/vsts/certes-ssl && npm run coverage && cd ../../../
+  - IF NOT "%codecov_upload_token%" == "" npm run codecov
 
 configuration: Release
 

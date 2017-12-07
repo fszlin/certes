@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "test": "cd src/vsts && npm test",
+    "postinstall": "cd src/vsts && npm install",
+    "codecov": "cd src/vsts && npm run coverage && codecov -f ./build/coverage.lcov"
+  },
+  "dependencies": {
+    "codecov": "^3.0.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fszlin/certes.git"
+  },
+  "name": "vstsexttask",
+  "description": "",
+  "private": true,
+  "version": "0.0.1"
+}
