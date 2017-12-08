@@ -81,10 +81,9 @@ test_script:
   - cd ../../
 
 after_test:
-  - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
-  - IF NOT "%codecov_upload_token%" == "" pip install codecov
+  - IF NOT "%codecov_upload_token%" == "" npm run codecov
   - IF NOT "%codecov_upload_token%" == "" codecov -f "./build/coverage.xml" -t %codecov_upload_token%
-  - IF NOT "%codecov_upload_token%" == "" npm run codecov -t %codecov_upload_token%
+  - IF NOT "%codecov_upload_token%" == "" codecov -f "./build/coverage.lcov" -t %codecov_upload_token%
 
 configuration: Release
 
