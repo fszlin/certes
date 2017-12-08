@@ -6,7 +6,7 @@
   "scripts": {
     "test": "nyc mocha",
     "coverage": "nyc report --reporter=html",
-    "codecov": "nyc report --reporter=text-lcov > build/coverage.lcov && codecov -f build/coverage.lcov",
+    "codecov": "nyc report --reporter=text-lcov > build/coverage.lcov",
     "postinstall": "cd src/vsts/certes-ssl && npm install",
     "package": "npm run clean && npm run compile && tfx extension create -r ./src/vsts --output-path ./build/",
     "clean": "rimraf ./build/*.vsix",
