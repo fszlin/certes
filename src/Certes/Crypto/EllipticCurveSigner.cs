@@ -30,13 +30,17 @@ namespace Certes.Crypto
             var sequence = (Asn1Sequence)Asn1Object.FromByteArray(signature);
             using (var buffer = new MemoryStream())
             {
-                foreach (var intBytes in sequence
-                    .OfType<Asn1Object>()
-                    .Select(o => o.ToAsn1Object())
-                    .Cast<DerInteger>()
-                    .Select(i => i.Value.ToByteArrayUnsigned()))
+                foreach (var num in sequence
+                    .OfType<DerInteger>()
+                    .Select(i => i.Value))
                 {
-                    buffer.Write(intBytes, 0, intBytes.Length);
+                    var bytes = num.ToByteArrayUnsigned();
+                    for (var i = bytes.Length; i < 32; ++i)
+                    {
+                        buffer.WriteByte(0);
+                    }
+
+                    buffer.Write(bytes, 0, bytes.Length);
                 }
 
                 return buffer.ToArray();
