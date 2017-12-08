@@ -1,8 +1,8 @@
 {
-  "id": "95e54615-c46e-483b-b2a3-b9d8c4ee90a0",
-  "name": "certes-ssl",
-  "friendlyName": "SSL",
-  "description": "My Task makes tasks great again",
+  "id": "bdaa6c8c-452e-4bb4-a21a-40891488fe0d",
+  "name": "certes-authorization",
+  "friendlyName": "ACME Authorization",
+  "description": "Authorizes identifiers for creating certificates",
   "helpMarkDown": "[More Information](https://github.com/fszlin/certes)",
   "category": "Utility",
   "visibility": [ "Build", "Release" ],
@@ -10,17 +10,17 @@
   "version": {
     "Major": 1,
     "Minor": 0,
-    "Patch": 1
+    "Patch": 0
   },
   "minimumAgentVersion": "2.0.0",
   "demands": [],
   "inputs": [
     {
-      "name": "connectedServiceNameARM",
-      "type": "connectedService:AzureRM",
-      "label": "Azure subscription",
+      "name": "acmeAccount",
+      "type": "connectedService:certes-acme-endpoint",
+      "label": "ACME Account",
       "required": true,
-      "helpMarkDown": "Select an Azure resource manager subscription for the deployment"
+      "helpMarkDown": "Select an ACME account for the authorizations"
     },
     {
       "name": "indentifiers",
@@ -34,11 +34,18 @@
         "rows": "10",
         "maxLength": "20000"
       }
+    },
+    {
+      "name": "nugetSource",
+      "type": "string",
+      "label": "NuGet package source",
+      "required": true,
+      "helpMarkDown": "NuGet package source to load certes"
     }
   ],
-  "instanceNameFormat": "certes-ssl",
+  "instanceNameFormat": "Authorization",
   "execution": {
-    "Node": { "target": "certes-ssl.js" }
+    "Node": { "target": "authorization.js" }
   },
   "messages": {
     "ScriptReturnCode": "Script exited with return code: %d",

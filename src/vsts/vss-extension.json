@@ -63,18 +63,24 @@
   },
   "files": [
     {
-      "path": "certes-ssl"
+      "path": "common"
+    },
+    {
+      "path": "node_modules"
+    },
+    {
+      "path": "authorization"
     }
   ],
   "contributions": [
     {
-      "id": "certes-ssl",
+      "id": "certes-authorization",
       "targets": [
         "ms.vss-distributed-task.tasks"
       ],
       "type": "ms.vss-distributed-task.task",
       "properties": {
-        "name": "certes-ssl"
+        "name": "authorization"
       }
     },
     {
@@ -86,7 +92,7 @@
       ],
       "properties": {
         "name": "certes-acme",
-        "displayName": "ACME",
+        "displayName": "ACME Account",
         "url": "https://github.com/fszlin/certes",
         "inputDescriptors": [],
         "authenticationSchemes": [
