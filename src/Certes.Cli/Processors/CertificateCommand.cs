@@ -26,7 +26,7 @@ namespace Certes.Cli.Processors
                 throw new Exception("Account not specified.");
             }
 
-            if ( string.IsNullOrWhiteSpace(Options.Name ))
+            if ( string.IsNullOrWhiteSpace(Options.Name))
             {
                 throw new Exception("Certificate name not specficied.");
             }

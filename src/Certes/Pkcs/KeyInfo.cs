@@ -22,6 +22,27 @@ namespace Certes.Pkcs
         /// </value>
         [JsonProperty("der")]
         public byte[] PrivateKeyInfo { get; set; }
+
+        /// <summary>
+        /// Reads the key from the given <paramref name="stream"/>.
+        /// </summary>
+        /// <param name="stream">The steam.</param>
+        /// <returns>The key loaded.</returns>
+        public static KeyInfo From(Stream stream)
+        {
+            using (var streamReader = new StreamReader(stream))
+            {
+                var reader = new PemReader(streamReader);
+                var keyPair = reader.ReadObject() as AsymmetricCipherKeyPair;
+
+                if (keyPair == null)
+                {
+                    throw new Exception("Invaid key data.");
+                }
+
+                return keyPair.Export();
+            }
+        }
     }
 
     /// <summary>

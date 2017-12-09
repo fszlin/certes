@@ -6,5 +6,6 @@
         Register,
         Authorization,
         Certificate,
+        Import,
     }
 }
