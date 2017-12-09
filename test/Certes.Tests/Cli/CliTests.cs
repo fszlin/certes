@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
-using Certes.Cli.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -94,7 +93,7 @@ namespace Certes.Cli
                 .Select(s => placeHolders?.ContainsKey(s) == true ? placeHolders[s] : s)
                 .ToArray();
             
-            var logger = new _ConsoleLogger();
+            var logger = new TestConsoleLogger();
             var succeed = await new Program(logger).Process(args);
             Assert.True(succeed, string.Join(Environment.NewLine, logger.Logs));
 
@@ -107,21 +106,6 @@ namespace Certes.Cli
             var ctx = JObject.Parse(json);
             ctx["account"]["key"]["der"] = Helper.PrivateKey;
             File.WriteAllText(AccountPath, ctx.ToString(Formatting.Indented));
-        }
-
-        private class _ConsoleLogger : IConsole
-        {
-            public IList<string> Logs { get; } = new List<string>();
-
-            public void WriteLine(string message, Exception exception = null, params object[] args)
-            {
-                Logs.Add(message);
-
-                if (exception != null)
-                {
-                    Logs.Add(exception.ToString());
-                }
-            }
         }
     }
 }

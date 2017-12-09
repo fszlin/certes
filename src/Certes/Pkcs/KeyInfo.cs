@@ -24,18 +24,24 @@ namespace Certes.Pkcs
         public byte[] PrivateKeyInfo { get; set; }
 
         /// <summary>
-        /// Reads the key from the given <paramref name="steam"/>.
+        /// Reads the key from the given <paramref name="stream"/>.
         /// </summary>
-        /// <param name="steam">The steam.</param>
+        /// <param name="stream">The steam.</param>
         /// <returns>The key loaded.</returns>
-        public static KeyInfo From(Stream steam)
+        public static KeyInfo From(Stream stream)
         {
-            var keyParam = PrivateKeyFactory.CreateKey(steam);
-            var privateKey = PrivateKeyInfoFactory.CreatePrivateKeyInfo(keyParam);
-            return new KeyInfo
+            using (var streamReader = new StreamReader(stream))
             {
-                PrivateKeyInfo = privateKey.GetDerEncoded()
-            };
+                var reader = new PemReader(streamReader);
+                var keyPair = reader.ReadObject() as AsymmetricCipherKeyPair;
+
+                if (keyPair == null)
+                {
+                    throw new Exception("Invaid key data.");
+                }
+
+                return keyPair.Export();
+            }
         }
     }
 
