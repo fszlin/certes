@@ -66,9 +66,6 @@
       "path": "common"
     },
     {
-      "path": "node_modules"
-    },
-    {
       "path": "authorization"
     }
   ],
@@ -91,7 +88,7 @@
         "ms.vss-endpoint.endpoint-types"
       ],
       "properties": {
-        "name": "certes-acme",
+        "name": "CertesAcmeAccount",
         "displayName": "ACME Account",
         "url": "https://github.com/fszlin/certes",
         "inputDescriptors": [],

@@ -17,15 +17,15 @@
   "inputs": [
     {
       "name": "acmeAccount",
-      "type": "connectedService:certes-acme-endpoint",
+      "type": "connectedService:CertesAcmeAccount",
       "label": "ACME Account",
       "required": true,
       "helpMarkDown": "Select an ACME account for the authorizations"
     },
     {
-      "name": "indentifiers",
+      "name": "identifiers",
       "type": "multiLine",
-      "label": "Indentifiers",
+      "label": "Identifiers",
       "defaultValue": "",
       "required": true,
       "helpMarkDown": "List of host names, one per line",
@@ -39,13 +39,34 @@
       "name": "nugetSource",
       "type": "string",
       "label": "NuGet package source",
-      "required": true,
+      "required": false,
       "helpMarkDown": "NuGet package source to load certes"
+    },
+    {
+      "name": "frameworkVersion",
+      "type": "pickList",
+      "label": "Framework Version",
+      "defaultValue": "netcoreapp2.0",
+      "required": true,
+      "helpMarkDown": "Framework version to run certes cli",
+      "options": {
+        "netcoreapp2.0": "netcoreapp2.0",
+        "netcoreapp1.1": "netcoreapp1.1",
+        "netcoreapp1.0": "netcoreapp1.0"
+      }
+    },
+    {
+      "name": "cliVersion",
+      "type": "string",
+      "label": "Certes CLI Version",
+      "required": true,
+      "defaultValue": "1.1.4",
+      "helpMarkDown": "Certes CLI Version"
     }
   ],
   "instanceNameFormat": "Authorization",
   "execution": {
-    "Node": { "target": "authorization.js" }
+    "Node": { "target": "AuthorizationTask.js" }
   },
   "messages": {
     "ScriptReturnCode": "Script exited with return code: %d",

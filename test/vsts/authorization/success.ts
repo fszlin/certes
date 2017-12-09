@@ -13,6 +13,8 @@ tmr.registerMock('vsts-task-lib/toolrunner', mtt);
 
 tmr.setInput('acmeAccount', endpointId);
 tmr.setInput('identifiers', 'www.example.com\nweb.example.com\nnews.example.com\n');
+tmr.setInput('frameworkVersion', 'netcoreapp2.0');
+tmr.setInput('cliVersion', '1.1.4');
 
 MockHelper.mockServiceEndpoint(endpointId, {
     directoryUri: 'https://example.com/',
@@ -40,6 +42,10 @@ let a: ma.TaskLibAnswers = <ma.TaskLibAnswers>{
         '/mocked/tools/dotnet acme': {
             'code': 0,
             'stdout': 'acme called',
+        },
+        '/mocked/tools/dotnet acme authz --server https://example.com/ --v www.example.com --v web.example.com --v news.example.com': {
+            'code': 0,
+            'stdout': 'acme called'
         }
     }
 };
