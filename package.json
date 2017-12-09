@@ -8,7 +8,7 @@
     "test-d": "mocha",
     "coverage": "nyc report --reporter=html",
     "codecov": "nyc report --reporter=text-lcov > build/coverage.lcov",
-    "postinstall": "cd src/vsts && npm install",
+    "postinstall": "cd src/vsts/authorization && npm install",
     "package": "npm run clean && npm run compile && tfx extension create -r ./src/vsts --output-path ./build/",
     "clean": "rimraf ./build/*.vsix",
     "compile": "tsc -p ."
