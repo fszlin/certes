@@ -22,6 +22,21 @@ namespace Certes.Pkcs
         /// </value>
         [JsonProperty("der")]
         public byte[] PrivateKeyInfo { get; set; }
+
+        /// <summary>
+        /// Reads the key from the given <paramref name="steam"/>.
+        /// </summary>
+        /// <param name="steam">The steam.</param>
+        /// <returns>The key loaded.</returns>
+        public static KeyInfo From(Stream steam)
+        {
+            var keyParam = PrivateKeyFactory.CreateKey(steam);
+            var privateKey = PrivateKeyInfoFactory.CreatePrivateKeyInfo(keyParam);
+            return new KeyInfo
+            {
+                PrivateKeyInfo = privateKey.GetDerEncoded()
+            };
+        }
     }
 
     /// <summary>
