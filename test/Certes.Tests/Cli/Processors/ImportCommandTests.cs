@@ -40,7 +40,13 @@ namespace Certes.Cli.Processors
 
         [Fact]
         public async Task CanLoadKey()
-        {
+        { 
+            if (!Directory.Exists("./_test"))
+            {
+                Directory.CreateDirectory("./_test");
+        
+            }
+
             var options = new ImportOptions
             {
                 KeyFile = "./_test/key.pem",
