@@ -28,9 +28,10 @@ namespace Certes.Cli
             this.consoleLogger = consoleLogger;
         }
 
-        public static async Task Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
-            await new Program(new DefaultConsole()).Process(args);
+            var succeed = await new Program(new DefaultConsole()).Process(args);
+            return succeed ? 0 : 1;
         }
 
         public async Task<bool> Process(string[] args)
@@ -166,11 +167,6 @@ namespace Certes.Cli
             var context = await Load<AcmeContext>(options.Path);
             context = await command.Process(context);
             await Save(options.Path, context);
-        }
-
-        private T ParseEnum<T>(string val)
-        {
-            return (T)Enum.Parse(typeof(T), val);
         }
 
         public async Task<T> Load<T>(string path)
