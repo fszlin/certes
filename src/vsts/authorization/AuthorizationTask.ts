@@ -65,6 +65,11 @@ export class AuthorizationTask {
             dotnet.argIf(this.nugetSource, ['-s', this.nugetSource]);
             await dotnet.exec();
 
+            tl.writeFile('key.pem', this.prviKey);
+
+            dotnet = new trl.ToolRunner(dotnetPath);
+            dotnet.arg(['acme', 'import', '--key-file', 'key.pem']);
+
             dotnet = new trl.ToolRunner(dotnetPath);
             dotnet.arg(['acme', 'authz', '--server', this.directoryUri]);
             this.indentifiers.forEach(v => dotnet.arg(['--v', v]));

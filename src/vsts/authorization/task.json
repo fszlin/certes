@@ -25,10 +25,10 @@
     {
       "name": "identifiers",
       "type": "multiLine",
-      "label": "Identifiers",
+      "label": "Domain Names",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "List of host names, one per line",
+      "helpMarkDown": "List of domain names, one per line",
       "properties": {
         "resizable": "true",
         "rows": "10",
@@ -36,11 +36,31 @@
       }
     },
     {
+      "name": "authorizeMethod",
+      "type": "pickList",
+      "label": "Authorize Method",
+      "defaultValue": "azure-dns",
+      "required": true,
+      "helpMarkDown": "The method to vailidate domain ownership",
+      "options": {
+        "azureDns": "Azure DNS"
+      }
+    },
+    {
+      "name": "AzureDnsAccount",
+      "type": "connectedService:AzureRM",
+      "label": "Azure subscription",
+      "required": true,
+      "visibleRule": "authorizeMethod = azureDns",
+      "helpMarkDown": "Select an Azure resource manager subscription for the DNS"
+    },
+    {
       "name": "nugetSource",
       "type": "string",
       "label": "NuGet package source",
       "required": false,
-      "helpMarkDown": "NuGet package source to load certes"
+      "helpMarkDown": "NuGet package source to load certes",
+      "groupName": "advanced"
     },
     {
       "name": "frameworkVersion",
@@ -53,7 +73,8 @@
         "netcoreapp2.0": "netcoreapp2.0",
         "netcoreapp1.1": "netcoreapp1.1",
         "netcoreapp1.0": "netcoreapp1.0"
-      }
+      },
+      "groupName": "advanced"
     },
     {
       "name": "cliVersion",
@@ -61,7 +82,8 @@
       "label": "Certes CLI Version",
       "required": true,
       "defaultValue": "1.1.4",
-      "helpMarkDown": "Certes CLI Version"
+      "helpMarkDown": "Certes CLI Version",
+      "groupName": "advanced"
     }
   ],
   "instanceNameFormat": "Authorization",
