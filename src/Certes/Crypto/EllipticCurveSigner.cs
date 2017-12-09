@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -8,14 +7,18 @@ namespace Certes.Crypto
 {
     internal sealed class EllipticCurveSigner : AsymmetricCipherSigner
     {
+        private readonly int FieldSize;
+
         public EllipticCurveSigner(ISignatureKey key, string signingAlgorithm, string hashAlgorithm)
             : base(key)
         {
-            if (!(Key.KeyPair.Private is ECPrivateKeyParameters))
+            var privKey = Key.KeyPair.Private as ECPrivateKeyParameters;
+            if (privKey == null)
             {
                 throw new ArgumentException("The given key is not an EC private key.", nameof(key));
             }
 
+            FieldSize = privKey.Parameters.Curve.FieldSize / 8;
             SigningAlgorithm = signingAlgorithm;
             HashAlgorithm = hashAlgorithm;
         }
@@ -28,19 +31,23 @@ namespace Certes.Crypto
         {
             var signature = base.SignData(data);
             var sequence = (Asn1Sequence)Asn1Object.FromByteArray(signature);
-            using (var buffer = new MemoryStream())
-            {
-                foreach (var intBytes in sequence
-                    .OfType<Asn1Object>()
-                    .Select(o => o.ToAsn1Object())
-                    .Cast<DerInteger>()
-                    .Select(i => i.Value.ToByteArrayUnsigned()))
-                {
-                    buffer.Write(intBytes, 0, intBytes.Length);
-                }
 
-                return buffer.ToArray();
+            var nums = sequence
+                .OfType<DerInteger>()
+                .Select(i => i.Value.ToByteArrayUnsigned())
+                .ToArray();
+
+            var signatureBytes = new byte[FieldSize * nums.Length];
+
+            for (var i = 0; i < nums.Length; ++i)
+            {
+                Array.Copy(
+                    nums[i], 0, 
+                    signatureBytes, FieldSize * (i + 1) - nums[i].Length, 
+                    nums[i].Length);
             }
+
+            return signatureBytes;
         }
     }
 }
