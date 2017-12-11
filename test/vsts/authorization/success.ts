@@ -39,9 +39,9 @@ let a: ma.TaskLibAnswers = <ma.TaskLibAnswers>{
             'code': 0,
             'stdout': 'restore complete',
         },
-        '/mocked/tools/dotnet acme': {
+        '/mocked/tools/dotnet acme import --key-file key.pem': {
             'code': 0,
-            'stdout': 'acme called',
+            'stdout': 'account key imported',
         },
         '/mocked/tools/dotnet acme authz --server https://example.com/ --v www.example.com --v web.example.com --v news.example.com': {
             'code': 0,

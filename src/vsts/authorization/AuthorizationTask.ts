@@ -56,24 +56,21 @@ export class AuthorizationTask {
 
             tl.debug(projContent);
             tl.writeFile('certes.csproj', projContent);
-
-            const dotnetPath = tl.which("dotnet", true);
-
+            
             // call dotnet restore
-            let dotnet = new trl.ToolRunner(dotnetPath);
-            dotnet.arg('restore');
-            dotnet.argIf(this.nugetSource, ['-s', this.nugetSource]);
-            await dotnet.exec();
+            let args = ['restore'];
+            if (this.nugetSource) {
+                args = args.concat(['-s', this.nugetSource]);
+            }
+
+            tl.execSync('dotnet', args);
 
             tl.writeFile('key.pem', this.prviKey);
+            tl.execSync('dotnet', ['acme', 'import', '--key-file', 'key.pem']);
 
-            dotnet = new trl.ToolRunner(dotnetPath);
-            dotnet.arg(['acme', 'import', '--key-file', 'key.pem']);
-
-            dotnet = new trl.ToolRunner(dotnetPath);
-            dotnet.arg(['acme', 'authz', '--server', this.directoryUri]);
-            this.indentifiers.forEach(v => dotnet.arg(['--v', v]));
-            await dotnet.exec();
+            args = ['acme', 'authz', '--server', this.directoryUri];
+            this.indentifiers.forEach(v => args = args.concat(['--v', v]));
+            tl.execSync('dotnet', args);
 
             tl.setResult(tl.TaskResult.Succeeded, tl.loc("ScriptReturnCode", 0));
         }

@@ -14,6 +14,13 @@
   },
   "minimumAgentVersion": "2.0.0",
   "demands": [],
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
   "inputs": [
     {
       "name": "acmeAccount",
@@ -39,7 +46,7 @@
       "name": "authorizeMethod",
       "type": "pickList",
       "label": "Authorize Method",
-      "defaultValue": "azure-dns",
+      "defaultValue": "azureDns",
       "required": true,
       "helpMarkDown": "The method to vailidate domain ownership",
       "options": {
@@ -47,7 +54,7 @@
       }
     },
     {
-      "name": "AzureDnsAccount",
+      "name": "azureDnsAccount",
       "type": "connectedService:AzureRM",
       "label": "Azure subscription",
       "required": true,
@@ -68,7 +75,7 @@
       "label": "Framework Version",
       "defaultValue": "netcoreapp2.0",
       "required": true,
-      "helpMarkDown": "Framework version to run certes cli",
+      "helpMarkDown": "Framework version to run certes CLI",
       "options": {
         "netcoreapp2.0": "netcoreapp2.0",
         "netcoreapp1.1": "netcoreapp1.1",

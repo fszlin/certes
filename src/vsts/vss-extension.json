@@ -63,9 +63,6 @@
   },
   "files": [
     {
-      "path": "common"
-    },
-    {
       "path": "authorization"
     }
   ],
