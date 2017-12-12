@@ -5,6 +5,7 @@ import * as path from 'path';
 import { MockHelper } from './../common/MockHelper';
 
 const endpointId = 'acme-account-id';
+const azEndpointId = 'az-endpoint-id';
 const taskPath = path.join(__dirname, '../../../', 'src/vsts/', 'authorization/AuthorizationTask.ts');
 const tmr: tmrm.TaskMockRunner = new tmrm.TaskMockRunner(taskPath);
 
@@ -15,6 +16,8 @@ tmr.setInput('acmeAccount', endpointId);
 tmr.setInput('identifiers', 'www.example.com\nweb.example.com\nnews.example.com\n');
 tmr.setInput('frameworkVersion', 'netcoreapp2.0');
 tmr.setInput('cliVersion', '1.1.4');
+
+tmr.setInput('azureDnsAccount', azEndpointId);
 
 MockHelper.mockServiceEndpoint(endpointId, {
     directoryUri: 'https://example.com/',

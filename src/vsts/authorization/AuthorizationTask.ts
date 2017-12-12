@@ -1,7 +1,7 @@
-import * as path from "path";
+import * as path from 'path';
 import * as tl from 'vsts-task-lib/task';
-import * as trl from "vsts-task-lib/toolrunner";
-import * as st from "string-template";
+import * as st from 'string-template';
+import * as az from './AzCli';
 
 const TempFolder = '.certes';
 const ProjContentTemplate = `
@@ -27,18 +27,18 @@ export class AuthorizationTask {
     private frameworkVersion: string;
 
     constructor() {
-        this.acmeAccount = tl.getInput("acmeAccount", true);
+        this.acmeAccount = tl.getInput('acmeAccount', true);
         this.indentifiers = tl.getDelimitedInput('identifiers', '\n', true);
-        this.nugetSource = tl.getInput("nugetSource", false);
-        this.frameworkVersion = tl.getInput("frameworkVersion", false);
-        this.cliVersion = tl.getInput("cliVersion", true);
+        this.nugetSource = tl.getInput('nugetSource', false);
+        this.frameworkVersion = tl.getInput('frameworkVersion', false);
+        this.cliVersion = tl.getInput('cliVersion', true);
 
         this.directoryUri = tl.getEndpointAuthorizationParameter(this.acmeAccount, 'directoryUri', false);
         this.prviKey = tl.getEndpointAuthorizationParameter(this.acmeAccount, 'certificate', false);
     }
 
     public async execute() {
-        tl.setResourcePath(path.join(__dirname, "task.json"));
+        tl.setResourcePath(path.join(__dirname, 'task.json'));
 
         tl.debug('indentifiers to authz:');
         this.indentifiers.forEach(v => tl.debug(v));
@@ -72,7 +72,9 @@ export class AuthorizationTask {
             this.indentifiers.forEach(v => args = args.concat(['--v', v]));
             tl.execSync('dotnet', args);
 
-            tl.setResult(tl.TaskResult.Succeeded, tl.loc("ScriptReturnCode", 0));
+            //az.AzCli.loginAzure('azureDnsAccount');
+
+            tl.setResult(tl.TaskResult.Succeeded, tl.loc('ScriptReturnCode', 0));
         }
         finally {
             tl.popd();
