@@ -5,7 +5,7 @@
   "version": "0.0.1",
   "scripts": {
     "postinstall": "cd authz && npm install",
-    "test": "rimraf ./**./*.js && mocha",
+    "test": "rimraf ./test/**/*.js && mocha",
     "nyc-html": "nyc mocha && nyc report --reporter=html",
     "nyc-lcov": "nyc mocha && nyc report --reporter=text-lcov > ../../build/coverage.lcov",
     "tfx-pack": "npm run clean && npm run compile && tfx extension create -r ./ --output-path ../../build/",
