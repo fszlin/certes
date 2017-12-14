@@ -72,7 +72,12 @@ export class AuthzTask {
             this.indentifiers.forEach(v => args = args.concat(['--v', v]));
             tl.execSync('dotnet', args);
 
+            // TODO: login to Auzre
             //az.AzCli.loginAzure('azureDnsAccount');
+
+            // TODO: deploy key auth to Azure DNS
+            // TODO: submit ACME validation
+            // TODO: wait for ACME validation
 
             tl.setResult(tl.TaskResult.Succeeded, tl.loc('ScriptReturnCode', 0));
         }

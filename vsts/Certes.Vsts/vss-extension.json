@@ -63,7 +63,7 @@
   },
   "files": [
     {
-      "path": "authz"
+      "path": "tasks"
     }
   ],
   "contributions": [
@@ -74,7 +74,17 @@
       ],
       "type": "ms.vss-distributed-task.task",
       "properties": {
-        "name": "authz"
+        "name": "tasks/authz"
+      }
+    },
+    {
+      "id": "certes-pfx",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "type": "ms.vss-distributed-task.task",
+      "properties": {
+        "name": "tasks/pfx"
       }
     },
     {

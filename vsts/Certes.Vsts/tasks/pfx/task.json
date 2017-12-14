@@ -1,0 +1,43 @@
+{
+  "id": "1ed59ccc-6d5e-4d76-ba11-ae99918f06c2",
+  "name": "certes-pfx",
+  "friendlyName": "Generate PFX",
+  "description": "Generate PFX",
+  "helpMarkDown": "[More Information](https://github.com/fszlin/certes)",
+  "category": "Utility",
+  "visibility": [ "Build", "Release" ],
+  "author": "",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "minimumAgentVersion": "2.0.0",
+  "demands": [],
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "identifiers",
+      "type": "multiLine",
+      "label": "Domain Names",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "List of domain names, one per line",
+      "properties": {
+        "resizable": "true",
+        "rows": "10",
+        "maxLength": "20000"
+      }
+    }
+  ],
+  "instanceNameFormat": "Generate PFX",
+  "execution": {
+    "Node": { "target": "PfxTask.js" }
+  }
+}

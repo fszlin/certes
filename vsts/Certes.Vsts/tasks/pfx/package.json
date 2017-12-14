@@ -1,0 +1,10 @@
+{
+  "name": "certes-vsts-pfx",
+  "description": "",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {},
+  "dependencies": {
+    "vsts-task-lib": "^2.1.0"
+  }
+}
