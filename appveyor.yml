@@ -55,10 +55,10 @@ before_build:
   - ps: New-Item build -Type directory -Force | Out-Null
   - ps: gci *.csproj -recurse | %{ (gc $_) -replace '\<Version\>1.0.0\<\/Version\>', "<Version>$($env:CERTES_PACKAGE_VERSION)</Version>" | sc $_.fullname }
   - cmd: nuget restore Certes.sln
-  - ps: $vssExt = Get-Content 'src/vsts/vss-extension.json' -raw | ConvertFrom-Json
+  - ps: $vssExt = Get-Content 'vsts/Certes.Vsts/vss-extension.json' -raw | ConvertFrom-Json
   - ps: $vssExtVersion = [version]$vssExt.version
   - ps: $vssExt.version = "{0}.{1}.{2}" -f  $vssExtVersion.Major,  $vssExtVersion.Minor, $env:APPVEYOR_BUILD_NUMBER
-  - ps: $vssExt | ConvertTo-Json -Depth 20 | Set-Content 'src/vsts/vss-extension.json'
+  - ps: $vssExt | ConvertTo-Json -Depth 20 | Set-Content 'vsts/Certes.Vsts/vss-extension.json'
 
 build_script:
   - msbuild -t:src\Certes:pack
