@@ -1,6 +1,6 @@
 {
   "id": "bdaa6c8c-452e-4bb4-a21a-40891488fe0d",
-  "name": "certes-authorization",
+  "name": "certes-authz",
   "friendlyName": "ACME Authorization",
   "description": "Authorizes identifiers for creating certificates",
   "helpMarkDown": "[More Information](https://github.com/fszlin/certes)",
@@ -95,7 +95,7 @@
   ],
   "instanceNameFormat": "Authorization",
   "execution": {
-    "Node": { "target": "AuthorizationTask.js" }
+    "Node": { "target": "AuthzTask.js" }
   },
   "messages": {
     "ScriptReturnCode": "Script exited with return code: %d",

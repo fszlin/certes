@@ -49,7 +49,7 @@ init:
 
 install:
   - cmd: curl -O https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-  - npm install
+  - cd ./vsts/Certes.Vsts && npm install & cd ../../
 
 before_build:
   - ps: New-Item build -Type directory -Force | Out-Null
@@ -67,13 +67,13 @@ build_script:
   - ps: Get-ChildItem -Path "./src/**/*.nupkg" -Recurse | Move-Item -Destination "./build"
   - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
   - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
-  - npm run package
+  - cd ./vsts/Certes.Vsts && npm run tfx-pack & cd ../../
 
 #test: off
 before_test:
 
 test_script:
-  - npm test
+  - cd ./vsts/Certes.Vsts && npm run nyc-lcov & cd ../../
   - cd test/Certes.Tests
   - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
   - ps: >-
@@ -81,7 +81,6 @@ test_script:
   - cd ../../
 
 after_test:
-  - IF NOT "%codecov_upload_token%" == "" npm run codecov
   - IF NOT "%codecov_upload_token%" == "" "./node_modules/.bin/codecov" -f "./build/coverage.xml" -t %codecov_upload_token%
   - IF NOT "%codecov_upload_token%" == "" "./node_modules/.bin/codecov" -f "./build/coverage.lcov" -t %codecov_upload_token%
 

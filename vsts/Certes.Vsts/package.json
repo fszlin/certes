@@ -1,17 +1,16 @@
 {
-  "name": "certes",
+  "name": "certes-vsts",
   "description": "",
   "private": true,
   "version": "0.0.1",
   "scripts": {
-    "test": "nyc mocha",
-    "test-d": "mocha",
-    "coverage": "nyc report --reporter=html",
-    "codecov": "nyc report --reporter=text-lcov > build/coverage.lcov",
-    "postinstall": "cd src/vsts/authorization && npm install",
-    "package": "npm run clean && npm run compile && tfx extension create -r ./src/vsts --output-path ./build/",
-    "clean": "rimraf ./build/*.vsix",
-    "compile": "tsc -p ."
+    "postinstall": "cd authz && npm install",
+    "test": "rimraf ./**./*.js && mocha",
+    "nyc-html": "nyc mocha && nyc report --reporter=html",
+    "nyc-lcov": "nyc mocha && nyc report --reporter=text-lcov > ../../build/coverage.lcov",
+    "tfx-pack": "npm run clean && npm run compile && tfx extension create -r ./ --output-path ../../build/",
+    "clean": "rimraf ../../build/*.vsix",
+    "compile": "tsc -p ./"
   },
   "dependencies": {
     "vsts-task-lib": "^2.1.0"
@@ -36,7 +35,10 @@
   },
   "nyc": {
     "include": [
-      "src/**/*.ts"
+      "**/*.ts"
+    ],
+    "exclude": [
+      "test/*/*.ts"
     ],
     "extension": [
       ".ts",

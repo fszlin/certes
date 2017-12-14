@@ -63,18 +63,18 @@
   },
   "files": [
     {
-      "path": "authorization"
+      "path": "authz"
     }
   ],
   "contributions": [
     {
-      "id": "certes-authorization",
+      "id": "certes-authz",
       "targets": [
         "ms.vss-distributed-task.tasks"
       ],
       "type": "ms.vss-distributed-task.task",
       "properties": {
-        "name": "authorization"
+        "name": "authz"
       }
     },
     {

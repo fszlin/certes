@@ -249,5 +249,7 @@ data.json
 gh-pages/
 .taskkey
 .nyc_output/
-/coverage
+coverage
 .vscode
+npm-debug.log
+/vsts/**/*.js

@@ -16,7 +16,7 @@ const ProjContentTemplate = `
 </Project>
 `;
 
-export class AuthorizationTask {
+export class AuthzTask {
 
     private nugetSource: string;
     private acmeAccount: string;
@@ -82,5 +82,5 @@ export class AuthorizationTask {
     }
 }
 
-var tsk = new AuthorizationTask();
+var tsk = new AuthzTask();
 tsk.execute().catch((reason) => tl.setResult(tl.TaskResult.Failed, reason));

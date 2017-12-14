@@ -2,4 +2,4 @@
 --require source-map-support/register
 --recursive
 --timeout 60000
-test/vsts/**/_suite.ts
+./**/_suite.ts

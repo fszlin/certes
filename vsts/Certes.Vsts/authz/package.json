@@ -1,0 +1,11 @@
+{
+  "name": "certes-vsts-authz",
+  "description": "",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {},
+  "dependencies": {
+    "string-template": "^1.0.0",
+    "vsts-task-lib": "^2.1.0"
+  }
+}
