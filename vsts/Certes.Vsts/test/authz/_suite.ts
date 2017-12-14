@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as assert from 'assert';
 import * as ttm from 'vsts-task-lib/mock-test';
 
-describe('certes-ssl task tests', function () {
+describe('authz task tests', function () {
     before(() => {
     });
 
@@ -14,7 +14,7 @@ describe('certes-ssl task tests', function () {
         this.timeout(10000);
 
         let tp = path.join(__dirname, 'success.ts');
-        let tr: ttm.MockTestRunner = new ttm.MockTestRunner(tp);
+        let tr = new ttm.MockTestRunner(tp);
 
         tr.run();
         assert(tr.succeeded, 'should have succeeded');

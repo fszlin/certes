@@ -6,7 +6,7 @@ import { MockHelper } from './MockHelper';
 
 const endpointId = 'acme-account-id';
 const azEndpointId = 'az-endpoint-id';
-const taskPath = path.join(__dirname, '../../', 'authz/AuthzTask.ts');
+const taskPath = path.join(__dirname, '../../tasks', 'authz/AuthzTask.ts');
 const tmr: tmrm.TaskMockRunner = new tmrm.TaskMockRunner(taskPath);
 
 const mtt = require('vsts-task-lib/mock-toolrunner');

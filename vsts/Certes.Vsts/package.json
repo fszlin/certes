@@ -5,12 +5,11 @@
   "version": "0.0.1",
   "scripts": {
     "postinstall": "cd tasks && cd authz && npm install && cd ../pfx && npm install",
-    "test": "npm run clean-js && mocha",
+    "test": "mocha",
     "nyc-html": "nyc mocha && nyc report --reporter=html",
     "nyc-lcov": "nyc mocha && nyc report --reporter=text-lcov > ../../build/coverage.lcov",
     "tfx-pack": "npm run clean && npm run compile && tfx extension create -r ./ --output-path ../../build/",
-    "clean": "rimraf ../../build/*.vsix && npm run clean-js",
-    "clean-js": "rimraf ./test/**/*.js && rimraf ./tasks/**/*.js",
+    "clean": "rimraf ../../build/*.vsix",
     "compile": "tsc -p ./"
   },
   "dependencies": {
