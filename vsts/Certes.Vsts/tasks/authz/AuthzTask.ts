@@ -20,7 +20,7 @@ export class AuthzTask {
 
     private nugetSource: string;
     private acmeAccount: string;
-    private indentifiers: string[];
+    private identifiers: string[];
     private directoryUri: string;
     private prviKey: string;
     private cliVersion: string;
@@ -28,7 +28,7 @@ export class AuthzTask {
 
     constructor() {
         this.acmeAccount = tl.getInput('acmeAccount', true);
-        this.indentifiers = tl.getDelimitedInput('identifiers', '\n', true);
+        this.identifiers = tl.getDelimitedInput('identifiers', '\n', true);
         this.nugetSource = tl.getInput('nugetSource', false);
         this.frameworkVersion = tl.getInput('frameworkVersion', false);
         this.cliVersion = tl.getInput('cliVersion', true);
@@ -40,8 +40,8 @@ export class AuthzTask {
     public async execute() {
         tl.setResourcePath(path.join(__dirname, 'task.json'));
 
-        tl.debug('indentifiers to authz:');
-        this.indentifiers.forEach(v => tl.debug(v));
+        tl.debug('identifiers to authz:');
+        this.identifiers.forEach(v => tl.debug(v));
 
         tl.mkdirP(`./${TempFolder}`);
 
@@ -69,12 +69,15 @@ export class AuthzTask {
             tl.execSync('dotnet', ['acme', 'import', '--key-file', 'key.pem']);
 
             args = ['acme', 'authz', '--server', this.directoryUri];
-            this.indentifiers.forEach(v => args = args.concat(['--v', v]));
+            this.identifiers.forEach(v => args = args.concat(['--v', v]));
             tl.execSync('dotnet', args);
 
             az.AzCli.loginAzure('azureDnsAccount');
 
             // TODO: deploy key auth to Azure DNS
+            //this.identifiers.map(id => this.deployToAzureDns(id));
+
+
             // TODO: submit ACME validation
             // TODO: wait for ACME validation
 
@@ -83,6 +86,32 @@ export class AuthzTask {
         finally {
             tl.popd();
         }
+    }
+
+    private deployToAzureDns(identifier: string): string {
+        const domainInfo = this.parseDomain(identifier);
+        if (!domainInfo) {
+            throw new Error(`Unable to parse '${identifier}'`);
+        }
+
+        const resourceGroup = tl.getInput('azureDnsResourceGroup', true);
+        const zone = `${domainInfo.domain}.${domainInfo.tld}`;
+        let txtRecordName = '_acme-challenge';
+        if (domainInfo.subdomain) {
+            txtRecordName = txtRecordName + '.' + domainInfo.subdomain;
+        }
+
+        let args = [
+            'network', 'dns', 'record-set', 'list', '-g', resourceGroup, '-z', zone,
+            '--query', `[?name=='${txtRecordName}'] && [?type=='Microsoft.Network/dnszones/TXT']`
+        ];
+
+        tl.execSync('az', args);
+
+        return identifier;
+    }
+
+    private parseDomain(domain: string): any {
     }
 }
 

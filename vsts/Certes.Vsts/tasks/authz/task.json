@@ -62,6 +62,14 @@
       "helpMarkDown": "Select an Azure resource manager subscription for the DNS"
     },
     {
+      "name": "azureDnsResourceGroup",
+      "type": "string",
+      "label": "Resource Group",
+      "required": true,
+      "visibleRule": "authorizeMethod = azureDns",
+      "helpMarkDown": "Resource group of the DNS zone"
+    },
+    {
       "name": "nugetSource",
       "type": "string",
       "label": "NuGet package source",
