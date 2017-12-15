@@ -2,7 +2,7 @@
 import * as ma from 'vsts-task-lib/mock-answer';
 import * as tmrm from 'vsts-task-lib/mock-run';
 import * as path from 'path';
-import { MockHelper } from './MockHelper';
+import { MockHelper } from './../MockHelper';
 
 const endpointId = 'acme-account-id';
 const azEndpointId = 'az-endpoint-id';
@@ -21,15 +21,15 @@ tmr.setInput('azureDnsAccount', azEndpointId);
 
 MockHelper.mockServiceEndpoint(endpointId, {
     directoryUri: 'https://example.com/',
-    certificate: 'cert-data',
+    certificate: 'cert-data'
 });
 
 MockHelper.mockServiceEndpoint(azEndpointId, {
     serviceprincipalid: 'serviceprincipalid',
     serviceprincipalkey: 'serviceprincipalkey',
-    tenantid: 'tenantid',
+    tenantid: 'tenantid'
 }, {
-    SubscriptionName: 'SubscriptionName',
+    SubscriptionName: 'SubscriptionName'
 });
 
 let a: ma.TaskLibAnswers = <ma.TaskLibAnswers>{
