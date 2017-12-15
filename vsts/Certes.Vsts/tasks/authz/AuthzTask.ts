@@ -72,8 +72,7 @@ export class AuthzTask {
             this.indentifiers.forEach(v => args = args.concat(['--v', v]));
             tl.execSync('dotnet', args);
 
-            // TODO: login to Auzre
-            //az.AzCli.loginAzure('azureDnsAccount');
+            az.AzCli.loginAzure('azureDnsAccount');
 
             // TODO: deploy key auth to Azure DNS
             // TODO: submit ACME validation

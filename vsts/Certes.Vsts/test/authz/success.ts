@@ -21,7 +21,15 @@ tmr.setInput('azureDnsAccount', azEndpointId);
 
 MockHelper.mockServiceEndpoint(endpointId, {
     directoryUri: 'https://example.com/',
-    certificate: 'cert-data'
+    certificate: 'cert-data',
+});
+
+MockHelper.mockServiceEndpoint(azEndpointId, {
+    serviceprincipalid: 'serviceprincipalid',
+    serviceprincipalkey: 'serviceprincipalkey',
+    tenantid: 'tenantid',
+}, {
+    SubscriptionName: 'SubscriptionName',
 });
 
 let a: ma.TaskLibAnswers = <ma.TaskLibAnswers>{
@@ -49,6 +57,12 @@ let a: ma.TaskLibAnswers = <ma.TaskLibAnswers>{
         '/mocked/tools/dotnet acme authz --server https://example.com/ --v www.example.com --v web.example.com --v news.example.com': {
             'code': 0,
             'stdout': 'acme called'
+        },
+        "/mocked/tools/az login --service-principal -u 'serviceprincipalid' -p 'serviceprincipalkey' --tenant 'tenantid'": {
+            code: 0,
+        },
+        "/mocked/tools/az account set --subscription 'SubscriptionName'": {
+            code: 0,
         }
     }
 };
