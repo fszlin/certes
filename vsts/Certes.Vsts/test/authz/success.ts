@@ -18,6 +18,7 @@ tmr.setInput('frameworkVersion', 'netcoreapp2.0');
 tmr.setInput('cliVersion', '1.1.4');
 
 tmr.setInput('azureDnsAccount', azEndpointId);
+tmr.setInput('azureDnsResourceGroup', 'azureDnsResourceGroup');
 
 MockHelper.mockServiceEndpoint(endpointId, {
     directoryUri: 'https://example.com/',
@@ -62,6 +63,15 @@ let a: ma.TaskLibAnswers = <ma.TaskLibAnswers>{
             code: 0,
         },
         "/mocked/tools/az account set --subscription 'SubscriptionName'": {
+            code: 0,
+        },
+        "/mocked/tools/az network dns record-set list -g azureDnsResourceGroup -z example.com --query [?name=='_acme-challenge.www'] && [?type=='Microsoft.Network/dnszones/TXT']": {
+            code: 0,
+        },
+        "/mocked/tools/az network dns record-set list -g azureDnsResourceGroup -z example.com --query [?name=='_acme-challenge.web'] && [?type=='Microsoft.Network/dnszones/TXT']": {
+            code: 0,
+        },
+        "/mocked/tools/az network dns record-set list -g azureDnsResourceGroup -z example.com --query [?name=='_acme-challenge.news'] && [?type=='Microsoft.Network/dnszones/TXT']": {
             code: 0,
         }
     }

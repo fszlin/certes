@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as tl from 'vsts-task-lib/task';
 import * as st from 'string-template';
+import * as tld from 'tldjs';
 import * as az from './AzCli';
 
 const TempFolder = '.certes';
@@ -75,7 +76,7 @@ export class AuthzTask {
             az.AzCli.loginAzure('azureDnsAccount');
 
             // TODO: deploy key auth to Azure DNS
-            //this.identifiers.map(id => this.deployToAzureDns(id));
+            this.identifiers.map(id => this.deployToAzureDns(id));
 
 
             // TODO: submit ACME validation
@@ -89,13 +90,14 @@ export class AuthzTask {
     }
 
     private deployToAzureDns(identifier: string): string {
-        const domainInfo = this.parseDomain(identifier);
-        if (!domainInfo) {
+        const domainInfo = tld.parse(identifier);
+        if (!domainInfo.isValid) {
             throw new Error(`Unable to parse '${identifier}'`);
         }
 
         const resourceGroup = tl.getInput('azureDnsResourceGroup', true);
-        const zone = `${domainInfo.domain}.${domainInfo.tld}`;
+
+        const zone = domainInfo.domain;
         let txtRecordName = '_acme-challenge';
         if (domainInfo.subdomain) {
             txtRecordName = txtRecordName + '.' + domainInfo.subdomain;
@@ -109,9 +111,6 @@ export class AuthzTask {
         tl.execSync('az', args);
 
         return identifier;
-    }
-
-    private parseDomain(domain: string): any {
     }
 }
 
