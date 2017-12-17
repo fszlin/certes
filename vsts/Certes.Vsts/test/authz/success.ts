@@ -65,14 +65,17 @@ let a: ma.TaskLibAnswers = <ma.TaskLibAnswers>{
         "/mocked/tools/az account set --subscription 'SubscriptionName'": {
             code: 0,
         },
-        "/mocked/tools/az network dns record-set list -g azureDnsResourceGroup -z example.com --query [?name=='_acme-challenge.www'] && [?type=='Microsoft.Network/dnszones/TXT']": {
+        "/mocked/tools/az network dns record-set txt list -g azureDnsResourceGroup -z example.com --query [?name=='_acme-challenge.www']": {
             code: 0,
+            stdout: '[]'
         },
-        "/mocked/tools/az network dns record-set list -g azureDnsResourceGroup -z example.com --query [?name=='_acme-challenge.web'] && [?type=='Microsoft.Network/dnszones/TXT']": {
+        "/mocked/tools/az network dns record-set txt list -g azureDnsResourceGroup -z example.com --query [?name=='_acme-challenge.web']": {
             code: 0,
+            stdout: '[]'
         },
-        "/mocked/tools/az network dns record-set list -g azureDnsResourceGroup -z example.com --query [?name=='_acme-challenge.news'] && [?type=='Microsoft.Network/dnszones/TXT']": {
+        "/mocked/tools/az network dns record-set txt list -g azureDnsResourceGroup -z example.com --query [?name=='_acme-challenge.news']": {
             code: 0,
+            stdout: '[]'
         }
     }
 };

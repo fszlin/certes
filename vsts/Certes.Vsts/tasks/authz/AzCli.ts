@@ -1,5 +1,16 @@
 import tl = require('vsts-task-lib/task');
 
+export interface IDnsRecordSet {
+    etag: string;
+    fqdn: string;
+    id: string;
+    metadata: any;
+    name: string;
+    resourceGroup: string;
+    ttl: number;
+    type: string;
+}
+
 export class AzCli {
     private static loggedInService: string = null;
     

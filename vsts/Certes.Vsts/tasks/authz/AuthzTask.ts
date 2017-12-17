@@ -104,11 +104,25 @@ export class AuthzTask {
         }
 
         let args = [
-            'network', 'dns', 'record-set', 'list', '-g', resourceGroup, '-z', zone,
-            '--query', `[?name=='${txtRecordName}'] && [?type=='Microsoft.Network/dnszones/TXT']`
+            'network', 'dns', 'record-set', 'txt', 'list', '-g', resourceGroup, '-z', zone,
+            '--query', `[?name=='${txtRecordName}']`
         ];
 
-        tl.execSync('az', args);
+        const ret = tl.execSync('az', args);
+
+        // delete the _acme-challenge record is exists
+        const txtRecordSets = <az.IDnsRecordSet[]>JSON.parse(ret.stdout);
+        txtRecordSets.forEach(recSet => {
+            tl.execSync('az', [
+                'network', 'dns', 'record-set', 'txt', 'delete', '-g', resourceGroup, '-z', zone,
+                '-n', recSet.name
+            ]);
+        });
+
+        //tl.execSync('az', [
+        //    'network', 'dns', 'record-set', 'txt', 'add-record', '-g', resourceGroup, '-z', zone,
+        //    '-n', txtRecordName, '-v', 'key-authorization-string'
+        //]);
 
         return identifier;
     }
