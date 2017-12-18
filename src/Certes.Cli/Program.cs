@@ -22,6 +22,7 @@ namespace Certes.Cli
         private Formatting formatting = Formatting.None;
         private AuthorizationOptions authorizationOptions;
         private CertificateOptions certificateOptions;
+        private ImportOptions importOptions;
 
         internal Program(IConsole consoleLogger)
         {
@@ -44,6 +45,7 @@ namespace Certes.Cli
                     registerOptions = DefineRegisterCommand(syntax);
                     authorizationOptions = DefineAuthorizationCommand(syntax);
                     certificateOptions = DefineCertificateCommand(syntax);
+                    importOptions = DefineImportCommand(syntax);
 
                 });
             }
@@ -81,8 +83,8 @@ namespace Certes.Cli
                             new CertificateCommand(certificateOptions, consoleLogger));
                         break;
                     case Command.Import:
-                        await ProcessCommand<CertificateCommand, CertificateOptions>(
-                            new CertificateCommand(certificateOptions, consoleLogger));
+                        await ProcessCommand<ImportCommand, ImportOptions>(
+                            new ImportCommand(importOptions, consoleLogger));
                         break;
                 }
 
@@ -108,7 +110,7 @@ namespace Certes.Cli
             var options = new ImportOptions();
             syntax.DefineCommand("import", ref command, Command.Import, "Import ACME account");
 
-            syntax.DefineOption("f|key-file", ref options.KeyFile, "The path to the account key.");
+            syntax.DefineOption("key-file", ref options.KeyFile, "The path to the account key.");
 
             DefineCommonOptions(options, syntax);
 
