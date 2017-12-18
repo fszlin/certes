@@ -95,23 +95,29 @@ export class AuthzTask {
             throw new Error(`Unable to parse '${identifier}'`);
         }
 
-        const resourceGroup = tl.getInput('azureDnsResourceGroup', true);
-
         const zone = domainInfo.domain;
         let txtRecordName = '_acme-challenge';
         if (domainInfo.subdomain) {
             txtRecordName = txtRecordName + '.' + domainInfo.subdomain;
         }
 
-        let args = [
+        let azResult = tl.execSync('az', [
+            'resource', 'list', '--query', `[?name=='${zone}'] && [?type=='Microsoft.Network/dnszones']`
+        ]);
+
+        const zoneResource = JSON.parse(azResult.stdout)[0];
+        if (!zoneResource) {
+            throw new Error(`DNS zone '${zone}' not found.`);
+        }
+
+        const resourceGroup = zoneResource.resourceGroup;
+        azResult = tl.execSync('az', [
             'network', 'dns', 'record-set', 'txt', 'list', '-g', resourceGroup, '-z', zone,
             '--query', `[?name=='${txtRecordName}']`
-        ];
-
-        const ret = tl.execSync('az', args);
+        ]);
 
         // delete the _acme-challenge record is exists
-        const txtRecordSets = <az.IDnsRecordSet[]>JSON.parse(ret.stdout);
+        const txtRecordSets = <az.IDnsRecordSet[]>JSON.parse(azResult.stdout);
         txtRecordSets.forEach(recSet => {
             tl.execSync('az', [
                 'network', 'dns', 'record-set', 'txt', 'delete', '-g', resourceGroup, '-z', zone,

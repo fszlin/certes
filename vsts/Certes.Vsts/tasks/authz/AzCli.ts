@@ -32,10 +32,10 @@ export class AzCli {
         var subscriptionName: string = tl.getEndpointDataParameter(connectedService, 'SubscriptionName', true);
         //login using svn
         this.throwIfError(
-            tl.execSync('az', `login --service-principal -u '${servicePrincipalId}' -p '${servicePrincipalKey}' --tenant '${tenantId}'`));
+            tl.execSync('az', `login --service-principal -u "${servicePrincipalId}" -p "${servicePrincipalKey}" --tenant "${tenantId}"`));
         this.loggedInService = connectedService;
         //set the subscription imported to the current subscription
-        this.throwIfError(tl.execSync('az', `account set --subscription '${subscriptionName}'`));
+        this.throwIfError(tl.execSync('az', `account set --subscription "${subscriptionName}"`));
     }
 
     private static throwIfError(resultOfToolExecution): void {
