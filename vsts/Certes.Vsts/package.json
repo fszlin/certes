@@ -24,6 +24,7 @@
     "@types/node": "^8.0.57",
     "@types/q": "^1.0.6",
     "@types/string-template": "^1.0.2",
+    "@types/tldjs": "^1.7.1",
     "mocha": "^4.0.1",
     "nyc": "^11.4.1",
     "rimraf": "^2.6.2",

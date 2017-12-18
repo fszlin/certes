@@ -1,4 +1,5 @@
-import tl = require('vsts-task-lib/task');
+import * as tl from 'vsts-task-lib/task';
+import * as tr from 'vsts-task-lib/toolrunner';
 
 export interface IDnsRecordSet {
     etag: string;
@@ -12,7 +13,7 @@ export interface IDnsRecordSet {
 }
 
 export class AzCli {
-    private static loggedInService: string = null;
+    private static loggedInService: string = '';
     
     public static checkIfAzurePythonSdkIsInstalled() {
         return !!tl.which('az', true);
@@ -38,7 +39,7 @@ export class AzCli {
         this.throwIfError(tl.execSync('az', `account set --subscription "${subscriptionName}"`));
     }
 
-    private static throwIfError(resultOfToolExecution): void {
+    private static throwIfError(resultOfToolExecution: tr.IExecSyncResult): void {
         if (resultOfToolExecution.stderr) {
             throw resultOfToolExecution;
         }

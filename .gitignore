@@ -253,3 +253,5 @@ coverage
 .vscode
 npm-debug.log
 /vsts/**/*.js
+/vsts/**/*.map
+/vsts/**/package-lock.json

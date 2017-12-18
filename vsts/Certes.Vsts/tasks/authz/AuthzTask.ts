@@ -90,15 +90,15 @@ export class AuthzTask {
     }
 
     private deployToAzureDns(identifier: string): string {
-        const domainInfo = tld.parse(identifier);
-        if (!domainInfo.isValid) {
+        if (!tld.isValid(identifier)) {
             throw new Error(`Unable to parse '${identifier}'`);
         }
 
-        const zone = domainInfo.domain;
+        const zone = tld.getDomain(identifier);
         let txtRecordName = '_acme-challenge';
-        if (domainInfo.subdomain) {
-            txtRecordName = txtRecordName + '.' + domainInfo.subdomain;
+        const subdomain = tld.getSubdomain(identifier);
+        if (subdomain) {
+            txtRecordName = txtRecordName + '.' + subdomain;
         }
 
         let azResult = tl.execSync('az', [
