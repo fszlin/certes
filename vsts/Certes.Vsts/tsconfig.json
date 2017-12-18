@@ -6,6 +6,9 @@
     "strict": true,
     "outDir": "./dist"
   },
+  "include": [
+    "./tasks"
+  ],
   "exclude": [
     "node_modules"
   ]

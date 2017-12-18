@@ -11,8 +11,8 @@
     "clean": "rimraf ../../build/*.vsix",
     "compile": "tsc -p ./",
     "install-tasks": "npm run install-authz && npm run install-pfx",
-    "install-authz": "cd dist/tasks/authz && npm install",
-    "install-pfx": "cd dist/tasks/pfx && npm install"
+    "install-authz": "cd dist/authz && npm install",
+    "install-pfx": "cd dist/pfx && npm install"
   },
   "dependencies": {
     "string-template": "^1.0.0",

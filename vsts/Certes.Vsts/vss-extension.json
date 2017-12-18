@@ -63,7 +63,7 @@
   },
   "files": [
     {
-      "path": "dist/tasks"
+      "path": "dist"
     }
   ],
   "contributions": [
@@ -74,7 +74,7 @@
       ],
       "type": "ms.vss-distributed-task.task",
       "properties": {
-        "name": "tasks/authz"
+        "name": "authz"
       }
     },
     {
@@ -84,7 +84,7 @@
       ],
       "type": "ms.vss-distributed-task.task",
       "properties": {
-        "name": "tasks/pfx"
+        "name": "pfx"
       }
     },
     {
