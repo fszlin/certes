@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as tl from 'vsts-task-lib/task';
 import * as st from 'string-template';
+import * as tld from 'tldjs';
 import * as az from './AzCli';
 
 const TempFolder = '.certes';
@@ -75,7 +76,7 @@ export class AuthzTask {
             az.AzCli.loginAzure('azureDnsAccount');
 
             // TODO: deploy key auth to Azure DNS
-            //this.identifiers.map(id => this.deployToAzureDns(id));
+            this.identifiers.map(id => this.deployToAzureDns(id));
 
 
             // TODO: submit ACME validation
@@ -89,29 +90,47 @@ export class AuthzTask {
     }
 
     private deployToAzureDns(identifier: string): string {
-        const domainInfo = this.parseDomain(identifier);
-        if (!domainInfo) {
+        const domainInfo = tld.parse(identifier);
+        if (!domainInfo.isValid) {
             throw new Error(`Unable to parse '${identifier}'`);
         }
 
-        const resourceGroup = tl.getInput('azureDnsResourceGroup', true);
-        const zone = `${domainInfo.domain}.${domainInfo.tld}`;
+        const zone = domainInfo.domain;
         let txtRecordName = '_acme-challenge';
         if (domainInfo.subdomain) {
             txtRecordName = txtRecordName + '.' + domainInfo.subdomain;
         }
 
-        let args = [
-            'network', 'dns', 'record-set', 'list', '-g', resourceGroup, '-z', zone,
-            '--query', `[?name=='${txtRecordName}'] && [?type=='Microsoft.Network/dnszones/TXT']`
-        ];
+        let azResult = tl.execSync('az', [
+            'resource', 'list', '--query', `[?name=='${zone}'] && [?type=='Microsoft.Network/dnszones']`
+        ]);
 
-        tl.execSync('az', args);
+        const zoneResource = JSON.parse(azResult.stdout)[0];
+        if (!zoneResource) {
+            throw new Error(`DNS zone '${zone}' not found.`);
+        }
+
+        const resourceGroup = zoneResource.resourceGroup;
+        azResult = tl.execSync('az', [
+            'network', 'dns', 'record-set', 'txt', 'list', '-g', resourceGroup, '-z', zone,
+            '--query', `[?name=='${txtRecordName}']`
+        ]);
+
+        // delete the _acme-challenge record is exists
+        const txtRecordSets = <az.IDnsRecordSet[]>JSON.parse(azResult.stdout);
+        txtRecordSets.forEach(recSet => {
+            tl.execSync('az', [
+                'network', 'dns', 'record-set', 'txt', 'delete', '-g', resourceGroup, '-z', zone,
+                '-n', recSet.name
+            ]);
+        });
+
+        //tl.execSync('az', [
+        //    'network', 'dns', 'record-set', 'txt', 'add-record', '-g', resourceGroup, '-z', zone,
+        //    '-n', txtRecordName, '-v', 'key-authorization-string'
+        //]);
 
         return identifier;
-    }
-
-    private parseDomain(domain: string): any {
     }
 }
 

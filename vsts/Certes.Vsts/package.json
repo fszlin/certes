@@ -28,7 +28,7 @@
     "nyc": "^11.4.1",
     "rimraf": "^2.6.2",
     "source-map-support": "^0.5.0",
-    "tfx-cli": "^0.4.13",
+    "tfx-cli": "^0.4.16",
     "ts-node": "^3.3.0",
     "typescript": "^2.6.2"
   },

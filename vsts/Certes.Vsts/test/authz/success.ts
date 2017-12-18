@@ -58,11 +58,33 @@ let a: ma.TaskLibAnswers = <ma.TaskLibAnswers>{
             'code': 0,
             'stdout': 'acme called'
         },
-        "/mocked/tools/az login --service-principal -u 'serviceprincipalid' -p 'serviceprincipalkey' --tenant 'tenantid'": {
+        '/mocked/tools/az login --service-principal -u "serviceprincipalid" -p "serviceprincipalkey" --tenant "tenantid"': {
             code: 0,
         },
-        "/mocked/tools/az account set --subscription 'SubscriptionName'": {
+        '/mocked/tools/az account set --subscription "SubscriptionName"': {
             code: 0,
+        },
+        "/mocked/tools/az resource list --query [?name=='example.com'] && [?type=='Microsoft.Network/dnszones']": {
+            code: 0,
+            stdout: JSON.stringify([
+                {
+                    "name": "example.com",
+                    "resourceGroup": "azureDnsResourceGroup",
+                    "type": "Microsoft.Network/dnszones"
+                }
+            ])
+        },
+        "/mocked/tools/az network dns record-set txt list -g azureDnsResourceGroup -z example.com --query [?name=='_acme-challenge.www']": {
+            code: 0,
+            stdout: '[]'
+        },
+        "/mocked/tools/az network dns record-set txt list -g azureDnsResourceGroup -z example.com --query [?name=='_acme-challenge.web']": {
+            code: 0,
+            stdout: '[]'
+        },
+        "/mocked/tools/az network dns record-set txt list -g azureDnsResourceGroup -z example.com --query [?name=='_acme-challenge.news']": {
+            code: 0,
+            stdout: '[]'
         }
     }
 };
