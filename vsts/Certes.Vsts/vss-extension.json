@@ -63,7 +63,7 @@
   },
   "files": [
     {
-      "path": "tasks"
+      "path": "dist/tasks"
     }
   ],
   "contributions": [
