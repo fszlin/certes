@@ -19,18 +19,20 @@ tmr.setInput('cliVersion', '1.1.4');
 
 tmr.setInput('azureDnsAccount', azEndpointId);
 
-MockHelper.mockServiceEndpoint(endpointId, {
-    directoryUri: 'https://example.com/',
-    certificate: 'cert-data'
-});
+MockHelper.mockServiceEndpoint(
+    endpointId, {
+        directoryUri: 'https://example.com/',
+        certificate: 'cert-data'
+    }, null);
 
-MockHelper.mockServiceEndpoint(azEndpointId, {
-    serviceprincipalid: 'serviceprincipalid',
-    serviceprincipalkey: 'serviceprincipalkey',
-    tenantid: 'tenantid'
-}, {
-    SubscriptionName: 'SubscriptionName'
-});
+MockHelper.mockServiceEndpoint(
+    azEndpointId, {
+        serviceprincipalid: 'serviceprincipalid',
+        serviceprincipalkey: 'serviceprincipalkey',
+        tenantid: 'tenantid'
+    }, {
+        SubscriptionName: 'SubscriptionName'
+    });
 
 let a: ma.TaskLibAnswers = <ma.TaskLibAnswers>{
     'which': {
