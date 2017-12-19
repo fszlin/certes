@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../certes.props" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -27,8 +28,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Certes\Certes.csproj" />
   </ItemGroup>
-
-  <Import Project="../../common.props" />
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <DebugType>Full</DebugType>
