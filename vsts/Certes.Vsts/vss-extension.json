@@ -132,7 +132,8 @@
               }
             ]
           }
-        ]
+        ],
+        "helpMarkDown": "<a href=\"https://github.com/fszlin/certes\" target=\"_blank\"><b>Learn More</b></a>"
       }
     }
   ]
