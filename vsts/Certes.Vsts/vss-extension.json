@@ -74,7 +74,7 @@
       ],
       "type": "ms.vss-distributed-task.task",
       "properties": {
-        "name": "authz"
+        "name": "dist/authz"
       }
     },
     {
@@ -84,7 +84,7 @@
       ],
       "type": "ms.vss-distributed-task.task",
       "properties": {
-        "name": "pfx"
+        "name": "dist/pfx"
       }
     },
     {
