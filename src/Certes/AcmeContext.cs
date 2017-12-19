@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Jws;
-
-using Certificate = Certes.Acme.Resource.Certificate;
 using AuthorizationIdentifier = Certes.Acme.Resource.AuthorizationIdentifier;
-using System.Linq;
+using Certificate = Certes.Acme.Resource.Certificate;
 
 namespace Certes
 {
