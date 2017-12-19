@@ -70,7 +70,7 @@ export class AuthzTask {
             tl.execSync('dotnet', ['acme', 'import', '--key-file', 'key.pem']);
 
             args = ['acme', 'authz', '--server', this.directoryUri];
-            this.identifiers.forEach(v => args = args.concat(['--v', v]));
+            this.identifiers.forEach(v => args = args.concat(['-v', v]));
             tl.execSync('dotnet', args);
 
             az.AzCli.loginAzure('azureDnsAccount');
