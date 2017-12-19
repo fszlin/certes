@@ -42,29 +42,29 @@ namespace Certes.Acme
         }
 
         [Fact]
-        public async Task CanCreateInstance()
+        public void CanCreateInstance()
         {
-            using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer())) { }
+            using (var handler = new AcmeHttpHandler(server)) { }
 
             using (var http = new HttpClient())
             {
-                using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer(), http)) { }
+                using (var handler = new AcmeHttpHandler(server, http)) { }
             }
 
-            using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer(), (HttpClient)null)) { }
+            using (var handler = new AcmeHttpHandler(server, (HttpClient)null)) { }
 
 #pragma warning disable 0618
-            using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer(), (HttpMessageHandler)null)) { }
-            using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer(), CreateHttpMock().Object)) { }
+            using (var handler = new AcmeHttpHandler(server, (HttpMessageHandler)null)) { }
+            using (var handler = new AcmeHttpHandler(server, CreateHttpMock().Object)) { }
 #pragma warning restore 0618
         }
 
         [Fact]
-        public async Task CanGetServerUri()
+        public void CanGetServerUri()
         {
-            using (var handler = new AcmeHttpHandler(await Helper.GetStagingServer(), (HttpClient)null))
+            using (var handler = new AcmeHttpHandler(server, (HttpClient)null))
             {
-                Assert.Equal(await Helper.GetStagingServer(), handler.ServerUri);
+                Assert.Equal(server, handler.ServerUri);
             }
         }
 

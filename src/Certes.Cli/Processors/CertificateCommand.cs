@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
+using Certes.Cli.Internal;
 using Certes.Cli.Options;
 using Certes.Pkcs;
-using NLog;
 
 namespace Certes.Cli.Processors
 {
@@ -14,7 +14,7 @@ namespace Certes.Cli.Processors
     {
         private static readonly char[] NameValueSeparator = new[] { '\r', '\n', ' ', ';', ',' };
 
-        public CertificateCommand(CertificateOptions options, ILogger consoleLogger)
+        public CertificateCommand(CertificateOptions options, IConsole consoleLogger)
             : base(options, consoleLogger)
         {
         }
@@ -26,7 +26,7 @@ namespace Certes.Cli.Processors
                 throw new Exception("Account not specified.");
             }
 
-            if ( string.IsNullOrWhiteSpace(Options.Name ))
+            if ( string.IsNullOrWhiteSpace(Options.Name))
             {
                 throw new Exception("Certificate name not specficied.");
             }

@@ -8,16 +8,12 @@ using System.Threading.Tasks;
 using Certes.Acme;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using NLog;
-using NLog.Config;
-using NLog.Targets;
 using Xunit;
 
 namespace Certes.Cli
 {
     public class CliTests
     {
-        // TODO: Setup boulder for testing
         private const string Host = "certes-ci.dymetis.com";
         private const string OutputPrefix = "./_test/cli-example";
         private readonly string AccountPath = $"{OutputPrefix}/context.json";
@@ -93,29 +89,15 @@ namespace Certes.Cli
 
         private async Task<IList<string>> RunCommand(string cmd, Dictionary<string, string> placeHolders = null)
         {
-            var config = new LoggingConfiguration();
-            var memoryTarget = new MemoryTarget()
-            {
-                Layout = @"${message}${onexception:${exception:format=tostring}}"
-            };
-
-            config.AddTarget("logger", memoryTarget);
-
-            var consoleRule = new LoggingRule("*", LogLevel.Debug, memoryTarget);
-            config.LoggingRules.Add(consoleRule);
-            
             var args = cmd.Split(' ')
                 .Select(s => placeHolders?.ContainsKey(s) == true ? placeHolders[s] : s)
                 .ToArray();
+            
+            var logger = new TestConsoleLogger();
+            var succeed = await new Program(logger).Process(args);
+            Assert.True(succeed, string.Join(Environment.NewLine, logger.Logs));
 
-            using (var factory = new LogFactory(config))
-            {
-                var logger = factory.GetLogger("logger");
-                var succeed = await new Program(logger).Process(args);
-                Assert.True(succeed, string.Join(Environment.NewLine, memoryTarget.Logs));
-            }
-
-            return memoryTarget.Logs;
+            return logger.Logs;
         }
 
         private void InjectTestKey()

@@ -1,15 +1,15 @@
-﻿using Certes.Acme;
+﻿using System;
+using System.Threading.Tasks;
+using Certes.Acme;
+using Certes.Cli.Internal;
 using Certes.Cli.Options;
 using Certes.Jws;
-using NLog;
-using System;
-using System.Threading.Tasks;
 
 namespace Certes.Cli.Processors
 {
     internal class RegisterCommand : CommandBase<RegisterOptions>
     {
-        public RegisterCommand(RegisterOptions options, ILogger consoleLogger)
+        public RegisterCommand(RegisterOptions options, IConsole consoleLogger)
             : base(options, consoleLogger)
         {
         }
@@ -56,13 +56,13 @@ namespace Certes.Cli.Processors
                 };
             }
 
-            ConsoleLogger.Info("Registration created.");
+            ConsoleLogger.LogInformation("Registration created.");
             return context;
         }
 
         private async Task<AcmeContext> UpdateAccount(AcmeContext context)
         {
-            bool changed = false;
+            var changed = false;
             var account = context.Account;
             using (var client = new AcmeClient(Options.Server))
             {
@@ -87,7 +87,7 @@ namespace Certes.Cli.Processors
                 }
             }
 
-            ConsoleLogger.Info("Registration updated.");
+            ConsoleLogger.LogInformation("Registration updated.");
             return context;
         }
         
@@ -95,7 +95,7 @@ namespace Certes.Cli.Processors
         {
             var account = new AccountKey(context.Account.Key);
             var thumbprint = JwsConvert.ToBase64String(account.GenerateThumbprint());
-            ConsoleLogger.Info(thumbprint);
+            ConsoleLogger.LogInformation(thumbprint);
         }
     }
 }

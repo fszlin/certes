@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.IO;
+using Newtonsoft.Json;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
-using System;
-using System.IO;
 
 namespace Certes.Pkcs
 {
@@ -22,6 +22,27 @@ namespace Certes.Pkcs
         /// </value>
         [JsonProperty("der")]
         public byte[] PrivateKeyInfo { get; set; }
+
+        /// <summary>
+        /// Reads the key from the given <paramref name="stream"/>.
+        /// </summary>
+        /// <param name="stream">The steam.</param>
+        /// <returns>The key loaded.</returns>
+        public static KeyInfo From(Stream stream)
+        {
+            using (var streamReader = new StreamReader(stream))
+            {
+                var reader = new PemReader(streamReader);
+                var keyPair = reader.ReadObject() as AsymmetricCipherKeyPair;
+
+                if (keyPair == null)
+                {
+                    throw new Exception("Invaid key data.");
+                }
+
+                return keyPair.Export();
+            }
+        }
     }
 
     /// <summary>

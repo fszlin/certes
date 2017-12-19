@@ -29,6 +29,7 @@ branches:
     - master
     - dev
     - vnext
+    - cli
 
 assembly_info:
   patch: true
@@ -45,21 +46,21 @@ init:
   - ps: $buildVer = $verParts[3] - $env:ver_offset
   - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + '.' + $buildVer }
   - ps: $env:CERTES_PACKAGE_VERSION = $env:CERTES_ASSEMBLY_INFO_VERSION
-  
+
 install:
   - cmd: curl -O https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
 
 before_build:
   - ps: New-Item build -Type directory -Force | Out-Null
+  - ps: gci *.csproj -recurse | %{ (gc $_) -replace '\<Version\>1.0.0\<\/Version\>', "<Version>$($env:CERTES_PACKAGE_VERSION)</Version>" | sc $_.fullname }
   - cmd: nuget restore Certes.sln
 
 build_script:
-  - msbuild -t:src\Certes
-  - msbuild -t:src\Certes:pack -p:PackageVersion="%CERTES_PACKAGE_VERSION%"
-  - msbuild -t:src\Certes_Cli
+  - msbuild -t:src\Certes:pack
+  - msbuild -t:src\Certes_Cli:pack
   - msbuild -t:src\Certes_Cli:Publish -p:TargetFramework=netcoreapp1.0
-  - ps: Get-ChildItem -Path "./src/Certes/**/Certes.$($env:CERTES_PACKAGE_VERSION).nupkg" -Recurse | Move-Item -Destination "./build"
-  - ps: '"dotnet %~dp0Certes.Cli.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
+  - ps: Get-ChildItem -Path "./src/**/*.nupkg" -Recurse | Move-Item -Destination "./build"
+  - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
   - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
 
 #test: off
@@ -69,7 +70,7 @@ before_test:
 test_script:
   - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
   - ps: >-
-      & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:xunit --fx-version 2.0.0" "-oldstyle" "-output:./../../build/coverage.xml" "-filter:+[Certes]* +[Certes.Cli]*" "-hideskipped:All" "-returntargetcode"
+      & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:xunit --fx-version 2.0.0" "-oldstyle" "-output:./../../build/coverage.xml" "-filter:+[*]Certes.* -[Certes.Tests]*" "-hideskipped:All" "-returntargetcode"
 
 after_test:
   - cd ../../
@@ -80,7 +81,7 @@ after_test:
 configuration: Release
 
 artifacts:
-    - path: build/Certes.$(CERTES_PACKAGE_VERSION).nupkg
+    - path: build/*.nupkg
       name: nupkg
       
     - path: build/certes-cli.zip
@@ -133,3 +134,4 @@ deploy:
         - master
         - dev
         - vnext
+        - cli
