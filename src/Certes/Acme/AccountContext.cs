@@ -113,8 +113,8 @@ namespace Certes.Acme
             {
                 identifier = new
                 {
-                    type = type,
-                    value = value
+                    type,
+                    value
                 }
             };
 
