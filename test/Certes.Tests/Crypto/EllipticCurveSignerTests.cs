@@ -21,8 +21,6 @@ namespace Certes.Crypto
         [Theory]
         [InlineData(SignatureAlgorithm.RS256)]
         [InlineData(SignatureAlgorithm.ES256)]
-        [InlineData(SignatureAlgorithm.ES384)]
-        [InlineData(SignatureAlgorithm.ES512)]
         public void CanComputeHash(SignatureAlgorithm algoType)
         {
             var provider = new SignatureAlgorithmProvider();
