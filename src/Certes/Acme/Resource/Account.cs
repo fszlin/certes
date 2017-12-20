@@ -22,7 +22,7 @@ namespace Certes.Acme.Resource
         /// The status.
         /// </value>
         [JsonProperty("status")]
-        public AccountStatus Status { get; set; }
+        public AccountStatus? Status { get; set; }
 
         /// <summary>
         /// Gets or sets the contact.
@@ -39,8 +39,8 @@ namespace Certes.Acme.Resource
         /// <value>
         ///   <c>true</c> if the terms of service is agreed; otherwise, <c>false</c>.
         /// </value>
-        [JsonProperty("terms-of-service-agreed")]
-        public bool TermsOfServiceAgreed { get; set; }
+        [JsonProperty("termsOfServiceAgreed")]
+        public bool? TermsOfServiceAgreed { get; set; }
 
         /// <summary>
         /// Gets or sets the orders.
@@ -50,5 +50,8 @@ namespace Certes.Acme.Resource
         /// </value>
         [JsonProperty("orders")]
         public Uri Orders { get; set; }
+
+        [JsonProperty("onlyReturnExisting")]
+        internal bool? OnlyReturnExisting { get; set; }
     }
 }

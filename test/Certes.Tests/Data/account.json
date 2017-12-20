@@ -4,6 +4,6 @@
     "mailto:cert-admin@example.com",
     "tel:+12025551212"
   ],
-  "terms-of-service-agreed": true,
+  "termsOfServiceAgreed": true,
   "orders": "https://example.com/acme/acct/1/orders"
 }

@@ -103,12 +103,12 @@ namespace Certes
         /// <returns>
         /// The account created.
         /// </returns>
-        public async Task<Account> CreateAccount(IList<string> contact, bool termsOfServiceAgreed = false)
+        public async Task<Account> NewAccount(IList<string> contact, bool termsOfServiceAgreed = false)
         {
-            var body = new Dictionary<string, object>
+            var body = new Account
             {
-                { "contact", contact },
-                { "termsOfServiceAgreed", termsOfServiceAgreed },
+                Contact = contact,
+                TermsOfServiceAgreed = termsOfServiceAgreed
             };
 
             var resp = await NewAccount(body, true);
@@ -126,7 +126,7 @@ namespace Certes
         {
             if (directory == null)
             {
-                var resp = await this.HttpClient.Get<Directory>(DirectoryUri);
+                var resp = await HttpClient.Get<Directory>(DirectoryUri);
                 directory = resp.Resource;
             }
 
@@ -165,18 +165,17 @@ namespace Certes
         /// <returns></returns>
         public async Task<Uri> GetAccountLocation()
         {
-            if (this.accountLocation != null)
+            if (accountLocation != null)
             {
-                return this.accountLocation;
+                return accountLocation;
             }
-
-            // boulder doesn't process "only-return-existing", but will still retrun the location with status 409
-            var resp = await NewAccount(new Dictionary<string, object> { { "only-return-existing", true } }, false);
+            
+            var resp = await NewAccount(new Account { OnlyReturnExisting = true }, false);
 
             return resp.Location;
         }
 
-        private async Task<AcmeHttpResponse<Account>> NewAccount(IDictionary<string, object> body, bool ensureSuccessStatusCode)
+        private async Task<AcmeHttpResponse<Account>> NewAccount(Account body, bool ensureSuccessStatusCode)
         {
             var endpoint = await this.GetResourceUri(d => d.NewAccount);
             var jws = new JwsSigner(AccountKey);

@@ -18,7 +18,7 @@ namespace Certes
             var dirUri = await GetAvailableStagingServer();
 
             var ctx = new AcmeContext(dirUri);
-            var account = await ctx.CreateAccount(
+            var account = await ctx.NewAccount(
                 new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
             var location = await ctx.GetAccountLocation();
 
@@ -39,7 +39,7 @@ namespace Certes
             var dirUri = await GetAvailableStagingServer();
 
             var ctx = new AcmeContext(dirUri);
-            var account = await ctx.CreateAccount(
+            var account = await ctx.NewAccount(
                 new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
             var location = await ctx.GetAccountLocation();
 
@@ -89,7 +89,7 @@ namespace Certes
                         try
                         {
                             var ctx = new AcmeContext(uri, GetAccountKey());
-                            await ctx.CreateAccount(new[] { "mailto:fszlin@gmail.com" }, true);
+                            await ctx.NewAccount(new[] { "mailto:fszlin@gmail.com" }, true);
                         }
                         catch
                         {
