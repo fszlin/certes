@@ -14,7 +14,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The new nonce endpoint.
         /// </value>
-        [JsonProperty("new-nonce")]
+        [JsonProperty("newNonce")]
         public Uri NewNonce { get; set; }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The new account endpoint.
         /// </value>
-        [JsonProperty("new-account")]
+        [JsonProperty("newAccount")]
         public Uri NewAccount { get; set; }
 
         /// <summary>
@@ -32,17 +32,8 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The new order endpoint.
         /// </value>
-        [JsonProperty("new-order")]
+        [JsonProperty("newOrder")]
         public Uri NewOrder { get; set; }
-
-        /// <summary>
-        /// Gets or sets the new authorization endpoint.
-        /// </summary>
-        /// <value>
-        /// The new authorization endpoint.
-        /// </value>
-        [JsonProperty("new-authz")]
-        public Uri NewAuthz { get; set; }
 
         /// <summary>
         /// Gets or sets the revoke cert.
@@ -50,7 +41,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The revoke cert.
         /// </value>
-        [JsonProperty("revoke-cert")]
+        [JsonProperty("revokeCert")]
         public Uri RevokeCert { get; set; }
 
         /// <summary>
@@ -59,7 +50,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The key change endpoint.
         /// </value>
-        [JsonProperty("key-change")]
+        [JsonProperty("keyChange")]
         public Uri KeyChange { get; set; }
 
         /// <summary>

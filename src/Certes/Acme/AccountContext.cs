@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
@@ -105,22 +106,9 @@ namespace Certes.Acme
         /// <param name="type">The type.</param>
         /// <returns></returns>
         /// <exception cref="System.NotSupportedException"></exception>
-        public async Task<IAuthorizationContext> Authorize(string value, string type = AuthorizationIdentifierTypes.Dns)
+        public Task<IAuthorizationContext> Authorize(string value, string type = AuthorizationIdentifierTypes.Dns)
         {
-            var endpoint = await context.GetResourceUri(d => d.NewAuthz);
-
-            var data = new
-            {
-                identifier = new
-                {
-                    type,
-                    value
-                }
-            };
-
-            var payload = await context.Sign(data, endpoint);
-            var resp = await context.HttpClient.Post<Authz>(endpoint, payload);
-            return new AuthorizationContext(context, resp.Location);
+            throw new NotImplementedException();
         }
     }
 }

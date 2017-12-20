@@ -108,7 +108,7 @@ namespace Certes
             var body = new Dictionary<string, object>
             {
                 { "contact", contact },
-                { "terms-of-service-agreed", termsOfServiceAgreed },
+                { "termsOfServiceAgreed", termsOfServiceAgreed },
             };
 
             var resp = await NewAccount(body, true);

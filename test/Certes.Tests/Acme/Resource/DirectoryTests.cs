@@ -10,7 +10,6 @@ namespace Certes.Acme.Resource
         {
             var model = new Directory();
             model.VerifyGetterSetter(a => a.NewNonce, new Uri("http://NewNonce.is.working"));
-            model.VerifyGetterSetter(a => a.NewAuthz, new Uri("http://NewAuthz.is.working"));
             model.VerifyGetterSetter(a => a.RevokeCert, new Uri("http://RevokeCert.is.working"));
             model.VerifyGetterSetter(a => a.KeyChange, new Uri("http://KeyChange.is.working"));
             model.VerifyGetterSetter(a => a.NewAccount, new Uri("http://NewAccount.is.working"));

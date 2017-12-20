@@ -15,7 +15,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The terms of service.
         /// </value>
-        [JsonProperty("terms-of-service")]
+        [JsonProperty("termsOfService")]
         public Uri TermsOfService { get; set; }
 
         /// <summary>
@@ -33,7 +33,16 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The caa identities.
         /// </value>
-        [JsonProperty("caa-identities")]
+        [JsonProperty("caaIdentities")]
         public IReadOnlyList<string> CaaIdentities { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [external account required].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if external account required; otherwise, <c>false</c>.
+        /// </value>
+        [JsonProperty("externalAccountRequired")]
+        public bool ExternalAccountRequired { get; set; }
     }
 }

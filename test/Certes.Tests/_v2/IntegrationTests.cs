@@ -18,7 +18,8 @@ namespace Certes
             var dirUri = await GetAvailableStagingServer();
 
             var ctx = new AcmeContext(dirUri);
-            var account = await ctx.CreateAccount(new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" });
+            var account = await ctx.CreateAccount(
+                new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
             var location = await ctx.GetAccountLocation();
 
             Assert.NotNull(account);
@@ -32,13 +33,14 @@ namespace Certes
             Assert.Equal(AccountStatus.Deactivated, account.Status);
         }
 
-        [Fact(Skip = "server side not implemented")]
+        [Fact(Skip = "New key is already in use for a different account")]
         public async Task CanChangeAccountKey()
         {
             var dirUri = await GetAvailableStagingServer();
 
             var ctx = new AcmeContext(dirUri);
-            var account = await ctx.CreateAccount(new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" });
+            var account = await ctx.CreateAccount(
+                new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
             var location = await ctx.GetAccountLocation();
 
             var newKey = new AccountKey();
@@ -49,7 +51,7 @@ namespace Certes
             Assert.Equal(location, locationWithNewKey);
         }
 
-        [Fact(Skip = "server side not implemented")]
+        [Fact(Skip = "E003450 boulder-wfe2 [AUDIT] Internal error - Error creating new order")]
         public async Task CanCreateNewOrder()
         {
             var ctx = new AcmeContext(await GetAvailableStagingServer(), GetAccountKey());
@@ -87,7 +89,7 @@ namespace Certes
                         try
                         {
                             var ctx = new AcmeContext(uri, GetAccountKey());
-                            await ctx.CreateAccount(new[] { "mailto:fszlin@gmail.com" });
+                            await ctx.CreateAccount(new[] { "mailto:fszlin@gmail.com" }, true);
                         }
                         catch
                         {

@@ -12,6 +12,7 @@ namespace Certes.Acme.Resource
             model.VerifyGetterSetter(a => a.TermsOfService, new Uri("http://TermsOfService.is.working"));
             model.VerifyGetterSetter(a => a.Website, new Uri("http://Website.is.working"));
             model.VerifyGetterSetter(a => a.CaaIdentities, new[] { "caa", "is", "working" });
+            model.VerifyGetterSetter(a => a.ExternalAccountRequired, true);
         }
     }
 }
