@@ -5,7 +5,6 @@ using Certes.Jws;
 using Certes.Pkcs;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
 
 namespace Certes.Crypto
