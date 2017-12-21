@@ -20,13 +20,26 @@
 
   <ItemGroup>
     <Compile Include="..\..\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
-    <Compile Include="..\..\external\src\**\*.cs" />
-    <EmbeddedResource Include="..\..\external\src\**\*.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="0.1.0-e171221-1" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Certes\Certes.csproj" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludePrivateAssembly</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+
+  <Target Name="IncludePrivateAssembly">
+    <Error Text="System.CommandLine.dll not found." Condition="!Exists('$(NuGetPackageRoot)System.CommandLine\0.1.0-e171221-1\lib\netstandard1.5\System.CommandLine.dll')" />
+    <ItemGroup>
+      <BuildOutputInPackage Include="$(NuGetPackageRoot)System.CommandLine\0.1.0-e171221-1\lib\netstandard1.5\System.CommandLine.dll" />
+    </ItemGroup>
+  </Target>
 
   <Import Project="../../common.props" />
 
