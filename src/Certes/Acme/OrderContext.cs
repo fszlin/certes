@@ -9,16 +9,13 @@ namespace Certes.Acme
     internal class OrderContext : IOrderContext
     {
         private readonly IAcmeContext context;
-        private readonly IAccountContext account;
         private readonly Uri location;
 
         public OrderContext(
             IAcmeContext context,
-            IAccountContext account,
             Uri location)
         {
             this.context = context;
-            this.account = account;
             this.location = location;
         }
 

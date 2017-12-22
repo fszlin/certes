@@ -193,7 +193,7 @@ namespace Certes
         /// TODO
         /// </returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task CreateOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null)
+        public async Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null)
         {
             var endpoint = await this.GetResourceUri(d => d.NewOrder);
 
@@ -207,7 +207,8 @@ namespace Certes
             };
 
             var payload = await Sign(body, endpoint);
-            var cert = await HttpClient.Post<Certificate>(endpoint, payload, true);
+            var order = await HttpClient.Post<Order>(endpoint, payload, true);
+            return new OrderContext(this, order.Location);
         }
     }
 }

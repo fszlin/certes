@@ -48,7 +48,7 @@ namespace Certes.Acme
                 var resp = await this.context.HttpClient.Get<OrderList>(next);
 
                 orderList.AddRange(
-                    resp.Resource.Orders.Select(o => new OrderContext(this.context, this.account, o)));
+                    resp.Resource.Orders.Select(o => new OrderContext(this.context, o)));
 
                 next = resp.Links["next"].FirstOrDefault();
             }
@@ -84,7 +84,7 @@ namespace Certes.Acme
             var payload = await context.Sign(body, endpoint);
             var resp = await this.context.HttpClient.Post<Order>(endpoint, payload);
 
-            return new OrderContext(this.context, this.account, resp.Location);
+            return new OrderContext(this.context, resp.Location);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Jws;
 using Certes.Pkcs;
@@ -55,7 +56,12 @@ namespace Certes
         public async Task CanCreateNewOrder()
         {
             var ctx = new AcmeContext(await GetAvailableStagingServer(), GetAccountKey());
-            await ctx.CreateOrder(new[] { "www.certes.com" });
+            var orderCtx = await ctx.NewOrder(new[] { "www.certes-ci.certes.com", "mail.certes-ci.certes.com" });
+            Assert.IsAssignableFrom<OrderContext>(orderCtx);
+            var order = await orderCtx.Resource();
+            Assert.NotNull(order);
+            Assert.Equal(2, order.Authorizations?.Count);
+            Assert.Equal(OrderStatus.Pending, order.Status);
         }
 
         private const string PrivateKey = "ME0CAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQcEMzAxAgEBBCBePIf6wd4Gob+TzAdwp1/Pyz1tXQT22BoawjhdJRhAUaAKBggqhkjOPQMBBw==";

@@ -83,7 +83,7 @@ namespace Certes
         /// <returns>
         /// TODO
         /// </returns>
-        Task CreateOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null);
+        Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null);
 
         /// <summary>
         /// Signs the specified entity.

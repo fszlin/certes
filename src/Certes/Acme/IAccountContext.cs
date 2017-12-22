@@ -1,9 +1,6 @@
-﻿using Certes.Acme.Resource;
-using Certes.Jws;
-using Certes.Pkcs;
-using System;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using Certes.Acme.Resource;
 
 namespace Certes.Acme
 {
