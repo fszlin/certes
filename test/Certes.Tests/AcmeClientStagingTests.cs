@@ -67,6 +67,8 @@ namespace Certes
                 await Task.Delay(1000);
                 authz = await client.GetAuthorization(httpChallenge.Location);
             }
+
+            Assert.Equal(EntityStatus.Valid, authz.Data.Status);
         }
     }
 }

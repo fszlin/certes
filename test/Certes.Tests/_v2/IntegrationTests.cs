@@ -51,7 +51,7 @@ namespace Certes
             Assert.Equal(location, locationWithNewKey);
         }
 
-        [Fact(Skip = "E003450 boulder-wfe2 [AUDIT] Internal error - Error creating new order")]
+        [Fact]
         public async Task CanCreateNewOrder()
         {
             var ctx = new AcmeContext(await GetAvailableStagingServer(), GetAccountKey());
