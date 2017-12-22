@@ -52,6 +52,7 @@ namespace Certes.Cli
             catch (ArgumentSyntaxException ex)
             {
                 consoleLogger.LogError(ex, ex.Message);
+                return false;
             }
 
             jsonSettings = new JsonSerializerSettings
