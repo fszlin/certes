@@ -20,6 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Certes.xml</DocumentationFile>
+    <PackageIconUrl>https://raw.githubusercontent.com/fszlin/certes/master/misc/logo.png</PackageIconUrl>
   </PropertyGroup>
   
   <ItemGroup>

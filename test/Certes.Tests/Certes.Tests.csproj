@@ -24,6 +24,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0-preview-20171211-02" />
     <PackageReference Include="Moq" Version="4.8.0-rc1" />
     <PackageReference Include="OpenCover" Version="4.6.519" />
+    <PackageReference Include="System.CommandLine" Version="0.1.0-e171221-1" Condition="'$(TargetFramework)' == 'netcoreapp1.0' OR '$(TargetFramework)' == 'netcoreapp2.0'" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
