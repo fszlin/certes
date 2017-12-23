@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Certes.Acme.Resource;
 
 namespace Certes.Acme
 {
@@ -17,9 +16,9 @@ namespace Certes.Acme
             Location = location;
         }
 
-        public virtual async Task<Order> Resource()
+        public virtual async Task<T> Resource()
         {
-            var resp = await Context.HttpClient.Get<Order>(Location);
+            var resp = await Context.HttpClient.Get<T>(Location);
             return resp.Resource;
         }
     }
