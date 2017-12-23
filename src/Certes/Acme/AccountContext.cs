@@ -72,27 +72,24 @@ namespace Certes.Acme
         /// <returns>
         /// The account context.
         /// </returns>
-        public async Task<IAccountContext> Update(bool agreeTermsOfService = false, IEnumerable<string> contact = null)
+        public async Task<IAccountContext> Update(IList<string> contact = null, bool agreeTermsOfService = false)
         {
             var location = await context.GetAccountLocation();
-            var account = new Dictionary<string, object>();
-            if (contact != null)
+            var account = new Account
             {
-                account["contact"] = contact.ToArray();
-            }
+                Contact = contact
+            };
+           
+            //var account = new Dictionary<string, object>();
+            //if (contact != null)
+            //{
+            //    account["contact"] = contact.ToArray();
+            //}
 
-            if (agreeTermsOfService)
-            {
-                account["terms-of-service-agreed"] = true;
-
-                // boulder specific
-                var dict = await context.GetDirectory();
-                var tosUri = dict.Meta?.TermsOfService;
-                if (tosUri != null)
-                {
-                    account["Agreement"] = tosUri;
-                }
-            }
+            //if (agreeTermsOfService)
+            //{
+            //    account["terms-of-service-agreed"] = true;
+            //}
 
             var payload = await context.Sign(account, location);
             await context.HttpClient.Post<Account>(location, payload, true);

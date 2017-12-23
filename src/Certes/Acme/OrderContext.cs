@@ -1,43 +1,31 @@
-﻿using Certes.Acme.Resource;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Certes.Acme.Resource;
 
 namespace Certes.Acme
 {
-    internal class OrderContext : IOrderContext
+    internal class OrderContext : EntityContext<Order>, IOrderContext
     {
-        private readonly IAcmeContext context;
-        private readonly Uri location;
-
         public OrderContext(
             IAcmeContext context,
             Uri location)
+            : base(context, location)
         {
-            this.context = context;
-            this.location = location;
-        }
-
-        /// <summary>
-        /// Resources this instance.
-        /// </summary>
-        /// <returns></returns>
-        public async Task<Order> Resource()
-        {
-            var resp = await this.context.HttpClient.Get<Order>(location);
-            return resp.Resource;
         }
 
         /// <summary>
         /// Authorizationses this instance.
         /// </summary>
         /// <returns></returns>
-        public async Task<IEnumerable<AuthorizationContext>> Authorizations()
+        public async Task<IEnumerable<IAuthorizationContext>> Authorizations()
         {
-            var order = await this.Resource();
-            return order.Authorizations
-                .Select(a => new AuthorizationContext(this.context, a));
+            var order = await Resource();
+            return order
+                .Authorizations?
+                .Select(a => new AuthorizationContext(Context, a)) ??
+                Enumerable.Empty<IAuthorizationContext>();
         }
     }
 }

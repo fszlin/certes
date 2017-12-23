@@ -27,7 +27,7 @@ namespace Certes.Acme
         /// <param name="agreeTermsOfService">if set to <c>true</c> [agree terms of service].</param>
         /// <param name="contact">The contact.</param>
         /// <returns></returns>
-        Task<IAccountContext> Update(bool agreeTermsOfService = false, IEnumerable<string> contact = null);
+        Task<IAccountContext> Update(IList<string> contact = null, bool agreeTermsOfService = false);
 
         /// <summary>
         /// Deactivates the current account.

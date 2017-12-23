@@ -7,9 +7,6 @@ namespace Certes.Acme.Resource
     /// <summary>
     /// Represents the ACME Account resource.
     /// </summary>
-    /// <remarks>
-    /// As https://tools.ietf.org/html/draft-ietf-acme-acme-07#section-7.1.2
-    /// </remarks>
     public class Account
     {
         /// <summary>

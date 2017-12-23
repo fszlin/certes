@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Certes.Acme.Resource;
 
 namespace Certes.Acme
@@ -13,5 +14,11 @@ namespace Certes.Acme
         /// </summary>
         /// <returns>The account resource.</returns>
         Task<Order> Resource();
+
+        /// <summary>
+        /// Authorizationses this instance.
+        /// </summary>
+        /// <returns></returns>
+        Task<IEnumerable<IAuthorizationContext>> Authorizations();
     }
 }

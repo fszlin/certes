@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -26,7 +27,7 @@ namespace Certes
             Assert.NotNull(account);
             Assert.Equal(AccountStatus.Valid, account.Status);
 
-            await ctx.Account.Update(true);
+            await ctx.Account.Update(agreeTermsOfService: true);
             await ctx.Account.Update(contact: new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" });
 
             account = await ctx.Account.Deactivate();
@@ -52,6 +53,10 @@ namespace Certes
             Assert.Equal(location, locationWithNewKey);
         }
 
+        /// <summary>
+        /// Determines whether this instance [can create new order].
+        /// </summary>
+        /// <returns></returns>
         [Fact]
         public async Task CanCreateNewOrder()
         {
@@ -62,6 +67,8 @@ namespace Certes
             Assert.NotNull(order);
             Assert.Equal(2, order.Authorizations?.Count);
             Assert.Equal(OrderStatus.Pending, order.Status);
+
+            var authrizations = await Task.WhenAll((await orderCtx.Authorizations()).Select(async a => await a.Resource()));
         }
 
         private const string PrivateKey = "ME0CAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQcEMzAxAgEBBCBePIf6wd4Gob+TzAdwp1/Pyz1tXQT22BoawjhdJRhAUaAKBggqhkjOPQMBBw==";
