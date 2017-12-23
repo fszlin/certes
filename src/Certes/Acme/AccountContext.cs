@@ -80,17 +80,6 @@ namespace Certes.Acme
                 Contact = contact
             };
            
-            //var account = new Dictionary<string, object>();
-            //if (contact != null)
-            //{
-            //    account["contact"] = contact.ToArray();
-            //}
-
-            //if (agreeTermsOfService)
-            //{
-            //    account["terms-of-service-agreed"] = true;
-            //}
-
             var payload = await context.Sign(account, location);
             await context.HttpClient.Post<Account>(location, payload, true);
             return this;
