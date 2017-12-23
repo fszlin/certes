@@ -16,7 +16,7 @@ namespace Certes.Acme
             model.VerifyGetterSetter(a => a.NewReg, new Uri("http://NewReg.is.working"));
             model.VerifyGetterSetter(a => a.Meta, new AcmeDirectory.AcmeDirectoryMeta
             {
-                Website = new Uri("http://certes.is.working")
+                TermsOfService = new Uri("http://certes.is.working")
             });
         }
     }

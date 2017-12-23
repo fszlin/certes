@@ -15,7 +15,7 @@ namespace Certes.Acme.Resource
         /// The new nonce endpoint.
         /// </value>
         [JsonProperty("newNonce")]
-        public Uri NewNonce { get; set; }
+        public Uri NewNonce { get; }
 
         /// <summary>
         /// Gets or sets the new account endpoint.
@@ -24,7 +24,7 @@ namespace Certes.Acme.Resource
         /// The new account endpoint.
         /// </value>
         [JsonProperty("newAccount")]
-        public Uri NewAccount { get; set; }
+        public Uri NewAccount { get; }
 
         /// <summary>
         /// Gets or sets the new order endpoint.
@@ -33,7 +33,7 @@ namespace Certes.Acme.Resource
         /// The new order endpoint.
         /// </value>
         [JsonProperty("newOrder")]
-        public Uri NewOrder { get; set; }
+        public Uri NewOrder { get; }
 
         /// <summary>
         /// Gets or sets the revoke cert.
@@ -42,7 +42,7 @@ namespace Certes.Acme.Resource
         /// The revoke cert.
         /// </value>
         [JsonProperty("revokeCert")]
-        public Uri RevokeCert { get; set; }
+        public Uri RevokeCert { get; }
 
         /// <summary>
         /// Gets or sets the key change endpoint.
@@ -51,7 +51,7 @@ namespace Certes.Acme.Resource
         /// The key change endpoint.
         /// </value>
         [JsonProperty("keyChange")]
-        public Uri KeyChange { get; set; }
+        public Uri KeyChange { get; }
 
         /// <summary>
         /// Gets or sets the metadata.
@@ -60,6 +60,31 @@ namespace Certes.Acme.Resource
         /// The metadata.
         /// </value>
         [JsonProperty("meta")]
-        public DirectoryMeta Meta { get; set; }
+        public DirectoryMeta Meta { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Directory"/> class.
+        /// </summary>
+        /// <param name="newNonce">The new nonce.</param>
+        /// <param name="newAccount">The new account.</param>
+        /// <param name="newOrder">The new order.</param>
+        /// <param name="revokeCert">The revoke cert.</param>
+        /// <param name="keyChange">The key change.</param>
+        /// <param name="meta">The meta.</param>
+        public Directory(
+            Uri newNonce,
+            Uri newAccount,
+            Uri newOrder,
+            Uri revokeCert, 
+            Uri keyChange,
+            DirectoryMeta meta)
+        {
+            NewNonce = newNonce;
+            NewAccount = newAccount;
+            NewOrder = newOrder;
+            RevokeCert = revokeCert;
+            KeyChange = keyChange;
+            Meta = meta;
+        }
     }
 }
