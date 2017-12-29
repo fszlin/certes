@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Certes.Acme
+﻿namespace Certes.Acme
 {
     /// <summary>
     /// 
     /// </summary>
-    public interface IChallengeHandler
+    public interface IChallengeContext
     {
         /// <summary>
         /// Gets the type.
@@ -18,19 +14,19 @@ namespace Certes.Acme
         string Type { get; }
 
         /// <summary>
-        /// Gets the URL.
-        /// </summary>
-        /// <value>
-        /// The URL.
-        /// </value>
-        Uri Url { get; }
-
-        /// <summary>
         /// Gets the token.
         /// </summary>
         /// <value>
         /// The token.
         /// </value>
         string Token {get;}
+
+        /// <summary>
+        /// Gets the key authorization.
+        /// </summary>
+        /// <value>
+        /// The key authorization.
+        /// </value>
+        string KeyAuthorization { get; }
     }
 }

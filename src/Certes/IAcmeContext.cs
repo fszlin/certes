@@ -37,6 +37,14 @@ namespace Certes
         IAccountContext Account { get; }
 
         /// <summary>
+        /// Gets the account key.
+        /// </summary>
+        /// <value>
+        /// The account key.
+        /// </value>
+        IAccountKey AccountKey { get; }
+
+        /// <summary>
         /// Gets the ACME directory.
         /// </summary>
         /// <returns>
