@@ -22,20 +22,11 @@ namespace Certes.Acme
 
         public string Token { get; }
 
-        public string KeyAuthorization
-        {
-            get
-            {
-                var jwkThumbprintEncoded = Context.AccountKey.Thumbprint();
-                return $"{Token}.{jwkThumbprintEncoded}";
-            }
-        }
-
         public async Task<AuthorizationIdentifierChallenge> Validate()
         {
             var payload = await Context.Sign(
                 new AuthorizationIdentifierChallenge {
-                    KeyAuthorization = KeyAuthorization
+                    KeyAuthorization = Context.AccountKey.KeyAuthorization(Token)
                 }, Location);
             var resp = await Context.HttpClient.Post<AuthorizationIdentifierChallenge>(Location, payload, true);
             return resp.Resource;

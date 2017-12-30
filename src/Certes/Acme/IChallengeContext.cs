@@ -25,14 +25,6 @@ namespace Certes.Acme
         string Token {get;}
 
         /// <summary>
-        /// Gets the key authorization.
-        /// </summary>
-        /// <value>
-        /// The key authorization.
-        /// </value>
-        string KeyAuthorization { get; }
-
-        /// <summary>
         /// Acknowledges the ACME server the challenge is ready for validation
         /// </summary>
         /// <returns>The challenge.</returns>

@@ -3,6 +3,7 @@ using System.Text;
 using Certes.Json;
 using Certes.Pkcs;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Security;
 
 namespace Certes.Jws
 {
@@ -88,6 +89,31 @@ namespace Certes.Jws
         {
             var jwkThumbprint = key.GenerateThumbprint();
             return JwsConvert.ToBase64String(jwkThumbprint);
+        }
+
+        /// <summary>
+        /// Generates key authorization string.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="token">The challenge token.</param>
+        /// <returns></returns>
+        public static string KeyAuthorization(this IAccountKey key, string token)
+        {
+            var jwkThumbprintEncoded = key.Thumbprint();
+            return $"{token}.{jwkThumbprintEncoded}";
+        }
+
+        /// <summary>
+        /// Generates the value for DNS TXT record.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="token">The challenge token.</param>
+        /// <returns></returns>
+        public static string DnsTxtRecord(this IAccountKey key, string token)
+        {
+            var keyAuthz = key.KeyAuthorization(token);
+            var hashed = DigestUtilities.CalculateDigest("SHA256", Encoding.UTF8.GetBytes(keyAuthz));
+            return JwsConvert.ToBase64String(hashed);
         }
     }
 }

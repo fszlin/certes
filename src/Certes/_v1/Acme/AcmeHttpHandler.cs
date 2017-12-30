@@ -159,7 +159,7 @@ namespace Certes.Acme
             var body = Encode(entity, keyPair, nonce);
             var bodyJson = JsonConvert.SerializeObject(body, Formatting.None, jsonSettings);
 
-            return new StringContent(bodyJson, Encoding.ASCII, MimeJson);
+            return new StringContent(bodyJson, Encoding.UTF8, MimeJson);
         }
 
         private async Task<AcmeResponse<T>> ReadResponse<T>(HttpResponseMessage response, string resourceType = null)
