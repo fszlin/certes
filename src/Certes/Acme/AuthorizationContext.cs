@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Certes.Acme.Resource;
 using Authz = Certes.Acme.Resource.Authorization;
 
 namespace Certes.Acme
@@ -21,6 +22,20 @@ namespace Certes.Acme
                 .Challenges?
                 .Select(c => new ChallengeContext(Context, c.Url, c.Type, c.Token)) ??
                 Enumerable.Empty<IChallengeContext>();
+        }
+
+        /// <summary>
+        /// Deactivates the current account.
+        /// </summary>
+        /// <returns>
+        /// The awaitable.
+        /// </returns>
+        public async Task<Authz> Deactivate()
+        {
+            var location = await Context.GetAccountLocation();
+            var payload = await Context.Sign(new { status = AuthorizationStatus.Deactivated }, location);
+            var resp = await Context.HttpClient.Post<Authz>(location, payload, true);
+            return resp.Resource;
         }
     }
 }

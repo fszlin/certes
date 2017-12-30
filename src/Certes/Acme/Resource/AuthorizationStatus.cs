@@ -39,5 +39,11 @@ namespace Certes.Acme.Resource
         /// </summary>
         [EnumMember(Value = "revoked")]
         Revoked,
+
+        /// <summary>
+        /// The deactivated status.
+        /// </summary>
+        [EnumMember(Value = "deactivated")]
+        Deactivated,
     }
 }

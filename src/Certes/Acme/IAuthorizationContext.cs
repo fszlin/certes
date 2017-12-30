@@ -14,5 +14,11 @@ namespace Certes.Acme
         /// </summary>
         /// <returns></returns>
         Task<IEnumerable<IChallengeContext>> Challenges();
+
+        /// <summary>
+        /// Deactivates this instance.
+        /// </summary>
+        /// <returns></returns>
+        Task<Authz> Deactivate();
     }
 }
