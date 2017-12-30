@@ -1,16 +1,18 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Authz = Certes.Acme.Resource.Authorization;
 
 namespace Certes.Acme
 {
     /// <summary>
     /// 
     /// </summary>
-    public interface IAuthorizationContext
+    public interface IAuthorizationContext : IResourceContext<Authz>
     {
         /// <summary>
-        /// Resources this instance.
+        /// Gets the challenges for this authorization.
         /// </summary>
         /// <returns></returns>
-        Task<Resource.Authorization> Resource();
+        Task<IEnumerable<IChallengeContext>> Challenges();
     }
 }

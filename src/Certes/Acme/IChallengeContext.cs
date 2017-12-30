@@ -1,9 +1,11 @@
-﻿namespace Certes.Acme
+﻿using Certes.Acme.Resource;
+
+namespace Certes.Acme
 {
     /// <summary>
     /// 
     /// </summary>
-    public interface IChallengeContext
+    public interface IChallengeContext : IResourceContext<AuthorizationIdentifierChallenge>
     {
         /// <summary>
         /// Gets the type.

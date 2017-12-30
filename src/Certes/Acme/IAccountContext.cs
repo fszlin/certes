@@ -7,14 +7,8 @@ namespace Certes.Acme
     /// <summary>
     /// Supports ACME account operations.
     /// </summary>
-    public interface IAccountContext
+    public interface IAccountContext : IResourceContext<Account>
     {
-        /// <summary>
-        /// Gets the account resource.
-        /// </summary>
-        /// <returns>The account resource.</returns>
-        Task<Account> Resource();
-
         /// <summary>
         /// Gets the orders
         /// </summary>

@@ -7,7 +7,7 @@ namespace Certes.Acme
     internal class ChallengeContext : EntityContext<AuthorizationIdentifierChallenge>, IChallengeContext
     {
         public ChallengeContext(
-            AcmeContext context,
+            IAcmeContext context,
             Uri location,
             string type,
             string token)
