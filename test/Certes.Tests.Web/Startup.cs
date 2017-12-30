@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.IO;
+using System.Text;
+using Certes.Jws;
+using Certes.Pkcs;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,8 +13,6 @@ namespace Certes.Tests.Web
 {
     public class Startup
     {
-        private const string ThumbPrint = "cSTPyZ48ZK6w7Z_ndytGxoz5XNR6-ycwGEs_VI6nj44";
-
         public void ConfigureServices(IServiceCollection services)
         {
         }
@@ -27,11 +30,27 @@ namespace Certes.Tests.Web
             {
                 sub.Run(async context =>
                 {
-                    var path = context.Request.Path.ToUriComponent();
-                    if (path?.Length > 1 && path.StartsWith("/"))
+                    var request = context.Request;
+                    var path = request.Path.ToUriComponent();
+                    if (request.Method == "GET" && path?.Length > 1 && path.StartsWith("/"))
                     {
+                        var host = request.Host.Host;
+                        var key =
+                            host.IndexOf(".es256.", StringComparison.OrdinalIgnoreCase) >= 0 ? Keys.ES256Key :
+                            host.IndexOf(".es384.", StringComparison.OrdinalIgnoreCase) >= 0 ? Keys.ES384Key :
+                            host.IndexOf(".es512.", StringComparison.OrdinalIgnoreCase) >= 0 ? Keys.ES512Key :
+                            Keys.RS256Key;
+
+                        AccountKey accountKey;
+                        using (var buffer = new MemoryStream(Encoding.UTF8.GetBytes(key)))
+                        {
+                            accountKey = new AccountKey(KeyInfo.From(buffer));
+                        }
+
+                        var thumbPrint = JwsConvert.ToBase64String(accountKey.GenerateThumbprint());
+
                         context.Response.ContentType = "plain/text";
-                        await context.Response.WriteAsync($"{path.Substring(1)}.{ThumbPrint}");
+                        await context.Response.WriteAsync($"{path.Substring(1)}.{thumbPrint}");
                     }
                 });
             });

@@ -38,21 +38,24 @@ namespace Certes.Cli.Processors
                 cmd.Process(null));
         }
 
-        [Fact]
-        public async Task CanLoadKey()
+        [Theory]
+        [InlineData(SignatureAlgorithm.ES256)]
+        [InlineData(SignatureAlgorithm.ES384)]
+        [InlineData(SignatureAlgorithm.ES512)]
+        [InlineData(SignatureAlgorithm.RS256)]
+        public async Task CanLoadKey(SignatureAlgorithm algo)
         { 
             if (!Directory.Exists("./_test"))
             {
                 Directory.CreateDirectory("./_test");
-        
             }
 
             var options = new ImportOptions
             {
-                KeyFile = "./_test/key.pem",
+                KeyFile = $"./_test/key-{algo.ToString().ToLowerInvariant()}.pem",
             };
 
-            var key = new AccountKey(SignatureAlgorithm.ES256);
+            var key = new AccountKey(algo);
             using (var fs = File.Create(options.KeyFile))
             {
                 key.Export().Save(fs);

@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;netcoreapp1.0;net452</TargetFrameworks>
-    <TargetFrameworks Condition="'$(Configuration)' != 'Debug' OR '$(Net47Installed)' == 'True'">
+    <TargetFrameworks Condition="'$(Configuration)' != 'Debug' OR '$(Net47Target)' == 'True'">
       $(TargetFrameworks);net47
     </TargetFrameworks>
     <RootNamespace>Certes</RootNamespace>

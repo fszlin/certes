@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq.Expressions;
 using System.Net.Http;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Jws;
@@ -100,6 +102,28 @@ namespace Certes
             var actualValue = propInfo.GetValue(source);
 
             Assert.Equal(value, (TProperty)actualValue);
+        }
+        internal static AccountKey GetAccountKey(SignatureAlgorithm algo = SignatureAlgorithm.ES256)
+        {
+            using (var buffer = new MemoryStream(Encoding.UTF8.GetBytes(algo.GetTestKey())))
+            {
+                return new AccountKey(KeyInfo.From(buffer));
+            }
+        }
+
+        internal static string GetTestKey(this SignatureAlgorithm algo)
+        {
+            switch (algo)
+            {
+                case SignatureAlgorithm.ES256:
+                    return Keys.ES256Key;
+                case SignatureAlgorithm.ES384:
+                    return Keys.ES384Key;
+                case SignatureAlgorithm.ES512:
+                    return Keys.ES512Key;
+                default:
+                    return Keys.RS256Key;
+            }
         }
     }
 }

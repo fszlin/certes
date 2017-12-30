@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Jws;
-using Certes.Pkcs;
 using Xunit;
 
 namespace Certes
@@ -60,8 +59,8 @@ namespace Certes
         [Fact]
         public async Task CanCreateNewOrder()
         {
-            var ctx = new AcmeContext(await GetAvailableStagingServer(), GetAccountKey());
-            var orderCtx = await ctx.NewOrder(new[] { "www.certes-ci.certes.com", "mail.certes-ci.certes.com" });
+            var ctx = new AcmeContext(await GetAvailableStagingServer(), Helper.GetAccountKey());
+            var orderCtx = await ctx.NewOrder(new[] { "www.es256.certes-ci.certes.com", "mail.es256.certes-ci.certes.com" });
             Assert.IsAssignableFrom<OrderContext>(orderCtx);
             var order = await orderCtx.Resource();
             Assert.NotNull(order);
@@ -69,14 +68,6 @@ namespace Certes
             Assert.Equal(OrderStatus.Pending, order.Status);
 
             var authrizations = await Task.WhenAll((await orderCtx.Authorizations()).Select(async a => await a.Resource()));
-        }
-
-        private const string PrivateKey = "ME0CAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQcEMzAxAgEBBCBePIf6wd4Gob+TzAdwp1/Pyz1tXQT22BoawjhdJRhAUaAKBggqhkjOPQMBBw==";
-
-        private AccountKey GetAccountKey()
-        {
-            var keyInfo = new KeyInfo { PrivateKeyInfo = Convert.FromBase64String(PrivateKey) };
-            return new AccountKey(keyInfo);
         }
 
         private async Task<Uri> GetAvailableStagingServer()
@@ -101,8 +92,8 @@ namespace Certes
 
                         try
                         {
-                            var ctx = new AcmeContext(uri, GetAccountKey());
-                            await ctx.NewAccount(new[] { "mailto:fszlin@gmail.com" }, true);
+                            var ctx = new AcmeContext(uri, Helper.GetAccountKey());
+                            await ctx.NewAccount(new[] { "mailto:fszlin@example.com" }, true);
                         }
                         catch
                         {

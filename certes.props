@@ -7,9 +7,8 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
-  
+
   <PropertyGroup>
-    <NetFrameworkRelease>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full@Release)</NetFrameworkRelease>
-    <Net47Installed Condition="$(NetFrameworkRelease) != '' AND $(NetFrameworkRelease) >= 460798" >True</Net47Installed>
+    <Net47Target>True</Net47Target>
   </PropertyGroup>
 </Project>
