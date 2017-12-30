@@ -67,7 +67,13 @@ namespace Certes
             Assert.Equal(2, order.Authorizations?.Count);
             Assert.Equal(OrderStatus.Pending, order.Status);
 
-            var authrizations = await Task.WhenAll((await orderCtx.Authorizations()).Select(async a => await a.Resource()));
+            var authrizations = await orderCtx.Authorizations();
+
+            foreach (var authz in authrizations)
+            {
+                var httpChallenge = await authz.Http();
+                await httpChallenge.Validate();
+            }
         }
 
         private async Task<Uri> GetAvailableStagingServer()

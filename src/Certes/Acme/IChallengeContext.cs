@@ -1,4 +1,5 @@
-﻿using Certes.Acme.Resource;
+﻿using System.Threading.Tasks;
+using Certes.Acme.Resource;
 
 namespace Certes.Acme
 {
@@ -30,5 +31,11 @@ namespace Certes.Acme
         /// The key authorization.
         /// </value>
         string KeyAuthorization { get; }
+
+        /// <summary>
+        /// Acknowledges the ACME server the challenge is ready for validation
+        /// </summary>
+        /// <returns>The new status.</returns>
+        Task<AuthorizationIdentifierChallengeStatus> Validate();
     }
 }

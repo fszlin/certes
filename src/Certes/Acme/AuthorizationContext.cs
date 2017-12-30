@@ -15,6 +15,7 @@ namespace Certes.Acme
             : base(context, location)
         {
         }
+
         public async Task<IEnumerable<IChallengeContext>> Challenges()
         {
             var authz = await Resource();
@@ -33,7 +34,7 @@ namespace Certes.Acme
         public async Task<Authz> Deactivate()
         {
             var location = await Context.GetAccountLocation();
-            var payload = await Context.Sign(new { status = AuthorizationStatus.Deactivated }, location);
+            var payload = await Context.Sign(new Authz { Status = AuthorizationStatus.Deactivated }, location);
             var resp = await Context.HttpClient.Post<Authz>(location, payload, true);
             return resp.Resource;
         }

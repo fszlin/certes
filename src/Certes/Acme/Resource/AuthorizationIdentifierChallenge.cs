@@ -34,7 +34,7 @@ namespace Certes.Acme.Resource
         /// The status.
         /// </value>
         [JsonProperty("status")]
-        public AuthorizationIdentifierChallengeStatus Status { get; set; }
+        public AuthorizationIdentifierChallengeStatus? Status { get; set; }
 
         /// <summary>
         /// Gets or sets the validation time.
@@ -62,5 +62,14 @@ namespace Certes.Acme.Resource
         /// </value>
         [JsonProperty("token")]
         public string Token { get; set; }
+
+        /// <summary>
+        /// Gets or sets the key authorization.
+        /// </summary>
+        /// <value>
+        /// The key authorization.
+        /// </value>
+        [JsonProperty("keyAuthorization")]
+        public string KeyAuthorization { get; set; }
     }
 }

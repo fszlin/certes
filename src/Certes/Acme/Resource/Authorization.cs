@@ -25,7 +25,7 @@ namespace Certes.Acme.Resource
         /// The status.
         /// </value>
         [JsonProperty("status")]
-        public AuthorizationStatus Status { get; set; }
+        public AuthorizationStatus? Status { get; set; }
 
         /// <summary>
         /// Gets or sets the expires.
