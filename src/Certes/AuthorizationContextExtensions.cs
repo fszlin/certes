@@ -14,10 +14,21 @@ namespace Certes
         /// </summary>
         /// <param name="authorizationContext">The authorization context.</param>
         /// <returns></returns>
-        public static async Task<IChallengeContext> Http(this IAuthorizationContext authorizationContext)
+        public static Task<IChallengeContext> Http(this IAuthorizationContext authorizationContext)
+            => authorizationContext.ChallengeByType(ChallengeTypes.Http01);
+
+        /// <summary>
+        /// DNSs the specified authorization context.
+        /// </summary>
+        /// <param name="authorizationContext">The authorization context.</param>
+        /// <returns></returns>
+        public static Task<IChallengeContext> Dns(this IAuthorizationContext authorizationContext)
+            => authorizationContext.ChallengeByType(ChallengeTypes.Dns01);
+
+        private static async Task<IChallengeContext> ChallengeByType(this IAuthorizationContext authorizationContext, string type)
         {
             var challenges = await authorizationContext.Challenges();
-            return challenges.FirstOrDefault(c => c.Type == ChallengeTypes.Http01);
+            return challenges.FirstOrDefault(c => c.Type == type);
         }
     }
 }

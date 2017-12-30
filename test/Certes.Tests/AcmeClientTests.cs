@@ -204,7 +204,7 @@ namespace Certes
             var payloadJson = Encoding.UTF8.GetString(JwsConvert.FromBase64String(payloadBase64));
 
             var signature = $"{protectedBase64}.{payloadBase64}";
-            var signatureBytes = Encoding.ASCII.GetBytes(signature);
+            var signatureBytes = Encoding.UTF8.GetBytes(signature);
             var signedSignatureBytes = accountKey.SignData(signatureBytes);
             var signedSignatureEncoded = JwsConvert.ToBase64String(signedSignatureBytes);
 

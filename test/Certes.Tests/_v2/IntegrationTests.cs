@@ -54,12 +54,64 @@ namespace Certes
             Assert.Equal(location, locationWithNewKey);
         }
 
-        /// <summary>
-        /// Determines whether this instance [can create new order].
-        /// </summary>
-        /// <returns></returns>
         [Fact]
-        public async Task CanGenerateCertificate()
+        public async Task CanGenerateCertificateDns()
+        {
+            var ctx = new AcmeContext(await GetAvailableStagingServer(), Helper.GetAccountKey());
+            var orderCtx = await ctx.NewOrder(new[] { "www.es256.certes-ci.dymetis.com", "mail.es256.certes-ci.dymetis.com" });
+            Assert.IsAssignableFrom<OrderContext>(orderCtx);
+            var order = await orderCtx.Resource();
+            Assert.NotNull(order);
+            Assert.Equal(2, order.Authorizations?.Count);
+            Assert.Equal(OrderStatus.Pending, order.Status);
+
+            var authrizations = await orderCtx.Authorizations();
+
+            foreach (var authz in authrizations)
+            {
+                var res = await authz.Resource();
+                var dnsChallenge = await authz.Dns();
+                await Helper.DeployDns01(res.Identifier.Value, dnsChallenge.Token);
+
+                await dnsChallenge.Validate();
+            }
+
+            while (true)
+            {
+                await Task.Delay(100);
+
+                var statuses = new List<AuthorizationStatus>();
+                foreach (var authz in authrizations)
+                {
+                    var a = await authz.Resource();
+                    statuses.Add(a.Status ?? AuthorizationStatus.Pending);
+                }
+
+                if (statuses.All(s => s == AuthorizationStatus.Valid || s == AuthorizationStatus.Invalid))
+                {
+                    break;
+                }
+            }
+
+            var csr = new CertificationRequestBuilder();
+            csr.AddName("CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN=www.es256.certes-ci.dymetis.com");
+            csr.SubjectAlternativeNames.Add("www.es256.certes-ci.dymetis.com");
+            csr.SubjectAlternativeNames.Add("mail.es256.certes-ci.dymetis.com");
+            var der = csr.Generate();
+
+            var finalizedOrder = await orderCtx.Finalize(der);
+            var certificate = await orderCtx.Download();
+
+            // deactivate authz so the subsequence can trigger challenge validation
+            foreach (var authz in authrizations)
+            {
+                var authzRes = await authz.Deactivate();
+                Assert.Equal(AuthorizationStatus.Deactivated, authzRes.Status);
+            }
+        }
+
+        [Fact]
+        public async Task CanGenerateCertificateHttp()
         {
             var ctx = new AcmeContext(await GetAvailableStagingServer(), Helper.GetAccountKey());
             var orderCtx = await ctx.NewOrder(new[] { "www.es256.certes-ci.dymetis.com", "mail.es256.certes-ci.dymetis.com" });
@@ -102,6 +154,13 @@ namespace Certes
 
             var finalizedOrder = await orderCtx.Finalize(der);
             var certificate = await orderCtx.Download();
+
+            // deactivate authz so the subsequence can trigger challenge validation
+            foreach (var authz in authrizations)
+            {
+                var authzRes = await authz.Deactivate();
+                Assert.Equal(AuthorizationStatus.Deactivated, authzRes.Status);
+            }
         }
 
         private async Task<Uri> GetAvailableStagingServer()

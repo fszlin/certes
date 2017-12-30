@@ -6,6 +6,7 @@
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     <LangVersion>Latest</LangVersion>
+    <UserSecretsId>certes-dev</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,9 +20,10 @@
     <Compile Include="..\..\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
     <Compile Include="..\Certes.Tests\Keys.cs" Link="Keys.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.4.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Certes\Certes.csproj" />
