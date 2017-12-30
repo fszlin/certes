@@ -22,7 +22,7 @@ namespace Certes.Acme.Resource
         /// See <see cref="OrderStatus"/> for possible values.
         /// </remarks>
         [JsonProperty("status")]
-        public OrderStatus Status { get; set; }
+        public OrderStatus? Status { get; set; }
 
         /// <summary>
         /// Gets or sets the expires.
@@ -31,7 +31,7 @@ namespace Certes.Acme.Resource
         /// The expires.
         /// </value>
         [JsonProperty("expires")]
-        public DateTimeOffset Expires { get; set; }
+        public DateTimeOffset? Expires { get; set; }
 
         /// <summary>
         /// Gets or sets the CSR.
@@ -49,7 +49,7 @@ namespace Certes.Acme.Resource
         /// The not before.
         /// </value>
         [JsonProperty("notBefore")]
-        public DateTimeOffset NotBefore { get; set; }
+        public DateTimeOffset? NotBefore { get; set; }
 
         /// <summary>
         /// Gets or sets the not after.
@@ -58,7 +58,7 @@ namespace Certes.Acme.Resource
         /// The not after.
         /// </value>
         [JsonProperty("notAfter")]
-        public DateTimeOffset NotAfter { get; set; }
+        public DateTimeOffset? NotAfter { get; set; }
 
         /// <summary>
         /// Gets or sets the error.
@@ -80,6 +80,15 @@ namespace Certes.Acme.Resource
         /// </value>
         [JsonProperty("authorizations")]
         public IList<Uri> Authorizations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the finalize.
+        /// </summary>
+        /// <value>
+        /// The finalize.
+        /// </value>
+        [JsonProperty("finalize")]
+        public Uri Finalize { get; set; }
 
         /// <summary>
         /// Gets or sets the certificate.

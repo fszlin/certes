@@ -35,7 +35,7 @@ namespace Certes.Acme
         /// <summary>
         /// Acknowledges the ACME server the challenge is ready for validation
         /// </summary>
-        /// <returns>The new status.</returns>
-        Task<AuthorizationIdentifierChallengeStatus> Validate();
+        /// <returns>The challenge.</returns>
+        Task<AuthorizationIdentifierChallenge> Validate();
     }
 }

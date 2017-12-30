@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Jws;
+using Certes.Pkcs;
 using Xunit;
 
 namespace Certes
@@ -57,10 +59,10 @@ namespace Certes
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task CanCreateNewOrder()
+        public async Task CanGenerateCertificate()
         {
             var ctx = new AcmeContext(await GetAvailableStagingServer(), Helper.GetAccountKey());
-            var orderCtx = await ctx.NewOrder(new[] { "www.es256.certes-ci.certes.com", "mail.es256.certes-ci.certes.com" });
+            var orderCtx = await ctx.NewOrder(new[] { "www.es256.certes-ci.dymetis.com", "mail.es256.certes-ci.dymetis.com" });
             Assert.IsAssignableFrom<OrderContext>(orderCtx);
             var order = await orderCtx.Resource();
             Assert.NotNull(order);
@@ -74,6 +76,32 @@ namespace Certes
                 var httpChallenge = await authz.Http();
                 await httpChallenge.Validate();
             }
+
+            while (true)
+            {
+                await Task.Delay(100);
+
+                var statuses = new List<AuthorizationStatus>();
+                foreach (var authz in authrizations)
+                {
+                    var a = await authz.Resource();
+                    statuses.Add(a.Status ?? AuthorizationStatus.Pending);
+                }
+
+                if (statuses.All(s => s == AuthorizationStatus.Valid || s == AuthorizationStatus.Invalid))
+                {
+                    break;
+                }
+            }
+
+            var csr = new CertificationRequestBuilder();
+            csr.AddName("CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN=www.es256.certes-ci.dymetis.com");
+            csr.SubjectAlternativeNames.Add("www.es256.certes-ci.dymetis.com");
+            csr.SubjectAlternativeNames.Add("mail.es256.certes-ci.dymetis.com");
+            var der = csr.Generate();
+
+            var finalizedOrder = await orderCtx.Finalize(der);
+            var certificate = await orderCtx.Download();
         }
 
         private async Task<Uri> GetAvailableStagingServer()

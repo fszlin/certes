@@ -33,9 +33,8 @@ namespace Certes.Acme
         /// </returns>
         public async Task<Authz> Deactivate()
         {
-            var location = await Context.GetAccountLocation();
-            var payload = await Context.Sign(new Authz { Status = AuthorizationStatus.Deactivated }, location);
-            var resp = await Context.HttpClient.Post<Authz>(location, payload, true);
+            var payload = await Context.Sign(new Authz { Status = AuthorizationStatus.Deactivated }, Location);
+            var resp = await Context.HttpClient.Post<Authz>(Location, payload, true);
             return resp.Resource;
         }
     }

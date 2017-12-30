@@ -13,7 +13,7 @@ namespace Certes.Acme
     /// 
     /// </summary>
     /// <seealso cref="Certes.Acme.IAcmeHttpClient" />
-    public class AcmeHttpClient : IAcmeHttpClient
+    internal class AcmeHttpClient : IAcmeHttpClient
     {
         private const string MimeJoseJson = "application/jose+json";
         private const string MimeJson = "application/json";
@@ -124,15 +124,24 @@ namespace Certes.Acme
                     .ToLookup(l => l.Rel, l => l.Uri);
             }
 
-            if (IsJsonMedia(response.Content?.Headers.ContentType.MediaType))
+            if (response.IsSuccessStatusCode)
             {
-                var json = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
+                if (IsJsonMedia(response.Content?.Headers.ContentType.MediaType))
                 {
+                    var json = await response.Content.ReadAsStringAsync();
                     resource = JsonConvert.DeserializeObject<T>(json);
                 }
-                else
+                else if (typeof(T) == typeof(string))
                 {
+                    object content = await response.Content.ReadAsStringAsync();
+                    resource = (T)content;
+                }
+            }
+            else
+            {
+                if (IsJsonMedia(response.Content?.Headers.ContentType.MediaType))
+                {
+                    var json = await response.Content.ReadAsStringAsync();
                     error = JsonConvert.DeserializeObject<AcmeError>(json);
                 }
             }

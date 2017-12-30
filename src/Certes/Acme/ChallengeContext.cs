@@ -31,15 +31,14 @@ namespace Certes.Acme
             }
         }
 
-        public async Task<AuthorizationIdentifierChallengeStatus> Validate()
+        public async Task<AuthorizationIdentifierChallenge> Validate()
         {
-            var location = await Context.GetAccountLocation();
             var payload = await Context.Sign(
                 new AuthorizationIdentifierChallenge {
                     KeyAuthorization = KeyAuthorization
-                }, location);
-            var resp = await Context.HttpClient.Post<AuthorizationIdentifierChallenge>(location, payload, true);
-            return resp.Resource.Status ?? AuthorizationIdentifierChallengeStatus.Pending;
+                }, Location);
+            var resp = await Context.HttpClient.Post<AuthorizationIdentifierChallenge>(Location, payload, true);
+            return resp.Resource;
         }
     }
 }
