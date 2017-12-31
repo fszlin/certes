@@ -76,7 +76,7 @@ namespace Certes.Tests.Web
                         RecordType.TXT,
                         new RecordSetInner(
                             name: txtRecordName,
-                            tTL: 5 * 60,
+                            tTL: 10,
                             txtRecords: new[] { new TxtRecord(new[] { accountKey.DnsTxtRecord(token) }) }));
                 }
             }

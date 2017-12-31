@@ -130,11 +130,13 @@ namespace Certes
 
         internal static async Task DeployDns01(string host, string token)
         {
-            var resp = await http.Value.SendAsync(new HttpRequestMessage
+            using (await http.Value.SendAsync(new HttpRequestMessage
             {
                 RequestUri = new Uri($"http://{host}/dns-01/{token}"),
                 Method = HttpMethod.Put,
-            });
+            }))
+            {
+            }
         }
     }
 }

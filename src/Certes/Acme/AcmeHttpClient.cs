@@ -45,8 +45,10 @@ namespace Certes.Acme
         /// <returns></returns>
         public async Task<AcmeHttpResponse<T>> Get<T>(Uri uri)
         {
-            var response = await http.Value.GetAsync(uri);
-            return await ProcessResponse<T>(response);
+            using (var response = await http.Value.GetAsync(uri))
+            {
+                return await ProcessResponse<T>(response);
+            }
         }
 
         /// <summary>
@@ -62,8 +64,10 @@ namespace Certes.Acme
             {
                 var payloadJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
                 var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
-                var response = await http.Value.PostAsync(uri, content);
-                return await ProcessResponse<T>(response);
+                using (var response = await http.Value.PostAsync(uri, content))
+                {
+                    return await ProcessResponse<T>(response);
+                }
             }
             catch (Exception e)
             {
