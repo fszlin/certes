@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
@@ -8,6 +10,7 @@ using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Jws;
 using Certes.Pkcs;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Certes
@@ -128,14 +131,22 @@ namespace Certes
             }
         }
 
-        internal static async Task DeployDns01(string host, string token)
+        internal static async Task DeployDns01(SignatureAlgorithm algo, Dictionary<string, string> tokens)
         {
-            using (await http.Value.SendAsync(new HttpRequestMessage
+            using (await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens)))) { }
+
+            var prefix = Guid.NewGuid().ToString("N");
+            for (var i = 0; ; ++i)
             {
-                RequestUri = new Uri($"http://{host}/dns-01/{token}"),
-                Method = HttpMethod.Put,
-            }))
-            {
+                await Task.Delay(100);
+                try
+                {
+                    await Dns.GetHostAddressesAsync($"{prefix}-{i}.certes-ci.dymetis.com");
+                    break;
+                }
+                catch
+                {
+                }
             }
         }
     }

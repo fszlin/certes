@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Certes.Tests.Web
 {
@@ -53,11 +55,16 @@ namespace Certes.Tests.Web
 
             if (request.Method == "PUT")
             {
+                Dictionary<string, string> tokens;
+                using (var reader = new StreamReader(request.Body))
+                {
+                    var json = await reader.ReadToEndAsync();
+                    tokens = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                }
+
                 var path = request.Path.ToUriComponent();
-                var accountKey = GetTestKey(request);
-                var name = request.Host.Host.Replace(".certes-ci.dymetis.com", "");
-                var txtRecordName = $"_acme-challenge.{name}.certes-ci";
-                var token = path.Substring(1);
+                var keyType = Enum.Parse<SignatureAlgorithm>(path.Substring(1), true);
+                var accountKey = GetTestKey(keyType);
 
                 var loginInfo = new ServicePrincipalLoginInformation
                 {
@@ -69,15 +76,20 @@ namespace Certes.Tests.Web
                 using (var client = new DnsManagementClient(credentials))
                 {
                     client.SubscriptionId = Configuration["subscriptionId"];
-                    await client.RecordSets.CreateOrUpdateAsync(
-                        "dymetis",
-                        "dymetis.com",
-                        txtRecordName,
-                        RecordType.TXT,
-                        new RecordSetInner(
-                            name: txtRecordName,
-                            tTL: 10,
-                            txtRecords: new[] { new TxtRecord(new[] { accountKey.DnsTxtRecord(token) }) }));
+
+                    foreach (var p in tokens)
+                    {
+                        var name = "_acme-challenge." + p.Key.Replace(".dymetis.com", "");
+                        await client.RecordSets.CreateOrUpdateAsync(
+                            "dymetis",
+                            "dymetis.com",
+                            name,
+                            RecordType.TXT,
+                            new RecordSetInner(
+                                name: name,
+                                tTL: 10,
+                                txtRecords: new[] { new TxtRecord(new[] { accountKey.DnsTxtRecord(p.Value) }) }));
+                    }
                 }
             }
         }
@@ -100,20 +112,29 @@ namespace Certes.Tests.Web
         {
             await context.Response.WriteAsync("Find Certes project on GitHub - https://goo.gl/beyaxD");
         }
-        
-        private AccountKey GetTestKey(HttpRequest request)
+
+        private AccountKey GetTestKey(SignatureAlgorithm algo)
         {
-            var host = request.Host.Host;
             var key =
-                host.IndexOf(".es256.", StringComparison.OrdinalIgnoreCase) >= 0 ? Keys.ES256Key :
-                host.IndexOf(".es384.", StringComparison.OrdinalIgnoreCase) >= 0 ? Keys.ES384Key :
-                host.IndexOf(".es512.", StringComparison.OrdinalIgnoreCase) >= 0 ? Keys.ES512Key :
+                algo == SignatureAlgorithm.ES256 ? Keys.ES256Key :
+                algo == SignatureAlgorithm.ES384 ? Keys.ES384Key :
+                algo == SignatureAlgorithm.ES512 ? Keys.ES512Key :
                 Keys.RS256Key;
 
             using (var buffer = new MemoryStream(Encoding.UTF8.GetBytes(key)))
             {
                 return new AccountKey(KeyInfo.From(buffer));
             }
+        }
+
+        private AccountKey GetTestKey(HttpRequest request)
+        {
+            var host = request.Host.Host;
+            return
+                host.IndexOf(".es256.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(SignatureAlgorithm.ES256) :
+                host.IndexOf(".es384.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(SignatureAlgorithm.ES384) :
+                host.IndexOf(".es512.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(SignatureAlgorithm.ES512) :
+                GetTestKey(SignatureAlgorithm.RS256);
         }
     }
 }

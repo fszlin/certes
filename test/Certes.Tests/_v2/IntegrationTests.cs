@@ -57,8 +57,9 @@ namespace Certes
         [Fact]
         public async Task CanGenerateCertificateDns()
         {
+            var hosts = new[] { "www-dns.es256.certes-ci.dymetis.com", "mail-dns.es256.certes-ci.dymetis.com" };
             var ctx = new AcmeContext(await GetAvailableStagingServer(), Helper.GetAccountKey());
-            var orderCtx = await ctx.NewOrder(new[] { "www.es256.certes-ci.dymetis.com", "mail.es256.certes-ci.dymetis.com" });
+            var orderCtx = await ctx.NewOrder(hosts);
             Assert.IsAssignableFrom<OrderContext>(orderCtx);
             var order = await orderCtx.Resource();
             Assert.NotNull(order);
@@ -67,12 +68,20 @@ namespace Certes
 
             var authrizations = await orderCtx.Authorizations();
 
+            var tokens = new Dictionary<string, string>();
             foreach (var authz in authrizations)
             {
                 var res = await authz.Resource();
                 var dnsChallenge = await authz.Dns();
-                await Helper.DeployDns01(res.Identifier.Value, dnsChallenge.Token);
+                tokens.Add(res.Identifier.Value, dnsChallenge.Token);
+            }
 
+            await Helper.DeployDns01(SignatureAlgorithm.ES256, tokens);
+
+            foreach (var authz in authrizations)
+            {
+                var res = await authz.Resource();
+                var dnsChallenge = await authz.Dns();
                 await dnsChallenge.Validate();
             }
 
@@ -94,9 +103,12 @@ namespace Certes
             }
 
             var csr = new CertificationRequestBuilder();
-            csr.AddName("CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN=www.es256.certes-ci.dymetis.com");
-            csr.SubjectAlternativeNames.Add("www.es256.certes-ci.dymetis.com");
-            csr.SubjectAlternativeNames.Add("mail.es256.certes-ci.dymetis.com");
+            csr.AddName($"CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN={hosts[0]}");
+            foreach (var h in hosts)
+            {
+                csr.SubjectAlternativeNames.Add(h);
+            }
+
             var der = csr.Generate();
 
             var finalizedOrder = await orderCtx.Finalize(der);
@@ -113,8 +125,9 @@ namespace Certes
         [Fact]
         public async Task CanGenerateCertificateHttp()
         {
+            var hosts = new[] { "www-http.es256.certes-ci.dymetis.com", "mail-http.es256.certes-ci.dymetis.com" };
             var ctx = new AcmeContext(await GetAvailableStagingServer(), Helper.GetAccountKey());
-            var orderCtx = await ctx.NewOrder(new[] { "www.es256.certes-ci.dymetis.com", "mail.es256.certes-ci.dymetis.com" });
+            var orderCtx = await ctx.NewOrder(hosts);
             Assert.IsAssignableFrom<OrderContext>(orderCtx);
             var order = await orderCtx.Resource();
             Assert.NotNull(order);
@@ -147,9 +160,12 @@ namespace Certes
             }
 
             var csr = new CertificationRequestBuilder();
-            csr.AddName("CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN=www.es256.certes-ci.dymetis.com");
-            csr.SubjectAlternativeNames.Add("www.es256.certes-ci.dymetis.com");
-            csr.SubjectAlternativeNames.Add("mail.es256.certes-ci.dymetis.com");
+            csr.AddName($"CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN={hosts[0]}");
+            foreach (var h in hosts)
+            {
+                csr.SubjectAlternativeNames.Add(h);
+            }
+
             var der = csr.Generate();
 
             var finalizedOrder = await orderCtx.Finalize(der);
