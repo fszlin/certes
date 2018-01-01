@@ -28,4 +28,4 @@ branches:
     - vnext
 script:
   - dotnet restore
-  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp2.0 --filter FullyQualifiedName!=Certes.IntegrationTests.CanGenerateCertificateDns
+  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp2.0

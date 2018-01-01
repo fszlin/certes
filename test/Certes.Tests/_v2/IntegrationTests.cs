@@ -8,12 +8,25 @@ using Certes.Acme.Resource;
 using Certes.Jws;
 using Certes.Pkcs;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Certes
 {
     public class IntegrationTests
     {
         private static Uri stagingServer;
+        private readonly ITestOutputHelper output;
+        private readonly string domainSuffix;
+
+        public IntegrationTests(ITestOutputHelper output)
+        {
+            this.output = output;
+
+            domainSuffix =
+                bool.TrueString.Equals(Environment.GetEnvironmentVariable("APPVEYOR"), StringComparison.OrdinalIgnoreCase) ? "appveyor" :
+                bool.TrueString.Equals(Environment.GetEnvironmentVariable("TRAVIS"), StringComparison.OrdinalIgnoreCase) ? "travis" :
+                "dev";
+        }
 
         [Fact]
         public async Task CanRunAccountFlows()
@@ -57,49 +70,14 @@ namespace Certes
         [Fact]
         public async Task CanGenerateCertificateDns()
         {
-            var hosts = new[] { "www-dns.es256.certes-ci.dymetis.com", "mail-dns.es256.certes-ci.dymetis.com" };
+            var hosts = new[] { $"www-dns-{domainSuffix}.es256.certes-ci.dymetis.com", $"mail-dns-{domainSuffix}.es256.certes-ci.dymetis.com" };
             var ctx = new AcmeContext(await GetAvailableStagingServer(), Helper.GetAccountKey());
-            var orderCtx = await ctx.NewOrder(hosts);
-            Assert.IsAssignableFrom<OrderContext>(orderCtx);
-            var order = await orderCtx.Resource();
-            Assert.NotNull(order);
-            Assert.Equal(2, order.Authorizations?.Count);
-            Assert.Equal(OrderStatus.Pending, order.Status);
-
-            var authrizations = await orderCtx.Authorizations();
-
-            var tokens = new Dictionary<string, string>();
-            foreach (var authz in authrizations)
+            var orderCtx = await AuthzDns(ctx, hosts);
+            while (orderCtx == null)
             {
-                var res = await authz.Resource();
-                var dnsChallenge = await authz.Dns();
-                tokens.Add(res.Identifier.Value, dnsChallenge.Token);
-            }
-
-            await Helper.DeployDns01(SignatureAlgorithm.ES256, tokens);
-
-            foreach (var authz in authrizations)
-            {
-                var res = await authz.Resource();
-                var dnsChallenge = await authz.Dns();
-                await dnsChallenge.Validate();
-            }
-
-            while (true)
-            {
-                await Task.Delay(100);
-
-                var statuses = new List<AuthorizationStatus>();
-                foreach (var authz in authrizations)
-                {
-                    var a = await authz.Resource();
-                    statuses.Add(a.Status ?? AuthorizationStatus.Pending);
-                }
-
-                if (statuses.All(s => s == AuthorizationStatus.Valid || s == AuthorizationStatus.Invalid))
-                {
-                    break;
-                }
+                output.WriteLine("DNS authz faild, retrying...");
+                await Task.Delay(1000);
+                orderCtx = await AuthzDns(ctx, hosts);
             }
 
             var csr = new CertificationRequestBuilder();
@@ -115,6 +93,7 @@ namespace Certes
             var certificate = await orderCtx.Download();
 
             // deactivate authz so the subsequence can trigger challenge validation
+            var authrizations = await orderCtx.Authorizations();
             foreach (var authz in authrizations)
             {
                 var authzRes = await authz.Deactivate();
@@ -125,7 +104,7 @@ namespace Certes
         [Fact]
         public async Task CanGenerateCertificateHttp()
         {
-            var hosts = new[] { "www-http.es256.certes-ci.dymetis.com", "mail-http.es256.certes-ci.dymetis.com" };
+            var hosts = new[] { $"www-http-{domainSuffix}.es256.certes-ci.dymetis.com", $"mail-http-{domainSuffix}.es256.certes-ci.dymetis.com" };
             var ctx = new AcmeContext(await GetAvailableStagingServer(), Helper.GetAccountKey());
             var orderCtx = await ctx.NewOrder(hosts);
             Assert.IsAssignableFrom<OrderContext>(orderCtx);
@@ -177,6 +156,61 @@ namespace Certes
                 var authzRes = await authz.Deactivate();
                 Assert.Equal(AuthorizationStatus.Deactivated, authzRes.Status);
             }
+        }
+
+        private async Task<IOrderContext> AuthzDns(AcmeContext ctx, string[] hosts)
+        {
+            var orderCtx = await ctx.NewOrder(hosts);
+            Assert.IsAssignableFrom<OrderContext>(orderCtx);
+            var order = await orderCtx.Resource();
+            Assert.NotNull(order);
+            Assert.Equal(2, order.Authorizations?.Count);
+            Assert.Equal(OrderStatus.Pending, order.Status);
+
+            var authrizations = await orderCtx.Authorizations();
+
+            var tokens = new Dictionary<string, string>();
+            foreach (var authz in authrizations)
+            {
+                var res = await authz.Resource();
+                var dnsChallenge = await authz.Dns();
+                tokens.Add(res.Identifier.Value, dnsChallenge.Token);
+            }
+
+            await Helper.DeployDns01(SignatureAlgorithm.ES256, tokens);
+
+            foreach (var authz in authrizations)
+            {
+                var res = await authz.Resource();
+                var dnsChallenge = await authz.Dns();
+                await dnsChallenge.Validate();
+            }
+
+            while (true)
+            {
+                await Task.Delay(100);
+
+                var statuses = new List<AuthorizationStatus>();
+                foreach (var authz in authrizations)
+                {
+                    var a = await authz.Resource();
+                    if (AuthorizationStatus.Invalid == a.Status)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        statuses.Add(a.Status ?? AuthorizationStatus.Pending);
+                    }
+                }
+
+                if (statuses.All(s => s == AuthorizationStatus.Valid))
+                {
+                    break;
+                }
+            }
+
+            return orderCtx;
         }
 
         private async Task<Uri> GetAvailableStagingServer()

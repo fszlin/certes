@@ -87,7 +87,7 @@ namespace Certes.Tests.Web
                             RecordType.TXT,
                             new RecordSetInner(
                                 name: name,
-                                tTL: 10,
+                                tTL: 1,
                                 txtRecords: new[] { new TxtRecord(new[] { accountKey.DnsTxtRecord(p.Value) }) }));
                     }
                 }

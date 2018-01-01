@@ -134,20 +134,6 @@ namespace Certes
         internal static async Task DeployDns01(SignatureAlgorithm algo, Dictionary<string, string> tokens)
         {
             using (await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens)))) { }
-
-            var prefix = Guid.NewGuid().ToString("N");
-            for (var i = 0; ; ++i)
-            {
-                await Task.Delay(100);
-                try
-                {
-                    await Dns.GetHostAddressesAsync($"{prefix}-{i}.certes-ci.dymetis.com");
-                    break;
-                }
-                catch
-                {
-                }
-            }
         }
     }
 }
