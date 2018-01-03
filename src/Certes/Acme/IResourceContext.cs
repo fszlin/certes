@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Certes.Acme
 {
@@ -8,6 +9,14 @@ namespace Certes.Acme
     /// <typeparam name="T"></typeparam>
     public interface IResourceContext<T>
     {
+        /// <summary>
+        /// Gets the location.
+        /// </summary>
+        /// <value>
+        /// The location.
+        /// </value>
+        Uri Location { get; }
+
         /// <summary>
         /// Gets the acme resource.
         /// </summary>

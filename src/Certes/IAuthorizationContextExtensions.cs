@@ -1,13 +1,12 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Certes.Acme;
 
-namespace Certes
+namespace Certes.Acme
 {
     /// <summary>
     /// 
     /// </summary>
-    public static class AuthorizationContextExtensions
+    public static class IAuthorizationContextExtensions
     {
         /// <summary>
         /// HTTPs the specified authorization context.
