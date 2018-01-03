@@ -2,15 +2,15 @@
 using System.IO;
 using System.Threading.Tasks;
 using Certes.Acme;
-using Certes.Cli.Internal;
 using Certes.Cli.Options;
 using Certes.Pkcs;
+using Microsoft.Extensions.Logging;
 
 namespace Certes.Cli.Processors
 {
     internal class ImportCommand : CommandBase<ImportOptions>
     {
-        public ImportCommand(ImportOptions options, IConsole consoleLogger)
+        public ImportCommand(ImportOptions options, ILogger consoleLogger)
             : base(options, consoleLogger)
         {
         }

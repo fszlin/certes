@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Certes.Cli.Internal;
 using Certes.Cli.Options;
+using Microsoft.Extensions.Logging;
 
 namespace Certes.Cli.Processors
 {
@@ -8,9 +8,9 @@ namespace Certes.Cli.Processors
         where T : OptionsBase
     {
         public T Options { get; }
-        public IConsole ConsoleLogger { get; }
+        public ILogger ConsoleLogger { get; }
 
-        public CommandBase(T options, IConsole consoleLogger)
+        public CommandBase(T options, ILogger consoleLogger)
         {
             Options = options;
             ConsoleLogger = consoleLogger;

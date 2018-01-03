@@ -1,13 +1,15 @@
 ﻿#if NETCOREAPP1_0 || NETCOREAPP2_0
 
+using Certes.Acme;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Certes.Acme;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Certes.Cli
@@ -93,7 +95,7 @@ namespace Certes.Cli
                 .Select(s => placeHolders?.ContainsKey(s) == true ? placeHolders[s] : s)
                 .ToArray();
             
-            var logger = new TestConsoleLogger();
+            var logger = new _ConsoleLogger("logger");
             var succeed = await new Program(logger).Process(args);
             Assert.True(succeed, string.Join(Environment.NewLine, logger.Logs));
 
@@ -106,6 +108,23 @@ namespace Certes.Cli
             var ctx = JObject.Parse(json);
             ctx["account"]["key"]["der"] = Helper.PrivateKey;
             File.WriteAllText(AccountPath, ctx.ToString(Formatting.Indented));
+        }
+
+        internal class _ConsoleLogger : ConsoleLogger
+        {
+            public IList<string> Logs { get; } = new List<string>();
+
+            public _ConsoleLogger(string name)
+                : base(name, (category, logLevel) => true, false)
+            {
+            }
+
+            public override void WriteMessage(LogLevel logLevel, string logName, int eventId, string message, Exception exception)
+            {
+                base.WriteMessage(logLevel, logName, eventId, message, exception);
+
+                Logs.Add(message);
+            }
         }
     }
 }

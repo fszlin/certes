@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Certes.Acme;
-using Certes.Cli.Internal;
 using Certes.Cli.Options;
 using Certes.Jws;
+using Microsoft.Extensions.Logging;
 
 namespace Certes.Cli.Processors
 {
     internal class RegisterCommand : CommandBase<RegisterOptions>
     {
-        public RegisterCommand(RegisterOptions options, IConsole consoleLogger)
+        public RegisterCommand(RegisterOptions options, ILogger consoleLogger)
             : base(options, consoleLogger)
         {
         }
