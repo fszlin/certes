@@ -29,14 +29,6 @@ namespace Certes
         IAcmeHttpClient HttpClient { get; }
 
         /// <summary>
-        /// Gets the account.
-        /// </summary>
-        /// <value>
-        /// The account.
-        /// </value>
-        IAccountContext Account { get; }
-
-        /// <summary>
         /// Gets the account key.
         /// </summary>
         /// <value>
@@ -45,18 +37,18 @@ namespace Certes
         IAccountKey AccountKey { get; }
 
         /// <summary>
+        /// Gets the ACME account.
+        /// </summary>
+        /// <returns></returns>
+        Task<IAccountContext> Account();
+
+        /// <summary>
         /// Gets the ACME directory.
         /// </summary>
         /// <returns>
         /// The ACME directory.
         /// </returns>
         Task<Directory> GetDirectory();
-
-        /// <summary>
-        /// Gets the account location.
-        /// </summary>
-        /// <returns></returns>
-        Task<Uri> GetAccountLocation();
 
         /// <summary>
         /// Creates the account.
@@ -101,20 +93,4 @@ namespace Certes
         /// <returns></returns>
         Task<JwsPayload> Sign(object entity, Uri uri);
     }
-
-    internal static class IAcmeContextExtensions
-    {
-        internal static async Task<Uri> GetResourceUri(this IAcmeContext context, Func<Directory, Uri> getter, bool optional = false)
-        {
-            var dir = await context.GetDirectory();
-            var uri = getter(dir);
-            if (!optional && uri == null)
-            {
-                throw new NotSupportedException("ACME operation not supported.");
-            }
-
-            return uri;
-        }
-    }
-
 }

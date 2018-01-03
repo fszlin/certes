@@ -36,15 +36,15 @@ namespace Certes
             var ctx = new AcmeContext(dirUri);
             var account = await ctx.NewAccount(
                 new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
-            var location = await ctx.GetAccountLocation();
+            var location = await ctx.Account().Location();
 
             Assert.NotNull(account);
             Assert.Equal(AccountStatus.Valid, account.Status);
 
-            await ctx.Account.Update(agreeTermsOfService: true);
-            await ctx.Account.Update(contact: new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" });
+            await ctx.Account().Update(agreeTermsOfService: true);
+            await ctx.Account().Update(contact: new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" });
 
-            account = await ctx.Account.Deactivate();
+            account = await ctx.Account().Deactivate();
             Assert.NotNull(account);
             Assert.Equal(AccountStatus.Deactivated, account.Status);
         }
@@ -57,13 +57,13 @@ namespace Certes
             var ctx = new AcmeContext(dirUri);
             var account = await ctx.NewAccount(
                 new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
-            var location = await ctx.GetAccountLocation();
+            var location = await ctx.Account().Location();
 
             var newKey = new AccountKey();
             await ctx.ChangeKey(newKey);
 
             var ctxWithNewKey = new AcmeContext(dirUri, newKey);
-            var locationWithNewKey = await ctxWithNewKey.GetAccountLocation();
+            var locationWithNewKey = await ctxWithNewKey.Account().Location();
             Assert.Equal(location, locationWithNewKey);
         }
 

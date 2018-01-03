@@ -17,8 +17,7 @@ namespace Certes
     public class AcmeContext : IAcmeContext
     {
         private Directory directory;
-        private IAccountContext accountContext;
-        private Uri accountLocation;
+        private IAccountContext accountContext = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeContext" /> class.
@@ -35,15 +34,6 @@ namespace Certes
             AccountKey = accountKey ?? new AccountKey();
             HttpClient = http ?? new AcmeHttpClient(directoryUri);
         }
-
-        /// <summary>
-        /// Gets the account.
-        /// </summary>
-        /// <value>
-        /// The account.
-        /// </value>
-        /// <exception cref="NotImplementedException"></exception>
-        public IAccountContext Account => accountContext ?? (accountContext = new AccountContext(this));
 
         /// <summary>
         /// Gets the ACME HTTP client.
@@ -69,6 +59,16 @@ namespace Certes
         /// The account key.
         /// </value>
         public IAccountKey AccountKey { get; private set; }
+
+        /// <summary>
+        /// Gets the ACME account.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IAccountContext> Account()
+        {
+            return accountContext ??
+                (accountContext = new AccountContext(this, await GetAccountLocation()));
+        }
 
         /// <summary>
         /// Changes the key.
@@ -112,7 +112,7 @@ namespace Certes
             };
 
             var resp = await NewAccount(body, true);
-            this.accountLocation = resp.Location;
+            accountContext = new AccountContext(this, resp.Location);
             return resp.Resource;
         }
 
@@ -163,19 +163,13 @@ namespace Certes
         /// Gets the account location.
         /// </summary>
         /// <returns></returns>
-        public async Task<Uri> GetAccountLocation()
+        private async Task<Uri> GetAccountLocation()
         {
-            if (accountLocation != null)
-            {
-                return accountLocation;
-            }
-            
             var resp = await NewAccount(new Account { OnlyReturnExisting = true }, false);
-
             return resp.Location;
         }
 
-        private async Task<AcmeHttpResponse<Account>> NewAccount(Account body, bool ensureSuccessStatusCode)
+        internal async Task<AcmeHttpResponse<Account>> NewAccount(Account body, bool ensureSuccessStatusCode)
         {
             var endpoint = await this.GetResourceUri(d => d.NewAccount);
             var jws = new JwsSigner(AccountKey);

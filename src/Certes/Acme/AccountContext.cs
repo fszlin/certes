@@ -1,27 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
-using Authz = Certes.Acme.Resource.Authorization;
+using Certes.Jws;
 
 namespace Certes.Acme
 {
     /// <summary>
-    /// Presents the context for ACME account operations.
+    /// Represents the context for ACME account operations.
     /// </summary>
     /// <seealso cref="Certes.Acme.IAccountContext" />
-    public class AccountContext : IAccountContext
+    internal class AccountContext : EntityContext<Account>, IAccountContext
     {
-        private readonly IAcmeContext context;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountContext" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public AccountContext(IAcmeContext context)
+        /// <param name="location">The location.</param>
+        public AccountContext(IAcmeContext context, Uri location)
+            : base(context, location)
         {
-            this.context = context;
+        }
+
+        /// <summary>
+        /// Resources this instance.
+        /// </summary>
+        /// <returns></returns>
+        public override async Task<Account> Resource()
+        {
+            var resp = await NewAccount(new Account { OnlyReturnExisting = true }, false);
+            return resp.Resource;
         }
 
         /// <summary>
@@ -32,9 +40,8 @@ namespace Certes.Acme
         /// </returns>
         public async Task<Account> Deactivate()
         {
-            var location = await context.GetAccountLocation();
-            var payload = await context.Sign(new { status = AccountStatus.Deactivated }, location);
-            var resp = await context.HttpClient.Post<Account>(location, payload, true);
+            var payload = await Context.Sign(new { status = AccountStatus.Deactivated }, Location);
+            var resp = await Context.HttpClient.Post<Account>(Location, payload, true);
             return resp.Resource;
         }
 
@@ -47,21 +54,7 @@ namespace Certes.Acme
         public async Task<IOrderListContext> Orders()
         {
             var account = await Resource();
-            return new OrderListContext(context, this, account.Orders);
-        }
-
-        /// <summary>
-        /// Gets the account 
-        /// </summary>
-        /// <returns>
-        /// The account 
-        /// </returns>
-        public async Task<Account> Resource()
-        {
-            var location = await context.GetAccountLocation();
-            var payload = await context.Sign(new { }, location);
-            var resp = await context.HttpClient.Post<Account>(location, payload);
-            return resp.Resource;
+            return new OrderListContext(Context, this, account.Orders);
         }
 
         /// <summary>
@@ -74,14 +67,14 @@ namespace Certes.Acme
         /// </returns>
         public async Task<IAccountContext> Update(IList<string> contact = null, bool agreeTermsOfService = false)
         {
-            var location = await context.GetAccountLocation();
+            var location = await Context.Account().Location();
             var account = new Account
             {
                 Contact = contact
             };
            
-            var payload = await context.Sign(account, location);
-            await context.HttpClient.Post<Account>(location, payload, true);
+            var payload = await Context.Sign(account, location);
+            await Context.HttpClient.Post<Account>(location, payload, true);
             return this;
         }
 
@@ -95,6 +88,14 @@ namespace Certes.Acme
         public Task<IAuthorizationContext> Authorize(string value, string type = AuthorizationIdentifierTypes.Dns)
         {
             throw new NotImplementedException();
+        }
+
+        internal async Task<AcmeHttpResponse<Account>> NewAccount(Account body, bool ensureSuccessStatusCode)
+        {
+            var endpoint = await Context.GetResourceUri(d => d.NewAccount);
+            var jws = new JwsSigner(Context.AccountKey);
+            var payload = jws.Sign(body, url: endpoint, nonce: await Context.HttpClient.ConsumeNonce());
+            return await Context.HttpClient.Post<Account>(endpoint, payload, ensureSuccessStatusCode);
         }
     }
 }

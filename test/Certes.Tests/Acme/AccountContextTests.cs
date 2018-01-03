@@ -24,8 +24,8 @@ namespace Certes.Acme
             httpClientMock.Reset();
 
             contextMock
-                .Setup(c => c.GetAccountLocation())
-                .ReturnsAsync(location);
+                .Setup(c => c.GetDirectory())
+                .ReturnsAsync(Helper.MockDirectory);
             contextMock
                 .Setup(c => c.Sign(It.IsAny<object>(), location))
                 .Callback((object payload, Uri loc) =>
@@ -41,10 +41,9 @@ namespace Certes.Acme
                 .Setup(c => c.Post<Account>(location, expectedPayload))
                 .ReturnsAsync(new AcmeHttpResponse<Account>(location, expectedAccount, null, null));
 
-            var instance = new AccountContext(contextMock.Object);
+            var instance = new AccountContext(contextMock.Object, location);
             var account = await instance.Deactivate();
 
-            contextMock.Verify(c => c.GetAccountLocation(), Times.Once);
             httpClientMock.Verify(c => c.Post<Account>(location, expectedPayload), Times.Once);
             Assert.Equal(expectedAccount, account);
         }
@@ -52,35 +51,38 @@ namespace Certes.Acme
         [Fact]
         public async Task CanLoadResource()
         {
-            var expectedPayload = new JwsPayload();
             var expectedAccount = new Account();
+
+            var payload = new Account { OnlyReturnExisting = true };
+            var expectedPayload = new JwsSigner(Helper.GetAccountKey())
+                .Sign(payload, null, Helper.MockDirectory.NewAccount, "nonce");
 
             contextMock.Reset();
             httpClientMock.Reset();
 
             contextMock
-                .Setup(c => c.GetAccountLocation())
-                .ReturnsAsync(location);
+                .Setup(c => c.GetDirectory())
+                .ReturnsAsync(Helper.MockDirectory);
             contextMock
-                .Setup(c => c.Sign(It.IsAny<object>(), location))
-                .Callback((object payload, Uri loc) =>
-                {
-                    Assert.Equal(
-                        JsonConvert.SerializeObject(new { }),
-                        JsonConvert.SerializeObject(payload));
-                    Assert.Equal(location, loc);
-                })
-                .ReturnsAsync(expectedPayload);
+                .SetupGet(c => c.AccountKey)
+                .Returns(Helper.GetAccountKey());
             contextMock.SetupGet(c => c.HttpClient).Returns(httpClientMock.Object);
             httpClientMock
-                .Setup(c => c.Post<Account>(location, expectedPayload))
+                .Setup(c => c.ConsumeNonce())
+                .ReturnsAsync("nonce");
+            httpClientMock
+                .Setup(c => c.Post<Account>(Helper.MockDirectory.NewAccount, It.IsAny<JwsPayload>()))
+                .Callback((Uri _, object o) =>
+                {
+                    var p = (JwsPayload)o;
+                    Assert.Equal(expectedPayload.Payload, p.Payload);
+                    Assert.Equal(expectedPayload.Protected, p.Protected);
+                })
                 .ReturnsAsync(new AcmeHttpResponse<Account>(location, expectedAccount, null, null));
 
-            var instance = new AccountContext(contextMock.Object);
+            var instance = new AccountContext(contextMock.Object, location);
             var account = await instance.Resource();
 
-            contextMock.Verify(c => c.GetAccountLocation(), Times.Once);
-            httpClientMock.Verify(c => c.Post<Account>(location, expectedPayload), Times.Once);
             Assert.Equal(expectedAccount, account);
         }
     }
