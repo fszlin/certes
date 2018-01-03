@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="NLog" Version="4.5.0-rc03" PrivateAssets="all" />
     <PackageReference Include="System.CommandLine" Version="0.1.0-e171221-1" PrivateAssets="all" />
   </ItemGroup>
 
@@ -34,12 +35,13 @@
 
   <PropertyGroup>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludePrivateAssembly</TargetsForTfmSpecificBuildOutput>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <Target Name="IncludePrivateAssembly">
-    <Error Text="System.CommandLine.dll not found." Condition="!Exists('$(NuGetPackageRoot)System.CommandLine\0.1.0-e171221-1\lib\netstandard1.5\System.CommandLine.dll')" />
     <ItemGroup>
-      <BuildOutputInPackage Include="$(NuGetPackageRoot)System.CommandLine\0.1.0-e171221-1\lib\netstandard1.5\System.CommandLine.dll" />
+      <BuildOutputInPackage Include="$(OutputPath)System.CommandLine.dll" />
+      <BuildOutputInPackage Include="$(OutputPath)NLog.dll" />
     </ItemGroup>
   </Target>
 
