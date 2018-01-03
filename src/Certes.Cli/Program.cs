@@ -1,14 +1,15 @@
-﻿using System;
-using System.CommandLine;
-using System.IO;
-using System.Threading.Tasks;
-using Certes.Cli.Options;
+﻿using Certes.Cli.Options;
 using Certes.Cli.Processors;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
+using System;
+using System.CommandLine;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Certes.Cli
 {
@@ -32,10 +33,12 @@ namespace Certes.Cli
 
         public static async Task<int> Main(string[] args)
         {
-            var logger = new ConsoleLogger(
-                ConsoleLoggerName, (category, logLevel) => true, false);
-            var succeed = await new Program(logger).Process(args);
-            return succeed ? 0 : 1;
+            using (var factory = new LogFactory(ConfigureConsoleLogger()))
+            {
+                var logger = factory.GetLogger(ConsoleLoggerName);
+                var succeed = await new Program(logger).Process(args);
+                return succeed ? 0 : 1;
+            }
         }
 
         public async Task<bool> Process(string[] args)
@@ -54,7 +57,7 @@ namespace Certes.Cli
             }
             catch (ArgumentSyntaxException ex)
             {
-                consoleLogger.LogError(ex.Message);
+                consoleLogger.Error(ex, ex.Message);
                 return false;
             }
 
@@ -98,12 +101,12 @@ namespace Certes.Cli
             {
                 foreach (var err in ex.InnerExceptions)
                 {
-                    consoleLogger.LogError(err, err.Message);
+                    consoleLogger.Error(err, err.Message);
                 }
             }
             catch (Exception ex)
             {
-                consoleLogger.LogError(ex, ex.Message);
+                consoleLogger.Error(ex, ex.Message);
             }
 
             return false;
@@ -119,6 +122,22 @@ namespace Certes.Cli
             DefineCommonOptions(options, syntax);
 
             return options;
+        }
+
+        private static LoggingConfiguration ConfigureConsoleLogger()
+        {
+            var config = new LoggingConfiguration();
+            var consoleTarget = new ColoredConsoleTarget
+            {
+                Layout = @"${message}"
+            };
+
+            config.AddTarget(ConsoleLoggerName, consoleTarget);
+
+            var consoleRule = new LoggingRule("*", LogLevel.Debug, consoleTarget);
+            config.LoggingRules.Add(consoleRule);
+
+            return config;
         }
 
         private CertificateOptions DefineCertificateCommand(ArgumentSyntax syntax)

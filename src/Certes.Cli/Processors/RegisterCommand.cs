@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Certes.Acme;
+﻿using Certes.Acme;
 using Certes.Cli.Options;
 using Certes.Jws;
-using Microsoft.Extensions.Logging;
+using NLog;
+using System;
+using System.Threading.Tasks;
 
 namespace Certes.Cli.Processors
 {
@@ -56,13 +56,13 @@ namespace Certes.Cli.Processors
                 };
             }
 
-            ConsoleLogger.LogInformation("Registration created.");
+            ConsoleLogger.Info("Registration created.");
             return context;
         }
 
         private async Task<AcmeContext> UpdateAccount(AcmeContext context)
         {
-            var changed = false;
+            bool changed = false;
             var account = context.Account;
             using (var client = new AcmeClient(Options.Server))
             {
@@ -87,7 +87,7 @@ namespace Certes.Cli.Processors
                 }
             }
 
-            ConsoleLogger.LogInformation("Registration updated.");
+            ConsoleLogger.Info("Registration updated.");
             return context;
         }
         
@@ -95,7 +95,7 @@ namespace Certes.Cli.Processors
         {
             var account = new AccountKey(context.Account.Key);
             var thumbprint = JwsConvert.ToBase64String(account.GenerateThumbprint());
-            ConsoleLogger.LogInformation(thumbprint);
+            ConsoleLogger.Info(thumbprint);
         }
     }
 }

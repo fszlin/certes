@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using Certes.Cli.Options;
-using Microsoft.Extensions.Logging;
+﻿using Certes.Cli.Options;
+using NLog;
+using System.Threading.Tasks;
 
 namespace Certes.Cli.Processors
 {
@@ -12,8 +12,8 @@ namespace Certes.Cli.Processors
 
         public CommandBase(T options, ILogger consoleLogger)
         {
-            Options = options;
-            ConsoleLogger = consoleLogger;
+            this.Options = options;
+            this.ConsoleLogger = consoleLogger;
         }
 
         public abstract Task<AcmeContext> Process(AcmeContext context);

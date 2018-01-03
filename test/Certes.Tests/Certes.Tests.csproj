@@ -23,6 +23,7 @@
     <PackageReference Include="Microsoft.CodeCoverage" Version="1.0.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0-preview-20171211-02" />
     <PackageReference Include="Moq" Version="4.8.0" />
+    <PackageReference Include="NLog" Version="4.5.0-rc03" />
     <PackageReference Include="OpenCover" Version="4.6.519" />
     <PackageReference Include="System.CommandLine" Version="0.1.0-e171221-1" Condition="'$(TargetFramework)' == 'netcoreapp1.0' OR '$(TargetFramework)' == 'netcoreapp2.0'" />
     <PackageReference Include="xunit" Version="2.3.1" />

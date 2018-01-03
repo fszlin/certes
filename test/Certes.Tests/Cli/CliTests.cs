@@ -1,10 +1,11 @@
 ﻿#if NETCOREAPP1_0 || NETCOREAPP2_0
 
 using Certes.Acme;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,6 +17,7 @@ namespace Certes.Cli
 {
     public class CliTests
     {
+        // TODO: Setup boulder for testing
         private const string Host = "certes-ci.dymetis.com";
         private const string OutputPrefix = "./_test/cli-example";
         private readonly string AccountPath = $"{OutputPrefix}/context.json";
@@ -91,15 +93,24 @@ namespace Certes.Cli
 
         private async Task<IList<string>> RunCommand(string cmd, Dictionary<string, string> placeHolders = null)
         {
+            var config = new LoggingConfiguration();
+            var memoryTarget = new MemoryTarget()
+            {
+                Layout = @"${message}${onexception:${exception:format=tostring}}"
+            };
+
+            config.AddTarget("logger", memoryTarget);
+
+            var consoleRule = new LoggingRule("*", LogLevel.Debug, memoryTarget);
+            config.LoggingRules.Add(consoleRule);
+            
             var args = cmd.Split(' ')
                 .Select(s => placeHolders?.ContainsKey(s) == true ? placeHolders[s] : s)
                 .ToArray();
-            
-            var logger = new _ConsoleLogger("logger");
-            var succeed = await new Program(logger).Process(args);
-            Assert.True(succeed, string.Join(Environment.NewLine, logger.Logs));
 
-            return logger.Logs;
+            var succeed = await new Program(Helper.Logger).Process(args);
+            Assert.True(succeed, string.Join(Environment.NewLine, Helper.Logs));
+            return memoryTarget.Logs;
         }
 
         private void InjectTestKey()
@@ -108,23 +119,6 @@ namespace Certes.Cli
             var ctx = JObject.Parse(json);
             ctx["account"]["key"]["der"] = Helper.PrivateKey;
             File.WriteAllText(AccountPath, ctx.ToString(Formatting.Indented));
-        }
-
-        internal class _ConsoleLogger : ConsoleLogger
-        {
-            public IList<string> Logs { get; } = new List<string>();
-
-            public _ConsoleLogger(string name)
-                : base(name, (category, logLevel) => true, false)
-            {
-            }
-
-            public override void WriteMessage(LogLevel logLevel, string logName, int eventId, string message, Exception exception)
-            {
-                base.WriteMessage(logLevel, logName, eventId, message, exception);
-
-                Logs.Add(message);
-            }
         }
     }
 }

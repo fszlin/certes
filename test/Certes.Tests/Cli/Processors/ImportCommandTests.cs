@@ -20,7 +20,7 @@ namespace Certes.Cli.Processors
                 Force = false,
             };
 
-            var cmd = new ImportCommand(options, new CliTests._ConsoleLogger(nameof(ImportCommandTests)));
+            var cmd = new ImportCommand(options, Helper.Logger);
             await Assert.ThrowsAsync<Exception>(() =>
                 cmd.Process(new AcmeContext()));
         }
@@ -33,7 +33,7 @@ namespace Certes.Cli.Processors
                 KeyFile = null,
             };
 
-            var cmd = new ImportCommand(options, new CliTests._ConsoleLogger(nameof(ImportCommandTests)));
+            var cmd = new ImportCommand(options, Helper.Logger);
             await Assert.ThrowsAsync<Exception>(() =>
                 cmd.Process(null));
         }
@@ -61,7 +61,7 @@ namespace Certes.Cli.Processors
                 key.Export().Save(fs);
             }
 
-            var cmd = new ImportCommand(options, new CliTests._ConsoleLogger(nameof(ImportCommandTests)));
+            var cmd = new ImportCommand(options, Helper.Logger);
             var ctx = await cmd.Process(null);
 
             Assert.NotNull(ctx.Account);
