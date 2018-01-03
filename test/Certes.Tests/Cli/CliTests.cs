@@ -110,6 +110,7 @@ namespace Certes.Cli
 
             var succeed = await new Program(Helper.Logger).Process(args);
             Assert.True(succeed, string.Join(Environment.NewLine, Helper.Logs));
+            Helper.Logs.Clear();
             return memoryTarget.Logs;
         }
 

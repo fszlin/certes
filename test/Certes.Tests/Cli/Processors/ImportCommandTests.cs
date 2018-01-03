@@ -23,6 +23,7 @@ namespace Certes.Cli.Processors
             var cmd = new ImportCommand(options, Helper.Logger);
             await Assert.ThrowsAsync<Exception>(() =>
                 cmd.Process(new AcmeContext()));
+            Helper.Logs.Clear();
         }
 
         [Fact]
@@ -36,6 +37,7 @@ namespace Certes.Cli.Processors
             var cmd = new ImportCommand(options, Helper.Logger);
             await Assert.ThrowsAsync<Exception>(() =>
                 cmd.Process(null));
+            Helper.Logs.Clear();
         }
 
         [Theory]
@@ -68,6 +70,7 @@ namespace Certes.Cli.Processors
             Assert.Equal(
                 key.Export().PrivateKeyInfo,
                 ctx.Account.Key.PrivateKeyInfo);
+            Helper.Logs.Clear();
         }
     }
 }
