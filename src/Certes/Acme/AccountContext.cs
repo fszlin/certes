@@ -28,7 +28,7 @@ namespace Certes.Acme
         /// <returns></returns>
         public override async Task<Account> Resource()
         {
-            var resp = await NewAccount(new Account { OnlyReturnExisting = true }, false);
+            var resp = await NewAccount(Context, new Account { OnlyReturnExisting = true }, false);
             return resp.Resource;
         }
 
@@ -90,12 +90,13 @@ namespace Certes.Acme
             throw new NotImplementedException();
         }
 
-        internal async Task<AcmeHttpResponse<Account>> NewAccount(Account body, bool ensureSuccessStatusCode)
+        internal static async Task<AcmeHttpResponse<Account>> NewAccount(
+            IAcmeContext context, Account body, bool ensureSuccessStatusCode)
         {
-            var endpoint = await Context.GetResourceUri(d => d.NewAccount);
-            var jws = new JwsSigner(Context.AccountKey);
-            var payload = jws.Sign(body, url: endpoint, nonce: await Context.HttpClient.ConsumeNonce());
-            return await Context.HttpClient.Post<Account>(endpoint, payload, ensureSuccessStatusCode);
+            var endpoint = await context.GetResourceUri(d => d.NewAccount);
+            var jws = new JwsSigner(context.AccountKey);
+            var payload = jws.Sign(body, url: endpoint, nonce: await context.HttpClient.ConsumeNonce());
+            return await context.HttpClient.Post<Account>(endpoint, payload, ensureSuccessStatusCode);
         }
     }
 }

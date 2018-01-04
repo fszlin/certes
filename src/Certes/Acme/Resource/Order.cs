@@ -34,13 +34,21 @@ namespace Certes.Acme.Resource
         public DateTimeOffset? Expires { get; set; }
 
         /// <summary>
+        /// Gets or sets the identifiers.
+        /// </summary>
+        /// <value>
+        /// The identifiers.
+        /// </value>
+        public IList<AuthorizationIdentifier> Identifiers { get; set; }
+
+        /// <summary>
         /// Gets or sets the CSR.
         /// </summary>
         /// <value>
         /// The CSR.
         /// </value>
         [JsonProperty("csr")]
-        public string Csr { get; set; }
+        internal string Csr { get; set; }
 
         /// <summary>
         /// Gets or sets the not before.

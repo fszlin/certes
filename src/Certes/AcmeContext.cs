@@ -6,7 +6,7 @@ using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Jws;
 using AuthorizationIdentifier = Certes.Acme.Resource.AuthorizationIdentifier;
-using Certificate = Certes.Acme.Resource.Certificate;
+using AuthorizationIdentifierTypes = Certes.Acme.Resource.AuthorizationIdentifierTypes;
 
 namespace Certes
 {
@@ -66,8 +66,13 @@ namespace Certes
         /// <returns></returns>
         public async Task<IAccountContext> Account()
         {
-            return accountContext ??
-                (accountContext = new AccountContext(this, await GetAccountLocation()));
+            if (accountContext != null)
+            {
+                return accountContext;
+            }
+
+            var resp = await AccountContext.NewAccount(this, new Account { OnlyReturnExisting = true }, false);
+            return accountContext = new AccountContext(this, resp.Location);
         }
 
         /// <summary>
@@ -79,7 +84,7 @@ namespace Certes
         public async Task ChangeKey(AccountKey key = null)
         {
             var endpoint = await this.GetResourceUri(d => d.KeyChange);
-            var location = await this.GetAccountLocation();
+            var location = await Account().Location();
             
             var newKey = key ?? new AccountKey();
             var keyChange = new
@@ -111,7 +116,7 @@ namespace Certes
                 TermsOfServiceAgreed = termsOfServiceAgreed
             };
 
-            var resp = await NewAccount(body, true);
+            var resp = await AccountContext.NewAccount(this, body, true);
             accountContext = new AccountContext(this, resp.Location);
             return resp.Resource;
         }
@@ -154,27 +159,9 @@ namespace Certes
         public async Task<JwsPayload> Sign(object entity, Uri uri)
         {
             var nonce = await HttpClient.ConsumeNonce();
-            var location = await this.GetAccountLocation();
+            var location = await Account().Location();
             var jws = new JwsSigner(AccountKey);
             return jws.Sign(entity, location, uri, nonce);
-        }
-
-        /// <summary>
-        /// Gets the account location.
-        /// </summary>
-        /// <returns></returns>
-        private async Task<Uri> GetAccountLocation()
-        {
-            var resp = await NewAccount(new Account { OnlyReturnExisting = true }, false);
-            return resp.Location;
-        }
-
-        internal async Task<AcmeHttpResponse<Account>> NewAccount(Account body, bool ensureSuccessStatusCode)
-        {
-            var endpoint = await this.GetResourceUri(d => d.NewAccount);
-            var jws = new JwsSigner(AccountKey);
-            var payload = jws.Sign(body, url: endpoint, nonce: await HttpClient.ConsumeNonce());
-            return await HttpClient.Post<Account>(endpoint, payload, ensureSuccessStatusCode);
         }
 
         /// <summary>
@@ -191,10 +178,10 @@ namespace Certes
         {
             var endpoint = await this.GetResourceUri(d => d.NewOrder);
 
-            var body = new Certificate
+            var body = new Order
             {
                 Identifiers = identifiers
-                    .Select(id => new AuthorizationIdentifier { Type = "dns", Value = id })
+                    .Select(id => new AuthorizationIdentifier { Type = AuthorizationIdentifierTypes.Dns, Value = id })
                     .ToArray(),
                 NotBefore = notBefore,
                 NotAfter = notAfter,

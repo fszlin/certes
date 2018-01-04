@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Certes.Acme.Resource
@@ -17,6 +18,7 @@ namespace Certes.Acme.Resource
             entity.VerifyGetterSetter(a => a.NotAfter, DateTimeOffset.Now.AddDays(1));
             entity.VerifyGetterSetter(a => a.NotBefore, DateTimeOffset.Now.AddDays(-1));
             entity.VerifyGetterSetter(a => a.Status, OrderStatus.Processing);
+            entity.VerifyGetterSetter(a => a.Identifiers, new List<AuthorizationIdentifier>());
         }
     }
 }
