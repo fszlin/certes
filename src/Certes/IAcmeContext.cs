@@ -8,7 +8,7 @@ using Certes.Jws;
 namespace Certes
 {
     /// <summary>
-    /// Presents the context for ACME operations.
+    /// Represents the context for ACME operations.
     /// </summary>
     public interface IAcmeContext
     {
@@ -75,7 +75,7 @@ namespace Certes
         Task ChangeKey(AccountKey key = null);
 
         /// <summary>
-        /// Create a bew the order.
+        /// Create a new the order.
         /// </summary>
         /// <param name="identifiers">The identifiers.</param>
         /// <param name="notBefore">The not before.</param>
