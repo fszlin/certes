@@ -28,7 +28,7 @@ namespace Certes.Acme
         /// <returns></returns>
         public override async Task<Account> Resource()
         {
-            var resp = await NewAccount(Context, new Account { OnlyReturnExisting = true }, false);
+            var resp = await NewAccount(Context, new Account.Payload { OnlyReturnExisting = true }, false);
             return resp.Resource;
         }
 

@@ -17,7 +17,9 @@ namespace Certes.Acme.Resource
             account.VerifyGetterSetter(a => a.Contact, new string[] { "mailto:hello@example.com" });
             account.VerifyGetterSetter(a => a.Orders, new Uri("http://certes.is.working"));
             account.VerifyGetterSetter(a => a.TermsOfServiceAgreed, true);
-            account.VerifyGetterSetter(a => a.OnlyReturnExisting, true);
+
+            var r = new Account.Payload();
+            r.VerifyGetterSetter(a => a.OnlyReturnExisting, true);
         }
 
         [Fact]

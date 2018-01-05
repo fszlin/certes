@@ -53,7 +53,7 @@ namespace Certes.Acme
         {
             var expectedAccount = new Account();
 
-            var payload = new Account { OnlyReturnExisting = true };
+            var payload = new Account.Payload { OnlyReturnExisting = true };
             var expectedPayload = new JwsSigner(Helper.GetAccountKey())
                 .Sign(payload, null, Helper.MockDirectory.NewAccount, "nonce");
 

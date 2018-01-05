@@ -1,15 +1,12 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Certes.Acme.Resource
 {
     /// <summary>
     /// Represents the ACME Order resource.
     /// </summary>
-    /// <remarks>
-    /// As https://tools.ietf.org/html/draft-ietf-acme-acme-07#section-7.1.3
-    /// </remarks>
     public class Order
     {
         /// <summary>
@@ -40,15 +37,6 @@ namespace Certes.Acme.Resource
         /// The identifiers.
         /// </value>
         public IList<AuthorizationIdentifier> Identifiers { get; set; }
-
-        /// <summary>
-        /// Gets or sets the CSR.
-        /// </summary>
-        /// <value>
-        /// The CSR.
-        /// </value>
-        [JsonProperty("csr")]
-        internal string Csr { get; set; }
 
         /// <summary>
         /// Gets or sets the not before.
@@ -106,5 +94,17 @@ namespace Certes.Acme.Resource
         /// </value>
         [JsonProperty("certificate")]
         public Uri Certificate { get; set; }
+
+        internal class Payload : Order
+        {
+            /// <summary>
+            /// Gets or sets the CSR.
+            /// </summary>
+            /// <value>
+            /// The CSR.
+            /// </value>
+            [JsonProperty("csr")]
+            internal string Csr { get; set; }
+        }
     }
 }
