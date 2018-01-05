@@ -71,7 +71,7 @@ namespace Certes
                 return accountContext;
             }
 
-            var resp = await AccountContext.NewAccount(this, new Account { OnlyReturnExisting = true }, false);
+            var resp = await AccountContext.NewAccount(this, new Account.Payload { OnlyReturnExisting = true }, false);
             return accountContext = new AccountContext(this, resp.Location);
         }
 
@@ -173,7 +173,6 @@ namespace Certes
         /// <returns>
         /// TODO
         /// </returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null)
         {
             var endpoint = await this.GetResourceUri(d => d.NewOrder);

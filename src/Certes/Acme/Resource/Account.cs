@@ -48,7 +48,10 @@ namespace Certes.Acme.Resource
         [JsonProperty("orders")]
         public Uri Orders { get; set; }
 
-        [JsonProperty("onlyReturnExisting")]
-        internal bool? OnlyReturnExisting { get; set; }
+        internal class Payload : Account
+        {
+            [JsonProperty("onlyReturnExisting")]
+            internal bool? OnlyReturnExisting { get; set; }
+        }
     }
 }

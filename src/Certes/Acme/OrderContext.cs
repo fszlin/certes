@@ -32,7 +32,7 @@ namespace Certes.Acme
         public async Task<Order> Finalize(byte[] csr)
         {
             var order = await Resource();
-            var payload = await Context.Sign(new Order { Csr = JwsConvert.ToBase64String(csr) }, order.Finalize);
+            var payload = await Context.Sign(new Order.Payload { Csr = JwsConvert.ToBase64String(csr) }, order.Finalize);
             var resp = await Context.HttpClient.Post<Order>(order.Finalize, payload, true);
             return resp.Resource;
         }
