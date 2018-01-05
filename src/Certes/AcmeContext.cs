@@ -41,7 +41,6 @@ namespace Certes
         /// <value>
         /// The ACME HTTP client.
         /// </value>
-        /// <exception cref="NotImplementedException"></exception>
         public IAcmeHttpClient HttpClient { get; }
 
         /// <summary>
@@ -80,8 +79,7 @@ namespace Certes
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        /// <exception cref="NotSupportedException"></exception>
-        public async Task ChangeKey(AccountKey key = null)
+        public async Task ChangeKey(AccountKey key)
         {
             var endpoint = await this.GetResourceUri(d => d.KeyChange);
             var location = await Account().Location();
@@ -108,7 +106,7 @@ namespace Certes
         /// <returns>
         /// The account created.
         /// </returns>
-        public async Task<Account> NewAccount(IList<string> contact, bool termsOfServiceAgreed = false)
+        public async Task<Account> NewAccount(IList<string> contact, bool termsOfServiceAgreed)
         {
             var body = new Account
             {
@@ -144,10 +142,29 @@ namespace Certes
         /// <returns>
         /// The awaitable.
         /// </returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public Task RevokeCertificate()
+        public async Task RevokeCertificate(byte[] certificate, RevocationReason reason, IAccountKey certificatePrivateKey)
         {
-            throw new NotImplementedException();
+            var endpoint = await this.GetResourceUri(d => d.RevokeCert);
+
+            var body = new CertificateRevocation
+            {
+                Certificate = JwsConvert.ToBase64String(certificate),
+                Reason = reason
+            };
+
+
+            object payload;
+            if (certificatePrivateKey != null)
+            {
+                var jws = new JwsSigner(certificatePrivateKey);
+                payload = jws.Sign(body, url: endpoint, nonce: await HttpClient.ConsumeNonce());
+            }
+            else
+            {
+                payload = await Sign(body, endpoint);
+            }
+
+            await HttpClient.Post<string>(endpoint, payload, true);
         }
 
         /// <summary>

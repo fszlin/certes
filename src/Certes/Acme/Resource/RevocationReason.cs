@@ -1,4 +1,6 @@
-﻿namespace Certes.Acme.Resource
+﻿using Newtonsoft.Json;
+
+namespace Certes.Acme.Resource
 {
     /// <summary>
     /// Represents the reason for certificate revocation.
@@ -6,6 +8,7 @@
     /// <remarks>
     /// See https://tools.ietf.org/html/rfc5280#section-5.3.1
     /// </remarks>
+    //[JsonConverter(typeof(JsonConverter))]
     public enum RevocationReason
     {
         /// <summary>

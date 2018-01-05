@@ -64,7 +64,7 @@ namespace Certes
         /// <returns>
         /// The awaitable.
         /// </returns>
-        Task RevokeCertificate();
+        Task RevokeCertificate(byte[] certificate, RevocationReason reason = RevocationReason.Unspecified, IAccountKey certificatePrivateKey = null);
 
         /// <summary>
         /// Changes the account key.

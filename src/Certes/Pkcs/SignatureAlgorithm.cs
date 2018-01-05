@@ -1,7 +1,5 @@
 ﻿using System;
-using Certes.Jws;
 using Org.BouncyCastle.Asn1.Pkcs;
-using Org.BouncyCastle.Crypto;
 
 namespace Certes.Pkcs
 {

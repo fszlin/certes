@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Jws;
 using Certes.Pkcs;
+using Org.BouncyCastle.X509;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -145,10 +147,17 @@ namespace Certes
                 csr.SubjectAlternativeNames.Add(h);
             }
 
-            var der = csr.Generate();
+            var csrDer = csr.Generate();
 
-            var finalizedOrder = await orderCtx.Finalize(der);
-            var certificate = await orderCtx.Download();
+            var finalizedOrder = await orderCtx.Finalize(csrDer);
+            var pem = await orderCtx.Download();
+
+            // revoke certificate
+            var certParser = new X509CertificateParser();
+            var certificate = certParser.ReadCertificate(Encoding.UTF8.GetBytes(pem));
+            var der = certificate.GetEncoded();
+
+            await ctx.RevokeCertificate(der, RevocationReason.Unspecified, null);
 
             // deactivate authz so the subsequence can trigger challenge validation
             foreach (var authz in authrizations)
