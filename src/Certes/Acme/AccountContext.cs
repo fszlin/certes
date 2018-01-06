@@ -28,7 +28,8 @@ namespace Certes.Acme
         /// <returns></returns>
         public override async Task<Account> Resource()
         {
-            var resp = await NewAccount(Context, new Account.Payload { OnlyReturnExisting = true }, false);
+            var payload = await Context.Sign(new Account(), Location);
+            var resp = await Context.HttpClient.Post<Account>(Location, payload, true);
             return resp.Resource;
         }
 
@@ -40,7 +41,7 @@ namespace Certes.Acme
         /// </returns>
         public async Task<Account> Deactivate()
         {
-            var payload = await Context.Sign(new { status = AccountStatus.Deactivated }, Location);
+            var payload = await Context.Sign(new Account { Status = AccountStatus.Deactivated }, Location);
             var resp = await Context.HttpClient.Post<Account>(Location, payload, true);
             return resp.Resource;
         }
@@ -72,7 +73,7 @@ namespace Certes.Acme
             {
                 Contact = contact
             };
-           
+
             var payload = await Context.Sign(account, location);
             await Context.HttpClient.Post<Account>(location, payload, true);
             return this;

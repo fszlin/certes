@@ -31,7 +31,7 @@ namespace Certes.Acme
                 .Callback((object payload, Uri loc) =>
                 {
                     Assert.Equal(
-                        JsonConvert.SerializeObject(new { status = AccountStatus.Deactivated }),
+                        JsonConvert.SerializeObject(new Account { Status = AccountStatus.Deactivated }),
                         JsonConvert.SerializeObject(payload));
                     Assert.Equal(location, loc);
                 })
@@ -53,9 +53,8 @@ namespace Certes.Acme
         {
             var expectedAccount = new Account();
 
-            var payload = new Account.Payload { OnlyReturnExisting = true };
             var expectedPayload = new JwsSigner(Helper.GetAccountKey())
-                .Sign(payload, null, Helper.MockDirectory.NewAccount, "nonce");
+                .Sign(new Account(), null, location, "nonce");
 
             contextMock.Reset();
             httpClientMock.Reset();
@@ -67,11 +66,21 @@ namespace Certes.Acme
                 .SetupGet(c => c.AccountKey)
                 .Returns(Helper.GetAccountKey());
             contextMock.SetupGet(c => c.HttpClient).Returns(httpClientMock.Object);
+            contextMock
+                .Setup(c => c.Sign(It.IsAny<object>(), location))
+                .Callback((object payload, Uri loc) =>
+                {
+                    Assert.Equal(
+                        JsonConvert.SerializeObject(new Account()),
+                        JsonConvert.SerializeObject(payload));
+                    Assert.Equal(location, loc);
+                })
+                .ReturnsAsync(expectedPayload);
             httpClientMock
                 .Setup(c => c.ConsumeNonce())
                 .ReturnsAsync("nonce");
             httpClientMock
-                .Setup(c => c.Post<Account>(Helper.MockDirectory.NewAccount, It.IsAny<JwsPayload>()))
+                .Setup(c => c.Post<Account>(location, It.IsAny<JwsPayload>()))
                 .Callback((Uri _, object o) =>
                 {
                     var p = (JwsPayload)o;

@@ -60,18 +60,11 @@ namespace Certes.Acme
         /// <returns></returns>
         public async Task<AcmeHttpResponse<T>> Post<T>(Uri uri, object payload)
         {
-            try
+            var payloadJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
+            var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
+            using (var response = await http.Value.PostAsync(uri, content))
             {
-                var payloadJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
-                var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
-                using (var response = await http.Value.PostAsync(uri, content))
-                {
-                    return await ProcessResponse<T>(response);
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
+                return await ProcessResponse<T>(response);
             }
         }
 
@@ -84,7 +77,7 @@ namespace Certes.Acme
             var nonce = Interlocked.Exchange(ref this.nonce, null);
             while (nonce == null)
             {
-                await this.FetchNonce();
+                await FetchNonce();
                 nonce = Interlocked.Exchange(ref this.nonce, null);
             }
 
@@ -100,7 +93,7 @@ namespace Certes.Acme
 
             if (response.Headers.Contains("Replay-Nonce"))
             {
-                this.nonce = response.Headers.GetValues("Replay-Nonce").Single();
+                nonce = response.Headers.GetValues("Replay-Nonce").Single();
             }
 
             if (response.Headers.Contains("Link"))
@@ -161,8 +154,8 @@ namespace Certes.Acme
                 Method = HttpMethod.Head,
             });
 
-            this.nonce = response.Headers.GetValues("Replay-Nonce").FirstOrDefault();
-            if (this.nonce == null)
+            nonce = response.Headers.GetValues("Replay-Nonce").FirstOrDefault();
+            if (nonce == null)
             {
                 throw new Exception();
             }

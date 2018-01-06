@@ -31,6 +31,19 @@ namespace Certes
         }
 
         [Fact]
+        public async Task CanDiscoverAccountByKey()
+        {
+            var dirUri = await GetAvailableStagingServer();
+
+            var ctx = new AcmeContext(dirUri, Helper.GetAccountKey());
+            var acct = await ctx.Account();
+
+            Assert.NotNull(acct.Location);
+
+            var res = await acct.Resource();
+        }
+
+        [Fact]
         public async Task CanRunAccountFlows()
         {
             var dirUri = await GetAvailableStagingServer();
@@ -232,6 +245,7 @@ namespace Certes
             var servers = new[] {
                 new Uri("http://localhost:4001/directory"),
                 new Uri("http://boulder-certes-ci.dymetis.com:4001/directory"),
+                //new Uri("https://acme-staging-v02.api.letsencrypt.org/directory"),
             };
 
             using (var http = new HttpClient())

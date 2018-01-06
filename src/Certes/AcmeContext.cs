@@ -70,7 +70,7 @@ namespace Certes
                 return accountContext;
             }
 
-            var resp = await AccountContext.NewAccount(this, new Account.Payload { OnlyReturnExisting = true }, false);
+            var resp = await AccountContext.NewAccount(this, new Account.Payload { OnlyReturnExisting = true }, true);
             return accountContext = new AccountContext(this, resp.Location);
         }
 
@@ -153,7 +153,7 @@ namespace Certes
             };
 
 
-            object payload;
+            JwsPayload payload;
             if (certificatePrivateKey != null)
             {
                 var jws = new JwsSigner(certificatePrivateKey);
