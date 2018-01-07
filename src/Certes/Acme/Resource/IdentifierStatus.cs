@@ -1,9 +1,9 @@
 ﻿namespace Certes.Acme.Resource
 {
     /// <summary>
-    /// Represents status of <see cref="AuthorizationIdentifier"/>.
+    /// Represents status of <see cref="Identifier"/>.
     /// </summary>
-    public static class AuthorizationIdentifierStatus
+    public static class IdentifierStatus
     {
         /// <summary>
         /// The pending status.

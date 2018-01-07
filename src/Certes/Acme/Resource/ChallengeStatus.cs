@@ -4,10 +4,10 @@ using Newtonsoft.Json.Converters;
 namespace Certes.Acme.Resource
 {
     /// <summary>
-    /// Represents the status for <see cref="AuthorizationIdentifierChallenge"/>.
+    /// Represents the status for <see cref="Challenge"/>.
     /// </summary>
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum AuthorizationIdentifierChallengeStatus
+    public enum ChallengeStatus
     {
         /// <summary>
         /// The pending status.

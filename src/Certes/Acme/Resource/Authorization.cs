@@ -16,7 +16,7 @@ namespace Certes.Acme.Resource
         /// The identifier.
         /// </value>
         [JsonProperty("identifier")]
-        public AuthorizationIdentifier Identifier { get; set; }
+        public Identifier Identifier { get; set; }
 
         /// <summary>
         /// Gets or sets the status.
@@ -52,7 +52,7 @@ namespace Certes.Acme.Resource
         /// The challenges.
         /// </value>
         [JsonProperty("challenges")]
-        public IList<AuthorizationIdentifierChallenge> Challenges { get; set; }
+        public IList<Challenge> Challenges { get; set; }
 
     }
 }

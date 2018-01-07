@@ -17,7 +17,7 @@ namespace Certes.Acme.Resource
             entity.VerifyGetterSetter(a => a.NotAfter, DateTimeOffset.Now.AddDays(1));
             entity.VerifyGetterSetter(a => a.NotBefore, DateTimeOffset.Now.AddDays(-1));
             entity.VerifyGetterSetter(a => a.Status, OrderStatus.Processing);
-            entity.VerifyGetterSetter(a => a.Identifiers, new List<AuthorizationIdentifier>());
+            entity.VerifyGetterSetter(a => a.Identifiers, new List<Identifier>());
 
             var r = new Order.Payload();
             r.VerifyGetterSetter(a => a.Csr, "certes is working");

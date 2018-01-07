@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Jws;
-using AuthorizationIdentifier = Certes.Acme.Resource.AuthorizationIdentifier;
-using AuthorizationIdentifierTypes = Certes.Acme.Resource.AuthorizationIdentifierTypes;
+using Identifier = Certes.Acme.Resource.Identifier;
+using IdentifierType = Certes.Acme.Resource.IdentifierType;
 
 namespace Certes
 {
@@ -187,7 +187,7 @@ namespace Certes
             var body = new Order
             {
                 Identifiers = identifiers
-                    .Select(id => new AuthorizationIdentifier { Type = AuthorizationIdentifierTypes.Dns, Value = id })
+                    .Select(id => new Identifier { Type = IdentifierType.Dns, Value = id })
                     .ToArray(),
                 NotBefore = notBefore,
                 NotAfter = notAfter,

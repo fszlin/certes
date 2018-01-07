@@ -9,8 +9,8 @@ namespace Certes.Tests.Acme.Resource
         [Fact]
         public void CanGetSetProperties()
         {
-            var authorizationIdentifier = new AuthorizationIdentifier();
-            authorizationIdentifier.VerifyGetterSetter(a => a.Type, "dns");
+            var authorizationIdentifier = new Identifier();
+            authorizationIdentifier.VerifyGetterSetter(a => a.Type, IdentifierType.Dns);
             authorizationIdentifier.VerifyGetterSetter(a => a.Value, "certes is working");
         }
     }

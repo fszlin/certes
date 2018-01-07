@@ -11,9 +11,9 @@ namespace Certes.Tests.Acme.Resource
         {
             var authz = new Authorization();
             authz.VerifyGetterSetter(a => a.Status, AuthorizationStatus.Processing);
-            authz.VerifyGetterSetter(a => a.Challenges, new[] { new AuthorizationIdentifierChallenge() });
+            authz.VerifyGetterSetter(a => a.Challenges, new[] { new Challenge() });
             authz.VerifyGetterSetter(a => a.Expires, DateTimeOffset.Now);
-            authz.VerifyGetterSetter(a => a.Identifier, new AuthorizationIdentifier());
+            authz.VerifyGetterSetter(a => a.Identifier, new Identifier());
             authz.VerifyGetterSetter(a => a.Scope, new Uri("http://certes.is.working"));
         }
     }

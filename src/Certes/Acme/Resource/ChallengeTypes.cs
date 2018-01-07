@@ -1,9 +1,9 @@
 ﻿namespace Certes.Acme.Resource
 {
     /// <summary>
-    /// Represents the type for <see cref="AuthorizationIdentifierChallenge"/>.
+    /// Represents the type for <see cref="Challenge"/>.
     /// </summary>
-    public static class AuthorizationIdentifierChallengeTypes
+    public static class ChallengeTypes
     {
         /// <summary>
         /// The http-01 challenge.

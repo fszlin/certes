@@ -5,7 +5,7 @@ using Certes.Jws;
 
 namespace Certes.Acme
 {
-    internal class ChallengeContext : EntityContext<AuthorizationIdentifierChallenge>, IChallengeContext
+    internal class ChallengeContext : EntityContext<Resource.Challenge>, IChallengeContext
     {
         public ChallengeContext(
             IAcmeContext context,
@@ -22,13 +22,13 @@ namespace Certes.Acme
 
         public string Token { get; }
 
-        public async Task<AuthorizationIdentifierChallenge> Validate()
+        public async Task<Resource.Challenge> Validate()
         {
             var payload = await Context.Sign(
-                new AuthorizationIdentifierChallenge {
+                new Resource.Challenge {
                     KeyAuthorization = Context.AccountKey.KeyAuthorization(Token)
                 }, Location);
-            var resp = await Context.HttpClient.Post<AuthorizationIdentifierChallenge>(Location, payload, true);
+            var resp = await Context.HttpClient.Post<Resource.Challenge>(Location, payload, true);
             return resp.Resource;
         }
     }

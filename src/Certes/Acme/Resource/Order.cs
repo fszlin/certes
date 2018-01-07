@@ -36,7 +36,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The identifiers.
         /// </value>
-        public IList<AuthorizationIdentifier> Identifiers { get; set; }
+        public IList<Identifier> Identifiers { get; set; }
 
         /// <summary>
         /// Gets or sets the not before.

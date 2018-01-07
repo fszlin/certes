@@ -5,9 +5,9 @@ using System.Collections.Generic;
 namespace Certes.Acme.Resource
 {
     /// <summary>
-    /// Represents a challenge for <see cref="AuthorizationIdentifier"/>.
+    /// Represents a challenge for <see cref="Identifier"/>.
     /// </summary>
-    public class AuthorizationIdentifierChallenge
+    public class Challenge
     {
         /// <summary>
         /// Gets or sets the type.
@@ -34,7 +34,7 @@ namespace Certes.Acme.Resource
         /// The status.
         /// </value>
         [JsonProperty("status")]
-        public AuthorizationIdentifierChallengeStatus? Status { get; set; }
+        public ChallengeStatus? Status { get; set; }
 
         /// <summary>
         /// Gets or sets the validation time.

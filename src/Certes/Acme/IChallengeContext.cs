@@ -6,7 +6,7 @@ namespace Certes.Acme
     /// <summary>
     /// 
     /// </summary>
-    public interface IChallengeContext : IResourceContext<AuthorizationIdentifierChallenge>
+    public interface IChallengeContext : IResourceContext<Resource.Challenge>
     {
         /// <summary>
         /// Gets the type.
@@ -28,6 +28,6 @@ namespace Certes.Acme
         /// Acknowledges the ACME server the challenge is ready for validation
         /// </summary>
         /// <returns>The challenge.</returns>
-        Task<AuthorizationIdentifierChallenge> Validate();
+        Task<Resource.Challenge> Validate();
     }
 }

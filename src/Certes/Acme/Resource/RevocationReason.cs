@@ -1,9 +1,7 @@
-﻿using Newtonsoft.Json;
-
-namespace Certes.Acme.Resource
+﻿namespace Certes.Acme.Resource
 {
     /// <summary>
-    /// Represents the reason for certificate revocation.
+    /// Represents the reasons for certificate revocation.
     /// </summary>
     /// <remarks>
     /// See https://tools.ietf.org/html/rfc5280#section-5.3.1
