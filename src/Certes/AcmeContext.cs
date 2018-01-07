@@ -20,22 +20,6 @@ namespace Certes
         private IAccountContext accountContext = null;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AcmeContext" /> class.
-        /// </summary>
-        /// <param name="directoryUri">The directory URI.</param>
-        /// <param name="accountKey">The account key.</param>
-        /// <param name="http">The HTTP client.</param>
-        /// <exception cref="ArgumentNullException">
-        /// If <paramref name="directoryUri"/> is <c>null</c>.
-        /// </exception>
-        public AcmeContext(Uri directoryUri, IAccountKey accountKey = null, IAcmeHttpClient http = null)
-        {
-            DirectoryUri = directoryUri ?? throw new ArgumentNullException(nameof(directoryUri));
-            AccountKey = accountKey ?? new AccountKey();
-            HttpClient = http ?? new AcmeHttpClient(directoryUri);
-        }
-
-        /// <summary>
         /// Gets the ACME HTTP client.
         /// </summary>
         /// <value>
@@ -60,9 +44,25 @@ namespace Certes
         public IAccountKey AccountKey { get; private set; }
 
         /// <summary>
-        /// Gets the ACME account.
+        /// Initializes a new instance of the <see cref="AcmeContext" /> class.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="directoryUri">The directory URI.</param>
+        /// <param name="accountKey">The account key.</param>
+        /// <param name="http">The HTTP client.</param>
+        /// <exception cref="ArgumentNullException">
+        /// If <paramref name="directoryUri"/> is <c>null</c>.
+        /// </exception>
+        public AcmeContext(Uri directoryUri, IAccountKey accountKey = null, IAcmeHttpClient http = null)
+        {
+            DirectoryUri = directoryUri ?? throw new ArgumentNullException(nameof(directoryUri));
+            AccountKey = accountKey ?? new AccountKey();
+            HttpClient = http ?? new AcmeHttpClient(directoryUri);
+        }
+
+        /// <summary>
+        /// Gets the ACME account context.
+        /// </summary>
+        /// <returns>The ACME account context.</returns>
         public async Task<IAccountContext> Account()
         {
             if (accountContext != null)
@@ -75,11 +75,11 @@ namespace Certes
         }
 
         /// <summary>
-        /// Changes the key.
+        /// Changes the account key.
         /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns></returns>
-        public async Task ChangeKey(AccountKey key)
+        /// <param name="key">The new account key.</param>
+        /// <returns>The account resource.</returns>
+        public async Task<Account> ChangeKey(AccountKey key)
         {
             var endpoint = await this.GetResourceUri(d => d.KeyChange);
             var location = await Account().Location();
@@ -95,9 +95,10 @@ namespace Certes
             var body = jws.Sign(keyChange, url: endpoint);
 
             var payload = await Sign(body, endpoint);
-            await HttpClient.Post<Account>(endpoint, payload, true);
+            var resp = await HttpClient.Post<Account>(endpoint, payload, true);
 
             AccountKey = newKey;
+            return resp.Resource;
         }
 
         /// <summary>
@@ -139,6 +140,9 @@ namespace Certes
         /// <summary>
         /// Revokes the certificate.
         /// </summary>
+        /// <param name="certificate">The certificate in DER format.</param>
+        /// <param name="reason">The reason for revocation.</param>
+        /// <param name="certificatePrivateKey">The certificate's private key.</param>
         /// <returns>
         /// The awaitable.
         /// </returns>
@@ -168,27 +172,13 @@ namespace Certes
         }
 
         /// <summary>
-        /// Signs the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <param name="uri">The URI.</param>
-        /// <returns></returns>
-        public async Task<JwsPayload> Sign(object entity, Uri uri)
-        {
-            var nonce = await HttpClient.ConsumeNonce();
-            var location = await Account().Location();
-            var jws = new JwsSigner(AccountKey);
-            return jws.Sign(entity, location, uri, nonce);
-        }
-
-        /// <summary>
-        /// Create a bew the order.
+        /// Creates a new the order.
         /// </summary>
         /// <param name="identifiers">The identifiers.</param>
-        /// <param name="notBefore">The not before.</param>
-        /// <param name="notAfter">The not after.</param>
+        /// <param name="notBefore">Th value of not before field for the certificate.</param>
+        /// <param name="notAfter">The value of not after field for the certificate.</param>
         /// <returns>
-        /// TODO
+        /// The order context created.
         /// </returns>
         public async Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null)
         {
@@ -206,6 +196,20 @@ namespace Certes
             var payload = await Sign(body, endpoint);
             var order = await HttpClient.Post<Order>(endpoint, payload, true);
             return new OrderContext(this, order.Location);
+        }
+
+        /// <summary>
+        /// Signs the data with account key.
+        /// </summary>
+        /// <param name="entity">The data to sign.</param>
+        /// <param name="uri">The URI for the request.</param>
+        /// <returns>The JWS payload.</returns>
+        public async Task<JwsPayload> Sign(object entity, Uri uri)
+        {
+            var nonce = await HttpClient.ConsumeNonce();
+            var location = await Account().Location();
+            var jws = new JwsSigner(AccountKey);
+            return jws.Sign(entity, location, uri, nonce);
         }
     }
 }

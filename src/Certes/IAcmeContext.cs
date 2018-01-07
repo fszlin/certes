@@ -37,9 +37,9 @@ namespace Certes
         IAccountKey AccountKey { get; }
 
         /// <summary>
-        /// Gets the ACME account.
+        /// Gets the ACME account context.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The ACME account context.</returns>
         Task<IAccountContext> Account();
 
         /// <summary>
@@ -61,6 +61,9 @@ namespace Certes
         /// <summary>
         /// Revokes the certificate.
         /// </summary>
+        /// <param name="certificate">The certificate in DER format.</param>
+        /// <param name="reason">The reason for revocation.</param>
+        /// <param name="certificatePrivateKey">The certificate's private key.</param>
         /// <returns>
         /// The awaitable.
         /// </returns>
@@ -69,28 +72,27 @@ namespace Certes
         /// <summary>
         /// Changes the account key.
         /// </summary>
-        /// <returns>
-        /// The awaitable.
-        /// </returns>
-        Task ChangeKey(AccountKey key = null);
+        /// <param name="key">The new account key.</param>
+        /// <returns>The account resource.</returns>
+        Task<Account> ChangeKey(AccountKey key = null);
 
         /// <summary>
-        /// Create a new the order.
+        /// Creates a new the order.
         /// </summary>
         /// <param name="identifiers">The identifiers.</param>
-        /// <param name="notBefore">The not before.</param>
-        /// <param name="notAfter">The not after.</param>
+        /// <param name="notBefore">Th value of not before field for the certificate.</param>
+        /// <param name="notAfter">The value of not after field for the certificate.</param>
         /// <returns>
-        /// TODO
+        /// The order context created.
         /// </returns>
         Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null);
 
         /// <summary>
-        /// Signs the specified entity.
+        /// Signs the data with account key.
         /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <param name="uri">The URI.</param>
-        /// <returns></returns>
+        /// <param name="entity">The data to sign.</param>
+        /// <param name="uri">The URI for the request.</param>
+        /// <returns>The JWS payload.</returns>
         Task<JwsPayload> Sign(object entity, Uri uri);
     }
 }
