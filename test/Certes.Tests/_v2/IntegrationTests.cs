@@ -245,7 +245,7 @@ namespace Certes
             var servers = new[] {
                 new Uri("http://localhost:4001/directory"),
                 new Uri("http://boulder-certes-ci.dymetis.com:4001/directory"),
-                //new Uri("https://acme-staging-v02.api.letsencrypt.org/directory"),
+                WellKnownServers.LetsEncryptStagingV2,
             };
 
             using (var http = new HttpClient())
