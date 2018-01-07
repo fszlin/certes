@@ -82,7 +82,7 @@ namespace Certes
             Assert.Equal(location, locationWithNewKey);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/letsencrypt/boulder/issues/3333")]
         public async Task CanGenerateCertificateDns()
         {
             var hosts = new[] { $"www-dns-{domainSuffix}.es256.certes-ci.dymetis.com", $"mail-dns-{domainSuffix}.es256.certes-ci.dymetis.com" };
