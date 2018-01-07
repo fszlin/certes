@@ -1,6 +1,7 @@
 ﻿using Certes.Json;
 using Certes.Pkcs;
 using Newtonsoft.Json;
+using System;
 using System.Text;
 
 namespace Certes.Jws
@@ -22,18 +23,45 @@ namespace Certes.Jws
         }
 
         /// <summary>
+        /// Signs the specified payload.
+        /// </summary>
+        /// <param name="payload">The payload.</param>
+        /// <param name="nonce">The nonce.</param>
+        /// <returns></returns>
+        public JwsPayload Sign(object payload, string nonce)
+            => Sign(payload, null, null, nonce);
+
+        /// <summary>
         /// Encodes this instance.
         /// </summary>
-        public JwsPayload Sign(object payload, string nonce = null)
+        /// <param name="payload">The payload.</param>
+        /// <param name="keyId">The key identifier.</param>
+        /// <param name="url">The URL.</param>
+        /// <param name="nonce">The nonce.</param>
+        /// <returns></returns>
+        public JwsPayload Sign(
+            object payload,
+            Uri keyId = null,
+            Uri url = null,
+            string nonce = null)
         {
             var jsonSettings = JsonUtil.CreateSettings();
 
-            var protectedHeader = new
-            {
-                nonce = nonce,
-                alg = keyPair.Algorithm.ToJwsAlgorithm(),
-                jwk = keyPair.JsonWebKey,
-            };
+            var protectedHeader = keyId == null ?
+                (object)new
+                {
+                    alg = keyPair.Algorithm.ToJwsAlgorithm(),
+                    jwk = keyPair.JsonWebKey,
+                    nonce = nonce,
+                    url = url,
+                } :
+                new
+                {
+                    alg = keyPair.Algorithm.ToJwsAlgorithm(),
+                    kid = keyId,
+                    nonce = nonce,
+                    url = url,
+                };
 
             var entityJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
             var protectedHeaderJson = JsonConvert.SerializeObject(protectedHeader, Formatting.None, jsonSettings);
@@ -42,7 +70,7 @@ namespace Certes.Jws
             var protectedHeaderEncoded = JwsConvert.ToBase64String(Encoding.UTF8.GetBytes(protectedHeaderJson));
 
             var signature = $"{protectedHeaderEncoded}.{payloadEncoded}";
-            var signatureBytes = Encoding.ASCII.GetBytes(signature);
+            var signatureBytes = Encoding.UTF8.GetBytes(signature);
             var signedSignatureBytes = keyPair.SignData(signatureBytes);
             var signedSignatureEncoded = JwsConvert.ToBase64String(signedSignatureBytes);
 

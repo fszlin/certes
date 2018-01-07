@@ -5,6 +5,7 @@ VisualStudioVersion = 15.0.27110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{E9E7371E-AB81-4ECF-9684-2ACB1EF7FF67}"
 	ProjectSection(SolutionItems) = preProject
+		docs\APIv2.md = docs\APIv2.md
 		docs\CHANGELOG.md = docs\CHANGELOG.md
 		docs\CODE_OF_CONDUCT.md = docs\CODE_OF_CONDUCT.md
 		docs\implementation-status.md = docs\implementation-status.md
@@ -18,10 +19,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{556F2BFB-D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E420B696-0E51-40E1-B534-96E66C2C27F5}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.travis.yml = .travis.yml
 		appveyor.yml = appveyor.yml
+		certes.props = certes.props
 		codecov.yml = codecov.yml
-		common.props = common.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Certes", "src\Certes\Certes.csproj", "{7AA85BF4-2A4F-42C8-A107-82B22C640C4E}"

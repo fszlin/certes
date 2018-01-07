@@ -22,7 +22,7 @@ namespace Certes.Jws
         /// Initializes a new instance of the <see cref="AccountKey"/> class.
         /// </summary>
         /// <param name="algorithm">The JWS signature algorithm.</param>
-        public AccountKey(SignatureAlgorithm algorithm = SignatureAlgorithm.RS256)
+        public AccountKey(SignatureAlgorithm algorithm = SignatureAlgorithm.ES256)
         {
             signatureAlgorithm = signatureAlgorithmProvider.Get(algorithm);
             signatureKey = signatureAlgorithm.GenerateKey();

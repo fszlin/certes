@@ -1,8 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../certes.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;netcoreapp1.0;net452;net47</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp1.0;net452</TargetFrameworks>
+    <TargetFrameworks Condition="'$(Configuration)' != 'Debug' OR '$(Net47Target)' == 'True'">
+      $(TargetFrameworks);net47
+    </TargetFrameworks>
     <RootNamespace>Certes</RootNamespace>
+    <NoWarn>1701;1702;1705;0618</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;1705;0618</NoWarn>
   </PropertyGroup>
 
@@ -11,11 +19,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.4.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <PackageReference Include="Microsoft.CodeCoverage" Version="1.0.3" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
-    <PackageReference Include="Moq" Version="4.7.145" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0-preview-20171211-02" />
+    <PackageReference Include="Moq" Version="4.8.0" />
+    <PackageReference Include="NLog" Version="4.5.0-rc03" />
     <PackageReference Include="OpenCover" Version="4.6.519" />
+    <PackageReference Include="System.CommandLine" Version="0.1.0-e171221-1" Condition="'$(TargetFramework)' == 'netcoreapp1.0' OR '$(TargetFramework)' == 'netcoreapp2.0'" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
@@ -40,7 +50,9 @@
     <None Update="Data\test-root.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Data\account.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-
-  <Import Project="../../common.props" />
+  
 </Project>

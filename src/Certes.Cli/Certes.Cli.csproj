@@ -1,18 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../certes.props" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>netcoreapp1.0;netcoreapp2.0</TargetFrameworks>
     <Version>1.0.0</Version>
-    <Authors>Eddie Lin</Authors>
+    <Authors>Certes Contributors</Authors>
     <Company />
     <Product>CLI for Certes</Product>
     <Description>CLI for Certes</Description>
+    <PackageType>DotnetCliTool</PackageType>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
+    <PackageId>Certes.Cli</PackageId>
+    <PackageIconUrl>https://raw.githubusercontent.com/fszlin/certes/master/misc/logo.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,15 +24,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NLog" Version="5.0.0-beta11" />
-    <PackageReference Include="System.CommandLine" Version="0.1.0-e170926-4" />
+    <PackageReference Include="NLog" Version="4.5.0-rc03" PrivateAssets="all" />
+    <PackageReference Include="System.CommandLine" Version="0.1.0-e171221-1" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Certes\Certes.csproj" />
   </ItemGroup>
 
-  <Import Project="../../common.props" />
+  <PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludePrivateAssembly</TargetsForTfmSpecificBuildOutput>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <Target Name="IncludePrivateAssembly">
+    <ItemGroup>
+      <BuildOutputInPackage Include="$(OutputPath)System.CommandLine.dll" />
+      <BuildOutputInPackage Include="$(OutputPath)NLog.dll" />
+    </ItemGroup>
+  </Target>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <DebugType>Full</DebugType>

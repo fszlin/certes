@@ -8,10 +8,24 @@ namespace Certes.Acme.Resource
         [Fact]
         public void CanGetSetProperties()
         {
-            var model = new DirectoryMeta();
-            model.VerifyGetterSetter(a => a.TermsOfService, new Uri("http://TermsOfService.is.working"));
-            model.VerifyGetterSetter(a => a.Website, new Uri("http://Website.is.working"));
-            model.VerifyGetterSetter(a => a.CaaIdentities, new[] { "caa", "is", "working" });
+            var data = new
+            {
+                Website = new Uri("http://certes.is.working"),
+                CaaIdentities = new[] { "caa1", "caa2" },
+                ExternalAccountRequired = true,
+                TermsOfService = new Uri("http://certes.is.working/tos"),
+            };
+
+            var model = new DirectoryMeta(
+                data.TermsOfService,
+                data.Website,
+                data.CaaIdentities,
+                data.ExternalAccountRequired);
+
+            Assert.Equal(data.TermsOfService, model.TermsOfService);
+            Assert.Equal(data.Website, model.Website);
+            Assert.Equal(data.CaaIdentities, model.CaaIdentities);
+            Assert.Equal(data.ExternalAccountRequired, model.ExternalAccountRequired);
         }
     }
 }

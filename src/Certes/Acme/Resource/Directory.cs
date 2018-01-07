@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Certes.Acme.Resource
 {
@@ -14,8 +14,8 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The new nonce endpoint.
         /// </value>
-        [JsonProperty("new-nonce")]
-        public Uri NewNonce { get; set; }
+        [JsonProperty("newNonce")]
+        public Uri NewNonce { get; }
 
         /// <summary>
         /// Gets or sets the new account endpoint.
@@ -23,8 +23,8 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The new account endpoint.
         /// </value>
-        [JsonProperty("new-account")]
-        public Uri NewAccount { get; set; }
+        [JsonProperty("newAccount")]
+        public Uri NewAccount { get; }
 
         /// <summary>
         /// Gets or sets the new order endpoint.
@@ -32,17 +32,8 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The new order endpoint.
         /// </value>
-        [JsonProperty("new-order ")]
-        public Uri NewOrder { get; set; }
-
-        /// <summary>
-        /// Gets or sets the new authorization endpoint.
-        /// </summary>
-        /// <value>
-        /// The new authorization endpoint.
-        /// </value>
-        [JsonProperty("new-authz")]
-        public Uri NewAuthz { get; set; }
+        [JsonProperty("newOrder")]
+        public Uri NewOrder { get; }
 
         /// <summary>
         /// Gets or sets the revoke cert.
@@ -50,8 +41,8 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The revoke cert.
         /// </value>
-        [JsonProperty("revoke-cert")]
-        public Uri RevokeCert { get; set; }
+        [JsonProperty("revokeCert")]
+        public Uri RevokeCert { get; }
 
         /// <summary>
         /// Gets or sets the key change endpoint.
@@ -59,26 +50,8 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The key change endpoint.
         /// </value>
-        [JsonProperty("key-change")]
-        public Uri KeyChange { get; set; }
-
-        /// <summary>
-        /// Gets or sets the new registration endpoint.
-        /// </summary>
-        /// <value>
-        /// The new registration endpoint.
-        /// </value>
-        [JsonProperty("new-reg")]
-        public Uri NewReg { get; set; }
-
-        /// <summary>
-        /// Gets or sets the new certificate endpoint.
-        /// </summary>
-        /// <value>
-        /// The new certificate endpoint.
-        /// </value>
-        [JsonProperty("new-cert")]
-        public Uri NewCert { get; set; }
+        [JsonProperty("keyChange")]
+        public Uri KeyChange { get; }
 
         /// <summary>
         /// Gets or sets the metadata.
@@ -87,6 +60,31 @@ namespace Certes.Acme.Resource
         /// The metadata.
         /// </value>
         [JsonProperty("meta")]
-        public DirectoryMeta Meta { get; set; }
+        public DirectoryMeta Meta { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Directory"/> class.
+        /// </summary>
+        /// <param name="newNonce">The new nonce.</param>
+        /// <param name="newAccount">The new account.</param>
+        /// <param name="newOrder">The new order.</param>
+        /// <param name="revokeCert">The revoke cert.</param>
+        /// <param name="keyChange">The key change.</param>
+        /// <param name="meta">The meta.</param>
+        public Directory(
+            Uri newNonce,
+            Uri newAccount,
+            Uri newOrder,
+            Uri revokeCert, 
+            Uri keyChange,
+            DirectoryMeta meta)
+        {
+            NewNonce = newNonce;
+            NewAccount = newAccount;
+            NewOrder = newOrder;
+            RevokeCert = revokeCert;
+            KeyChange = keyChange;
+            Meta = meta;
+        }
     }
 }

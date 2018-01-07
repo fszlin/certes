@@ -1,17 +1,16 @@
-﻿using Certes.Acme;
-using Certes.Acme.Resource;
+﻿using System;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Certes.Acme;
 using Certes.Json;
 using Certes.Jws;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Certes
@@ -24,7 +23,7 @@ namespace Certes
         private readonly Uri server = new Uri("http://example.com/dir");
         private readonly Uri tos = new Uri("http://example.com/tos");
 
-        private readonly Directory acmeDir = Helper.AcmeDir;
+        private readonly AcmeDirectory acmeDir = Helper.AcmeDir;
 
         private int nonce = 0;
 
@@ -205,7 +204,7 @@ namespace Certes
             var payloadJson = Encoding.UTF8.GetString(JwsConvert.FromBase64String(payloadBase64));
 
             var signature = $"{protectedBase64}.{payloadBase64}";
-            var signatureBytes = Encoding.ASCII.GetBytes(signature);
+            var signatureBytes = Encoding.UTF8.GetBytes(signature);
             var signedSignatureBytes = accountKey.SignData(signatureBytes);
             var signedSignatureEncoded = JwsConvert.ToBase64String(signedSignatureBytes);
 

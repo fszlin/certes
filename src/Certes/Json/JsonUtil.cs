@@ -27,8 +27,6 @@ namespace Certes.Json
                 MissingMemberHandling = MissingMemberHandling.Ignore
             };
 
-            jsonSettings.Converters.Add(new StringEnumConverter());
-
             return jsonSettings;
         }
     }

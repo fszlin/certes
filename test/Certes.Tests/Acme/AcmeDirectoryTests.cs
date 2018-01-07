@@ -8,22 +8,16 @@ namespace Certes.Acme
         [Fact]
         public void CanGetSetProperties()
         {
-#pragma warning disable 0618
-
             var model = new AcmeDirectory();
-            var assigned = model.Meta = new AcmeDirectory.AcmeDirectoryMeta
+            model.VerifyGetterSetter(a => a.NewCert, new Uri("http://NewCert.is.working"));
+            model.VerifyGetterSetter(a => a.NewAuthz, new Uri("http://NewAuthz.is.working"));
+            model.VerifyGetterSetter(a => a.RevokeCert, new Uri("http://RevokeCert.is.working"));
+            model.VerifyGetterSetter(a => a.KeyChange, new Uri("http://KeyChange.is.working"));
+            model.VerifyGetterSetter(a => a.NewReg, new Uri("http://NewReg.is.working"));
+            model.VerifyGetterSetter(a => a.Meta, new AcmeDirectory.AcmeDirectoryMeta
             {
-                Website = new Uri("https://certes.is.working")
-            };
-
-            Assert.NotNull(model.Meta);
-            Assert.Equal(assigned.Website, model.Meta.Website);
-            Assert.Null(model.Meta.CaaIdentities);
-            Assert.Null(model.Meta.TermsOfService);
-
-            model.VerifyGetterSetter(a => a.Meta, null);
-
-#pragma warning restore 0618
+                TermsOfService = new Uri("http://certes.is.working")
+            });
         }
     }
 }

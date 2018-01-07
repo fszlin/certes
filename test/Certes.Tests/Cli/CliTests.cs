@@ -108,13 +108,9 @@ namespace Certes.Cli
                 .Select(s => placeHolders?.ContainsKey(s) == true ? placeHolders[s] : s)
                 .ToArray();
 
-            using (var factory = new LogFactory(config))
-            {
-                var logger = factory.GetLogger("logger");
-                var succeed = await new Program(logger).Process(args);
-                Assert.True(succeed, string.Join(Environment.NewLine, memoryTarget.Logs));
-            }
-
+            var succeed = await new Program(Helper.Logger).Process(args);
+            Assert.True(succeed, string.Join(Environment.NewLine, Helper.Logs));
+            Helper.Logs.Clear();
             return memoryTarget.Logs;
         }
 

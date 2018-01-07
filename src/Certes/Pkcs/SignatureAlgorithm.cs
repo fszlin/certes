@@ -1,7 +1,5 @@
 ﻿using System;
-using Certes.Jws;
 using Org.BouncyCastle.Asn1.Pkcs;
-using Org.BouncyCastle.Crypto;
 
 namespace Certes.Pkcs
 {
@@ -47,7 +45,6 @@ namespace Certes.Pkcs
         /// </summary>
         /// <param name="algorithm">The algorithm.</param>
         /// <returns></returns>
-        /// <exception cref="System.ArgumentException">If the <paramref name="algorithm"/> is not supported.</exception>
         public static string ToJwsAlgorithm(this SignatureAlgorithm algorithm)
         {
             if (!Enum.IsDefined(typeof(SignatureAlgorithm), algorithm))

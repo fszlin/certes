@@ -7,4 +7,8 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <Net47Target>True</Net47Target>
+  </PropertyGroup>
 </Project>
