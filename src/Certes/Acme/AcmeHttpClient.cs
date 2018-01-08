@@ -20,20 +20,21 @@ namespace Certes.Acme
 
         private readonly static JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
         private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(() => new HttpClient());
-        private readonly Uri directoryUri;
+        private readonly IAcmeContext context;
         private readonly Lazy<HttpClient> http;
 
+        private Uri newNonceUri;
         private string nonce;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AcmeHttpClient"/> class.
+        /// Initializes a new instance of the <see cref="AcmeHttpClient" /> class.
         /// </summary>
-        /// <param name="directoryUri">The directory URI.</param>
+        /// <param name="context">The context.</param>
         /// <param name="http">The HTTP.</param>
         /// <exception cref="ArgumentNullException">directoryUri</exception>
-        public AcmeHttpClient(Uri directoryUri, HttpClient http = null)
+        public AcmeHttpClient(IAcmeContext context, HttpClient http = null)
         {
-            this.directoryUri = directoryUri ?? throw new ArgumentNullException(nameof(directoryUri));
+            this.context = context ?? throw new ArgumentNullException(nameof(newNonceUri));
             this.http = http == null ? SharedHttp : new Lazy<HttpClient>(() => http);
         }
 
@@ -148,16 +149,17 @@ namespace Certes.Acme
 
         private async Task FetchNonce()
         {
+            var newNonceUri = this.newNonceUri ?? (this.newNonceUri = await context.GetResourceUri(d => d.NewNonce));
             var response = await http.Value.SendAsync(new HttpRequestMessage
             {
-                RequestUri = directoryUri,
+                RequestUri = newNonceUri,
                 Method = HttpMethod.Head,
             });
 
             nonce = response.Headers.GetValues("Replay-Nonce").FirstOrDefault();
             if (nonce == null)
             {
-                throw new Exception();
+                throw new Exception("Can not get new nonce.");
             }
         }
 

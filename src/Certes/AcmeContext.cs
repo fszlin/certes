@@ -57,7 +57,7 @@ namespace Certes
         {
             DirectoryUri = directoryUri ?? throw new ArgumentNullException(nameof(directoryUri));
             AccountKey = accountKey ?? DSA.NewKey();
-            HttpClient = http ?? new AcmeHttpClient(directoryUri);
+            HttpClient = http ?? new AcmeHttpClient(this);
         }
 
         /// <summary>
