@@ -1,14 +1,16 @@
-﻿using Org.BouncyCastle.Asn1.X509;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using Certes.Crypto;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Pkix;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.X509.Store;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace Certes.Pkcs
 {
@@ -17,9 +19,11 @@ namespace Certes.Pkcs
     /// </summary>
     public class PfxBuilder
     {
+        private static readonly SignatureAlgorithmProvider signatureAlgorithmProvider = new SignatureAlgorithmProvider();
+
         private static X509Certificate[] embeddedIssuers;
         private readonly X509Certificate certificate;
-        private readonly KeyInfo privateKeyInfo;
+        private readonly ISignatureKey privateKey;
         private readonly Dictionary<X509Name, X509Certificate> issuers = EmbeddedIssuers.ToDictionary(c => c.SubjectDN, c => c);
         private readonly X509CertificateParser certParser = new X509CertificateParser();
 
@@ -62,9 +66,19 @@ namespace Certes.Pkcs
         /// <param name="certificate">The certificate.</param>
         /// <param name="privateKeyInfo">The private key information.</param>
         public PfxBuilder(byte[] certificate, KeyInfo privateKeyInfo)
+            : this(certificate, signatureAlgorithmProvider.GetKey(privateKeyInfo.PrivateKeyInfo))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PfxBuilder"/> class.
+        /// </summary>
+        /// <param name="certificate">The certificate.</param>
+        /// <param name="privateKey">The private key.</param>
+        public PfxBuilder(byte[] certificate, ISignatureKey privateKey)
         {
             this.certificate = certParser.ReadCertificate(certificate);
-            this.privateKeyInfo = privateKeyInfo;
+            this.privateKey = privateKey;
         }
 
         /// <summary>
@@ -85,7 +99,7 @@ namespace Certes.Pkcs
         /// <returns>The PFX data.</returns>
         public byte[] Build(string friendlyName, string password)
         {
-            var keyPair = privateKeyInfo.CreateKeyPair();
+            var keyPair = LoadKeyPair();
             var store = new Pkcs12StoreBuilder().Build();
 
             var entry = new X509CertificateEntry(certificate);
@@ -144,6 +158,16 @@ namespace Certes.Pkcs
             
             var fullChain = result.CertPath.Certificates.Cast<X509Certificate>().ToArray();
             return fullChain;
+        }
+
+        private AsymmetricCipherKeyPair LoadKeyPair()
+        {
+            using (var buffer = new MemoryStream())
+            {
+                privateKey.Save(buffer);
+                var (_, keyPair) = signatureAlgorithmProvider.GetKeyPair(buffer.ToArray());
+                return keyPair;
+            }
         }
     }
 }
