@@ -18,7 +18,7 @@ namespace Certes.Pkcs
         [Fact]
         public void CanCreateCsrWithSignatureKey()
         {
-            var key = DSA.NewKey();
+            var key = DSA.NewKey(SignatureAlgorithm.RS256);
             new CertificationRequestBuilder(key);
         }
 

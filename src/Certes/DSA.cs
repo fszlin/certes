@@ -15,7 +15,7 @@ namespace Certes
         /// </summary>
         /// <param name="algorithm">The algorithm.</param>
         /// <returns></returns>
-        public static ISignatureKey NewKey(SignatureAlgorithm algorithm = SignatureAlgorithm.ES256)
+        public static ISignatureKey NewKey(SignatureAlgorithm algorithm)
         {
             var signatureAlgorithm = signatureAlgorithmProvider.Get(algorithm);
             return signatureAlgorithm.GenerateKey();

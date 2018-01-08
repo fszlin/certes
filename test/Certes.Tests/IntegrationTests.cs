@@ -73,7 +73,7 @@ namespace Certes
                 new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
             var location = await ctx.Account().Location();
 
-            var newKey = DSA.NewKey();
+            var newKey = DSA.NewKey(SignatureAlgorithm.ES256);
             await ctx.ChangeKey(newKey);
 
             var ctxWithNewKey = new AcmeContext(dirUri, newKey);

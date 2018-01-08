@@ -6,6 +6,7 @@ using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Crypto;
 using Certes.Jws;
+using Certes.Pkcs;
 using Identifier = Certes.Acme.Resource.Identifier;
 using IdentifierType = Certes.Acme.Resource.IdentifierType;
 
@@ -17,6 +18,7 @@ namespace Certes
     /// <seealso cref="Certes.IAcmeContext" />
     public class AcmeContext : IAcmeContext
     {
+        private const SignatureAlgorithm defaultKeyType = SignatureAlgorithm.ES256;
         private Directory directory;
         private IAccountContext accountContext = null;
 
@@ -56,7 +58,7 @@ namespace Certes
         public AcmeContext(Uri directoryUri, ISignatureKey accountKey = null, IAcmeHttpClient http = null)
         {
             DirectoryUri = directoryUri ?? throw new ArgumentNullException(nameof(directoryUri));
-            AccountKey = accountKey ?? DSA.NewKey();
+            AccountKey = accountKey ?? DSA.NewKey(defaultKeyType);
             HttpClient = http ?? new AcmeHttpClient(this);
         }
 
@@ -85,7 +87,7 @@ namespace Certes
             var endpoint = await this.GetResourceUri(d => d.KeyChange);
             var location = await Account().Location();
             
-            var newKey = key ?? DSA.NewKey();
+            var newKey = key ?? DSA.NewKey(defaultKeyType);
             var keyChange = new
             {
                 account = location,
