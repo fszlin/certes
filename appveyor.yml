@@ -1,4 +1,4 @@
-version: 1.1.4.{build}
+version: 2.0.0.{build}
 build:
   verbosity: minimal
   project: Certes.sln
@@ -27,8 +27,6 @@ branches:
   only:
     - release
     - master
-    - dev
-    - vnext
     - cli
 
 assembly_info:
@@ -113,7 +111,6 @@ deploy:
         - dev
 
   - provider: NuGet
-    #server: http://www.nuget.org/api/v2/package                  # remove to push to NuGet.org
     api_key:
       secure: enjdo7AiXKaGhj8NC2k3wjQ9mGlU1jxABzG6tuphpM7dNaazlrSlvwR2H1kC4kr+
     skip_symbols: true
@@ -132,6 +129,4 @@ deploy:
     on:
       branch:
         - master
-        - dev
-        - vnext
         - cli
