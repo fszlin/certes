@@ -79,18 +79,6 @@ namespace Certes.Acme
             return this;
         }
 
-        /// <summary>
-        /// Authorizes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="type">The type.</param>
-        /// <returns></returns>
-        /// <exception cref="System.NotSupportedException"></exception>
-        public Task<IAuthorizationContext> Authorize(string value, string type = AuthorizationIdentifierTypes.Dns)
-        {
-            throw new NotImplementedException();
-        }
-
         internal static async Task<AcmeHttpResponse<Account>> NewAccount(
             IAcmeContext context, Account body, bool ensureSuccessStatusCode)
         {
