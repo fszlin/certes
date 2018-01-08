@@ -57,7 +57,7 @@ namespace Certes
         /// <returns>
         /// The account created.
         /// </returns>
-        Task<Account> NewAccount(IList<string> contact, bool termsOfServiceAgreed = false);
+        Task<IAccountContext> NewAccount(IList<string> contact, bool termsOfServiceAgreed = false);
 
         /// <summary>
         /// Revokes the certificate.

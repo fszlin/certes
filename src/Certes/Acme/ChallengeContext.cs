@@ -22,6 +22,8 @@ namespace Certes.Acme
 
         public string Token { get; }
 
+        public string KeyAuthz => Context.AccountKey.KeyAuthorization(Token);
+
         public async Task<Resource.Challenge> Validate()
         {
             var payload = await Context.Sign(

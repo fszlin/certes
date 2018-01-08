@@ -48,17 +48,18 @@ namespace Certes
             var dirUri = await GetAvailableStagingServer();
 
             var ctx = new AcmeContext(dirUri);
-            var account = await ctx.NewAccount(
+            var accountCtx = await ctx.NewAccount(
                 new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
-            var location = await ctx.Account().Location();
+            var account = await accountCtx.Resource();
+            var location = accountCtx.Location;
 
             Assert.NotNull(account);
             Assert.Equal(AccountStatus.Valid, account.Status);
 
-            await ctx.Account().Update(agreeTermsOfService: true);
-            await ctx.Account().Update(contact: new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" });
+            await accountCtx.Update(agreeTermsOfService: true);
+            await accountCtx.Update(contact: new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" });
 
-            account = await ctx.Account().Deactivate();
+            account = await accountCtx.Deactivate();
             Assert.NotNull(account);
             Assert.Equal(AccountStatus.Deactivated, account.Status);
         }
@@ -234,7 +235,7 @@ namespace Certes
             return orderCtx;
         }
 
-        private async Task<Uri> GetAvailableStagingServer()
+        public static async Task<Uri> GetAvailableStagingServer()
         {
             if (stagingServer != null)
             {

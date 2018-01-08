@@ -11,7 +11,7 @@
 [![AppVeyor](https://img.shields.io/appveyor/tests/fszlin/certes.svg)](https://ci.appveyor.com/project/fszlin/certes)
 [![codecov](https://codecov.io/gh/fszlin/certes/branch/master/graph/badge.svg)](https://codecov.io/gh/fszlin/certes)
 
-Certes is a client implantation for the Automated Certificate Management
+Certes is a client implementation for the Automated Certificate Management
 Environment (ACME) protocol, build on .NET Core. It is aimed to provide a easy
 to use API for managing certificates using scripts during build process.
 

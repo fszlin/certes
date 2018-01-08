@@ -22,7 +22,15 @@ namespace Certes.Acme
         /// <value>
         /// The token.
         /// </value>
-        string Token {get;}
+        string Token { get; }
+
+        /// <summary>
+        /// Gets the key authorization string.
+        /// </summary>
+        /// <value>
+        /// The key authorization string.
+        /// </value>
+        string KeyAuthz { get; }
 
         /// <summary>
         /// Acknowledges the ACME server the challenge is ready for validation
