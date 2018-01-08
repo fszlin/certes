@@ -38,14 +38,19 @@ namespace Certes.Crypto
             return ReadKey(keyParam);
         }
 
-        private static ISignatureKey ReadKey(AsymmetricKeyParameter keyParam)
+        internal (SignatureAlgorithm, AsymmetricCipherKeyPair) GetKeyPair(byte[] der)
+        {
+            var keyParam = PrivateKeyFactory.CreateKey(der);
+            return ParseKey(keyParam);
+        }
+
+        private static (SignatureAlgorithm, AsymmetricCipherKeyPair) ParseKey(AsymmetricKeyParameter keyParam)
         {
             if (keyParam is RsaPrivateCrtKeyParameters)
             {
                 var privateKey = (RsaPrivateCrtKeyParameters)keyParam;
                 var publicKey = new RsaKeyParameters(false, privateKey.Modulus, privateKey.PublicExponent);
-                return new AsymmetricCipherSignatureKey(
-                    SignatureAlgorithm.RS256, new AsymmetricCipherKeyPair(publicKey, keyParam));
+                return (SignatureAlgorithm.RS256, new AsymmetricCipherKeyPair(publicKey, keyParam));
             }
             else if (keyParam is ECPrivateKeyParameters)
             {
@@ -60,13 +65,18 @@ namespace Certes.Crypto
                     domain.Curve.FieldSize == 521 ? SignatureAlgorithm.ES512 :
                     throw new NotSupportedException();
 
-                return new AsymmetricCipherSignatureKey(
-                    algo, new AsymmetricCipherKeyPair(publicKey, keyParam));
+                return (algo, new AsymmetricCipherKeyPair(publicKey, keyParam));
             }
             else
             {
                 throw new NotSupportedException();
             }
+        }
+
+        private static ISignatureKey ReadKey(AsymmetricKeyParameter keyParam)
+        {
+            var (algo, keyPair) = ParseKey(keyParam);
+            return new AsymmetricCipherSignatureKey(algo, keyPair);
         }
     }
 }
