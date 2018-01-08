@@ -139,7 +139,7 @@ namespace Certes.Acme
         /// <returns>The encoded JSON.</returns>
         private static object Encode(object entity, IAccountKey keyPair, string nonce)
         {
-            var encoder = new JwsSigner(keyPair);
+            var encoder = new JwsSigner(keyPair.SignatureKey);
             return encoder.Sign(entity, nonce);
         }
 

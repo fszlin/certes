@@ -14,8 +14,6 @@ namespace Certes.Jws
         private static readonly SignatureAlgorithmProvider signatureAlgorithmProvider = new SignatureAlgorithmProvider();
         
         private JsonWebKey jwk;
-        private readonly ISignatureAlgorithm signatureAlgorithm;
-        private readonly ISignatureKey signatureKey;
         private readonly ISigner signer;
 
         /// <summary>
@@ -24,9 +22,8 @@ namespace Certes.Jws
         /// <param name="algorithm">The JWS signature algorithm.</param>
         public AccountKey(SignatureAlgorithm algorithm = SignatureAlgorithm.ES256)
         {
-            signatureAlgorithm = signatureAlgorithmProvider.Get(algorithm);
-            signatureKey = signatureAlgorithm.GenerateKey();
-            signer = signatureAlgorithm.CreateSigner(signatureKey);
+            SignatureKey = DSA.NewKey(algorithm);
+            signer = SignatureKey.GetSigner();
         }
 
         /// <summary>
@@ -44,13 +41,8 @@ namespace Certes.Jws
                 throw new ArgumentNullException(nameof(keyInfo));
             }
 
-            using (var buffer = new MemoryStream(keyInfo.PrivateKeyInfo))
-            {
-                signatureKey = signatureAlgorithmProvider.GetKey(buffer);
-            }
-
-            signatureAlgorithm = signatureAlgorithmProvider.Get(signatureKey.Algorithm);
-            signer = signatureAlgorithm.CreateSigner(signatureKey);
+            SignatureKey = DSA.FromDer(keyInfo.PrivateKeyInfo);
+            signer = SignatureKey.GetSigner();
         }
 
         /// <summary>
@@ -63,7 +55,7 @@ namespace Certes.Jws
         {
             get
             {
-                return signatureKey.Algorithm;
+                return SignatureKey.Algorithm;
             }
         }
 
@@ -82,7 +74,15 @@ namespace Certes.Jws
         /// <value>
         /// The JSON web key.
         /// </value>
-        public JsonWebKey JsonWebKey => jwk ?? (jwk = signatureKey.JsonWebKey);
+        public JsonWebKey JsonWebKey => jwk ?? (jwk = SignatureKey.JsonWebKey);
+
+        /// <summary>
+        /// Gets the signature key.
+        /// </summary>
+        /// <value>
+        /// The signature key.
+        /// </value>
+        public ISignatureKey SignatureKey { get; private set; }
 
         /// <summary>
         /// Computes the hash for given data.
@@ -106,7 +106,7 @@ namespace Certes.Jws
         {
             using (var buffer = new MemoryStream())
             {
-                signatureKey.Save(buffer);
+                SignatureKey.Save(buffer);
                 return new KeyInfo
                 {
                     PrivateKeyInfo = buffer.ToArray()

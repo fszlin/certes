@@ -136,7 +136,7 @@ namespace Certes
                 newKey = keyPair.JsonWebKey,
             };
             
-            var jws = new JwsSigner(keyPair);
+            var jws = new JwsSigner(keyPair.SignatureKey);
             var payload = jws.Sign(body);
             var payloadWithResourceType = new
             {

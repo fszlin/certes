@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
+using Certes.Crypto;
 using Certes.Jws;
 
 namespace Certes
@@ -34,7 +35,7 @@ namespace Certes
         /// <value>
         /// The account key.
         /// </value>
-        IAccountKey AccountKey { get; }
+        ISignatureKey AccountKey { get; }
 
         /// <summary>
         /// Gets the ACME account context.
@@ -74,7 +75,7 @@ namespace Certes
         /// </summary>
         /// <param name="key">The new account key.</param>
         /// <returns>The account resource.</returns>
-        Task<Account> ChangeKey(AccountKey key = null);
+        Task<Account> ChangeKey(ISignatureKey key = null);
 
         /// <summary>
         /// Creates a new the order.

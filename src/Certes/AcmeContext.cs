@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
+using Certes.Crypto;
 using Certes.Jws;
 using Identifier = Certes.Acme.Resource.Identifier;
 using IdentifierType = Certes.Acme.Resource.IdentifierType;
@@ -41,7 +42,7 @@ namespace Certes
         /// <value>
         /// The account key.
         /// </value>
-        public IAccountKey AccountKey { get; private set; }
+        public ISignatureKey AccountKey { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeContext" /> class.
@@ -52,10 +53,10 @@ namespace Certes
         /// <exception cref="ArgumentNullException">
         /// If <paramref name="directoryUri"/> is <c>null</c>.
         /// </exception>
-        public AcmeContext(Uri directoryUri, IAccountKey accountKey = null, IAcmeHttpClient http = null)
+        public AcmeContext(Uri directoryUri, ISignatureKey accountKey = null, IAcmeHttpClient http = null)
         {
             DirectoryUri = directoryUri ?? throw new ArgumentNullException(nameof(directoryUri));
-            AccountKey = accountKey ?? new AccountKey();
+            AccountKey = accountKey ?? DSA.NewKey();
             HttpClient = http ?? new AcmeHttpClient(directoryUri);
         }
 
@@ -79,12 +80,12 @@ namespace Certes
         /// </summary>
         /// <param name="key">The new account key.</param>
         /// <returns>The account resource.</returns>
-        public async Task<Account> ChangeKey(AccountKey key)
+        public async Task<Account> ChangeKey(ISignatureKey key)
         {
             var endpoint = await this.GetResourceUri(d => d.KeyChange);
             var location = await Account().Location();
             
-            var newKey = key ?? new AccountKey();
+            var newKey = key ?? DSA.NewKey();
             var keyChange = new
             {
                 account = location,
@@ -160,7 +161,7 @@ namespace Certes
             JwsPayload payload;
             if (certificatePrivateKey != null)
             {
-                var jws = new JwsSigner(certificatePrivateKey);
+                var jws = new JwsSigner(certificatePrivateKey.SignatureKey);
                 payload = jws.Sign(body, url: endpoint, nonce: await HttpClient.ConsumeNonce());
             }
             else

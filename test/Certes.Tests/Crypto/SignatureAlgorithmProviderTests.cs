@@ -53,9 +53,8 @@ namespace Certes.Crypto
             {
                 await key.Save(data);
                 var keyData = data.ToArray();
-                data.Seek(0, SeekOrigin.Begin);
 
-                var restored = provider.GetKey(data);
+                var restored = provider.GetKey(keyData);
 
                 using (var buffer = new MemoryStream())
                 {
@@ -76,11 +75,8 @@ namespace Certes.Crypto
             generator.Init(generatorParams);
             var keyPair = generator.GenerateKeyPair();
 
-            using (var data = new MemoryStream(
-                PrivateKeyInfoFactory.CreatePrivateKeyInfo((keyPair.Private)).GetDerEncoded()))
-            {
-                Assert.Throws<NotSupportedException>(() => provider.GetKey(data));
-            }
+            var der = PrivateKeyInfoFactory.CreatePrivateKeyInfo((keyPair.Private)).GetDerEncoded();
+            Assert.Throws<NotSupportedException>(() => provider.GetKey(der));
         }
 
         [Fact]
@@ -95,11 +91,8 @@ namespace Certes.Crypto
             dsaKpg.Init(new DsaKeyGenerationParameters(new SecureRandom(), dsaSpec));
             var keyPair = dsaKpg.GenerateKeyPair();
 
-            using (var data = new MemoryStream(
-                PrivateKeyInfoFactory.CreatePrivateKeyInfo((keyPair.Private)).GetDerEncoded()))
-            {
-                Assert.Throws<NotSupportedException>(() => provider.GetKey(data));
-            }
+            var der = PrivateKeyInfoFactory.CreatePrivateKeyInfo((keyPair.Private)).GetDerEncoded();
+            Assert.Throws<NotSupportedException>(() => provider.GetKey(der));
         }
     }
 }

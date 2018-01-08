@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using Certes.Pkcs;
 using Newtonsoft.Json;
 using Xunit;
@@ -26,8 +23,9 @@ namespace Certes.Crypto
             {
                 key.Save(buffer);
 
+                var der = buffer.ToArray();
                 buffer.Seek(0, SeekOrigin.Begin);
-                var exported = provider.GetKey(buffer);
+                var exported = provider.GetKey(der);
 
                 Assert.Equal(
                     JsonConvert.SerializeObject(key.JsonWebKey),

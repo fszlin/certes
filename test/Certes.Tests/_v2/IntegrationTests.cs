@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
-using Certes.Jws;
 using Certes.Pkcs;
 using Org.BouncyCastle.X509;
 using Xunit;
@@ -74,7 +73,7 @@ namespace Certes
                 new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
             var location = await ctx.Account().Location();
 
-            var newKey = new AccountKey();
+            var newKey = DSA.NewKey();
             await ctx.ChangeKey(newKey);
 
             var ctxWithNewKey = new AcmeContext(dirUri, newKey);

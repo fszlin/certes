@@ -1,6 +1,4 @@
-﻿using Certes.Pkcs;
-
-namespace Certes
+﻿namespace Certes
 {
     public static class Keys
     {
@@ -31,26 +29,22 @@ mu4t7p3jbTHVdqKe5G8Q1bRHpSEoTmmn6m5Y5RkpPnxo8HF+Xv0zEpyFcd5c6S4n
 jl6d4qMCgYAEcJwSR8ws9e3FOKWxPa2XaDrsmzLNqYldQSpcgXqw/qkhOcwCH9if
 vfcrTi64g4ZJKwd6oPnzkYHho2I0Q3dkPwMAWUHaaWjTAWmiEromE4z9QNb+Inkx
 qeIAldJH4zaLqkEXH/643NjLFeQy7w4cbdODASwGqBEJa9SJJjMfbw==
------END RSA PRIVATE KEY-----
-";
+-----END RSA PRIVATE KEY-----";
 
         internal const string ES256Key = @"-----BEGIN EC PRIVATE KEY-----
 MDECAQEEIJTKjLb/7vi68uMaaktLL8A8uKeM5r2ibBJm1KPG/xhVoAoGCCqGSM49
 AwEH
------END EC PRIVATE KEY-----
-";
+-----END EC PRIVATE KEY-----";
 
         internal const string ES384Key = @"-----BEGIN EC PRIVATE KEY-----
 MD4CAQEEMIipuyxYYQecexCUNx5U9bo+OWhHm7ZfdxRY3juNkNmNTD7r87KHZkNr
 LXMS57GJOqAHBgUrgQQAIg==
------END EC PRIVATE KEY-----
-";
+-----END EC PRIVATE KEY-----";
 
         internal const string ES512Key = @"-----BEGIN EC PRIVATE KEY-----
 MFACAQEEQgHjbZs0LAlpMoTgyDNQ5JJajX8TTk0jlm+SPOmP0nJcMb2fK5oqY4z8
 Aq8YDXfnAZVZ2xQJkiysQjyDoJrNpz5kBKAHBgUrgQQAIw==
------END EC PRIVATE KEY-----
-";
+-----END EC PRIVATE KEY-----";
         #endregion
     }
 }

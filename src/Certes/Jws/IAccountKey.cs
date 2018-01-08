@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Certes.Crypto;
 using Certes.Json;
 using Certes.Pkcs;
 using Newtonsoft.Json;
@@ -50,6 +51,14 @@ namespace Certes.Jws
         /// The JSON web key.
         /// </value>
         JsonWebKey JsonWebKey { get; }
+
+        /// <summary>
+        /// Gets the signature key.
+        /// </summary>
+        /// <value>
+        /// The signature key.
+        /// </value>
+        ISignatureKey SignatureKey { get; }
 
         /// <summary>
         /// Exports the key pair.

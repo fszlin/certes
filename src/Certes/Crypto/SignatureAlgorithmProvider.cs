@@ -1,35 +1,45 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Certes.Pkcs;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 
 namespace Certes.Crypto
 {
     internal class SignatureAlgorithmProvider
     {
-        public ISignatureAlgorithm Get(SignatureAlgorithm algorithm)
+        private static readonly Dictionary<SignatureAlgorithm, ISignatureAlgorithm> signatureAlgorithms = new Dictionary<SignatureAlgorithm, ISignatureAlgorithm>()
         {
-            switch (algorithm)
-            {
-                case SignatureAlgorithm.ES256:
-                    return new EllipticCurveSignatureAlgorithm("P-256", "SHA-256withECDSA", "SHA256");
-                case SignatureAlgorithm.ES384:
-                    return new EllipticCurveSignatureAlgorithm("P-384", "SHA-384withECDSA", "SHA384");
-                case SignatureAlgorithm.ES512:
-                    return new EllipticCurveSignatureAlgorithm("P-521", "SHA-512withECDSA", "SHA512");
-                case SignatureAlgorithm.RS256:
-                    return new RS256SignatureAlgorithm();
-            }
+            { SignatureAlgorithm.ES256, new EllipticCurveSignatureAlgorithm("P-256", "SHA-256withECDSA", "SHA256") },
+            { SignatureAlgorithm.ES384, new EllipticCurveSignatureAlgorithm("P-384", "SHA-384withECDSA", "SHA384") },
+            { SignatureAlgorithm.ES512, new EllipticCurveSignatureAlgorithm("P-521", "SHA-512withECDSA", "SHA512") },
+            { SignatureAlgorithm.RS256, new RS256SignatureAlgorithm() },
+        };
 
-            throw new ArgumentException(nameof(algorithm));
+        public ISignatureAlgorithm Get(SignatureAlgorithm algorithm) =>
+            signatureAlgorithms.TryGetValue(algorithm, out var signer) ? signer : throw new ArgumentException(nameof(algorithm));
+
+        public ISignatureKey GetKey(string pem)
+        {
+            using (var reader = new StringReader(pem))
+            {
+                var pemReader = new PemReader(reader);
+                var pemKey = pemReader.ReadObject() as AsymmetricCipherKeyPair;
+                return ReadKey(pemKey.Private);
+            }
         }
 
-        public ISignatureKey GetKey(Stream data)
+        public ISignatureKey GetKey(byte[] der)
         {
-            var keyParam = PrivateKeyFactory.CreateKey(data);
+            var keyParam = PrivateKeyFactory.CreateKey(der);
+            return ReadKey(keyParam);
+        }
 
+        private static ISignatureKey ReadKey(AsymmetricKeyParameter keyParam)
+        {
             if (keyParam is RsaPrivateCrtKeyParameters)
             {
                 var privateKey = (RsaPrivateCrtKeyParameters)keyParam;

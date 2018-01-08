@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Certes.Acme.Resource;
+using Certes.Crypto;
 using Certes.Jws;
 
 namespace Certes.Acme

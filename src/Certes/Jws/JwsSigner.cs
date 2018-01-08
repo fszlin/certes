@@ -1,4 +1,5 @@
-﻿using Certes.Json;
+﻿using Certes.Crypto;
+using Certes.Json;
 using Certes.Pkcs;
 using Newtonsoft.Json;
 using System;
@@ -11,13 +12,13 @@ namespace Certes.Jws
     /// </summary>
     internal class JwsSigner
     {
-        private readonly IAccountKey keyPair;
+        private readonly ISignatureKey keyPair;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JwsSigner"/> class.
         /// </summary>
         /// <param name="keyPair">The keyPair.</param>
-        public JwsSigner(IAccountKey keyPair)
+        public JwsSigner(ISignatureKey keyPair)
         {
             this.keyPair = keyPair;
         }
@@ -71,7 +72,7 @@ namespace Certes.Jws
 
             var signature = $"{protectedHeaderEncoded}.{payloadEncoded}";
             var signatureBytes = Encoding.UTF8.GetBytes(signature);
-            var signedSignatureBytes = keyPair.SignData(signatureBytes);
+            var signedSignatureBytes = keyPair.GetSigner().SignData(signatureBytes);
             var signedSignatureEncoded = JwsConvert.ToBase64String(signedSignatureBytes);
 
             var body = new JwsPayload

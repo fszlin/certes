@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq.Expressions;
 using System.Net.Http;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
+using Certes.Crypto;
 using Certes.Jws;
 using Certes.Pkcs;
 using Newtonsoft.Json;
@@ -153,12 +152,9 @@ namespace Certes
 
             Assert.Equal(value, (TProperty)actualValue);
         }
-        internal static AccountKey GetAccountKey(SignatureAlgorithm algo = SignatureAlgorithm.ES256)
+        internal static ISignatureKey GetAccountKey(SignatureAlgorithm algo = SignatureAlgorithm.ES256)
         {
-            using (var buffer = new MemoryStream(Encoding.UTF8.GetBytes(algo.GetTestKey())))
-            {
-                return new AccountKey(KeyInfo.From(buffer));
-            }
+            return DSA.FromPem(algo.GetTestKey());
         }
 
         internal static string GetTestKey(this SignatureAlgorithm algo)
