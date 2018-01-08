@@ -64,7 +64,7 @@ namespace Certes.Cli
             cmd = $"cert --value {Host} --name mycert --distinguished-name %dn% --server {server} --path {AccountPath}";
             await RunCommand(cmd, new Dictionary<string, string>
             {
-                { "%dn%", $"CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN={Host}" }
+                { "%dn%", $"C=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN={Host}" }
             });
 
             // Export certificate

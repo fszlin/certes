@@ -95,7 +95,7 @@ namespace Certes
             }
 
             var csr = new CertificationRequestBuilder();
-            csr.AddName($"CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN={hosts[0]}");
+            csr.AddName($"C=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN={hosts[0]}");
             foreach (var h in hosts)
             {
                 csr.SubjectAlternativeNames.Add(h);
@@ -152,16 +152,16 @@ namespace Certes
                 }
             }
 
-            var csr = new CertificationRequestBuilder();
-            csr.AddName($"CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN={hosts[0]}");
-            foreach (var h in hosts)
-            {
-                csr.SubjectAlternativeNames.Add(h);
-            }
-
-            var csrDer = csr.Generate();
-
-            var finalizedOrder = await orderCtx.Finalize(csrDer);
+            var certKey = DSA.NewKey(SignatureAlgorithm.RS256);
+            var finalizedOrder = await orderCtx.Finalize(new CsrInfo
+            { 
+                CountryName = "CA",
+                State = "Ontario",
+                Locality = "Toronto",
+                Organization = "Certes",
+                OrganizationUnit = "Dev",
+                CommonName = hosts[0],
+            }, certKey);
             var pem = await orderCtx.Download();
 
             // revoke certificate

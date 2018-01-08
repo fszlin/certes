@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace Certes.Acme
 {
     /// <summary>
-    /// 
+    /// Extension methods for <see cref="IAuthorizationContext"/>.
     /// </summary>
     public static class IAuthorizationContextExtensions
     {

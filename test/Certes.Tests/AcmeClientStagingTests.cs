@@ -32,7 +32,7 @@ namespace Certes
         {
             var accountKey = await Helper.Loadkey();
             var csr = new CertificationRequestBuilder();
-            csr.AddName("CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN=www.certes-ci.dymetis.com");
+            csr.AddName("C=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN=www.certes-ci.dymetis.com");
             csr.SubjectAlternativeNames.Add("mail.certes-ci.dymetis.com");
             csr.SubjectAlternativeNames.Add("sso.certes-ci.dymetis.com");
 
