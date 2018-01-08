@@ -75,7 +75,7 @@ Continue the authorization process and generate the certificate
     certes authz --refresh http-01 --v my_domain.com #--v www.my_domain.com --v my_domain2.com
 
     # Create a certificate with the distinguished name, and additional SAN names
-    certes cert --name mycert --distinguished-name "CN=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN=my_domain.com" #--v www.my_domain.com --v my_domain2.com
+    certes cert --name mycert --distinguished-name "C=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN=my_domain.com" #--v www.my_domain.com --v my_domain2.com
 
     # Export the certificate in DER
     certes cert --name mycert --export-cer ./mycert.cer
