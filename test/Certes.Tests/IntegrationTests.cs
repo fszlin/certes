@@ -117,6 +117,26 @@ namespace Certes
             }
         }
 
+        [Fact(Skip = "https://github.com/letsencrypt/boulder/issues/3333")]
+        public async Task CanGenerateWildcard()
+        {
+            var hosts = new[] { $"wildcard-{domainSuffix}.es256.certes-ci.dymetis.com" };
+            var ctx = new AcmeContext(await GetAvailableStagingServer(), Helper.GetAccountKey());
+
+            var orderCtx = await AuthzDns(ctx, hosts);
+            var certKey = DSA.NewKey(SignatureAlgorithm.RS256);
+            var finalizedOrder = await orderCtx.Finalize(new CsrInfo
+            {
+                CountryName = "CA",
+                State = "Ontario",
+                Locality = "Toronto",
+                Organization = "Certes",
+                OrganizationUnit = "Dev",
+                CommonName = hosts[0],
+            }, certKey);
+            var pem = await orderCtx.Download();
+        }
+
         [Fact]
         public async Task CanGenerateCertificateHttp()
         {
@@ -165,7 +185,7 @@ namespace Certes
                 CommonName = hosts[0],
             }, certKey);
             var pem = await orderCtx.Download();
-
+            
             var pfxBuilder = new PfxBuilder(Encoding.UTF8.GetBytes(pem), certKey);
             pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-ca2.pem"));
             pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
