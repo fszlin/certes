@@ -31,6 +31,7 @@ branches:
     - master
     - cli
     - beta
+    - rc
 
 assembly_info:
   patch: true
@@ -45,9 +46,9 @@ init:
   - ps: $env:CERTES_ASSEMBLY_VERSION = $verParts[0] + '.' + $verParts[1] + '.' + $verParts[2]
   - ps: $env:CERTES_ASSEMBLY_FILE_VERSION = $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3]
   - ps: $buildVer = $verParts[3] - $env:ver_offset
-  - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + '.' + $buildVer }
-  - ps: if ($env:APPVEYOR_REPO_BRANCH -eq "beta") { $env:CERTES_ASSEMBLY_INFO_VERSION = $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + $env:beta_build_Ver }
-  - ps: if ($env:APPVEYOR_REPO_BRANCH -eq "rc") { $env:CERTES_ASSEMBLY_INFO_VERSION = $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + $env:rc_build_Ver }
+  - ps: if ($env:APPVEYOR_REPO_BRANCH -eq "beta") { $buildVer = Get-Date -Format yyyyMMdd }
+  - ps: if ($env:APPVEYOR_REPO_BRANCH -eq "rc") { $buildVer = Get-Date -Format yyyyMMdd }
+  - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + '-' + $buildVer }
   - ps: $env:CERTES_PACKAGE_VERSION = $env:CERTES_ASSEMBLY_INFO_VERSION
 
 install:
