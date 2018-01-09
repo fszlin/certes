@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -164,6 +165,12 @@ namespace Certes
                 CommonName = hosts[0],
             }, certKey);
             var pem = await orderCtx.Download();
+
+            var pfxBuilder = new PfxBuilder(Encoding.UTF8.GetBytes(pem), certKey);
+            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-ca2.pem"));
+            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
+
+            var pfx = pfxBuilder.Build("my-pfx", "abcd1234");
 
             // revoke certificate
             var certParser = new X509CertificateParser();

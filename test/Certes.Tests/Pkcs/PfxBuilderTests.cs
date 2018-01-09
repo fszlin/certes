@@ -19,8 +19,8 @@ namespace Certes.Pkcs
 
             var pfxBuilder = new PfxBuilder(leafCert, new AccountKey(alog).Export());
 
-            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-ca2.cer"));
-            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.cer"));
+            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-ca2.pem"));
+            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
             var pfx = pfxBuilder.Build("my-cert", "abcd1234");
         }
     }

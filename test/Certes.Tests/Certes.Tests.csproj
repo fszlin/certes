@@ -44,10 +44,10 @@
     <None Update="Data\leaf-cert.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Data\test-ca2.cer">
+    <None Update="Data\test-ca2.pem">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Data\test-root.cer">
+    <None Update="Data\test-root.pem">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Data\account.json">
