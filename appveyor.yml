@@ -45,7 +45,7 @@ init:
   - ps: $env:CERTES_ASSEMBLY_FILE_VERSION = $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3]
   - ps: $buildVer = $verParts[3] - $env:ver_offset
   - ps: if ($env:APPVEYOR_REPO_BRANCH -eq "beta") { $buildVer = $env:beta_build_Ver }
-  - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + '.' + $buildVer }
+  - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + $buildVer }
   - ps: $env:CERTES_PACKAGE_VERSION = $env:CERTES_ASSEMBLY_INFO_VERSION
 
 install:
