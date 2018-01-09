@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using Certes.Jws;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 namespace Certes.Json

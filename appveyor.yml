@@ -20,6 +20,7 @@ environment:
   DOTNET_CLI_TELEMETRY_OPTOUT: 0
   ver_offset: 360
   beta_build_Ver: 1
+  rc_build_Ver: 1
   codecov_upload_token:
     secure: DxYtxftZ1rpZhZzixRqY3hHFrlEZlh62XPV4tcO+zxdsRNZWPSEl967VpRevAPSo
 
@@ -44,8 +45,9 @@ init:
   - ps: $env:CERTES_ASSEMBLY_VERSION = $verParts[0] + '.' + $verParts[1] + '.' + $verParts[2]
   - ps: $env:CERTES_ASSEMBLY_FILE_VERSION = $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3]
   - ps: $buildVer = $verParts[3] - $env:ver_offset
-  - ps: if ($env:APPVEYOR_REPO_BRANCH -eq "beta") { $buildVer = $env:beta_build_Ver }
-  - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + $buildVer }
+  - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + '.' + $buildVer }
+  - ps: if ($env:APPVEYOR_REPO_BRANCH -eq "beta") { $env:CERTES_ASSEMBLY_INFO_VERSION = $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + $env:beta_build_Ver }
+  - ps: if ($env:APPVEYOR_REPO_BRANCH -eq "rc") { $env:CERTES_ASSEMBLY_INFO_VERSION = $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + $env:rc_build_Ver }
   - ps: $env:CERTES_PACKAGE_VERSION = $env:CERTES_ASSEMBLY_INFO_VERSION
 
 install:
@@ -116,7 +118,7 @@ deploy:
     api_key:
       secure: enjdo7AiXKaGhj8NC2k3wjQ9mGlU1jxABzG6tuphpM7dNaazlrSlvwR2H1kC4kr+
     skip_symbols: true
-    symbol_server:           # remove to push symbols to SymbolSource.org
+    symbol_server:
     artifact: nupkg
     on:
       branch: release
@@ -126,10 +128,9 @@ deploy:
     api_key:
       secure: RSdqUIwRSn8DI5xaa4iWBzOtYU6y3K9JRh07myQpAIRf5IhlwsZpFsnQOpCg1g7J
     skip_symbols: true
-    symbol_server:           # remove to push symbols to SymbolSource.org
+    symbol_server:
     artifact: nupkg
     on:
       branch:
         - master
         - cli
-        - beta
