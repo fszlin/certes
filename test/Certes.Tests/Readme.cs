@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
+using Certes.Acme.Resource;
 using Certes.Pkcs;
+using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Security;
 using Xunit;
 
 namespace Certes
 {
     public class Readme
     {
-        [Fact(Skip = "https://github.com/letsencrypt/boulder/issues/3335")]
+        [Fact]
         public async Task Account()
         {
             var acme = new AcmeContext(await IntegrationTests.GetAvailableStagingServer(), Helper.GetAccountKey(SignatureAlgorithm.RS256));
-            var account = await acme.Account();
+            var account = await acme.NewAccount("admin@example.com", true);
 
             var order = await acme.NewOrder(new[] { "www.certes-ci.dymetis.com" });
 
@@ -24,8 +25,13 @@ namespace Certes
             var token = httpChallenge.Token;
             var keyAuthz = httpChallenge.KeyAuthz;
 
-            // TODO: search the order/authz - https://github.com/letsencrypt/boulder/issues/3335
             await httpChallenge.Validate();
+
+            var res = await authz.Resource();
+            while (res.Status != AuthorizationStatus.Valid && res.Status != AuthorizationStatus.Invalid)
+            {
+                res = await authz.Resource();
+            }
 
             var certKey = DSA.NewKey(SignatureAlgorithm.RS256);
             await order.Finalize(new CsrInfo
@@ -39,8 +45,6 @@ namespace Certes
             }, certKey);
 
             var pem = await order.Download();
-
-            await account.Deactivate();
         }
     }
 }

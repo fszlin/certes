@@ -213,5 +213,25 @@ namespace Certes
             var jws = new JwsSigner(AccountKey);
             return jws.Sign(entity, location, uri, nonce);
         }
+
+        /// <summary>
+        /// Gets the order by specified location.
+        /// </summary>
+        /// <param name="location">The order location.</param>
+        /// <returns>
+        /// The order context.
+        /// </returns>
+        public IOrderContext Order(Uri location)
+            => new OrderContext(this, location);
+
+        /// <summary>
+        /// Gets the authorization by specified location.
+        /// </summary>
+        /// <param name="location">The authorization location.</param>
+        /// <returns>
+        /// The authorization context.
+        /// </returns>
+        public IAuthorizationContext Authorization(Uri location)
+            => new AuthorizationContext(this, location);
     }
 }

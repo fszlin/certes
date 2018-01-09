@@ -263,13 +263,16 @@ namespace Certes
                     {
                         await http.GetStringAsync(uri);
 
-                        try
+                        foreach (var algo in Enum.GetValues(typeof(SignatureAlgorithm)).OfType<SignatureAlgorithm>())
                         {
-                            var ctx = new AcmeContext(uri, Helper.GetAccountKey());
-                            await ctx.NewAccount(new[] { "mailto:fszlin@example.com" }, true);
-                        }
-                        catch
-                        {
+                            try
+                            {
+                                var ctx = new AcmeContext(uri, Helper.GetAccountKey(algo));
+                                await ctx.NewAccount(new[] { "mailto:fszlin@example.com" }, true);
+                            }
+                            catch
+                            {
+                            }
                         }
 
                         return stagingServer = uri;

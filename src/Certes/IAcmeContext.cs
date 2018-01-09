@@ -95,5 +95,19 @@ namespace Certes
         /// <param name="uri">The URI for the request.</param>
         /// <returns>The JWS payload.</returns>
         Task<JwsPayload> Sign(object entity, Uri uri);
+
+        /// <summary>
+        /// Gets the order by specified location.
+        /// </summary>
+        /// <param name="location">The order location.</param>
+        /// <returns>The order context.</returns>
+        IOrderContext Order(Uri location);
+
+        /// <summary>
+        /// Gets the authorization by specified location.
+        /// </summary>
+        /// <param name="location">The authorization location.</param>
+        /// <returns>The authorization context.</returns>
+        IAuthorizationContext Authorization(Uri location);
     }
 }
