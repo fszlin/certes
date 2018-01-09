@@ -26,7 +26,7 @@ namespace Certes.Cli
         [Fact]
         public async Task RunStaging()
         {
-            var server = await Helper.GetStagingServer();
+            var server = await Helper.GetStagingServerV1();
 
             // Create new Registration
             cmd = $"register --register-unsafely-without-email --agree-tos --server {server} --path {AccountPath} --force";
@@ -118,7 +118,7 @@ namespace Certes.Cli
         {
             var json = File.ReadAllText(AccountPath);
             var ctx = JObject.Parse(json);
-            ctx["account"]["key"]["der"] = Helper.PrivateKey;
+            ctx["account"]["key"]["der"] = Helper.GetTestKeyV1();
             File.WriteAllText(AccountPath, ctx.ToString(Formatting.Indented));
         }
     }

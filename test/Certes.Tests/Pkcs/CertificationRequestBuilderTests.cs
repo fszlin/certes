@@ -9,7 +9,7 @@ namespace Certes.Pkcs
         [Fact]
         public async Task CanCreateCsrWithKey()
         {
-            var key = await Helper.Loadkey();
+            var key = await Helper.LoadkeyV1();
 #pragma warning disable 0612
             new CertificationRequestBuilder(key.Export());
 #pragma warning restore 0612

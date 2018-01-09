@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -16,7 +15,6 @@ namespace Certes
 {
     public class IntegrationTests
     {
-        private static Uri stagingServer;
         private readonly ITestOutputHelper output;
         private readonly string domainSuffix;
 
@@ -33,7 +31,7 @@ namespace Certes
         [Fact]
         public async Task CanDiscoverAccountByKey()
         {
-            var dirUri = await GetAvailableStagingServer();
+            var dirUri = await Helper.GetAvailableStagingServerV2();
 
             var ctx = new AcmeContext(dirUri, Helper.GetAccountKey());
             var acct = await ctx.Account();
@@ -46,7 +44,7 @@ namespace Certes
         [Fact]
         public async Task CanRunAccountFlows()
         {
-            var dirUri = await GetAvailableStagingServer();
+            var dirUri = await Helper.GetAvailableStagingServerV2();
 
             var ctx = new AcmeContext(dirUri);
             var accountCtx = await ctx.NewAccount(
@@ -68,7 +66,7 @@ namespace Certes
         [Fact(Skip = "https://github.com/letsencrypt/boulder/issues/3340")]
         public async Task CanChangeAccountKey()
         {
-            var dirUri = await GetAvailableStagingServer();
+            var dirUri = await Helper.GetAvailableStagingServerV2();
 
             var ctx = new AcmeContext(dirUri);
             var account = await ctx.NewAccount(
@@ -87,7 +85,7 @@ namespace Certes
         public async Task CanGenerateCertificateDns()
         {
             var hosts = new[] { $"www-dns-{domainSuffix}.es256.certes-ci.dymetis.com", $"mail-dns-{domainSuffix}.es256.certes-ci.dymetis.com" };
-            var ctx = new AcmeContext(await GetAvailableStagingServer(), Helper.GetAccountKey());
+            var ctx = new AcmeContext(await Helper.GetAvailableStagingServerV2(), Helper.GetAccountKey());
             var orderCtx = await AuthzDns(ctx, hosts);
             while (orderCtx == null)
             {
@@ -121,7 +119,7 @@ namespace Certes
         public async Task CanGenerateWildcard()
         {
             var hosts = new[] { $"wildcard-{domainSuffix}.es256.certes-ci.dymetis.com" };
-            var ctx = new AcmeContext(await GetAvailableStagingServer(), Helper.GetAccountKey());
+            var ctx = new AcmeContext(await Helper.GetAvailableStagingServerV2(), Helper.GetAccountKey());
 
             var orderCtx = await AuthzDns(ctx, hosts);
             var certKey = DSA.NewKey(SignatureAlgorithm.RS256);
@@ -141,7 +139,7 @@ namespace Certes
         public async Task CanGenerateCertificateHttp()
         {
             var hosts = new[] { $"www-http-{domainSuffix}.es256.certes-ci.dymetis.com", $"mail-http-{domainSuffix}.es256.certes-ci.dymetis.com" };
-            var ctx = new AcmeContext(await GetAvailableStagingServer(), Helper.GetAccountKey());
+            var ctx = new AcmeContext(await Helper.GetAvailableStagingServerV2(), Helper.GetAccountKey());
             var orderCtx = await ctx.NewOrder(hosts);
             Assert.IsAssignableFrom<OrderContext>(orderCtx);
             var order = await orderCtx.Resource();
@@ -262,48 +260,5 @@ namespace Certes
             return orderCtx;
         }
 
-        public static async Task<Uri> GetAvailableStagingServer()
-        {
-            if (stagingServer != null)
-            {
-                return stagingServer;
-            }
-
-            var servers = new[] {
-                new Uri("http://localhost:4001/directory"),
-                new Uri("http://boulder-certes-ci.dymetis.com:4001/directory"),
-                WellKnownServers.LetsEncryptStagingV2,
-            };
-
-            using (var http = new HttpClient())
-            {
-                foreach (var uri in servers)
-                {
-                    try
-                    {
-                        await http.GetStringAsync(uri);
-
-                        foreach (var algo in Enum.GetValues(typeof(SignatureAlgorithm)).OfType<SignatureAlgorithm>())
-                        {
-                            try
-                            {
-                                var ctx = new AcmeContext(uri, Helper.GetAccountKey(algo));
-                                await ctx.NewAccount(new[] { "mailto:fszlin@example.com" }, true);
-                            }
-                            catch
-                            {
-                            }
-                        }
-
-                        return stagingServer = uri;
-                    }
-                    catch
-                    {
-                    }
-                }
-            }
-
-            throw new Exception("No staging server available.");
-        }
     }
 }

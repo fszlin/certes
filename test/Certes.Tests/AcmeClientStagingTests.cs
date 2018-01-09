@@ -16,7 +16,7 @@ namespace Certes
         public async Task RunAccountFlow(SignatureAlgorithm algorithm)
         {
             var key = new AccountKey(algorithm);
-            using (var client = new AcmeClient(await Helper.GetStagingServer()))
+            using (var client = new AcmeClient(await Helper.GetStagingServerV1()))
             {
                 client.Use(key.Export());
                 var reg = await client.NewRegistraton();
@@ -30,13 +30,13 @@ namespace Certes
         [Fact]
         public async Task CanIssueSan()
         {
-            var accountKey = await Helper.Loadkey();
+            var accountKey = await Helper.LoadkeyV1();
             var csr = new CertificationRequestBuilder();
             csr.AddName("C=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN=www.certes-ci.dymetis.com");
             csr.SubjectAlternativeNames.Add("mail.certes-ci.dymetis.com");
             csr.SubjectAlternativeNames.Add("sso.certes-ci.dymetis.com");
 
-            using (var client = new AcmeClient(await Helper.GetStagingServer()))
+            using (var client = new AcmeClient(await Helper.GetStagingServerV1()))
             {
                 client.Use(accountKey.Export());
 

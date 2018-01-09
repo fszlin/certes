@@ -14,7 +14,7 @@ namespace Certes.Acme
                 Type = "dns-01"
             };
 
-            var keyAuth = challenge.ComputeDnsValue(await Helper.Loadkey());
+            var keyAuth = challenge.ComputeDnsValue(await Helper.LoadkeyV1());
             Assert.Equal(
                 "_R4B3fDaVztZshDzof1sXQ90V-JlADF_2WFua87u7qU",
                 keyAuth);

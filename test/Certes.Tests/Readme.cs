@@ -12,7 +12,7 @@ namespace Certes
         [Fact]
         public async Task Account()
         {
-            var acmeDir = await IntegrationTests.GetAvailableStagingServer();
+            var acmeDir = await Helper.GetAvailableStagingServerV2();
             var accountKey = Helper.GetAccountKey(SignatureAlgorithm.RS256);
 
             var acme = new AcmeContext(acmeDir, accountKey);
