@@ -47,15 +47,15 @@ namespace Certes.Acme
         }
 
         /// <summary>
-        /// Gets the orders
+        /// Gets the order list.
         /// </summary>
         /// <returns>
-        /// The orders.
+        /// The orders list.
         /// </returns>
         public async Task<IOrderListContext> Orders()
         {
             var account = await Resource();
-            return new OrderListContext(Context, this, account.Orders);
+            return new OrderListContext(Context, account.Orders);
         }
 
         /// <summary>
