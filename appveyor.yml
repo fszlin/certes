@@ -19,6 +19,7 @@ environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 0
   ver_offset: 360
+  beta_build_Ver: 1
   codecov_upload_token:
     secure: DxYtxftZ1rpZhZzixRqY3hHFrlEZlh62XPV4tcO+zxdsRNZWPSEl967VpRevAPSo
 
@@ -28,6 +29,7 @@ branches:
     - release
     - master
     - cli
+    - beta
 
 assembly_info:
   patch: true
@@ -42,6 +44,7 @@ init:
   - ps: $env:CERTES_ASSEMBLY_VERSION = $verParts[0] + '.' + $verParts[1] + '.' + $verParts[2]
   - ps: $env:CERTES_ASSEMBLY_FILE_VERSION = $env:CERTES_ASSEMBLY_VERSION + '.' + $verParts[3]
   - ps: $buildVer = $verParts[3] - $env:ver_offset
+  - ps: if ($env:APPVEYOR_REPO_BRANCH -eq "beta") { $buildVer = $env:beta_build_Ver }
   - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + '.' + $buildVer }
   - ps: $env:CERTES_PACKAGE_VERSION = $env:CERTES_ASSEMBLY_INFO_VERSION
 
@@ -108,7 +111,6 @@ deploy:
     on:
       branch:
         - master
-        - dev
 
   - provider: NuGet
     api_key:
@@ -130,3 +132,4 @@ deploy:
       branch:
         - master
         - cli
+        - beta

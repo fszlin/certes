@@ -64,7 +64,7 @@ namespace Certes
             Assert.Equal(AccountStatus.Deactivated, account.Status);
         }
 
-        [Fact(Skip = "New key is already in use for a different account")]
+        [Fact(Skip = "https://github.com/letsencrypt/boulder/issues/3340")]
         public async Task CanChangeAccountKey()
         {
             var dirUri = await GetAvailableStagingServer();
