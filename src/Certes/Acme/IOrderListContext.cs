@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Certes.Acme
@@ -10,12 +9,11 @@ namespace Certes.Acme
     public interface IOrderListContext
     {
         /// <summary>
-        /// Creates a new order the specified CSR.
+        /// Returns an enumerator that iterates through the collection.
         /// </summary>
-        /// <param name="csr">The CSR.</param>
-        /// <param name="notBefore">The not before timestamp.</param>
-        /// <param name="notAfter">The not after timestamp.</param>
-        /// <returns>The created order.</returns>
-        Task<IOrderContext> New(string csr, DateTimeOffset notBefore, DateTimeOffset notAfter);
+        /// <returns>
+        /// An enumerator that can be used to iterate through the collection.
+        /// </returns>
+        Task<IEnumerable<IOrderContext>> Orders();
     }
 }

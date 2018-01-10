@@ -12,15 +12,21 @@ namespace Certes
         [Fact]
         public async Task Account()
         {
-            var acme = new AcmeContext(await IntegrationTests.GetAvailableStagingServer(), Helper.GetAccountKey(SignatureAlgorithm.RS256));
+            var acmeDir = await Helper.GetAvailableStagingServerV2();
+            var accountKey = Helper.GetAccountKey(SignatureAlgorithm.RS256);
+
+            var acme = new AcmeContext(acmeDir, accountKey);
             var account = await acme.NewAccount("admin@example.com", true);
 
             var order = await acme.NewOrder(new[] { "www.certes-ci.dymetis.com" });
 
             var authz = (await order.Authorizations()).First();
             var httpChallenge = await authz.Http();
+
             var token = httpChallenge.Token;
             var keyAuthz = httpChallenge.KeyAuthz;
+
+            var orderUri = order.Location;
 
             await httpChallenge.Validate();
 
@@ -30,6 +36,8 @@ namespace Certes
                 res = await authz.Resource();
             }
 
+            acme = new AcmeContext(acmeDir, accountKey);
+            order = acme.Order(orderUri);
             var certKey = DSA.NewKey(SignatureAlgorithm.RS256);
             await order.Finalize(new CsrInfo
             {

@@ -24,10 +24,10 @@ namespace Certes.Acme
             using (var http = new HttpClient(CreateHttpMock().Object))
             using (var handler = new AcmeHttpHandler(server, http))
             {
-                Assert.Equal(Helper.AcmeDir.NewReg, await handler.GetResourceUri(ResourceTypes.NewRegistration));
-                Assert.Equal(Helper.AcmeDir.NewAuthz, await handler.GetResourceUri(ResourceTypes.NewAuthorization));
-                Assert.Equal(Helper.AcmeDir.NewCert, await handler.GetResourceUri(ResourceTypes.NewCertificate));
-                Assert.Equal(Helper.AcmeDir.RevokeCert, await handler.GetResourceUri(ResourceTypes.RevokeCertificate));
+                Assert.Equal(Helper.MockDirectoryV1.NewReg, await handler.GetResourceUri(ResourceTypes.NewRegistration));
+                Assert.Equal(Helper.MockDirectoryV1.NewAuthz, await handler.GetResourceUri(ResourceTypes.NewAuthorization));
+                Assert.Equal(Helper.MockDirectoryV1.NewCert, await handler.GetResourceUri(ResourceTypes.NewCertificate));
+                Assert.Equal(Helper.MockDirectoryV1.RevokeCert, await handler.GetResourceUri(ResourceTypes.RevokeCertificate));
             }
         }
 
@@ -78,7 +78,7 @@ namespace Certes.Acme
                 {
                     var resp = new HttpResponseMessage();
                     resp.StatusCode = HttpStatusCode.OK;
-                    resp.Content = new StringContent(JsonConvert.SerializeObject(Helper.AcmeDir), Encoding.UTF8, "application/json");
+                    resp.Content = new StringContent(JsonConvert.SerializeObject(Helper.MockDirectoryV1), Encoding.UTF8, "application/json");
 
                     resp.Headers.Add("Replay-Nonce", string.Format(NonceFormat, ++this.nonce));
                     return Task.FromResult(resp);

@@ -25,7 +25,7 @@ namespace Certes.Acme
 
             contextMock
                 .Setup(c => c.GetDirectory())
-                .ReturnsAsync(Helper.MockDirectory);
+                .ReturnsAsync(Helper.MockDirectoryV2);
             contextMock
                 .Setup(c => c.Sign(It.IsAny<object>(), location))
                 .Callback((object payload, Uri loc) =>
@@ -61,7 +61,7 @@ namespace Certes.Acme
 
             contextMock
                 .Setup(c => c.GetDirectory())
-                .ReturnsAsync(Helper.MockDirectory);
+                .ReturnsAsync(Helper.MockDirectoryV2);
             contextMock
                 .SetupGet(c => c.AccountKey)
                 .Returns(Helper.GetAccountKey());
