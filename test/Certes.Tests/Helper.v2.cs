@@ -4,8 +4,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
-using Certes.Crypto;
-using Certes.Pkcs;
 
 using Directory = Certes.Acme.Resource.Directory;
 

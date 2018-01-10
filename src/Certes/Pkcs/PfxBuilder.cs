@@ -85,10 +85,19 @@ namespace Certes.Pkcs
         /// Adds an issuer certificate.
         /// </summary>
         /// <param name="certificate">The issuer certificate.</param>
-        public void AddIssuer(byte[] certificate)
+        public void AddIssuer(byte[] certificate) => AddIssuers(certificate);
+
+        /// <summary>
+        /// Adds issuer certificates.
+        /// </summary>
+        /// <param name="certificates">The issuer certificates.</param>
+        public void AddIssuers(byte[] certificates)
         {
-            var cert = certParser.ReadCertificate(certificate);
-            this.issuers[cert.SubjectDN] = cert;
+            var issuers = certParser.ReadCertificates(certificates).OfType<X509Certificate>();
+            foreach (var cert in issuers)
+            {
+                this.issuers[cert.SubjectDN] = cert;
+            }
         }
 
         /// <summary>

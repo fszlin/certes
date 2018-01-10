@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Certes.Pkcs;
 using Xunit;
 
 namespace Certes

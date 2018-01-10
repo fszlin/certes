@@ -34,10 +34,15 @@ namespace Certes
         /// PFXs this instance.
         /// </summary>
         /// <returns></returns>
-        public byte[] ToPfx(string friendlyName, string password, bool fullChain = true)
+        public byte[] ToPfx(string friendlyName, string password, bool fullChain = true, byte[] issuers = null)
         {
             var pfxBuilder = new PfxBuilder(Encoding.UTF8.GetBytes(pem), PrivateKey);
             pfxBuilder.FullChain = fullChain;
+            if (issuers != null)
+            {
+                pfxBuilder.AddIssuers(issuers);
+            }
+
             return pfxBuilder.Build(friendlyName, password);
         }
 

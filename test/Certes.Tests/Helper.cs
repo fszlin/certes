@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Http;
 using System.Reflection;
@@ -18,6 +20,12 @@ namespace Certes
     {
         private static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() => new HttpClient());
         private static readonly SignatureAlgorithmProvider signatureAlgorithmProvider = new SignatureAlgorithmProvider();
+
+        // shouldn't need to add intermediate certificate
+        // seems the 'up' link provided for test config is pointing to staging's cert
+        internal static readonly byte[] TestCertificates = 
+            File.ReadAllBytes("./Data/test-ca2.pem")
+                .Concat(File.ReadAllBytes("./Data/test-root.pem")).ToArray();
 
         private static Lazy<LogFactory> logFactory = new Lazy<LogFactory>(() =>
         {
@@ -84,5 +92,7 @@ namespace Certes
         {
             using (await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens)))) { }
         }
+
+        internal static void AddTestCert(this PfxBuilder pfx) => pfx.AddIssuers(TestCertificates);
     }
 }

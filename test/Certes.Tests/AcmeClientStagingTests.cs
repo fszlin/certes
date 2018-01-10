@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Jws;
@@ -47,6 +49,10 @@ namespace Certes
 
                 var cert = await client.NewCertificate(csr);
                 var pfx = cert.ToPfx();
+                
+                pfx.AddTestCert();
+
+                pfx.Build("my.pfx", "abcd1234");
             }
         }
 

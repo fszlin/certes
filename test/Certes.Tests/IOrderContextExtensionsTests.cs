@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
-using Certes.Pkcs;
 using Moq;
 using Xunit;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using Org.BouncyCastle.Asn1.Pkcs;
 
-namespace Certes.Pkcs
+namespace Certes
 {
     /// <summary>
     /// The supported algorithms.

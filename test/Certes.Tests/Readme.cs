@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
-using Certes.Pkcs;
 using Xunit;
 
 namespace Certes
@@ -38,8 +37,7 @@ namespace Certes
 
             acme = new AcmeContext(acmeDir, accountKey);
             order = acme.Order(orderUri);
-            var certKey = DSA.NewKey(SignatureAlgorithm.RS256);
-            await order.Finalize(new CsrInfo
+            var cert = await order.Generate(new CsrInfo
             {
                 CountryName = "CA",
                 State = "Ontario",
@@ -47,9 +45,9 @@ namespace Certes
                 Organization = "Certes",
                 OrganizationUnit = "Dev",
                 CommonName = "www.certes-ci.dymetis.com",
-            }, certKey);
+            });
 
-            var pem = await order.Download();
+            cert.ToPfx("my-cert.pfx", "abcd1234", issuers: Helper.TestCertificates);
         }
     }
 }
