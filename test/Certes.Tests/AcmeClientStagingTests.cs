@@ -46,6 +46,7 @@ namespace Certes
                     AuthorizeDns(client, "sso.certes-ci.dymetis.com"));
 
                 var cert = await client.NewCertificate(csr);
+                var pfx = cert.ToPfx();
             }
         }
 

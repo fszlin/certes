@@ -1,11 +1,8 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Pkcs;
-using Org.BouncyCastle.OpenSsl;
-using Org.BouncyCastle.Security;
 using Xunit;
 
 namespace Certes
