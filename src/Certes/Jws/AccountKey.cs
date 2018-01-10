@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Certes.Crypto;
 using Certes.Pkcs;
 
@@ -104,14 +103,10 @@ namespace Certes.Jws
         /// <returns>The key pair.</returns>
         public KeyInfo Export()
         {
-            using (var buffer = new MemoryStream())
+            return new KeyInfo
             {
-                SignatureKey.Save(buffer);
-                return new KeyInfo
-                {
-                    PrivateKeyInfo = buffer.ToArray()
-                };
-            }   
+                PrivateKeyInfo = SignatureKey.ToDer()
+            };
         }
     }
 }

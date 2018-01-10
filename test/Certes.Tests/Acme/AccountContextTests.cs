@@ -53,7 +53,7 @@ namespace Certes.Acme
         {
             var expectedAccount = new Account();
 
-            var expectedPayload = new JwsSigner(Helper.GetAccountKey())
+            var expectedPayload = new JwsSigner(Helper.GetKeyV2())
                 .Sign(new Account(), null, location, "nonce");
 
             contextMock.Reset();
@@ -64,7 +64,7 @@ namespace Certes.Acme
                 .ReturnsAsync(Helper.MockDirectoryV2);
             contextMock
                 .SetupGet(c => c.AccountKey)
-                .Returns(Helper.GetAccountKey());
+                .Returns(Helper.GetKeyV2());
             contextMock.SetupGet(c => c.HttpClient).Returns(httpClientMock.Object);
             contextMock
                 .Setup(c => c.Sign(It.IsAny<object>(), location))

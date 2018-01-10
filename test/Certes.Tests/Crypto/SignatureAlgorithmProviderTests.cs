@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Threading.Tasks;
 using Certes.Pkcs;
 using Org.BouncyCastle.Crypto.EC;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -43,26 +41,18 @@ namespace Certes.Crypto
         [InlineData(SignatureAlgorithm.ES256)]
         [InlineData(SignatureAlgorithm.ES384)]
         [InlineData(SignatureAlgorithm.ES512)]
-        public async Task CanGetKey(SignatureAlgorithm signatureAlgorithm)
+        public void CanGetKey(SignatureAlgorithm signatureAlgorithm)
         {
             var provider = new SignatureAlgorithmProvider();
             var algo = provider.Get(signatureAlgorithm);
             var key = (AsymmetricCipherSignatureKey)algo.GenerateKey();
 
-            using (var data = new MemoryStream())
-            {
-                await key.Save(data);
-                var keyData = data.ToArray();
+            var keyData = key.ToDer();
 
-                var restored = provider.GetKey(keyData);
+            var restored = provider.GetKey(keyData);
 
-                using (var buffer = new MemoryStream())
-                {
-                    await restored.Save(buffer);
-                    var restoredData = buffer.ToArray();
-                    Assert.Equal(keyData, restoredData);
-                }
-            }
+            var restoredData = restored.ToDer();
+            Assert.Equal(keyData, restoredData);
         }
 
         [Fact]

@@ -1,13 +1,11 @@
-﻿using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Certes.Json;
 using Certes.Jws;
 using Certes.Pkcs;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Security;
 
-namespace Certes.Crypto
+namespace Certes
 {
     /// <summary>
     /// Represents key parameters used for signing.
@@ -24,6 +22,7 @@ namespace Certes.Crypto
         /// The algorithm.
         /// </value>
         SignatureAlgorithm Algorithm { get;}
+
         /// <summary>
         /// Gets the json web key.
         /// </summary>
@@ -31,12 +30,18 @@ namespace Certes.Crypto
         /// The json web key.
         /// </value>
         JsonWebKey JsonWebKey { get; }
+
         /// <summary>
-        /// Saves the specified data.
+        /// Exports the key pair to DER.
         /// </summary>
-        /// <param name="data">The data.</param>
-        /// <returns></returns>
-        Task Save(Stream data);
+        /// <returns>The DER encoded key pair data.</returns>
+        byte[] ToDer();
+
+        /// <summary>
+        /// Exports the key pair to PEM.
+        /// </summary>
+        /// <returns>The key pair data.</returns>
+        string ToPem();
     }
 
     /// <summary>

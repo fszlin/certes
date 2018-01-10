@@ -37,8 +37,8 @@ namespace Certes
                 CommonName = "www.certes.com",
             });
 
-            Assert.Equal(pem, certInfoWithRandomKey.Pem);
-            Assert.NotNull(certInfoWithRandomKey.CertificateKey);
+            Assert.Equal(pem, certInfoWithRandomKey.ToPem());
+            Assert.NotNull(certInfoWithRandomKey.PrivateKey);
 
             var key = DSA.NewKey(SignatureAlgorithm.RS256);
             var certInfo = await orderCtxMock.Object.Generate(new CsrInfo
@@ -47,16 +47,16 @@ namespace Certes
                 CommonName = "www.certes.com",
             }, key);
 
-            Assert.Equal(pem, certInfo.Pem);
-            Assert.Equal(key, certInfo.CertificateKey);
+            Assert.Equal(pem, certInfo.ToPem());
+            Assert.Equal(key, certInfo.PrivateKey);
 
             var certInfoNoCn = await orderCtxMock.Object.Generate(new CsrInfo
             {
                 CountryName = "C",
             });
 
-            Assert.Equal(pem, certInfoNoCn.Pem);
-            Assert.NotNull(certInfoNoCn.CertificateKey);
+            Assert.Equal(pem, certInfoNoCn.ToPem());
+            Assert.NotNull(certInfoNoCn.PrivateKey);
         }
     }
 

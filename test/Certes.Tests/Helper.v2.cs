@@ -23,7 +23,7 @@ namespace Certes
 
         private static Uri stagingServerV2;
 
-        internal static ISignatureKey GetAccountKey(SignatureAlgorithm algo = SignatureAlgorithm.ES256)
+        internal static ISignatureKey GetKeyV2(SignatureAlgorithm algo = SignatureAlgorithm.ES256)
         {
             return DSA.FromPem(algo.GetTestKey());
         }
@@ -53,7 +53,7 @@ namespace Certes
                         {
                             try
                             {
-                                var ctx = new AcmeContext(uri, Helper.GetAccountKey(algo));
+                                var ctx = new AcmeContext(uri, Helper.GetKeyV2(algo));
                                 await ctx.NewAccount(new[] { "mailto:fszlin@example.com" }, true);
                             }
                             catch

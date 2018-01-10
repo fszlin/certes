@@ -110,7 +110,7 @@ namespace Certes.Pkcs
                 var certChain = FindIssuers();
                 var certChainEntries = certChain.Select(c => new X509CertificateEntry(c)).ToList();
                 certChainEntries.Add(entry);
-                
+
                 store.SetKeyEntry(friendlyName, new AsymmetricKeyEntry(keyPair.Private), certChainEntries.ToArray());
             }
             else
@@ -155,19 +155,15 @@ namespace Certes.Pkcs
 
             var builder = new PkixCertPathBuilder();
             var result = builder.Build(builderParams);
-            
+
             var fullChain = result.CertPath.Certificates.Cast<X509Certificate>().ToArray();
             return fullChain;
         }
 
         private AsymmetricCipherKeyPair LoadKeyPair()
         {
-            using (var buffer = new MemoryStream())
-            {
-                privateKey.Save(buffer);
-                var (_, keyPair) = signatureAlgorithmProvider.GetKeyPair(buffer.ToArray());
-                return keyPair;
-            }
+            var (_, keyPair) = signatureAlgorithmProvider.GetKeyPair(privateKey.ToDer());
+            return keyPair;
         }
     }
 }

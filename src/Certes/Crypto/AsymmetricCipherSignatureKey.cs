@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using Certes.Jws;
 using Certes.Pkcs;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
 
 namespace Certes.Crypto
@@ -52,11 +52,20 @@ namespace Certes.Crypto
             Algorithm = algorithm;
         }
 
-        public async Task Save(Stream data)
+        public byte[] ToDer()
         {
             var privateKey = PrivateKeyInfoFactory.CreatePrivateKeyInfo(KeyPair.Private);
-            var der = privateKey.GetDerEncoded();
-            await data.WriteAsync(der, 0, der.Length);
+            return privateKey.GetDerEncoded();
+        }
+
+        public string ToPem()
+        {
+            using (var sr = new StringWriter())
+            {
+                var pemWriter = new PemWriter(sr);
+                pemWriter.WriteObject(KeyPair);
+                return sr.ToString();
+            }
         }
     }
 }

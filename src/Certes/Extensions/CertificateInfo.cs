@@ -1,4 +1,6 @@
-﻿using Certes.Crypto;
+﻿using System.Text;
+using Certes.Pkcs;
+using Org.BouncyCastle.X509;
 
 namespace Certes
 {
@@ -7,21 +9,15 @@ namespace Certes
     /// </summary>
     public class CertificateInfo
     {
-        /// <summary>
-        /// Gets the certificate in PEM.
-        /// </summary>
-        /// <value>
-        /// The certificate in PEM.
-        /// </value>
-        public string Pem { get; }
+        private readonly string pem;
 
         /// <summary>
-        /// Gets the certificate key.
+        /// Gets the private key of the certificate.
         /// </summary>
         /// <value>
-        /// The certificate key.
+        /// The private key of the certificate.
         /// </value>
-        public ISignatureKey CertificateKey { get; }
+        public ISignatureKey PrivateKey { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificateInfo" /> class.
@@ -30,9 +26,36 @@ namespace Certes
         /// <param name="privateKey">The private key.</param>
         public CertificateInfo(string pem, ISignatureKey privateKey)
         {
-            Pem = pem;
-            CertificateKey = privateKey;
+            this.pem = pem;
+            PrivateKey = privateKey;
         }
-    }
 
+        /// <summary>
+        /// PFXs this instance.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] ToPfx(string friendlyName, string password, bool fullChain = true)
+        {
+            var pfxBuilder = new PfxBuilder(Encoding.UTF8.GetBytes(pem), PrivateKey);
+            pfxBuilder.FullChain = fullChain;
+            return pfxBuilder.Build(friendlyName, password);
+        }
+
+        /// <summary>
+        /// Exports the certificate to DER.
+        /// </summary>
+        /// <returns>The DER encoded certificate.</returns>
+        public byte[] ToDer()
+        {
+            var certParser = new X509CertificateParser();
+            var cert = certParser.ReadCertificate(Encoding.UTF8.GetBytes(pem));
+            return cert.GetEncoded();
+        }
+
+        /// <summary>
+        /// Exports the certificate to PEM.
+        /// </summary>
+        /// <returns>The certificate.</returns>
+        public string ToPem() => pem;
+    }
 }

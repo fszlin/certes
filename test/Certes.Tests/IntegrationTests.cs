@@ -33,7 +33,7 @@ namespace Certes
         {
             var dirUri = await Helper.GetAvailableStagingServerV2();
 
-            var ctx = new AcmeContext(dirUri, Helper.GetAccountKey());
+            var ctx = new AcmeContext(dirUri, Helper.GetKeyV2());
             var acct = await ctx.Account();
 
             Assert.NotNull(acct.Location);
@@ -85,7 +85,7 @@ namespace Certes
         public async Task CanGenerateCertificateDns()
         {
             var hosts = new[] { $"www-dns-{domainSuffix}.es256.certes-ci.dymetis.com", $"mail-dns-{domainSuffix}.es256.certes-ci.dymetis.com" };
-            var ctx = new AcmeContext(await Helper.GetAvailableStagingServerV2(), Helper.GetAccountKey());
+            var ctx = new AcmeContext(await Helper.GetAvailableStagingServerV2(), Helper.GetKeyV2());
             var orderCtx = await AuthzDns(ctx, hosts);
             while (orderCtx == null)
             {
@@ -119,7 +119,7 @@ namespace Certes
         public async Task CanGenerateWildcard()
         {
             var hosts = new[] { $"wildcard-{domainSuffix}.es256.certes-ci.dymetis.com" };
-            var ctx = new AcmeContext(await Helper.GetAvailableStagingServerV2(), Helper.GetAccountKey());
+            var ctx = new AcmeContext(await Helper.GetAvailableStagingServerV2(), Helper.GetKeyV2());
 
             var orderCtx = await AuthzDns(ctx, hosts);
             var certKey = DSA.NewKey(SignatureAlgorithm.RS256);
@@ -139,7 +139,7 @@ namespace Certes
         public async Task CanGenerateCertificateHttp()
         {
             var hosts = new[] { $"www-http-{domainSuffix}.es256.certes-ci.dymetis.com", $"mail-http-{domainSuffix}.es256.certes-ci.dymetis.com" };
-            var ctx = new AcmeContext(await Helper.GetAvailableStagingServerV2(), Helper.GetAccountKey());
+            var ctx = new AcmeContext(await Helper.GetAvailableStagingServerV2(), Helper.GetKeyV2());
             var orderCtx = await ctx.NewOrder(hosts);
             Assert.IsAssignableFrom<OrderContext>(orderCtx);
             var order = await orderCtx.Resource();

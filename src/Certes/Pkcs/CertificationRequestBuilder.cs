@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Certes.Crypto;
 using Org.BouncyCastle.Asn1;
@@ -147,14 +146,10 @@ namespace Certes.Pkcs
         [Obsolete]
         public KeyInfo Export()
         {
-            using (var buffer = new MemoryStream())
+            return new KeyInfo
             {
-                Key.Save(buffer);
-                return new KeyInfo
-                {
-                    PrivateKeyInfo = buffer.ToArray()
-                };
-            }
+                PrivateKeyInfo = Key.ToDer()
+            };
         }
 
         private Pkcs10CertificationRequest GeneratePkcs10()
@@ -195,13 +190,9 @@ namespace Certes.Pkcs
 
         private void LoadKeyPair()
         {
-            using (var buffer = new MemoryStream())
-            {
-                Key.Save(buffer);
-                var (algo, keyPair) = signatureAlgorithmProvider.GetKeyPair(buffer.ToArray());
-                pkcsObjectId = algo.ToPkcsObjectId();
-                this.keyPair = keyPair;
-            }
+            var (algo, keyPair) = signatureAlgorithmProvider.GetKeyPair(Key.ToDer());
+            pkcsObjectId = algo.ToPkcsObjectId();
+            this.keyPair = keyPair;
         }
     }
 }

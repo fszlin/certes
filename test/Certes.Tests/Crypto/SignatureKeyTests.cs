@@ -19,19 +19,15 @@ namespace Certes.Crypto
             var key = algo.GenerateKey();
             Assert.NotNull(key);
 
-            using (var buffer = new MemoryStream())
+            var der = key.ToDer();
+            var exported = provider.GetKey(der);
+
+            Assert.Equal(
+                JsonConvert.SerializeObject(key.JsonWebKey),
+                JsonConvert.SerializeObject(exported.JsonWebKey));
+
+            using (var buffer = new MemoryStream(der))
             {
-                key.Save(buffer);
-
-                var der = buffer.ToArray();
-                buffer.Seek(0, SeekOrigin.Begin);
-                var exported = provider.GetKey(der);
-
-                Assert.Equal(
-                    JsonConvert.SerializeObject(key.JsonWebKey),
-                    JsonConvert.SerializeObject(exported.JsonWebKey));
-
-                buffer.Seek(0, SeekOrigin.Begin);
                 exported = algo.ReadKey(buffer);
 
                 Assert.Equal(
