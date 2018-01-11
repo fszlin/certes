@@ -19,7 +19,7 @@ namespace Certes.Jws
         /// <value>
         /// The signing algorithm.
         /// </value>
-        SignatureAlgorithm Algorithm { get; }
+        KeyAlgorithm Algorithm { get; }
 
         /// <summary>
         /// Signs the data.
@@ -58,7 +58,7 @@ namespace Certes.Jws
         /// <value>
         /// The signature key.
         /// </value>
-        ISignatureKey SignatureKey { get; }
+        IKey SignatureKey { get; }
 
         /// <summary>
         /// Exports the key pair.

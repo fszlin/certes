@@ -17,7 +17,7 @@ namespace Certes.Pkcs
     /// <seealso cref="Certes.Pkcs.ICertificationRequestBuilder" />
     public class CertificationRequestBuilder : ICertificationRequestBuilder
     {
-        private static readonly SignatureAlgorithmProvider signatureAlgorithmProvider = new SignatureAlgorithmProvider();
+        private static readonly KeyAlgorithmProvider keyAlgorithmProvider = new KeyAlgorithmProvider();
         private string commonName;
         private readonly List<(DerObjectIdentifier Id, string Value)> attributes = new List<(DerObjectIdentifier, string)>();
         private IList<string> subjectAlternativeNames = new List<string>();
@@ -31,7 +31,7 @@ namespace Certes.Pkcs
         /// <value>
         /// The key.
         /// </value>
-        public ISignatureKey Key { get; }
+        public IKey Key { get; }
 
         /// <summary>
         /// Gets the subject alternative names.
@@ -57,11 +57,11 @@ namespace Certes.Pkcs
         /// </summary>
         /// <param name="keyInfo">The key information.</param>
         /// <exception cref="System.NotSupportedException">
-        /// If the provided key is not one of the supported <seealso cref="SignatureAlgorithm"/>.
+        /// If the provided key is not one of the supported <seealso cref="KeyAlgorithm"/>.
         /// </exception>
         [Obsolete]
         public CertificationRequestBuilder(KeyInfo keyInfo)
-            : this(DSA.FromDer(keyInfo.PrivateKeyInfo))
+            : this(KeyFactory.FromDer(keyInfo.PrivateKeyInfo))
         {
         }
 
@@ -69,7 +69,7 @@ namespace Certes.Pkcs
         /// Initializes a new instance of the <see cref="CertificationRequestBuilder"/> class.
         /// </summary>
         public CertificationRequestBuilder()
-            : this(DSA.NewKey(SignatureAlgorithm.RS256))
+            : this(KeyFactory.NewKey(KeyAlgorithm.RS256))
         {
         }
 
@@ -77,7 +77,7 @@ namespace Certes.Pkcs
         /// Initializes a new instance of the <see cref="CertificationRequestBuilder"/> class.
         /// </summary>
         /// <param name="key">The key.</param>
-        public CertificationRequestBuilder(ISignatureKey key)
+        public CertificationRequestBuilder(IKey key)
         {
             Key = key;
         }
@@ -190,7 +190,7 @@ namespace Certes.Pkcs
 
         private void LoadKeyPair()
         {
-            var (algo, keyPair) = signatureAlgorithmProvider.GetKeyPair(Key.ToDer());
+            var (algo, keyPair) = keyAlgorithmProvider.GetKeyPair(Key.ToDer());
             pkcsObjectId = algo.ToPkcsObjectId();
             this.keyPair = keyPair;
         }

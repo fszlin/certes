@@ -7,6 +7,10 @@ using Certes.Jws;
 
 namespace Certes.Acme
 {
+    /// <summary>
+    /// Represents the context for ACME order operations.
+    /// </summary>
+    /// <seealso cref="Certes.Acme.IOrderContext" />
     internal class OrderContext : EntityContext<Order>, IOrderContext
     {
         public OrderContext(
@@ -17,9 +21,11 @@ namespace Certes.Acme
         }
 
         /// <summary>
-        /// Authorizationses this instance.
+        /// Gets the authorizations for this order.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The list of authorizations.
+        /// </returns>
         public async Task<IEnumerable<IAuthorizationContext>> Authorizations()
         {
             var order = await Resource();
@@ -29,6 +35,13 @@ namespace Certes.Acme
                 Enumerable.Empty<IAuthorizationContext>();
         }
 
+        /// <summary>
+        /// Finalizes the certificate order.
+        /// </summary>
+        /// <param name="csr">The CSR in DER.</param>
+        /// <returns>
+        /// The order finalized.
+        /// </returns>
         public async Task<Order> Finalize(byte[] csr)
         {
             var order = await Resource();
@@ -37,6 +50,12 @@ namespace Certes.Acme
             return resp.Resource;
         }
 
+        /// <summary>
+        /// Downloads this certificate.
+        /// </summary>
+        /// <returns>
+        /// The certificate in PEM.
+        /// </returns>
         public async Task<string> Download()
         {
             var order = await Resource();

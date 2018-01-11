@@ -39,7 +39,7 @@ namespace Certes
             Assert.Equal(pem, certInfoWithRandomKey.ToPem());
             Assert.NotNull(certInfoWithRandomKey.PrivateKey);
 
-            var key = DSA.NewKey(SignatureAlgorithm.RS256);
+            var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
             var certInfo = await orderCtxMock.Object.Generate(new CsrInfo
             {
                 CountryName = "C",

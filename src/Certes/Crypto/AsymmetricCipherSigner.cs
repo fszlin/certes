@@ -5,11 +5,11 @@ namespace Certes.Crypto
 {
     internal abstract class AsymmetricCipherSigner : ISigner
     {
-        protected AsymmetricCipherSignatureKey Key { get; private set; }
+        protected AsymmetricCipherKey Key { get; private set; }
 
-        public AsymmetricCipherSigner(ISignatureKey key)
+        public AsymmetricCipherSigner(IKey key)
         {
-            Key = (key as AsymmetricCipherSignatureKey) ?? throw new ArgumentException(nameof(key));
+            Key = (key as AsymmetricCipherKey) ?? throw new ArgumentException(nameof(key));
         }
         protected abstract string SigningAlgorithm { get; }
         protected abstract string HashAlgorithm { get; }

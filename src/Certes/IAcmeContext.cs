@@ -35,7 +35,7 @@ namespace Certes
         /// <value>
         /// The account key.
         /// </value>
-        ISignatureKey AccountKey { get; }
+        IKey AccountKey { get; }
 
         /// <summary>
         /// Gets the ACME account context.
@@ -52,8 +52,10 @@ namespace Certes
         Task<Directory> GetDirectory();
 
         /// <summary>
-        /// Creates the account.
+        /// Creates an account.
         /// </summary>
+        /// <param name="contact">The contact.</param>
+        /// <param name="termsOfServiceAgreed">Set to <c>true</c> to accept the terms of service.</param>
         /// <returns>
         /// The account created.
         /// </returns>
@@ -75,7 +77,7 @@ namespace Certes
         /// </summary>
         /// <param name="key">The new account key.</param>
         /// <returns>The account resource.</returns>
-        Task<Account> ChangeKey(ISignatureKey key = null);
+        Task<Account> ChangeKey(IKey key = null);
 
         /// <summary>
         /// Creates a new the order.

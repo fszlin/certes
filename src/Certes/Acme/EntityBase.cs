@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Certes.Acme
+﻿namespace Certes.Acme
 {
     /// <summary>
     /// Represents an ACME entity.

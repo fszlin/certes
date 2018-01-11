@@ -18,7 +18,7 @@ dotnet add package Certes -v 2.0.0-*
 Creating new ACME account:
 ```C#
 var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2);
-var account = acme.NewAccount("admin@example.com");
+var account = acme.NewAccount("admin@example.com", true);
 ```
 
 Place an order for certificate
@@ -50,7 +50,7 @@ var cert = await order.Generate(new CsrInfo
     Locality = "Toronto",
     Organization = "Certes",
     OrganizationUnit = "Dev",
-    CommonName = "www.certes-ci.dymetis.com",
+    CommonName = "your.domain.name",
 });
 ```
 

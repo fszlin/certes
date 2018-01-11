@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 namespace Certes.Acme
 {
     /// <summary>
-    /// 
+    /// Supports loading ACME resource with URI.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The resource entity type.</typeparam>
     public interface IResourceContext<T>
     {
         /// <summary>
@@ -18,9 +18,9 @@ namespace Certes.Acme
         Uri Location { get; }
 
         /// <summary>
-        /// Gets the acme resource.
+        /// Gets the ACME resource.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The resource entity.</returns>
         Task<T> Resource();
     }
 }

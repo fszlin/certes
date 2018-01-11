@@ -9,10 +9,10 @@ namespace Certes.Acme
     public interface IOrderListContext
     {
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
+        /// Gets the orders.
         /// </summary>
         /// <returns>
-        /// An enumerator that can be used to iterate through the collection.
+        /// The orders.
         /// </returns>
         Task<IEnumerable<IOrderContext>> Orders();
     }

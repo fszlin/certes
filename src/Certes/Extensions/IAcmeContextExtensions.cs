@@ -10,6 +10,14 @@ namespace Certes
     /// </summary>
     public static class IAcmeContextExtensions
     {
+        /// <summary>
+        /// Gets a resource URI.
+        /// </summary>
+        /// <param name="context">The ACME context.</param>
+        /// <param name="getter">The getter to retrieve resource URI from <see cref="Directory"/>.</param>
+        /// <param name="optional">if set to <c>true</c>, the resource is optional.</param>
+        /// <returns>The resource URI, or <c>null</c> if not found</returns>
+        /// <exception cref="NotSupportedException">If the ACME operation not supported.</exception>
         internal static async Task<Uri> GetResourceUri(this IAcmeContext context, Func<Directory, Uri> getter, bool optional = false)
         {
             var dir = await context.GetDirectory();
@@ -23,12 +31,14 @@ namespace Certes
         }
 
         /// <summary>
-        /// News the account.
+        /// Creates an account.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The ACME context.</param>
         /// <param name="email">The email.</param>
-        /// <param name="termsOfServiceAgreed">if set to <c>true</c> [terms of service agreed].</param>
-        /// <returns></returns>
+        /// <param name="termsOfServiceAgreed">Set to <c>true</c> to accept the terms of service.</param>
+        /// <returns>
+        /// The account created.
+        /// </returns>
         public static Task<IAccountContext> NewAccount(this IAcmeContext context, string email, bool termsOfServiceAgreed = false)
             => context.NewAccount(new[] { $"mailto:{email}" }, termsOfServiceAgreed);
     }

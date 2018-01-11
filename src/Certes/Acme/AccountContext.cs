@@ -23,9 +23,11 @@ namespace Certes.Acme
         }
 
         /// <summary>
-        /// Resources this instance.
+        /// Gets the account entity data.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The account entity data.
+        /// </returns>
         public override async Task<Account> Resource()
         {
             var payload = await Context.Sign(new Account(), Location);
@@ -37,7 +39,7 @@ namespace Certes.Acme
         /// Deactivates the current account.
         /// </summary>
         /// <returns>
-        /// The awaitable.
+        /// The account deactivated.
         /// </returns>
         public async Task<Account> Deactivate()
         {
@@ -59,12 +61,12 @@ namespace Certes.Acme
         }
 
         /// <summary>
-        /// Updates the account.
+        /// Updates the current account.
         /// </summary>
-        /// <param name="agreeTermsOfService">The agree terms of service.</param>
-        /// <param name="contact">The contact.</param>
+        /// <param name="contact">The contact infomation.</param>
+        /// <param name="agreeTermsOfService">Set to <c>true</c> to accept the terms of service.</param>
         /// <returns>
-        /// The account context.
+        /// The account.
         /// </returns>
         public async Task<IAccountContext> Update(IList<string> contact = null, bool agreeTermsOfService = false)
         {
@@ -79,6 +81,13 @@ namespace Certes.Acme
             return this;
         }
 
+        /// <summary>
+        /// Post to the new account endpoint.
+        /// </summary>
+        /// <param name="context">The ACME context.</param>
+        /// <param name="body">The payload.</param>
+        /// <param name="ensureSuccessStatusCode">if set to <c>true</c>, throw exception if the request failed.</param>
+        /// <returns>The ACME response.</returns>
         internal static async Task<AcmeHttpResponse<Account>> NewAccount(
             IAcmeContext context, Account body, bool ensureSuccessStatusCode)
         {

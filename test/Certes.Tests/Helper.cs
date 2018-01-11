@@ -19,7 +19,7 @@ namespace Certes
     public static partial class Helper
     {
         private static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() => new HttpClient());
-        private static readonly SignatureAlgorithmProvider signatureAlgorithmProvider = new SignatureAlgorithmProvider();
+        private static readonly KeyAlgorithmProvider signatureAlgorithmProvider = new KeyAlgorithmProvider();
 
         // shouldn't need to add intermediate certificate
         // seems the 'up' link provided for test config is pointing to staging's cert
@@ -73,22 +73,22 @@ namespace Certes
             Assert.Equal(value, (TProperty)actualValue);
         }
 
-        internal static string GetTestKey(this SignatureAlgorithm algo)
+        internal static string GetTestKey(this KeyAlgorithm algo)
         {
             switch (algo)
             {
-                case SignatureAlgorithm.ES256:
+                case KeyAlgorithm.ES256:
                     return Keys.ES256Key;
-                case SignatureAlgorithm.ES384:
+                case KeyAlgorithm.ES384:
                     return Keys.ES384Key;
-                case SignatureAlgorithm.ES512:
+                case KeyAlgorithm.ES512:
                     return Keys.ES512Key;
                 default:
                     return Keys.RS256Key;
             }
         }
 
-        internal static async Task DeployDns01(SignatureAlgorithm algo, Dictionary<string, string> tokens)
+        internal static async Task DeployDns01(KeyAlgorithm algo, Dictionary<string, string> tokens)
         {
             using (await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens)))) { }
         }

@@ -9,21 +9,27 @@ namespace Certes.Acme
     public static class IAuthorizationContextExtensions
     {
         /// <summary>
-        /// HTTPs the specified authorization context.
+        /// Gets the HTTP challenge.
         /// </summary>
         /// <param name="authorizationContext">The authorization context.</param>
-        /// <returns></returns>
+        /// <returns>The HTTP challenge, <c>null</c> if no HTTP challenge available.</returns>
         public static Task<IChallengeContext> Http(this IAuthorizationContext authorizationContext)
             => authorizationContext.ChallengeByType(ChallengeTypes.Http01);
 
         /// <summary>
-        /// DNSs the specified authorization context.
+        /// Gets the DNS challenge.
         /// </summary>
         /// <param name="authorizationContext">The authorization context.</param>
-        /// <returns></returns>
+        /// <returns>The DNS challenge, <c>null</c> if no DNS challenge available.</returns>
         public static Task<IChallengeContext> Dns(this IAuthorizationContext authorizationContext)
             => authorizationContext.ChallengeByType(ChallengeTypes.Dns01);
 
+        /// <summary>
+        /// Gets a challenge by type.
+        /// </summary>
+        /// <param name="authorizationContext">The authorization context.</param>
+        /// <param name="type">The challenge type.</param>
+        /// <returns>The challenge, <c>null</c> if no challenge found.</returns>
         private static async Task<IChallengeContext> ChallengeByType(this IAuthorizationContext authorizationContext, string type)
         {
             var challenges = await authorizationContext.Challenges();

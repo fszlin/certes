@@ -48,8 +48,18 @@ namespace Certes.Acme.Resource
         [JsonProperty("orders")]
         public Uri Orders { get; set; }
 
+        /// <summary>
+        /// Represents the payload to retrieve existing account by key.
+        /// </summary>
+        /// <seealso cref="Certes.Acme.Resource.Account" />
         internal class Payload : Account
         {
+            /// <summary>
+            /// Gets or sets the only return existing flag.
+            /// </summary>
+            /// <value>
+            /// The only return existing flag.
+            /// </value>
             [JsonProperty("onlyReturnExisting")]
             internal bool? OnlyReturnExisting { get; set; }
         }

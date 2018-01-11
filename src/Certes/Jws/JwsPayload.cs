@@ -3,7 +3,7 @@
 namespace Certes.Jws
 {
     /// <summary>
-    /// 
+    /// Represents data signed with JWS.
     /// </summary>
     public class JwsPayload
     {

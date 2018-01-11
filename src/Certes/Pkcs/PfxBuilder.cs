@@ -19,11 +19,11 @@ namespace Certes.Pkcs
     /// </summary>
     public class PfxBuilder
     {
-        private static readonly SignatureAlgorithmProvider signatureAlgorithmProvider = new SignatureAlgorithmProvider();
+        private static readonly KeyAlgorithmProvider signatureAlgorithmProvider = new KeyAlgorithmProvider();
 
         private static X509Certificate[] embeddedIssuers;
         private readonly X509Certificate certificate;
-        private readonly ISignatureKey privateKey;
+        private readonly IKey privateKey;
         private readonly Dictionary<X509Name, X509Certificate> issuers = EmbeddedIssuers.ToDictionary(c => c.SubjectDN, c => c);
         private readonly X509CertificateParser certParser = new X509CertificateParser();
 
@@ -75,7 +75,7 @@ namespace Certes.Pkcs
         /// </summary>
         /// <param name="certificate">The certificate.</param>
         /// <param name="privateKey">The private key.</param>
-        public PfxBuilder(byte[] certificate, ISignatureKey privateKey)
+        public PfxBuilder(byte[] certificate, IKey privateKey)
         {
             this.certificate = certParser.ReadCertificate(certificate);
             this.privateKey = privateKey;

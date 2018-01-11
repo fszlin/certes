@@ -21,9 +21,9 @@ namespace Certes
 
         private static Uri stagingServerV2;
 
-        internal static ISignatureKey GetKeyV2(SignatureAlgorithm algo = SignatureAlgorithm.ES256)
+        internal static IKey GetKeyV2(KeyAlgorithm algo = KeyAlgorithm.ES256)
         {
-            return DSA.FromPem(algo.GetTestKey());
+            return KeyFactory.FromPem(algo.GetTestKey());
         }
 
         public static async Task<Uri> GetAvailableStagingServerV2()
@@ -47,7 +47,7 @@ namespace Certes
                     {
                         await http.GetStringAsync(uri);
 
-                        foreach (var algo in Enum.GetValues(typeof(SignatureAlgorithm)).OfType<SignatureAlgorithm>())
+                        foreach (var algo in Enum.GetValues(typeof(KeyAlgorithm)).OfType<KeyAlgorithm>())
                         {
                             try
                             {

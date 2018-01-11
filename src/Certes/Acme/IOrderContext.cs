@@ -10,22 +10,24 @@ namespace Certes.Acme
     public interface IOrderContext : IResourceContext<Order>
     {
         /// <summary>
-        /// Authorizationses this instance.
+        /// Gets the authorizations for this order.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The list of authorizations.
+        /// </returns>
         Task<IEnumerable<IAuthorizationContext>> Authorizations();
 
         /// <summary>
         /// Finalizes the certificate order.
         /// </summary>
         /// <param name="csr">The CSR in DER.</param>
-        /// <returns></returns>
+        /// <returns>The order finalized.</returns>
         Task<Order> Finalize(byte[] csr);
 
         /// <summary>
         /// Downloads this certificate.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The certificate in PEM.</returns>
         Task<string> Download();
     }
 }

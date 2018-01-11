@@ -7,9 +7,6 @@ namespace Certes.Acme.Resource
     /// <summary>
     /// Represents the status of <see cref="Account"/>.
     /// </summary>
-    /// <remarks>
-    /// As https://tools.ietf.org/html/draft-ietf-acme-acme-07#section-7.1.2
-    /// </remarks>
     [JsonConverter(typeof(StringEnumConverter))]
     public enum AccountStatus
     {

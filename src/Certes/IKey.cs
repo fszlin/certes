@@ -9,10 +9,7 @@ namespace Certes
     /// <summary>
     /// Represents key parameters used for signing.
     /// </summary>
-    /// <remarks>
-    /// May add netcore implementations once the API is ready - https://github.com/dotnet/designs/issues/11.
-    /// </remarks>
-    public interface ISignatureKey
+    public interface IKey
     {
         /// <summary>
         /// Gets the algorithm.
@@ -20,7 +17,7 @@ namespace Certes
         /// <value>
         /// The algorithm.
         /// </value>
-        SignatureAlgorithm Algorithm { get;}
+        KeyAlgorithm Algorithm { get;}
 
         /// <summary>
         /// Gets the json web key.
@@ -55,7 +52,7 @@ namespace Certes
         /// </summary>
         /// <param name="key">The account key.</param>
         /// <returns>The thumbprint.</returns>
-        private static byte[] GenerateThumbprint(this ISignatureKey key)
+        private static byte[] GenerateThumbprint(this IKey key)
         {
             var jwk = key.JsonWebKey;
             var json = JsonConvert.SerializeObject(jwk, Formatting.None, thumbprintSettings);
@@ -70,7 +67,7 @@ namespace Certes
         /// </summary>
         /// <param name="key">The account key.</param>
         /// <returns>The thumbprint.</returns>
-        public static string Thumbprint(this ISignatureKey key)
+        public static string Thumbprint(this IKey key)
         {
             var jwkThumbprint = key.GenerateThumbprint();
             return JwsConvert.ToBase64String(jwkThumbprint);
@@ -82,7 +79,7 @@ namespace Certes
         /// <param name="key">The key.</param>
         /// <param name="token">The challenge token.</param>
         /// <returns></returns>
-        public static string KeyAuthorization(this ISignatureKey key, string token)
+        public static string KeyAuthorization(this IKey key, string token)
         {
             var jwkThumbprintEncoded = key.Thumbprint();
             return $"{token}.{jwkThumbprintEncoded}";
@@ -94,7 +91,7 @@ namespace Certes
         /// <param name="key">The key.</param>
         /// <param name="token">The challenge token.</param>
         /// <returns></returns>
-        public static string DnsTxtRecord(this ISignatureKey key, string token)
+        public static string DnsTxtRecord(this IKey key, string token)
         {
             var keyAuthz = key.KeyAuthorization(token);
             var hashed = DigestUtilities.CalculateDigest("SHA256", Encoding.UTF8.GetBytes(keyAuthz));

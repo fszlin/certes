@@ -8,13 +8,13 @@ namespace Certes.Crypto
     public class SignatureKeyTests
     {
         [Theory]
-        [InlineData(SignatureAlgorithm.RS256)]
-        [InlineData(SignatureAlgorithm.ES256)]
-        [InlineData(SignatureAlgorithm.ES384)]
-        [InlineData(SignatureAlgorithm.ES512)]
-        private void CanExportKey(SignatureAlgorithm signatureAlgorithm)
+        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES384)]
+        [InlineData(KeyAlgorithm.ES512)]
+        private void CanExportKey(KeyAlgorithm signatureAlgorithm)
         {
-            var provider = new SignatureAlgorithmProvider();
+            var provider = new KeyAlgorithmProvider();
             var algo = provider.Get(signatureAlgorithm);
             var key = algo.GenerateKey();
             Assert.NotNull(key);

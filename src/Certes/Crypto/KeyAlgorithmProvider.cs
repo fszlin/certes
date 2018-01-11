@@ -10,20 +10,20 @@ using Org.BouncyCastle.Security;
 
 namespace Certes.Crypto
 {
-    internal class SignatureAlgorithmProvider
+    internal class KeyAlgorithmProvider
     {
-        private static readonly Dictionary<SignatureAlgorithm, ISignatureAlgorithm> signatureAlgorithms = new Dictionary<SignatureAlgorithm, ISignatureAlgorithm>()
+        private static readonly Dictionary<KeyAlgorithm, IKeyAlgorithm> keyAlgorithms = new Dictionary<KeyAlgorithm, IKeyAlgorithm>()
         {
-            { SignatureAlgorithm.ES256, new EllipticCurveSignatureAlgorithm("P-256", "SHA-256withECDSA", "SHA256") },
-            { SignatureAlgorithm.ES384, new EllipticCurveSignatureAlgorithm("P-384", "SHA-384withECDSA", "SHA384") },
-            { SignatureAlgorithm.ES512, new EllipticCurveSignatureAlgorithm("P-521", "SHA-512withECDSA", "SHA512") },
-            { SignatureAlgorithm.RS256, new RS256SignatureAlgorithm() },
+            { KeyAlgorithm.ES256, new EllipticCurveAlgorithm("P-256", "SHA-256withECDSA", "SHA256") },
+            { KeyAlgorithm.ES384, new EllipticCurveAlgorithm("P-384", "SHA-384withECDSA", "SHA384") },
+            { KeyAlgorithm.ES512, new EllipticCurveAlgorithm("P-521", "SHA-512withECDSA", "SHA512") },
+            { KeyAlgorithm.RS256, new RS256Algorithm() },
         };
 
-        public ISignatureAlgorithm Get(SignatureAlgorithm algorithm) =>
-            signatureAlgorithms.TryGetValue(algorithm, out var signer) ? signer : throw new ArgumentException(nameof(algorithm));
+        public IKeyAlgorithm Get(KeyAlgorithm algorithm) =>
+            keyAlgorithms.TryGetValue(algorithm, out var signer) ? signer : throw new ArgumentException(nameof(algorithm));
 
-        public ISignatureKey GetKey(string pem)
+        public IKey GetKey(string pem)
         {
             using (var reader = new StringReader(pem))
             {
@@ -33,25 +33,25 @@ namespace Certes.Crypto
             }
         }
 
-        public ISignatureKey GetKey(byte[] der)
+        public IKey GetKey(byte[] der)
         {
             var keyParam = PrivateKeyFactory.CreateKey(der);
             return ReadKey(keyParam);
         }
 
-        internal (SignatureAlgorithm, AsymmetricCipherKeyPair) GetKeyPair(byte[] der)
+        internal (KeyAlgorithm, AsymmetricCipherKeyPair) GetKeyPair(byte[] der)
         {
             var keyParam = PrivateKeyFactory.CreateKey(der);
             return ParseKey(keyParam);
         }
 
-        private static (SignatureAlgorithm, AsymmetricCipherKeyPair) ParseKey(AsymmetricKeyParameter keyParam)
+        private static (KeyAlgorithm, AsymmetricCipherKeyPair) ParseKey(AsymmetricKeyParameter keyParam)
         {
             if (keyParam is RsaPrivateCrtKeyParameters)
             {
                 var privateKey = (RsaPrivateCrtKeyParameters)keyParam;
                 var publicKey = new RsaKeyParameters(false, privateKey.Modulus, privateKey.PublicExponent);
-                return (SignatureAlgorithm.RS256, new AsymmetricCipherKeyPair(publicKey, keyParam));
+                return (KeyAlgorithm.RS256, new AsymmetricCipherKeyPair(publicKey, keyParam));
             }
             else if (keyParam is ECPrivateKeyParameters privateKey)
             {
@@ -59,20 +59,20 @@ namespace Certes.Crypto
                 var q = domain.G.Multiply(privateKey.D);
 
                 DerObjectIdentifier curveId;
-                SignatureAlgorithm algo;
+                KeyAlgorithm algo;
                 switch(domain.Curve.FieldSize)
                 {
                     case 256:
                         curveId = SecObjectIdentifiers.SecP256r1;
-                        algo = SignatureAlgorithm.ES256;
+                        algo = KeyAlgorithm.ES256;
                         break;
                     case 384:
                         curveId = SecObjectIdentifiers.SecP384r1;
-                        algo = SignatureAlgorithm.ES384;
+                        algo = KeyAlgorithm.ES384;
                         break;
                     case 521:
                         curveId = SecObjectIdentifiers.SecP521r1;
-                        algo = SignatureAlgorithm.ES512;
+                        algo = KeyAlgorithm.ES512;
                         break;
                     default:
                         throw new NotSupportedException();
@@ -87,10 +87,10 @@ namespace Certes.Crypto
             }
         }
 
-        private static ISignatureKey ReadKey(AsymmetricKeyParameter keyParam)
+        private static IKey ReadKey(AsymmetricKeyParameter keyParam)
         {
             var (algo, keyPair) = ParseKey(keyParam);
-            return new AsymmetricCipherSignatureKey(algo, keyPair);
+            return new AsymmetricCipherKey(algo, keyPair);
         }
     }
 }

@@ -5,7 +5,7 @@ using Org.BouncyCastle.X509;
 namespace Certes
 {
     /// <summary>
-    /// 
+    /// Represents the certificate with private key.
     /// </summary>
     public class CertificateInfo
     {
@@ -17,23 +17,29 @@ namespace Certes
         /// <value>
         /// The private key of the certificate.
         /// </value>
-        public ISignatureKey PrivateKey { get; }
+        public IKey PrivateKey { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificateInfo" /> class.
         /// </summary>
-        /// <param name="pem">The pem.</param>
+        /// <param name="pem">The certificate in PEM.</param>
         /// <param name="privateKey">The private key.</param>
-        public CertificateInfo(string pem, ISignatureKey privateKey)
+        public CertificateInfo(string pem, IKey privateKey)
         {
             this.pem = pem;
             PrivateKey = privateKey;
         }
 
         /// <summary>
-        /// PFXs this instance.
+        /// Creates PFX for this certificate.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="friendlyName">The friendly name for the PFX.</param>
+        /// <param name="password">The password for the PFX.</param>
+        /// <param name="fullChain">Whether to include the full certificate chain in the PFX.</param>
+        /// <param name="issuers">The additional issuers for building the certificate chain.</param>
+        /// <returns>
+        /// The PFX created.
+        /// </returns>
         public byte[] ToPfx(string friendlyName, string password, bool fullChain = true, byte[] issuers = null)
         {
             var pfxBuilder = new PfxBuilder(Encoding.UTF8.GetBytes(pem), PrivateKey);

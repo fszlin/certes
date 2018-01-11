@@ -13,8 +13,8 @@ namespace Certes.Crypto
         [Fact]
         public void InvalidPrivateKey()
         {
-            var provider = new SignatureAlgorithmProvider();
-            var algo = provider.Get(SignatureAlgorithm.ES256);
+            var provider = new KeyAlgorithmProvider();
+            var algo = provider.Get(KeyAlgorithm.ES256);
             var key = algo.GenerateKey();
 
             Assert.Throws<ArgumentException>(() => new RS256Signer(key));
@@ -23,7 +23,7 @@ namespace Certes.Crypto
         [Fact]
         public void InvalidKey()
         {
-            var mock = new Mock<ISignatureKey>();
+            var mock = new Mock<IKey>();
             var obj = mock.Object;
             Assert.Throws<ArgumentException>(() => new RS256Signer(obj));
         }

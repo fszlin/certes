@@ -18,7 +18,7 @@ namespace Certes
     /// <seealso cref="Certes.IAcmeContext" />
     public class AcmeContext : IAcmeContext
     {
-        private const SignatureAlgorithm defaultKeyType = SignatureAlgorithm.ES256;
+        private const KeyAlgorithm defaultKeyType = KeyAlgorithm.ES256;
         private Directory directory;
         private IAccountContext accountContext = null;
 
@@ -44,7 +44,7 @@ namespace Certes
         /// <value>
         /// The account key.
         /// </value>
-        public ISignatureKey AccountKey { get; private set; }
+        public IKey AccountKey { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeContext" /> class.
@@ -55,10 +55,10 @@ namespace Certes
         /// <exception cref="ArgumentNullException">
         /// If <paramref name="directoryUri"/> is <c>null</c>.
         /// </exception>
-        public AcmeContext(Uri directoryUri, ISignatureKey accountKey = null, IAcmeHttpClient http = null)
+        public AcmeContext(Uri directoryUri, IKey accountKey = null, IAcmeHttpClient http = null)
         {
             DirectoryUri = directoryUri ?? throw new ArgumentNullException(nameof(directoryUri));
-            AccountKey = accountKey ?? DSA.NewKey(defaultKeyType);
+            AccountKey = accountKey ?? KeyFactory.NewKey(defaultKeyType);
             HttpClient = http ?? new AcmeHttpClient(this);
         }
 
@@ -82,12 +82,12 @@ namespace Certes
         /// </summary>
         /// <param name="key">The new account key.</param>
         /// <returns>The account resource.</returns>
-        public async Task<Account> ChangeKey(ISignatureKey key)
+        public async Task<Account> ChangeKey(IKey key)
         {
             var endpoint = await this.GetResourceUri(d => d.KeyChange);
             var location = await Account().Location();
             
-            var newKey = key ?? DSA.NewKey(defaultKeyType);
+            var newKey = key ?? KeyFactory.NewKey(defaultKeyType);
             var keyChange = new
             {
                 account = location,

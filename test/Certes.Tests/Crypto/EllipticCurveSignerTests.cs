@@ -11,19 +11,19 @@ namespace Certes.Crypto
         [Fact]
         public void InvalidPrivateKey()
         {
-            var provider = new SignatureAlgorithmProvider();
-            var algo = provider.Get(SignatureAlgorithm.RS256);
+            var provider = new KeyAlgorithmProvider();
+            var algo = provider.Get(KeyAlgorithm.RS256);
             var key = algo.GenerateKey();
 
             Assert.Throws<ArgumentException>(() => new EllipticCurveSigner(key, "algo", "algo"));
         }
 
         [Theory]
-        [InlineData(SignatureAlgorithm.RS256)]
-        [InlineData(SignatureAlgorithm.ES256)]
-        public void CanComputeHash(SignatureAlgorithm algoType)
+        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256)]
+        public void CanComputeHash(KeyAlgorithm algoType)
         {
-            var provider = new SignatureAlgorithmProvider();
+            var provider = new KeyAlgorithmProvider();
             var algo = provider.Get(algoType);
             var signer = algo.CreateSigner(algo.GenerateKey());
 

@@ -9,7 +9,7 @@ namespace Certes
         public void CanGeneratePfx()
         {
             var cert = File.ReadAllText("./Data/cert-es256.pem");
-            var key = Helper.GetKeyV2(SignatureAlgorithm.ES256);
+            var key = Helper.GetKeyV2(KeyAlgorithm.ES256);
 
             var data = new CertificateInfo(cert, key);
             var pfx = data.ToPfx("my-pfx", "abcd1234", false);

@@ -8,11 +8,11 @@ namespace Certes.Pkcs
     public class PfxBuilderTests
     {
         [Theory]
-        [InlineData(SignatureAlgorithm.RS256)]
-        [InlineData(SignatureAlgorithm.ES256)]
-        [InlineData(SignatureAlgorithm.ES384)]
-        [InlineData(SignatureAlgorithm.ES512)]
-        public async Task CanCreatePfxChain(SignatureAlgorithm alog)
+        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES384)]
+        [InlineData(KeyAlgorithm.ES512)]
+        public async Task CanCreatePfxChain(KeyAlgorithm alog)
         {
             await Task.Yield();
             var leafCert = File.ReadAllBytes("./Data/leaf-cert.cer");

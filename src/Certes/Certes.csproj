@@ -13,7 +13,7 @@
     <Company />
     <Product>Certes ACME Client</Product>
     <Title>$(Product)</Title>
-    <Description>A client implantation for the Automated Certificate Management Environment (ACME) protocol</Description>
+    <Description>A client implementation for the Automated Certificate Management Environment (ACME) protocol.</Description>
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate</PackageTags>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>

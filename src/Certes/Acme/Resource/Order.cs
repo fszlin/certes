@@ -95,6 +95,10 @@ namespace Certes.Acme.Resource
         [JsonProperty("certificate")]
         public Uri Certificate { get; set; }
 
+        /// <summary>
+        /// Represents the payload to finalize an order.
+        /// </summary>
+        /// <seealso cref="Certes.Acme.Resource.Order" />
         internal class Payload : Order
         {
             /// <summary>

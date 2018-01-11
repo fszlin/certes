@@ -16,17 +16,17 @@ namespace Certes.Acme
         Task<IOrderListContext> Orders();
 
         /// <summary>
-        /// Updates the specified agree terms of service.
+        /// Updates the current account.
         /// </summary>
-        /// <param name="agreeTermsOfService">if set to <c>true</c> [agree terms of service].</param>
-        /// <param name="contact">The contact.</param>
-        /// <returns></returns>
+        /// <param name="agreeTermsOfService">Set to <c>true</c> to accept the terms of service.</param>
+        /// <param name="contact">The contact infomation.</param>
+        /// <returns>The account.</returns>
         Task<IAccountContext> Update(IList<string> contact = null, bool agreeTermsOfService = false);
 
         /// <summary>
         /// Deactivates the current account.
         /// </summary>
-        /// <returns>The awaitable.</returns>
+        /// <returns>The account deactivated.</returns>
         Task<Account> Deactivate();
     }
 }

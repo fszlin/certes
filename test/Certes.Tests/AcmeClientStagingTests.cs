@@ -12,10 +12,10 @@ namespace Certes
     public class AcmeClientStagingTests
     {
         [Theory]
-        [InlineData(SignatureAlgorithm.RS256)]
-        [InlineData(SignatureAlgorithm.ES256)]
-        [InlineData(SignatureAlgorithm.ES384)]
-        public async Task RunAccountFlow(SignatureAlgorithm algorithm)
+        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES384)]
+        public async Task RunAccountFlow(KeyAlgorithm algorithm)
         {
             var key = new AccountKey(algorithm);
             using (var client = new AcmeClient(await Helper.GetStagingServerV1()))

@@ -9,7 +9,7 @@ namespace Certes.Crypto
 
         protected override string HashAlgorithm => "SHA256";
 
-        public RS256Signer(ISignatureKey key)
+        public RS256Signer(IKey key)
             : base(key)
         {
             if (!(Key.KeyPair.Private is RsaPrivateCrtKeyParameters))

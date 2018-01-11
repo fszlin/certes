@@ -7,8 +7,17 @@ using Authz = Certes.Acme.Resource.Authorization;
 
 namespace Certes.Acme
 {
+    /// <summary>
+    /// Represents the context for ACME authorization operations.
+    /// </summary>
+    /// <seealso cref="Certes.Acme.IAuthorizationContext" />
     internal class AuthorizationContext : EntityContext<Authz>, IAuthorizationContext
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizationContext"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="location">The location.</param>
         public AuthorizationContext(
             IAcmeContext context,
             Uri location)
@@ -16,6 +25,12 @@ namespace Certes.Acme
         {
         }
 
+        /// <summary>
+        /// Gets the challenges for this authorization.
+        /// </summary>
+        /// <returns>
+        /// The list fo challenges.
+        /// </returns>
         public async Task<IEnumerable<IChallengeContext>> Challenges()
         {
             var authz = await Resource();
@@ -26,10 +41,10 @@ namespace Certes.Acme
         }
 
         /// <summary>
-        /// Deactivates the current account.
+        /// Deactivates this authzorization.
         /// </summary>
         /// <returns>
-        /// The awaitable.
+        /// The authorization deactivated.
         /// </returns>
         public async Task<Authz> Deactivate()
         {

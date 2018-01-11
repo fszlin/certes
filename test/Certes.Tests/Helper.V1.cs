@@ -48,7 +48,7 @@ namespace Certes
                 return accountKeyV1;
             }
 
-            var pem = GetTestKey(SignatureAlgorithm.RS256);
+            var pem = GetTestKey(KeyAlgorithm.RS256);
             using (var reader = new StringReader(pem))
             {
                 var pemReader = new PemReader(reader);

@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
-using Certes.Acme.Resource;
 
 namespace Certes.Acme
 {
     /// <summary>
-    /// 
+    /// Supports ACME challenge operations.
     /// </summary>
     public interface IChallengeContext : IResourceContext<Resource.Challenge>
     {
@@ -33,7 +32,7 @@ namespace Certes.Acme
         string KeyAuthz { get; }
 
         /// <summary>
-        /// Acknowledges the ACME server the challenge is ready for validation
+        /// Acknowledges the ACME server the challenge is ready for validation.
         /// </summary>
         /// <returns>The challenge.</returns>
         Task<Resource.Challenge> Validate();

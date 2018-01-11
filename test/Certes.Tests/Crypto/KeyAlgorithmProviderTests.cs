@@ -9,16 +9,16 @@ using Xunit;
 
 namespace Certes.Crypto
 {
-    public class SignatureAlgorithmProviderTests
+    public class KeyAlgorithmProviderTests
     {
         [Theory]
-        [InlineData(SignatureAlgorithm.ES256)]
-        [InlineData(SignatureAlgorithm.ES384)]
-        [InlineData(SignatureAlgorithm.ES512)]
-        private void CanCreateEllipticCurveAlgo(SignatureAlgorithm signatureAlgorithm)
+        [InlineData(KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES384)]
+        [InlineData(KeyAlgorithm.ES512)]
+        private void CanCreateEllipticCurveAlgo(KeyAlgorithm algorithm)
         {
-            var provider = new SignatureAlgorithmProvider();
-            var algo = provider.Get(signatureAlgorithm) as EllipticCurveSignatureAlgorithm;
+            var provider = new KeyAlgorithmProvider();
+            var algo = provider.Get(algorithm) as EllipticCurveAlgorithm;
 
             Assert.NotNull(algo);
 
@@ -31,21 +31,21 @@ namespace Certes.Crypto
         [Fact]
         public void CtorWithInvalidAlgo()
         {
-            var provider = new SignatureAlgorithmProvider();
+            var provider = new KeyAlgorithmProvider();
             Assert.Throws<ArgumentException>(() =>
-                provider.Get((SignatureAlgorithm)100));
+                provider.Get((KeyAlgorithm)100));
         }
 
         [Theory]
-        [InlineData(SignatureAlgorithm.RS256)]
-        [InlineData(SignatureAlgorithm.ES256)]
-        [InlineData(SignatureAlgorithm.ES384)]
-        [InlineData(SignatureAlgorithm.ES512)]
-        public void CanGetKey(SignatureAlgorithm signatureAlgorithm)
+        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES384)]
+        [InlineData(KeyAlgorithm.ES512)]
+        public void CanGetKey(KeyAlgorithm algorithm)
         {
-            var provider = new SignatureAlgorithmProvider();
-            var algo = provider.Get(signatureAlgorithm);
-            var key = (AsymmetricCipherSignatureKey)algo.GenerateKey();
+            var provider = new KeyAlgorithmProvider();
+            var algo = provider.Get(algorithm);
+            var key = (AsymmetricCipherKey)algo.GenerateKey();
 
             var keyData = key.ToDer();
 
@@ -58,7 +58,7 @@ namespace Certes.Crypto
         [Fact]
         public void InvalidCurve()
         {
-            var provider = new SignatureAlgorithmProvider();
+            var provider = new KeyAlgorithmProvider();
             var generator = GeneratorUtilities.GetKeyPairGenerator("ECDSA");
             var generatorParams = new ECKeyGenerationParameters(
                 CustomNamedCurves.GetOid("secp160r1"), new SecureRandom());
@@ -72,7 +72,7 @@ namespace Certes.Crypto
         [Fact]
         public void InvalidKeyData()
         {
-            var provider = new SignatureAlgorithmProvider();
+            var provider = new KeyAlgorithmProvider();
             var dsaSpec = new DsaParameters(
                 new BigInteger("7434410770759874867539421675728577177024889699586189000788950934679315164676852047058354758883833299702695428196962057871264685291775577130504050839126673"),
                 new BigInteger("1138656671590261728308283492178581223478058193247"),

@@ -49,7 +49,7 @@ namespace Certes.Pkcs
     /// </summary>
     public static class KeyInfoExtensions
     {
-        private static readonly SignatureAlgorithmProvider signatureAlgorithmProvider = new SignatureAlgorithmProvider();
+        private static readonly KeyAlgorithmProvider keyAlgorithmProvider = new KeyAlgorithmProvider();
 
         /// <summary>
         /// Saves the key pair to the specified stream.
@@ -66,12 +66,22 @@ namespace Certes.Pkcs
             }
         }
 
+        /// <summary>
+        /// Gets the key pair.
+        /// </summary>
+        /// <param name="keyInfo">The key data.</param>
+        /// <returns>The key pair</returns>
         internal static AsymmetricCipherKeyPair CreateKeyPair(this KeyInfo keyInfo)
         {
-            var (_, keyPair) = signatureAlgorithmProvider.GetKeyPair(keyInfo.PrivateKeyInfo);
+            var (_, keyPair) = keyAlgorithmProvider.GetKeyPair(keyInfo.PrivateKeyInfo);
             return keyPair;
         }
 
+        /// <summary>
+        /// Exports the key pair.
+        /// </summary>
+        /// <param name="keyPair">The key pair.</param>
+        /// <returns>The key data.</returns>
         internal static KeyInfo Export(this AsymmetricCipherKeyPair keyPair)
         {
             var privateKey = PrivateKeyInfoFactory.CreatePrivateKeyInfo(keyPair.Private);

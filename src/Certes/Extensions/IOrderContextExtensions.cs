@@ -12,13 +12,15 @@ namespace Certes.Acme
     public static class IOrderContextExtensions
     {
         /// <summary>
-        /// Finalizes the specified CSR.
+        /// Finalizes the certificate order.
         /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="csr">The CSR.</param>
-        /// <param name="key">The key.</param>
-        /// <returns></returns>
-        public static async Task<Order> Finalize(this IOrderContext context, CsrInfo csr, ISignatureKey key)
+        /// <param name="context">The order context.</param>
+        /// <param name="csr">The CSR in DER.</param>
+        /// <param name="key">The private key for the certificate.</param>
+        /// <returns>
+        /// The order finalized.
+        /// </returns>
+        public static async Task<Order> Finalize(this IOrderContext context, CsrInfo csr, IKey key)
         {
             var builder = new CertificationRequestBuilder(key);
             foreach (var authzCtx in await context.Authorizations())
@@ -41,17 +43,19 @@ namespace Certes.Acme
         }
 
         /// <summary>
-        /// Generates the specified context.
+        /// Generates the certifcate for the order.
         /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="csr">The CSR.</param>
-        /// <param name="key">The key.</param>
-        /// <returns></returns>
-        public static async Task<CertificateInfo> Generate(this IOrderContext context, CsrInfo csr, ISignatureKey key = null)
+        /// <param name="context">The order context.</param>
+        /// <param name="csr">The CSR in DER.</param>
+        /// <param name="key">The private key for the certificate.</param>
+        /// <returns>
+        /// The certificate generated.
+        /// </returns>
+        public static async Task<CertificateInfo> Generate(this IOrderContext context, CsrInfo csr, IKey key = null)
         {
             if (key == null)
             {
-                key = DSA.NewKey(SignatureAlgorithm.RS256);
+                key = KeyFactory.NewKey(KeyAlgorithm.RS256);
             }
 
             await context.Finalize(csr, key);

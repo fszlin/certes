@@ -63,7 +63,7 @@ namespace Certes.Tests.Web
                 }
 
                 var path = request.Path.ToUriComponent();
-                var keyType = Enum.Parse<SignatureAlgorithm>(path.Substring(1), true);
+                var keyType = Enum.Parse<KeyAlgorithm>(path.Substring(1), true);
                 var accountKey = GetTestKey(keyType);
 
                 var loginInfo = new ServicePrincipalLoginInformation
@@ -113,12 +113,12 @@ namespace Certes.Tests.Web
             await context.Response.WriteAsync("Find Certes project on GitHub - https://goo.gl/beyaxD");
         }
 
-        private AccountKey GetTestKey(SignatureAlgorithm algo)
+        private AccountKey GetTestKey(KeyAlgorithm algo)
         {
             var key =
-                algo == SignatureAlgorithm.ES256 ? Keys.ES256Key :
-                algo == SignatureAlgorithm.ES384 ? Keys.ES384Key :
-                algo == SignatureAlgorithm.ES512 ? Keys.ES512Key :
+                algo == KeyAlgorithm.ES256 ? Keys.ES256Key :
+                algo == KeyAlgorithm.ES384 ? Keys.ES384Key :
+                algo == KeyAlgorithm.ES512 ? Keys.ES512Key :
                 Keys.RS256Key;
 
             using (var buffer = new MemoryStream(Encoding.UTF8.GetBytes(key)))
@@ -131,10 +131,10 @@ namespace Certes.Tests.Web
         {
             var host = request.Host.Host;
             return
-                host.IndexOf(".es256.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(SignatureAlgorithm.ES256) :
-                host.IndexOf(".es384.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(SignatureAlgorithm.ES384) :
-                host.IndexOf(".es512.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(SignatureAlgorithm.ES512) :
-                GetTestKey(SignatureAlgorithm.RS256);
+                host.IndexOf(".es256.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(KeyAlgorithm.ES256) :
+                host.IndexOf(".es384.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(KeyAlgorithm.ES384) :
+                host.IndexOf(".es512.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(KeyAlgorithm.ES512) :
+                GetTestKey(KeyAlgorithm.RS256);
         }
     }
 }

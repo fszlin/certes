@@ -9,7 +9,7 @@ namespace Certes.Crypto
     {
         private readonly int fieldSize;
 
-        public EllipticCurveSigner(ISignatureKey key, string signingAlgorithm, string hashAlgorithm)
+        public EllipticCurveSigner(IKey key, string signingAlgorithm, string hashAlgorithm)
             : base(key)
         {
             var privKey = Key.KeyPair.Private as ECPrivateKeyParameters;

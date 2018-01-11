@@ -4,7 +4,7 @@ using System.Linq;
 namespace Certes
 {
     /// <summary>
-    /// 
+    /// Represents common information for CSR.
     /// </summary>
     public class CsrInfo
     {
@@ -83,6 +83,12 @@ namespace Certes
             set => data["CN"] = value;
         }
 
+        /// <summary>
+        /// Gets all the fields with value.
+        /// </summary>
+        /// <value>
+        /// All fields.
+        /// </value>
         internal IEnumerable<(string name, string value)> Fields
         {
             get => data.Select(p => (p.Key, p.Value));

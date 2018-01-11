@@ -41,11 +41,11 @@ namespace Certes.Cli.Processors
         }
 
         [Theory]
-        [InlineData(SignatureAlgorithm.ES256)]
-        [InlineData(SignatureAlgorithm.ES384)]
-        [InlineData(SignatureAlgorithm.ES512)]
-        [InlineData(SignatureAlgorithm.RS256)]
-        public async Task CanLoadKey(SignatureAlgorithm algo)
+        [InlineData(KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES384)]
+        [InlineData(KeyAlgorithm.ES512)]
+        [InlineData(KeyAlgorithm.RS256)]
+        public async Task CanLoadKey(KeyAlgorithm algo)
         { 
             if (!Directory.Exists("./_test"))
             {

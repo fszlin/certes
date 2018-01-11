@@ -73,7 +73,7 @@ namespace Certes
                 new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
             var location = await ctx.Account().Location();
 
-            var newKey = DSA.NewKey(SignatureAlgorithm.ES256);
+            var newKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
             await ctx.ChangeKey(newKey);
 
             var ctxWithNewKey = new AcmeContext(dirUri, newKey);
@@ -122,7 +122,7 @@ namespace Certes
             var ctx = new AcmeContext(await Helper.GetAvailableStagingServerV2(), Helper.GetKeyV2());
 
             var orderCtx = await AuthzDns(ctx, hosts);
-            var certKey = DSA.NewKey(SignatureAlgorithm.RS256);
+            var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
             var finalizedOrder = await orderCtx.Finalize(new CsrInfo
             {
                 CountryName = "CA",
@@ -136,9 +136,9 @@ namespace Certes
         }
 
         [Theory]
-        [InlineData(SignatureAlgorithm.ES256)]
-        [InlineData(SignatureAlgorithm.ES384)]
-        public async Task CanGenerateCertificateWithEC(SignatureAlgorithm algo)
+        [InlineData(KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES384)]
+        public async Task CanGenerateCertificateWithEC(KeyAlgorithm algo)
         {
             var hosts = new[] { $"www-ec-{domainSuffix}.es256.certes-ci.dymetis.com".ToLower() };
             var ctx = new AcmeContext(await Helper.GetAvailableStagingServerV2(), Helper.GetKeyV2());
@@ -174,7 +174,7 @@ namespace Certes
                 }
             }
 
-            var certKey = DSA.NewKey(algo);
+            var certKey = KeyFactory.NewKey(algo);
             var finalizedOrder = await orderCtx.Finalize(new CsrInfo
             {
                 CountryName = "CA",
@@ -231,7 +231,7 @@ namespace Certes
                 }
             }
 
-            var certKey = DSA.NewKey(SignatureAlgorithm.RS256);
+            var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
             var finalizedOrder = await orderCtx.Finalize(new CsrInfo
             { 
                 CountryName = "CA",
@@ -282,7 +282,7 @@ namespace Certes
                 tokens.Add(res.Identifier.Value, dnsChallenge.Token);
             }
 
-            await Helper.DeployDns01(SignatureAlgorithm.ES256, tokens);
+            await Helper.DeployDns01(KeyAlgorithm.ES256, tokens);
 
             foreach (var authz in authrizations)
             {

@@ -10,7 +10,7 @@ namespace Certes.Jws
     /// <seealso cref="Certes.Jws.IAccountKey" />
     public class AccountKey : IAccountKey
     {
-        private static readonly SignatureAlgorithmProvider signatureAlgorithmProvider = new SignatureAlgorithmProvider();
+        private static readonly KeyAlgorithmProvider keyAlgorithmProvider = new KeyAlgorithmProvider();
         
         private JsonWebKey jwk;
         private readonly ISigner signer;
@@ -19,9 +19,9 @@ namespace Certes.Jws
         /// Initializes a new instance of the <see cref="AccountKey"/> class.
         /// </summary>
         /// <param name="algorithm">The JWS signature algorithm.</param>
-        public AccountKey(SignatureAlgorithm algorithm = SignatureAlgorithm.ES256)
+        public AccountKey(KeyAlgorithm algorithm = KeyAlgorithm.ES256)
         {
-            SignatureKey = DSA.NewKey(algorithm);
+            SignatureKey = KeyFactory.NewKey(algorithm);
             signer = SignatureKey.GetSigner();
         }
 
@@ -31,7 +31,7 @@ namespace Certes.Jws
         /// <param name="keyInfo">The key information.</param>
         /// <exception cref="ArgumentNullException">keyInfo</exception>
         /// <exception cref="NotSupportedException">
-        /// If the provided key is not one of the supported <seealso cref="SignatureAlgorithm" />.
+        /// If the provided key is not one of the supported <seealso cref="KeyAlgorithm" />.
         /// </exception>
         public AccountKey(KeyInfo keyInfo)
         {
@@ -40,7 +40,7 @@ namespace Certes.Jws
                 throw new ArgumentNullException(nameof(keyInfo));
             }
 
-            SignatureKey = DSA.FromDer(keyInfo.PrivateKeyInfo);
+            SignatureKey = KeyFactory.FromDer(keyInfo.PrivateKeyInfo);
             signer = SignatureKey.GetSigner();
         }
 
@@ -50,7 +50,7 @@ namespace Certes.Jws
         /// <value>
         /// The signing algorithm.
         /// </value>
-        public SignatureAlgorithm Algorithm
+        public KeyAlgorithm Algorithm
         {
             get
             {
@@ -81,7 +81,7 @@ namespace Certes.Jws
         /// <value>
         /// The signature key.
         /// </value>
-        public ISignatureKey SignatureKey { get; private set; }
+        public IKey SignatureKey { get; private set; }
 
         /// <summary>
         /// Computes the hash for given data.

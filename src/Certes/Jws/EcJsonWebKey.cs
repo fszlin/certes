@@ -2,6 +2,10 @@
 
 namespace Certes.Jws
 {
+    /// <summary>
+    /// Represents a JWK using Elliptic Curve.
+    /// </summary>
+    /// <seealso cref="Certes.Jws.JsonWebKey" />
     internal class EcJsonWebKey : JsonWebKey
     {
         /// <summary>

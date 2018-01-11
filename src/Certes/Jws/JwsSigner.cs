@@ -1,9 +1,7 @@
-﻿using Certes.Crypto;
-using Certes.Json;
-using Certes.Pkcs;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Text;
+using Certes.Json;
+using Newtonsoft.Json;
 
 namespace Certes.Jws
 {
@@ -12,13 +10,13 @@ namespace Certes.Jws
     /// </summary>
     internal class JwsSigner
     {
-        private readonly ISignatureKey keyPair;
+        private readonly IKey keyPair;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JwsSigner"/> class.
         /// </summary>
         /// <param name="keyPair">The keyPair.</param>
-        public JwsSigner(ISignatureKey keyPair)
+        public JwsSigner(IKey keyPair)
         {
             this.keyPair = keyPair;
         }
@@ -53,15 +51,15 @@ namespace Certes.Jws
                 {
                     alg = keyPair.Algorithm.ToJwsAlgorithm(),
                     jwk = keyPair.JsonWebKey,
-                    nonce = nonce,
-                    url = url,
+                    nonce,
+                    url,
                 } :
                 new
                 {
                     alg = keyPair.Algorithm.ToJwsAlgorithm(),
                     kid = keyId,
-                    nonce = nonce,
-                    url = url,
+                    nonce,
+                    url,
                 };
 
             var entityJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);

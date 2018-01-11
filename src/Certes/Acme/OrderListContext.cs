@@ -6,6 +6,10 @@ using Certes.Acme.Resource;
 
 namespace Certes.Acme
 {
+    /// <summary>
+    /// Represents the context for ACME order list operations.
+    /// </summary>
+    /// <seealso cref="Certes.Acme.IOrderListContext" />
     internal class OrderListContext : EntityContext<OrderList>, IOrderListContext
     {
         /// <summary>
@@ -19,10 +23,10 @@ namespace Certes.Acme
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
+        /// Gets the orders.
         /// </summary>
         /// <returns>
-        /// An enumerator that can be used to iterate through the collection.
+        /// The orders.
         /// </returns>
         public async Task<IEnumerable<IOrderContext>> Orders()
         {
