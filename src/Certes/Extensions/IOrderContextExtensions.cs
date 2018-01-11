@@ -2,6 +2,7 @@
 using Certes.Acme.Resource;
 using Certes.Crypto;
 using Certes.Pkcs;
+using Org.BouncyCastle.OpenSsl;
 
 namespace Certes.Acme
 {

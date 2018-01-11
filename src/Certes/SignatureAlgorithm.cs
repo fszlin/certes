@@ -1,5 +1,6 @@
 ﻿using System;
 using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.X9;
 
 namespace Certes
 {
@@ -61,6 +62,12 @@ namespace Certes
             {
                 case SignatureAlgorithm.RS256:
                     return PkcsObjectIdentifiers.Sha256WithRsaEncryption.Id;
+                case SignatureAlgorithm.ES256:
+                    return X9ObjectIdentifiers.ECDsaWithSha256.Id;
+                case SignatureAlgorithm.ES384:
+                    return X9ObjectIdentifiers.ECDsaWithSha384.Id;
+                case SignatureAlgorithm.ES512:
+                    return X9ObjectIdentifiers.ECDsaWithSha512.Id;
             }
 
             return null;

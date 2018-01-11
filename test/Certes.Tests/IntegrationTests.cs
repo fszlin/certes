@@ -135,6 +135,65 @@ namespace Certes
             var pem = await orderCtx.Download();
         }
 
+        [Theory]
+        [InlineData(SignatureAlgorithm.ES256)]
+        [InlineData(SignatureAlgorithm.ES384)]
+        public async Task CanGenerateCertificateWithEC(SignatureAlgorithm algo)
+        {
+            var hosts = new[] { $"www-ec-{domainSuffix}.es256.certes-ci.dymetis.com".ToLower() };
+            var ctx = new AcmeContext(await Helper.GetAvailableStagingServerV2(), Helper.GetKeyV2());
+            var orderCtx = await ctx.NewOrder(hosts);
+            Assert.IsAssignableFrom<OrderContext>(orderCtx);
+            var order = await orderCtx.Resource();
+            Assert.NotNull(order);
+            Assert.Equal(hosts.Length, order.Authorizations?.Count);
+            Assert.Equal(OrderStatus.Pending, order.Status);
+
+            var authrizations = await orderCtx.Authorizations();
+
+            foreach (var authz in authrizations)
+            {
+                var httpChallenge = await authz.Http();
+                await httpChallenge.Validate();
+            }
+
+            while (true)
+            {
+                await Task.Delay(100);
+
+                var statuses = new List<AuthorizationStatus>();
+                foreach (var authz in authrizations)
+                {
+                    var a = await authz.Resource();
+                    statuses.Add(a.Status ?? AuthorizationStatus.Pending);
+                }
+
+                if (statuses.All(s => s == AuthorizationStatus.Valid || s == AuthorizationStatus.Invalid))
+                {
+                    break;
+                }
+            }
+
+            var certKey = DSA.NewKey(algo);
+            var finalizedOrder = await orderCtx.Finalize(new CsrInfo
+            {
+                CountryName = "CA",
+                State = "Ontario",
+                Locality = "Toronto",
+                Organization = "Certes",
+                OrganizationUnit = "Dev",
+                CommonName = hosts[0],
+            }, certKey);
+            var pem = await orderCtx.Download();
+
+            // deactivate authz so the subsequence can trigger challenge validation
+            foreach (var authz in authrizations)
+            {
+                var authzRes = await authz.Deactivate();
+                Assert.Equal(AuthorizationStatus.Deactivated, authzRes.Status);
+            }
+        }
+
         [Fact]
         public async Task CanGenerateCertificateHttp()
         {
@@ -144,7 +203,7 @@ namespace Certes
             Assert.IsAssignableFrom<OrderContext>(orderCtx);
             var order = await orderCtx.Resource();
             Assert.NotNull(order);
-            Assert.Equal(2, order.Authorizations?.Count);
+            Assert.Equal(hosts.Length, order.Authorizations?.Count);
             Assert.Equal(OrderStatus.Pending, order.Status);
 
             var authrizations = await orderCtx.Authorizations();
@@ -185,8 +244,7 @@ namespace Certes
             var pem = await orderCtx.Download();
             
             var pfxBuilder = new PfxBuilder(Encoding.UTF8.GetBytes(pem), certKey);
-            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-ca2.pem"));
-            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
+            pfxBuilder.AddIssuers(Helper.TestCertificates);
 
             var pfx = pfxBuilder.Build("my-pfx", "abcd1234");
 

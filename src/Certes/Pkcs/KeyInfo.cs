@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO;
+using Certes.Crypto;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
-using Org.BouncyCastle.Security;
 
 namespace Certes.Pkcs
 {
@@ -50,6 +49,8 @@ namespace Certes.Pkcs
     /// </summary>
     public static class KeyInfoExtensions
     {
+        private static readonly SignatureAlgorithmProvider signatureAlgorithmProvider = new SignatureAlgorithmProvider();
+
         /// <summary>
         /// Saves the key pair to the specified stream.
         /// </summary>
@@ -67,33 +68,8 @@ namespace Certes.Pkcs
 
         internal static AsymmetricCipherKeyPair CreateKeyPair(this KeyInfo keyInfo)
         {
-            var keyParam = PrivateKeyFactory.CreateKey(keyInfo.PrivateKeyInfo);
-
-            if (keyParam is RsaPrivateCrtKeyParameters)
-            {
-                var privateKey = (RsaPrivateCrtKeyParameters)keyParam;
-                var publicKey = new RsaKeyParameters(false, privateKey.Modulus, privateKey.PublicExponent);
-                return new AsymmetricCipherKeyPair(publicKey, keyParam);
-            }
-            else if (keyParam is ECPrivateKeyParameters)
-            {
-                var privateKey = (ECPrivateKeyParameters)keyParam;
-                var domain = privateKey.Parameters;
-                var q = domain.G.Multiply(privateKey.D);
-                var publicKey = new ECPublicKeyParameters(q, domain);
-
-                var algo =
-                    domain.Curve.FieldSize == 256 ? SignatureAlgorithm.ES256 :
-                    domain.Curve.FieldSize == 384 ? SignatureAlgorithm.ES384 :
-                    domain.Curve.FieldSize == 521 ? SignatureAlgorithm.ES512 :
-                    throw new NotSupportedException();
-
-                return new AsymmetricCipherKeyPair(publicKey, keyParam);
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
+            var (_, keyPair) = signatureAlgorithmProvider.GetKeyPair(keyInfo.PrivateKeyInfo);
+            return keyPair;
         }
 
         internal static KeyInfo Export(this AsymmetricCipherKeyPair keyPair)

@@ -25,15 +25,6 @@ namespace Certes.Crypto
             Assert.Equal(
                 JsonConvert.SerializeObject(key.JsonWebKey),
                 JsonConvert.SerializeObject(exported.JsonWebKey));
-
-            using (var buffer = new MemoryStream(der))
-            {
-                exported = algo.ReadKey(buffer);
-
-                Assert.Equal(
-                    JsonConvert.SerializeObject(key.JsonWebKey),
-                    JsonConvert.SerializeObject(exported.JsonWebKey));
-            }
         }
     }
 }

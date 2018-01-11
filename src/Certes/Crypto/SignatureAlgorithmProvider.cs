@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Certes.Pkcs;
+using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.Sec;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
@@ -52,19 +53,32 @@ namespace Certes.Crypto
                 var publicKey = new RsaKeyParameters(false, privateKey.Modulus, privateKey.PublicExponent);
                 return (SignatureAlgorithm.RS256, new AsymmetricCipherKeyPair(publicKey, keyParam));
             }
-            else if (keyParam is ECPrivateKeyParameters)
+            else if (keyParam is ECPrivateKeyParameters privateKey)
             {
-                var privateKey = (ECPrivateKeyParameters)keyParam;
                 var domain = privateKey.Parameters;
                 var q = domain.G.Multiply(privateKey.D);
-                var publicKey = new ECPublicKeyParameters(q, domain);
 
-                var algo =
-                    domain.Curve.FieldSize == 256 ? SignatureAlgorithm.ES256 :
-                    domain.Curve.FieldSize == 384 ? SignatureAlgorithm.ES384 :
-                    domain.Curve.FieldSize == 521 ? SignatureAlgorithm.ES512 :
-                    throw new NotSupportedException();
+                DerObjectIdentifier curveId;
+                SignatureAlgorithm algo;
+                switch(domain.Curve.FieldSize)
+                {
+                    case 256:
+                        curveId = SecObjectIdentifiers.SecP256r1;
+                        algo = SignatureAlgorithm.ES256;
+                        break;
+                    case 384:
+                        curveId = SecObjectIdentifiers.SecP384r1;
+                        algo = SignatureAlgorithm.ES384;
+                        break;
+                    case 521:
+                        curveId = SecObjectIdentifiers.SecP521r1;
+                        algo = SignatureAlgorithm.ES512;
+                        break;
+                    default:
+                        throw new NotSupportedException();
+                }
 
+                var publicKey = new ECPublicKeyParameters("EC", q, curveId);
                 return (algo, new AsymmetricCipherKeyPair(publicKey, keyParam));
             }
             else
