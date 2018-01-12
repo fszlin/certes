@@ -3,9 +3,6 @@
 [![NuGet](https://img.shields.io/nuget/v/certes.svg)](https://www.nuget.org/packages/certes/)
 [![NuGet](https://img.shields.io/nuget/dt/certes.svg)](https://www.nuget.org/packages/certes/)
 
-[![MyGet](https://img.shields.io/myget/certes/v/certes.svg)](https://www.myget.org/feed/certes/package/nuget/Certes)
-[![MyGet](https://img.shields.io/myget/certes/dt/certes.svg)](https://www.myget.org/feed/certes/package/nuget/Certes)
-
 [![Travis](https://img.shields.io/travis/fszlin/certes.svg)](https://travis-ci.org/fszlin/certes)
 [![AppVeyor](https://img.shields.io/appveyor/ci/fszlin/certes.svg)](https://ci.appveyor.com/project/fszlin/certes)
 [![AppVeyor](https://img.shields.io/appveyor/tests/fszlin/certes.svg)](https://ci.appveyor.com/project/fszlin/certes)
@@ -15,9 +12,8 @@ Certes is a client implementation for the Automated Certificate Management
 Environment (ACME) protocol, build on .NET Core. It is aimed to provide a easy
 to use API for managing certificates using scripts during build process.
 
-Before [Let's Encrypt](https://letsencrypt.org), SSL/TLS certificate for HTTPS
-was a privilege for who can afford it. With Certes, you can quickly generate
-certificates using .NET or command line, and it is **free**.
+**ACME v2** with wildcard SSL is [around the corner](https://community.letsencrypt.org/t/staging-endpoint-for-acme-v2/49605) now,
+check out our [v2 API](README.v2.md)!
 
 ## Get Certified in 5 Minutes
 
