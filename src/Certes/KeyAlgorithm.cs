@@ -40,7 +40,7 @@ namespace Certes
     /// <summary>
     /// Helper methods for <see cref="KeyAlgorithm"/>.
     /// </summary>
-    public static class SignatureAlgorithmExtensions
+    public static class KeyAlgorithmExtensions
     {
         /// <summary>
         /// Get the JWS name of the <paramref name="algorithm"/>.
