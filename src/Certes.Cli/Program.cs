@@ -47,6 +47,7 @@ namespace Certes.Cli
             {
                 ArgumentSyntax.Parse(args, syntax =>
                 {
+                    syntax.ApplicationName = "certes";
                     syntax.HandleErrors = false;
                     registerOptions = DefineRegisterCommand(syntax);
                     authorizationOptions = DefineAuthorizationCommand(syntax);
