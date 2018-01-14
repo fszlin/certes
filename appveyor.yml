@@ -74,7 +74,7 @@ before_test:
 test_script:
   - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
   - ps: >-
-      & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:xunit --fx-version 2.0.0" "-oldstyle" "-output:./../../build/coverage.xml" "-filter:+[*]Certes.* -[Certes.Tests]*" "-hideskipped:All" "-returntargetcode"
+      & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:xunit -fxversion 2.0.0 -configuration Release" "-oldstyle" "-output:./../../build/coverage.xml" "-filter:+[*]Certes.* -[Certes.Tests]*" "-hideskipped:All" "-returntargetcode"
 
 after_test:
   - cd ../../

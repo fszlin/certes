@@ -1,6 +1,4 @@
-﻿using System.IO;
-using Certes.Pkcs;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Xunit;
 
 namespace Certes.Crypto
@@ -21,6 +19,13 @@ namespace Certes.Crypto
 
             var der = key.ToDer();
             var exported = provider.GetKey(der);
+
+            Assert.Equal(
+                JsonConvert.SerializeObject(key.JsonWebKey),
+                JsonConvert.SerializeObject(exported.JsonWebKey));
+
+            var pem = key.ToPem();
+            exported = provider.GetKey(pem);
 
             Assert.Equal(
                 JsonConvert.SerializeObject(key.JsonWebKey),
