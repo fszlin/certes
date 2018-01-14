@@ -38,7 +38,7 @@ namespace Certes.Acme
         /// <exception cref="System.Exception">If the certificate data is missing.</exception>
         public static PfxBuilder ToPfx(this AcmeCertificate cert)
         {
-            if (cert?.Raw == null)
+            if ((cert ?? throw new ArgumentNullException(nameof(cert))).Raw == null)
             {
                 throw new Exception($"Certificate data missing, please fetch the certificate from ${cert.Location}");
             }

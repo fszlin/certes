@@ -94,5 +94,43 @@ namespace Certes.Acme
 
             Assert.Equal(expectedAccount, account);
         }
+
+        [Fact]
+        public async Task CanLoadOrderList()
+        {
+            var loc = new Uri("http://acme.d/acct/1/orders");
+            var account = new Account
+            {
+                Orders = loc
+            };
+            var expectedPayload = new JwsSigner(Helper.GetKeyV2())
+                .Sign(new Account(), null, location, "nonce");
+
+            contextMock.Reset();
+            httpClientMock.Reset();
+
+            contextMock
+                .Setup(c => c.GetDirectory())
+                .ReturnsAsync(Helper.MockDirectoryV2);
+            contextMock
+                .SetupGet(c => c.AccountKey)
+                .Returns(Helper.GetKeyV2());
+            contextMock.SetupGet(c => c.HttpClient).Returns(httpClientMock.Object);
+            contextMock
+                .Setup(c => c.Sign(It.IsAny<object>(), location))
+                .ReturnsAsync(expectedPayload);
+            httpClientMock
+                .Setup(c => c.ConsumeNonce())
+                .ReturnsAsync("nonce");
+            httpClientMock
+                .Setup(c => c.Post<Account>(location, It.IsAny<JwsPayload>()))
+                .ReturnsAsync(new AcmeHttpResponse<Account>(location, account, null, null));
+
+            var ctx = new AccountContext(contextMock.Object, location);
+            var orders = await ctx.Orders();
+
+            Assert.IsType<OrderListContext>(orders);
+            Assert.Equal(loc, orders.Location);
+        }
     }
 }

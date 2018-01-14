@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Certes.Acme.Resource;
 
 namespace Certes.Acme
 {
     /// <summary>
     /// Presents the context for ACME order list operations.
     /// </summary>
-    public interface IOrderListContext
+    public interface IOrderListContext : IResourceContext<OrderList>
     {
         /// <summary>
         /// Gets the orders.

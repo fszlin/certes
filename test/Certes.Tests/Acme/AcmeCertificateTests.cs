@@ -17,5 +17,11 @@ namespace Certes.Acme
             var ex = Assert.Throws<Exception>(() => AcmeCertificateExtensions.ToPfx(cert));
             Assert.Contains(cert.Location.AbsoluteUri, ex.Message);
         }
+
+        [Fact]
+        public void ThrowExceptionWhenNull()
+        {
+            var ex = Assert.Throws<ArgumentNullException>(() => AcmeCertificateExtensions.ToPfx(null));
+        }
     }
 }
