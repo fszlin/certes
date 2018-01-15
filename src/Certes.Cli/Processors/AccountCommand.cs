@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.Threading.Tasks;
 using Certes.Cli.Options;
-
+using NLog;
 using ValidationFunc = System.Func<Certes.Cli.Options.AccountOptions, bool>;
 
 namespace Certes.Cli.Processors
@@ -17,6 +17,7 @@ namespace Certes.Cli.Processors
             (AccountAction.Set, (ValidationFunc)(o => !string.IsNullOrWhiteSpace(o.Path)), "Please enter the key file path."),
         };
 
+        public ILogger Logger { get; } = LogManager.GetCurrentClassLogger();
         private AccountOptions Args { get; }
 
         public AccountCommand(AccountOptions args)
@@ -65,9 +66,32 @@ namespace Certes.Cli.Processors
             {
                 case AccountAction.Info:
                     return await LoadAccountInfo();
+                case AccountAction.New:
+                    return await NewAccount();
             }
 
             throw new NotSupportedException();
+        }
+
+        private async Task<object> NewAccount()
+        {
+            var key = await Args.LoadKey();
+            if (key != null && !Args.Force)
+            {
+                throw new Exception("An account key already exists, use '--force' option to overwrite the existing key.");
+            }
+
+            Logger.Debug("Using ACME server {0}.", Args.Server);
+            var ctx = ContextFactory.Create(Args.Server, null);
+
+            Logger.Debug("Creating new account, email='{0}', agree='{1}'", Args.Email, Args.AgreeTos);
+            var acctCtx = await ctx.NewAccount(Args.Email, Args.AgreeTos);
+            Logger.Debug("Created new account at {0}", acctCtx.Location);
+
+            var path = Args.GetKeyPath();
+            await FileUtil.WriteAllTexts(path, ctx.AccountKey.ToPem());
+
+            return await acctCtx.Resource();
         }
 
         private async Task<object> LoadAccountInfo()
@@ -78,8 +102,11 @@ namespace Certes.Cli.Processors
                 throw new Exception("No account key is available.");
             }
 
+            Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, key);
             var acctCtx = await ctx.Account();
+
+            Logger.Debug("Retrieve account at {0}", acctCtx.Location);
             return await acctCtx.Resource();
         }
     }

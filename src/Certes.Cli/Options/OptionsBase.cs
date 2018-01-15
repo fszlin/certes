@@ -24,7 +24,7 @@ namespace Certes.Cli.Options
         
         public static async Task<IKey> LoadKey(this OptionsBase options)
         {
-            var path = string.IsNullOrWhiteSpace(options.Path) ? GetDefaultKeyPath() : options.Path;
+            var path = options.GetKeyPath();
             if (!File.Exists(path))
             {
                 logger.Debug("No key found at {0}.", path);
@@ -34,6 +34,11 @@ namespace Certes.Cli.Options
             logger.Debug("Using account key from {0}.", path);
             var pem = await FileUtil.ReadAllText(path);
             return KeyFactory.FromPem(pem);
+        }
+
+        public static string GetKeyPath(this OptionsBase options)
+        {
+            return string.IsNullOrWhiteSpace(options.Path) ? GetDefaultKeyPath() : options.Path;
         }
 
         private static string GetDefaultKeyPath()

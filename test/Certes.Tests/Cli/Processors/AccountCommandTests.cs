@@ -50,6 +50,45 @@ namespace Certes.Cli.Processors
         }
 
         [Fact]
+        public async Task CanNewAccount()
+        {
+            var keyPath = $"./Data/{nameof(CanNewAccount)}/key.pem";
+            if (System.IO.Directory.Exists(Path.GetDirectoryName(keyPath)))
+            {
+                System.IO.Directory.Delete(Path.GetDirectoryName(keyPath), true);
+            }
+
+            var account = new Account
+            {
+                TermsOfServiceAgreed = true,
+                Contact = new[] { "mailto:admin@example.com" }
+            };
+
+            var acctMock = new Mock<IAccountContext>();
+            var ctxMock = new Mock<IAcmeContext>();
+            ctxMock.SetupGet(c => c.AccountKey).Returns(Helper.GetKeyV2());
+            ctxMock.Setup(c => c.NewAccount(new[] { "mailto:admin@example.com" }, true))
+                .ReturnsAsync(acctMock.Object);
+            acctMock.Setup(c => c.Resource()).ReturnsAsync(account);
+            ContextFactory.Create = (uri, key) => ctxMock.Object;
+
+            var proc = new AccountCommand(new AccountOptions
+            {
+                Action = AccountAction.New,
+                Email = "admin@example.com",
+                AgreeTos = true,
+                Path = keyPath,
+            });
+
+            var ret = await proc.Process();
+            Assert.NotNull(ret);
+            Assert.True(File.Exists(keyPath));
+
+            // should not allow to overwrite the key file
+            await Assert.ThrowsAsync<Exception>(() => proc.Process());
+        }
+
+        [Fact]
         public async Task CanShowAccountInfo()
         {
             var account = new Account
@@ -73,7 +112,6 @@ namespace Certes.Cli.Processors
             File.WriteAllText("./Data/key-es256.pem", Helper.GetTestKey(KeyAlgorithm.ES256));
 
             var ret = await proc.Process();
-
             Assert.Equal(JsonConvert.SerializeObject(account), JsonConvert.SerializeObject(ret));
         }
 
