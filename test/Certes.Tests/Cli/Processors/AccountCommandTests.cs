@@ -1,7 +1,13 @@
 ﻿#if NETCOREAPP1_0 || NETCOREAPP2_0
 
 using System.CommandLine;
+using System.IO;
+using System.Threading.Tasks;
+using Certes.Acme;
+using Certes.Acme.Resource;
 using Certes.Cli.Options;
+using Moq;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Certes.Cli.Processors
@@ -40,6 +46,34 @@ namespace Certes.Cli.Processors
             Assert.Throws<ArgumentSyntaxException>(() => Parse("account new"));
             Assert.Throws<ArgumentSyntaxException>(() => Parse("account update"));
             Assert.Throws<ArgumentSyntaxException>(() => Parse("account set"));
+        }
+
+        [Fact]
+        public async Task CanShowAccountInfo()
+        {
+            var account = new Account
+            {
+                TermsOfServiceAgreed = true,
+                Contact = new[] { "mailto:admin@example.com" }
+            };
+
+            var acctMock = new Mock<IAccountContext>();
+            var ctxMock = new Mock<IAcmeContext>();
+            ctxMock.Setup(c => c.Account()).ReturnsAsync(acctMock.Object);
+            acctMock.Setup(c => c.Resource()).ReturnsAsync(account);
+            ContextFactory.Create = (uri, key) => ctxMock.Object;
+
+            var proc = new AccountCommand(new AccountOptions
+            {
+                Action = AccountAction.Info,
+                Path = "./Data/key-es256.pem",
+            });
+
+            File.WriteAllText("./Data/key-es256.pem", Helper.GetTestKey(KeyAlgorithm.ES256));
+
+            var ret = await proc.Process();
+
+            Assert.Equal(JsonConvert.SerializeObject(account), JsonConvert.SerializeObject(ret));
         }
 
         private AccountOptions Parse(string cmd)

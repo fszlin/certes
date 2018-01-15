@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.Threading.Tasks;
 using Certes.Cli.Options;
 
 using ValidationFunc = System.Func<Certes.Cli.Options.AccountOptions, bool>;
@@ -15,6 +16,13 @@ namespace Certes.Cli.Processors
             (AccountAction.Update, (ValidationFunc)(o => !string.IsNullOrWhiteSpace(o.Email) || o.AgreeTos), "Please enter the data to update."),
             (AccountAction.Set, (ValidationFunc)(o => !string.IsNullOrWhiteSpace(o.Path)), "Please enter the key file path."),
         };
+
+        private AccountOptions Args { get; }
+
+        public AccountCommand(AccountOptions args)
+        {
+            Args = args;
+        }
 
         public static AccountOptions TryParse(ArgumentSyntax syntax)
         {
@@ -48,6 +56,25 @@ namespace Certes.Cli.Processors
             }
 
             return options;
+        }
+
+        public async Task<object> Process()
+        {
+            switch (Args.Action)
+            {
+                case AccountAction.Info:
+                    return await GetAccount();
+            }
+
+            throw new NotSupportedException();
+        }
+
+        private async Task<object> GetAccount()
+        {
+            var key = await Args.LoadKey();
+            var ctx = ContextFactory.Create(Args.Server, key);
+            var acctCtx = await ctx.Account();
+            return await acctCtx.Resource();
         }
     }
 }
