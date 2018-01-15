@@ -27,9 +27,16 @@ namespace Certes.Cli.Processors
             options = Parse("account deactivate");
             Assert.Equal(AccountAction.Deactivate, options.Action);
 
-            options = Parse("account set --path ./account-key.pem");
+            options = Parse("account change-key");
+            Assert.Equal(AccountAction.ChangeKey, options.Action);
+
+            options = Parse("account set --key ./account-key.pem");
             Assert.Equal(AccountAction.Set, options.Action);
             Assert.Equal("./account-key.pem", options.Path);
+
+            Assert.Throws<ArgumentSyntaxException>(() => Parse("account new"));
+            Assert.Throws<ArgumentSyntaxException>(() => Parse("account update"));
+            Assert.Throws<ArgumentSyntaxException>(() => Parse("account set"));
         }
 
         private AccountOptions Parse(string cmd)
@@ -37,6 +44,7 @@ namespace Certes.Cli.Processors
             AccountOptions options = null;
             ArgumentSyntax.Parse(cmd.Split(' '), syntax =>
             {
+                syntax.HandleErrors = false;
                 syntax.DefineCommand("noop");
                 options = AccountCommand.TryParse(syntax);
             });

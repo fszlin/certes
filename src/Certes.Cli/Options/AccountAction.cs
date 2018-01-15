@@ -5,6 +5,7 @@
         New,
         Update,
         Deactivate,
+        ChangeKey,
         Set,
     }
 }
