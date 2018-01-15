@@ -1,11 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using Certes.Cli.Options;
+
+using ValidationFunc = System.Func<Certes.Cli.Options.AccountOptions, bool>;
 
 namespace Certes.Cli.Processors
 {
     internal class AccountCommand
     {
+        private static readonly List<(AccountAction Action, ValidationFunc IsValid, string Help)> validations = new List<(AccountAction, ValidationFunc, string)>
+        {
+            (AccountAction.New, (ValidationFunc)(o => !string.IsNullOrWhiteSpace(o.Email)), "Please enter the admin email."),
+            (AccountAction.Update, (ValidationFunc)(o => !string.IsNullOrWhiteSpace(o.Email) || o.AgreeTos), "Please enter the data to update."),
+            (AccountAction.Set, (ValidationFunc)(o => !string.IsNullOrWhiteSpace(o.Path)), "Please enter the key file path."),
+        };
+
         public static AccountOptions TryParse(ArgumentSyntax syntax)
         {
             var options = new AccountOptions();
@@ -29,25 +39,11 @@ namespace Certes.Cli.Processors
                 a => (AccountAction)Enum.Parse(typeof(AccountAction), a?.Replace("-", ""), true),
                 "Account action");
 
-            if (options.Action == AccountAction.New)
+            foreach (var validation in validations)
             {
-                if (string.IsNullOrWhiteSpace(options.Email))
+                if (options.Action == validation.Action && !validation.IsValid(options))
                 {
-                    syntax.ReportError("Please enter the admin email.");
-                }
-            }
-            else if (options.Action == AccountAction.Update)
-            {
-                if (string.IsNullOrWhiteSpace(options.Email) && !options.AgreeTos)
-                {
-                    syntax.ReportError("Please enter the data to update.");
-                }
-            }
-            else if (options.Action == AccountAction.Set)
-            {
-                if (string.IsNullOrWhiteSpace(options.Path))
-                {
-                    syntax.ReportError("Please enter the key file path.");
+                    syntax.ReportError(validation.Help);
                 }
             }
 

@@ -14,6 +14,9 @@ namespace Certes.Cli.Processors
             var options = Parse("noop");
             Assert.Null(options);
 
+            options = Parse("account");
+            Assert.Equal(AccountAction.Info, options.Action);
+
             options = Parse("account new --email admin@example.com --agree-tos");
             Assert.Equal(AccountAction.New, options.Action);
             Assert.Equal("admin@example.com", options.Email);

@@ -2,6 +2,7 @@
 {
     internal enum AccountAction
     {
+        Info,
         New,
         Update,
         Deactivate,
