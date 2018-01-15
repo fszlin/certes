@@ -13,7 +13,6 @@ namespace Certes.Cli
 {
     public class CliV1
     {
-        internal const string ConsoleLoggerName = "certes-cli-console-logger";
         private readonly ILogger consoleLogger;
 
         private JsonSerializerSettings jsonSettings;

@@ -3,6 +3,8 @@
     public enum Command
     {
         Undefined,
+
+        // ACME v1 commands
         Register,
         Authorization,
         Certificate,
