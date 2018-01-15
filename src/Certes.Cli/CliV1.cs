@@ -74,25 +74,25 @@ namespace Certes.Cli
                     return true;
                 }
 
-                //switch (command)
-                //{
-                //    case Command.Register:
-                //        await ProcessCommand<RegisterCommand, RegisterOptions>(
-                //            new RegisterCommand(registerOptions, consoleLogger));
-                //        break;
-                //    case Command.Authorization:
-                //        await ProcessCommand<AuthorizationCommand, AuthorizationOptions>(
-                //            new AuthorizationCommand(authorizationOptions, consoleLogger));
-                //        break;
-                //    case Command.Certificate:
-                //        await ProcessCommand<CertificateCommand, CertificateOptions>(
-                //            new CertificateCommand(certificateOptions, consoleLogger));
-                //        break;
-                //    case Command.Import:
-                //        await ProcessCommand<ImportCommand, ImportOptions>(
-                //            new ImportCommand(importOptions, consoleLogger));
-                //        break;
-                //}
+                switch (command)
+                {
+                    case Command.Register:
+                        await ProcessCommand<RegisterCommand, RegisterOptions>(
+                            new RegisterCommand(registerOptions));
+                        break;
+                    case Command.Authorization:
+                        await ProcessCommand<AuthorizationCommand, AuthorizationOptions>(
+                            new AuthorizationCommand(authorizationOptions));
+                        break;
+                    case Command.Certificate:
+                        await ProcessCommand<CertificateCommand, CertificateOptions>(
+                            new CertificateCommand(certificateOptions));
+                        break;
+                    case Command.Import:
+                        await ProcessCommand<ImportCommand, ImportOptions>(
+                            new ImportCommand(importOptions));
+                        break;
+                }
 
                 return true;
             }
