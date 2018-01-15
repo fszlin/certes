@@ -40,6 +40,7 @@ namespace Certes.Cli.Processors
 
             syntax.DefineOption("server", ref options.Server, s => new Uri(s), $"ACME Directory Resource URI.");
             syntax.DefineOption("key", ref options.Path, $"File path to the account key to use.");
+            syntax.DefineOption("verbose", ref options.Verbose, $"Print process log.");
 
             syntax.DefineParameter(
                 "action",
@@ -63,15 +64,20 @@ namespace Certes.Cli.Processors
             switch (Args.Action)
             {
                 case AccountAction.Info:
-                    return await GetAccount();
+                    return await LoadAccountInfo();
             }
 
             throw new NotSupportedException();
         }
 
-        private async Task<object> GetAccount()
+        private async Task<object> LoadAccountInfo()
         {
             var key = await Args.LoadKey();
+            if (key == null)
+            {
+                throw new Exception("No account key is available.");
+            }
+
             var ctx = ContextFactory.Create(Args.Server, key);
             var acctCtx = await ctx.Account();
             return await acctCtx.Resource();

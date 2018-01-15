@@ -1,5 +1,6 @@
 ﻿#if NETCOREAPP1_0 || NETCOREAPP2_0
 
+using System;
 using System.CommandLine;
 using System.IO;
 using System.Threading.Tasks;
@@ -74,6 +75,30 @@ namespace Certes.Cli.Processors
             var ret = await proc.Process();
 
             Assert.Equal(JsonConvert.SerializeObject(account), JsonConvert.SerializeObject(ret));
+        }
+
+        [Fact]
+        public async Task ShouldNotShowAccountInfoWhenNoKey()
+        {
+            var account = new Account
+            {
+                TermsOfServiceAgreed = true,
+                Contact = new[] { "mailto:admin@example.com" }
+            };
+
+            var acctMock = new Mock<IAccountContext>();
+            var ctxMock = new Mock<IAcmeContext>();
+            ctxMock.Setup(c => c.Account()).ReturnsAsync(acctMock.Object);
+            acctMock.Setup(c => c.Resource()).ReturnsAsync(account);
+            ContextFactory.Create = (uri, key) => ctxMock.Object;
+
+            var proc = new AccountCommand(new AccountOptions
+            {
+                Action = AccountAction.Info,
+                Path = "./nokey.pem"
+            });
+
+            await Assert.ThrowsAsync<Exception>(() => proc.Process());
         }
 
         private AccountOptions Parse(string cmd)

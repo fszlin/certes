@@ -27,35 +27,57 @@ namespace Certes
             File.ReadAllBytes("./Data/test-ca2.pem")
                 .Concat(File.ReadAllBytes("./Data/test-root.pem")).ToArray();
 
-        private static Lazy<LogFactory> logFactory = new Lazy<LogFactory>(() =>
-        {
-            var config = new LoggingConfiguration();
-            var memoryTarget = new MemoryTarget()
-            {
-                Layout = @"${message}${onexception:${exception:format=tostring}}"
-            };
+        //private static Lazy<LogFactory> logFactory = new Lazy<LogFactory>(() =>
+        //{
+        //    var config = new LoggingConfiguration();
+        //    var memoryTarget = new MemoryTarget()
+        //    {
+        //        Layout = @"${message}${onexception:${exception:format=tostring}}"
+        //    };
 
-            config.AddTarget("logger", memoryTarget);
+        //    config.AddTarget("logger", memoryTarget);
 
-            var consoleRule = new LoggingRule("*", LogLevel.Debug, memoryTarget);
-            config.LoggingRules.Add(consoleRule);
-            return new LogFactory(config);
-        });
+        //    var consoleRule = new LoggingRule("*", LogLevel.Debug, memoryTarget);
+        //    config.LoggingRules.Add(consoleRule);
+        //    return new LogFactory(config);
+        //});
 
         public static IList<string> Logs
         {
             get
             {
-                var target = (MemoryTarget)logFactory.Value.Configuration.FindTargetByName("logger");
+                var target = (MemoryTarget)LogManager.Configuration.FindTargetByName("logger");
                 return target.Logs;
             }
         }
 
-        public static ILogger Logger
+        //public static ILogger Logger
+        //{
+        //    get
+        //    {
+        //        return logFactory.Value.GetLogger("logger");
+        //    }
+        //}
+
+        public static void ConfigureLogger()
         {
-            get
+            if (LogManager.Configuration == null)
             {
-                return logFactory.Value.GetLogger("logger");
+                var config = new LoggingConfiguration();
+                var memoryTarget = new MemoryTarget()
+                {
+                    Layout = @"${message}${onexception:${exception:format=tostring}}"
+                };
+
+                config.AddTarget("logger", memoryTarget);
+
+                var consoleRule = new LoggingRule("*", LogLevel.Debug, memoryTarget);
+                config.LoggingRules.Add(consoleRule);
+                LogManager.Configuration = config;
+            }
+            else
+            {
+                Logs.Clear();
             }
         }
 

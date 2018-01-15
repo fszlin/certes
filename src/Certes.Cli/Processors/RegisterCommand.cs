@@ -9,8 +9,8 @@ namespace Certes.Cli.Processors
 {
     internal class RegisterCommand : CommandBase<RegisterOptions>
     {
-        public RegisterCommand(RegisterOptions options, ILogger consoleLogger)
-            : base(options, consoleLogger)
+        public RegisterCommand(RegisterOptions options)
+            : base(options)
         {
         }
         

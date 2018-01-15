@@ -8,12 +8,11 @@ namespace Certes.Cli.Processors
         where T : OptionsBase
     {
         public T Options { get; }
-        public ILogger ConsoleLogger { get; }
+        public ILogger ConsoleLogger { get; } = LogManager.GetCurrentClassLogger();
 
-        public CommandBase(T options, ILogger consoleLogger)
+        public CommandBase(T options)
         {
             this.Options = options;
-            this.ConsoleLogger = consoleLogger;
         }
 
         public abstract Task<AcmeContext> Process(AcmeContext context);

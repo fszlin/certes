@@ -10,8 +10,8 @@ namespace Certes.Cli.Processors
 {
     internal class ImportCommand : CommandBase<ImportOptions>
     {
-        public ImportCommand(ImportOptions options, ILogger consoleLogger)
-            : base(options, consoleLogger)
+        public ImportCommand(ImportOptions options)
+            : base(options)
         {
         }
 

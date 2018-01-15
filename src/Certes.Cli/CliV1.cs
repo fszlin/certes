@@ -13,7 +13,7 @@ namespace Certes.Cli
 {
     public class CliV1
     {
-        private readonly ILogger consoleLogger;
+        private readonly ILogger consoleLogger = LogManager.GetLogger(nameof(CliV1));
 
         private JsonSerializerSettings jsonSettings;
         private Command command = Command.Undefined;
@@ -22,10 +22,10 @@ namespace Certes.Cli
         private AuthorizationOptions authorizationOptions;
         private CertificateOptions certificateOptions;
         private ImportOptions importOptions;
+        private AccountOptions accountOptions;
 
-        public CliV1(ILogger consoleLogger)
+        public CliV1()
         {
-            this.consoleLogger = consoleLogger;
         }
 
         public async Task<bool> Process(string[] args)
@@ -36,6 +36,9 @@ namespace Certes.Cli
                 {
                     syntax.ApplicationName = "certes";
                     syntax.HandleErrors = false;
+
+                    accountOptions = AccountCommand.TryParse(syntax);
+                    
                     registerOptions = DefineRegisterCommand(syntax);
                     authorizationOptions = DefineAuthorizationCommand(syntax);
                     certificateOptions = DefineCertificateCommand(syntax);
@@ -63,25 +66,33 @@ namespace Certes.Cli
 
             try
             {
-                switch (command)
+                if (accountOptions != null)
                 {
-                    case Command.Register:
-                        await ProcessCommand<RegisterCommand, RegisterOptions>(
-                            new RegisterCommand(registerOptions, consoleLogger));
-                        break;
-                    case Command.Authorization:
-                        await ProcessCommand<AuthorizationCommand, AuthorizationOptions>(
-                            new AuthorizationCommand(authorizationOptions, consoleLogger));
-                        break;
-                    case Command.Certificate:
-                        await ProcessCommand<CertificateCommand, CertificateOptions>(
-                            new CertificateCommand(certificateOptions, consoleLogger));
-                        break;
-                    case Command.Import:
-                        await ProcessCommand<ImportCommand, ImportOptions>(
-                            new ImportCommand(importOptions, consoleLogger));
-                        break;
+                    var cmd = new AccountCommand(accountOptions);
+                    var result = await cmd.Process();
+                    consoleLogger.Info(JsonConvert.SerializeObject(result, Formatting.Indented, jsonSettings));
+                    return true;
                 }
+
+                //switch (command)
+                //{
+                //    case Command.Register:
+                //        await ProcessCommand<RegisterCommand, RegisterOptions>(
+                //            new RegisterCommand(registerOptions, consoleLogger));
+                //        break;
+                //    case Command.Authorization:
+                //        await ProcessCommand<AuthorizationCommand, AuthorizationOptions>(
+                //            new AuthorizationCommand(authorizationOptions, consoleLogger));
+                //        break;
+                //    case Command.Certificate:
+                //        await ProcessCommand<CertificateCommand, CertificateOptions>(
+                //            new CertificateCommand(certificateOptions, consoleLogger));
+                //        break;
+                //    case Command.Import:
+                //        await ProcessCommand<ImportCommand, ImportOptions>(
+                //            new ImportCommand(importOptions, consoleLogger));
+                //        break;
+                //}
 
                 return true;
             }

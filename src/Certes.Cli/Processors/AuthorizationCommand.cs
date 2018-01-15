@@ -12,8 +12,8 @@ namespace Certes.Cli.Processors
     internal class AuthorizationCommand : CommandBase<AuthorizationOptions>
     {
         private static readonly char[] NameValueSeparator = new[] { '\r', '\n', ' ', ';', ',' };
-        public AuthorizationCommand(AuthorizationOptions options, ILogger ConsoleLogger)
-            : base(options, ConsoleLogger)
+        public AuthorizationCommand(AuthorizationOptions options)
+            : base(options)
         {
         }
 

@@ -15,29 +15,29 @@ namespace Certes.Cli.Processors
         [Fact]
         public async Task ProcessWithExistingContext()
         {
+            Helper.ConfigureLogger();
             var options = new ImportOptions
             {
                 Force = false,
             };
 
-            var cmd = new ImportCommand(options, Helper.Logger);
+            var cmd = new ImportCommand(options);
             await Assert.ThrowsAsync<Exception>(() =>
                 cmd.Process(new AcmeContext()));
-            Helper.Logs.Clear();
         }
 
         [Fact]
         public async Task ProcessWithoutKeyFile()
         {
+            Helper.ConfigureLogger();
             var options = new ImportOptions
             {
                 KeyFile = null,
             };
 
-            var cmd = new ImportCommand(options, Helper.Logger);
+            var cmd = new ImportCommand(options);
             await Assert.ThrowsAsync<Exception>(() =>
                 cmd.Process(null));
-            Helper.Logs.Clear();
         }
 
         [Theory]
@@ -46,7 +46,8 @@ namespace Certes.Cli.Processors
         [InlineData(KeyAlgorithm.ES512)]
         [InlineData(KeyAlgorithm.RS256)]
         public async Task CanLoadKey(KeyAlgorithm algo)
-        { 
+        {
+            Helper.ConfigureLogger();
             if (!Directory.Exists("./_test"))
             {
                 Directory.CreateDirectory("./_test");
@@ -63,14 +64,13 @@ namespace Certes.Cli.Processors
                 key.Export().Save(fs);
             }
 
-            var cmd = new ImportCommand(options, Helper.Logger);
+            var cmd = new ImportCommand(options);
             var ctx = await cmd.Process(null);
 
             Assert.NotNull(ctx.Account);
             Assert.Equal(
                 key.Export().PrivateKeyInfo,
                 ctx.Account.Key.PrivateKeyInfo);
-            Helper.Logs.Clear();
         }
     }
 }

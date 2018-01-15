@@ -14,8 +14,8 @@ namespace Certes.Cli.Processors
     {
         private static readonly char[] NameValueSeparator = new[] { '\r', '\n', ' ', ';', ',' };
 
-        public CertificateCommand(CertificateOptions options, ILogger consoleLogger)
-            : base(options, consoleLogger)
+        public CertificateCommand(CertificateOptions options)
+            : base(options)
         {
         }
 

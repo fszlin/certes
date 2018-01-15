@@ -1,16 +1,16 @@
 ﻿#if NETCOREAPP1_0 || NETCOREAPP2_0
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Certes.Acme;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Certes.Cli
@@ -93,25 +93,15 @@ namespace Certes.Cli
 
         private async Task<IList<string>> RunCommand(string cmd, Dictionary<string, string> placeHolders = null)
         {
-            var config = new LoggingConfiguration();
-            var memoryTarget = new MemoryTarget()
-            {
-                Layout = @"${message}${onexception:${exception:format=tostring}}"
-            };
+            Helper.ConfigureLogger();
 
-            config.AddTarget("logger", memoryTarget);
-
-            var consoleRule = new LoggingRule("*", LogLevel.Debug, memoryTarget);
-            config.LoggingRules.Add(consoleRule);
-            
             var args = cmd.Split(' ')
                 .Select(s => placeHolders?.ContainsKey(s) == true ? placeHolders[s] : s)
                 .ToArray();
 
-            var succeed = await new CliV1(Helper.Logger).Process(args);
+            var succeed = await new CliV1().Process(args);
             Assert.True(succeed, string.Join(Environment.NewLine, Helper.Logs));
-            Helper.Logs.Clear();
-            return memoryTarget.Logs;
+            return Helper.Logs;
         }
 
         private void InjectTestKey()
