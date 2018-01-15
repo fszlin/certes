@@ -9,5 +9,8 @@
         Authorization,
         Certificate,
         Import,
+
+        // ACME v2 commands
+        Account,
     }
 }
