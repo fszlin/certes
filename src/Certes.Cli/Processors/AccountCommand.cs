@@ -34,7 +34,6 @@ namespace Certes.Cli.Processors
                 if (string.IsNullOrWhiteSpace(options.Email))
                 {
                     syntax.ReportError("Please enter the admin email.");
-                    return null;
                 }
             }
             else if (options.Action == AccountAction.Update)
@@ -42,7 +41,6 @@ namespace Certes.Cli.Processors
                 if (string.IsNullOrWhiteSpace(options.Email) && !options.AgreeTos)
                 {
                     syntax.ReportError("Please enter the data to update.");
-                    return null;
                 }
             }
             else if (options.Action == AccountAction.Set)
@@ -50,7 +48,6 @@ namespace Certes.Cli.Processors
                 if (string.IsNullOrWhiteSpace(options.Path))
                 {
                     syntax.ReportError("Please enter the key file path.");
-                    return null;
                 }
             }
 
