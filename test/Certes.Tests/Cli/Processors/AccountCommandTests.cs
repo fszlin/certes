@@ -118,6 +118,34 @@ namespace Certes.Cli.Processors
         }
 
         [Fact]
+        public async Task CanDeactivateAccount()
+        {
+            var account = new Account
+            {
+                Status = AccountStatus.Deactivated,
+            };
+
+            var acctMock = new Mock<IAccountContext>();
+            var ctxMock = new Mock<IAcmeContext>();
+            ctxMock.Setup(c => c.Account()).ReturnsAsync(acctMock.Object);
+            acctMock.Setup(c => c.Deactivate()).ReturnsAsync(account);
+            acctMock.SetupGet(c => c.Location).Returns(new Uri("http://acme.d/acct/1"));
+            ContextFactory.Create = (uri, key) => ctxMock.Object;
+
+            var proc = new AccountCommand(new AccountOptions
+            {
+                Action = AccountAction.Deactivate,
+                Path = "./Data/key-es256.pem",
+            });
+
+            File.WriteAllText("./Data/key-es256.pem", Helper.GetTestKey(KeyAlgorithm.ES256));
+
+            var ret = await proc.Process();
+            Assert.Equal(JsonConvert.SerializeObject(account), JsonConvert.SerializeObject(ret));
+            Assert.False(File.Exists("./Data/key-es256.pem"));
+        }
+
+        [Fact]
         public async Task ShouldNotShowAccountInfoWhenNoKey()
         {
             var account = new Account

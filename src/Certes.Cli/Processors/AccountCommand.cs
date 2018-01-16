@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.IO;
 using System.Threading.Tasks;
 using Certes.Cli.Options;
 using NLog;
@@ -69,9 +70,25 @@ namespace Certes.Cli.Processors
                     return await LoadAccountInfo();
                 case AccountAction.New:
                     return await NewAccount();
+                case AccountAction.Deactivate:
+                    return await DeactivateAccount();
             }
 
             throw new NotSupportedException();
+        }
+
+        private async Task<object> DeactivateAccount()
+        {
+            var key = await Args.LoadKey(true);
+
+            Logger.Debug("Using ACME server {0}.", Args.Server);
+            var ctx = ContextFactory.Create(Args.Server, null);
+            var acctCtx = await ctx.Account();
+
+            Logger.Debug("Deactivate account at {0}", acctCtx.Location);
+            var acct = await acctCtx.Deactivate();
+            File.Delete(Args.GetKeyPath());
+            return acct;
         }
 
         private async Task<object> NewAccount()
@@ -97,11 +114,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> LoadAccountInfo()
         {
-            var key = await Args.LoadKey();
-            if (key == null)
-            {
-                throw new Exception("No account key is available.");
-            }
+            var key = await Args.LoadKey(true);
 
             Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, key);

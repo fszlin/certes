@@ -22,12 +22,18 @@ namespace Certes.Cli.Options
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
         
-        public static async Task<IKey> LoadKey(this OptionsBase options)
+        public static async Task<IKey> LoadKey(this OptionsBase options, bool required = false)
         {
             var path = options.GetKeyPath();
             if (!File.Exists(path))
             {
                 logger.Debug("No key found at {0}.", path);
+
+                if (required)
+                {
+                    throw new Exception("No account key is available.");
+                }
+
                 return null;
             }
 
