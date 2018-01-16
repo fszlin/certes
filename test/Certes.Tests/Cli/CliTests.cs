@@ -15,6 +15,7 @@ using Xunit;
 
 namespace Certes.Cli
 {
+    [Collection(nameof(IntegrationTests))]
     public class CliTests
     {
         // TODO: Setup boulder for testing

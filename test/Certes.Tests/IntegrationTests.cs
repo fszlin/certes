@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +12,7 @@ using Xunit.Abstractions;
 
 namespace Certes
 {
+    [Collection(nameof(IntegrationTests))]
     public class IntegrationTests
     {
         private readonly ITestOutputHelper output;
@@ -147,7 +147,7 @@ namespace Certes
             var order = await orderCtx.Resource();
             Assert.NotNull(order);
             Assert.Equal(hosts.Length, order.Authorizations?.Count);
-            Assert.Equal(OrderStatus.Pending, order.Status);
+            Assert.True(OrderStatus.Pending == order.Status || OrderStatus.Processing == order.Status);
 
             var authrizations = await orderCtx.Authorizations();
 
@@ -204,7 +204,7 @@ namespace Certes
             var order = await orderCtx.Resource();
             Assert.NotNull(order);
             Assert.Equal(hosts.Length, order.Authorizations?.Count);
-            Assert.Equal(OrderStatus.Pending, order.Status);
+            Assert.True(OrderStatus.Pending == order.Status || OrderStatus.Processing == order.Status);
 
             var authrizations = await orderCtx.Authorizations();
 
@@ -270,7 +270,7 @@ namespace Certes
             var order = await orderCtx.Resource();
             Assert.NotNull(order);
             Assert.Equal(2, order.Authorizations?.Count);
-            Assert.Equal(OrderStatus.Pending, order.Status);
+            Assert.True(OrderStatus.Pending == order.Status || OrderStatus.Processing == order.Status);
 
             var authrizations = await orderCtx.Authorizations();
 

@@ -13,6 +13,7 @@ using Xunit;
 
 namespace Certes.Cli.Processors
 {
+    [Collection(nameof(ContextFactory))]
     public class AccountCommandTests
     {
         [Fact]
@@ -101,6 +102,7 @@ namespace Certes.Cli.Processors
             var ctxMock = new Mock<IAcmeContext>();
             ctxMock.Setup(c => c.Account()).ReturnsAsync(acctMock.Object);
             acctMock.Setup(c => c.Resource()).ReturnsAsync(account);
+            acctMock.SetupGet(c => c.Location).Returns(new Uri("http://acme.d/acct/1"));
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
             var proc = new AccountCommand(new AccountOptions
