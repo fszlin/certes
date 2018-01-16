@@ -92,6 +92,7 @@ namespace Certes.Cli.Processors
         [Fact]
         public async Task CanShowAccountInfo()
         {
+            var keyPath = $"./Data/{nameof(CanShowAccountInfo)}/key.pem";
             var account = new Account
             {
                 TermsOfServiceAgreed = true,
@@ -108,10 +109,10 @@ namespace Certes.Cli.Processors
             var proc = new AccountCommand(new AccountOptions
             {
                 Action = AccountAction.Info,
-                Path = "./Data/key-es256.pem",
+                Path = keyPath,
             });
-
-            File.WriteAllText("./Data/key-es256.pem", Helper.GetTestKey(KeyAlgorithm.ES256));
+            
+            SaveKey(keyPath);
 
             var ret = await proc.Process();
             Assert.Equal(JsonConvert.SerializeObject(account), JsonConvert.SerializeObject(ret));
@@ -120,6 +121,7 @@ namespace Certes.Cli.Processors
         [Fact]
         public async Task CanDeactivateAccount()
         {
+            var keyPath = $"./Data/{nameof(CanDeactivateAccount)}/key.pem";
             var account = new Account
             {
                 Status = AccountStatus.Deactivated,
@@ -135,14 +137,14 @@ namespace Certes.Cli.Processors
             var proc = new AccountCommand(new AccountOptions
             {
                 Action = AccountAction.Deactivate,
-                Path = "./Data/key-es256.pem",
+                Path = keyPath,
             });
 
-            File.WriteAllText("./Data/key-es256.pem", Helper.GetTestKey(KeyAlgorithm.ES256));
+            SaveKey(keyPath);
 
             var ret = await proc.Process();
             Assert.Equal(JsonConvert.SerializeObject(account), JsonConvert.SerializeObject(ret));
-            Assert.False(File.Exists("./Data/key-es256.pem"));
+            Assert.False(File.Exists(keyPath));
         }
 
         [Fact]
@@ -191,6 +193,16 @@ namespace Certes.Cli.Processors
             });
 
             return options;
+        }
+
+        private static void SaveKey(string keyPath)
+        {
+            if (!System.IO.Directory.Exists(Path.GetDirectoryName(keyPath)))
+            {
+                System.IO.Directory.CreateDirectory(Path.GetDirectoryName(keyPath));
+            }
+
+            File.WriteAllText(keyPath, Helper.GetTestKey(KeyAlgorithm.ES256));
         }
     }
 }
