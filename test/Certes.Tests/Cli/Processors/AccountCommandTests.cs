@@ -141,6 +141,17 @@ namespace Certes.Cli.Processors
             await Assert.ThrowsAsync<Exception>(() => proc.Process());
         }
 
+        [Fact]
+        public async Task InvalidAction()
+        {
+            var proc = new AccountCommand(new AccountOptions
+            {
+                Action = (AccountAction)int.MaxValue,
+            });
+
+            await Assert.ThrowsAsync<NotSupportedException>(() => proc.Process());
+        }
+
         private AccountOptions Parse(string cmd)
         {
             AccountOptions options = null;
