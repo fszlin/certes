@@ -100,7 +100,7 @@ namespace Certes.Cli
                 .Select(s => placeHolders?.ContainsKey(s) == true ? placeHolders[s] : s)
                 .ToArray();
 
-            var succeed = await new CliV1().Process(args);
+            var succeed = await new CliCore().Process(args);
             Assert.True(succeed, string.Join(Environment.NewLine, Helper.Logs));
             return Helper.Logs;
         }

@@ -15,7 +15,7 @@ namespace Certes.Cli
             ConfigureConsoleLogger(
                 string.Equals("true", Environment.GetEnvironmentVariable("CERTES_DEBUG"), StringComparison.OrdinalIgnoreCase));
 
-            var succeed = await new CliV1().Process(args);
+            var succeed = await new CliCore().Process(args);
             return succeed ? 0 : 1;
         }
 

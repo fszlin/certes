@@ -11,9 +11,9 @@ using NLog;
 
 namespace Certes.Cli
 {
-    public class CliV1
+    public class CliCore
     {
-        private readonly ILogger consoleLogger = LogManager.GetLogger(nameof(CliV1));
+        private readonly ILogger consoleLogger = LogManager.GetLogger(nameof(CliCore));
 
         private JsonSerializerSettings jsonSettings;
         private Command command = Command.Undefined;
@@ -23,10 +23,7 @@ namespace Certes.Cli
         private CertificateOptions certificateOptions;
         private ImportOptions importOptions;
         private AccountOptions accountOptions;
-
-        public CliV1()
-        {
-        }
+        private OrderOptions orderOptions;
 
         public async Task<bool> Process(string[] args)
         {
@@ -38,7 +35,8 @@ namespace Certes.Cli
                     syntax.HandleErrors = false;
 
                     accountOptions = AccountCommand.TryParse(syntax);
-                    
+                    orderOptions = OrderCommand.TryParse(syntax);
+
                     registerOptions = DefineRegisterCommand(syntax);
                     authorizationOptions = DefineAuthorizationCommand(syntax);
                     certificateOptions = DefineCertificateCommand(syntax);
