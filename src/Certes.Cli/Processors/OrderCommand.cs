@@ -1,5 +1,7 @@
 ﻿using System;
 using System.CommandLine;
+using System.Linq;
+using System.Threading.Tasks;
 using Certes.Cli.Options;
 using NLog;
 
@@ -37,7 +39,33 @@ namespace Certes.Cli.Processors
                 a => (OrderAction)Enum.Parse(typeof(OrderAction), a?.Replace("-", ""), true),
                 "Order action");
 
+            syntax.DefineParameterList("name", ref options.Values, "Domain names");
+
             return options;
+        }
+
+        public async Task<object> Process()
+        {
+            switch (Args.Action)
+            {
+                case OrderAction.New:
+                    return await NewOrder();
+            }
+
+            throw new NotSupportedException();
+        }
+
+        private async Task<object> NewOrder()
+        {
+            var key = await Args.LoadKey(true);
+
+            Logger.Debug("Using ACME server {0}.", Args.Server);
+            var ctx = ContextFactory.Create(Args.Server, null);
+
+            var order = await ctx.NewOrder(Args.Values.ToArray());
+
+            Logger.Debug("Created new order at {0}", order.Location);
+            return await order.Resource();
         }
     }
 }

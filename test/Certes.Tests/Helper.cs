@@ -27,21 +27,6 @@ namespace Certes
             File.ReadAllBytes("./Data/test-ca2.pem")
                 .Concat(File.ReadAllBytes("./Data/test-root.pem")).ToArray();
 
-        //private static Lazy<LogFactory> logFactory = new Lazy<LogFactory>(() =>
-        //{
-        //    var config = new LoggingConfiguration();
-        //    var memoryTarget = new MemoryTarget()
-        //    {
-        //        Layout = @"${message}${onexception:${exception:format=tostring}}"
-        //    };
-
-        //    config.AddTarget("logger", memoryTarget);
-
-        //    var consoleRule = new LoggingRule("*", LogLevel.Debug, memoryTarget);
-        //    config.LoggingRules.Add(consoleRule);
-        //    return new LogFactory(config);
-        //});
-
         public static IList<string> Logs
         {
             get
@@ -51,13 +36,16 @@ namespace Certes
             }
         }
 
-        //public static ILogger Logger
-        //{
-        //    get
-        //    {
-        //        return logFactory.Value.GetLogger("logger");
-        //    }
-        //}
+
+        public static void SaveKey(string keyPath)
+        {
+            if (!Directory.Exists(Path.GetDirectoryName(keyPath)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(keyPath));
+            }
+
+            File.WriteAllText(keyPath, GetTestKey(KeyAlgorithm.ES256));
+        }
 
         public static void ConfigureLogger()
         {

@@ -111,8 +111,8 @@ namespace Certes.Cli.Processors
                 Action = AccountAction.Info,
                 Path = keyPath,
             });
-            
-            SaveKey(keyPath);
+
+            Helper.SaveKey(keyPath);
 
             var ret = await proc.Process();
             Assert.Equal(JsonConvert.SerializeObject(account), JsonConvert.SerializeObject(ret));
@@ -140,7 +140,7 @@ namespace Certes.Cli.Processors
                 Path = keyPath,
             });
 
-            SaveKey(keyPath);
+            Helper.SaveKey(keyPath);
 
             var ret = await proc.Process();
             Assert.Equal(JsonConvert.SerializeObject(account), JsonConvert.SerializeObject(ret));
@@ -193,16 +193,6 @@ namespace Certes.Cli.Processors
             });
 
             return options;
-        }
-
-        private static void SaveKey(string keyPath)
-        {
-            if (!System.IO.Directory.Exists(Path.GetDirectoryName(keyPath)))
-            {
-                System.IO.Directory.CreateDirectory(Path.GetDirectoryName(keyPath));
-            }
-
-            File.WriteAllText(keyPath, Helper.GetTestKey(KeyAlgorithm.ES256));
         }
     }
 }
