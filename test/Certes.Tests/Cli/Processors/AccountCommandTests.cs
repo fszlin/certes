@@ -93,17 +93,21 @@ namespace Certes.Cli.Processors
         public async Task CanShowAccountInfo()
         {
             var keyPath = $"./Data/{nameof(CanShowAccountInfo)}/key.pem";
-            var account = new Account
+            var account = new
             {
-                TermsOfServiceAgreed = true,
-                Contact = new[] { "mailto:admin@example.com" }
+                location = new Uri("http://acme.d/acct/1"),
+                data = new Account
+                {
+                    TermsOfServiceAgreed = true,
+                    Contact = new[] { "mailto:admin@example.com" }
+                }
             };
 
             var acctMock = new Mock<IAccountContext>();
             var ctxMock = new Mock<IAcmeContext>();
             ctxMock.Setup(c => c.Account()).ReturnsAsync(acctMock.Object);
-            acctMock.Setup(c => c.Resource()).ReturnsAsync(account);
-            acctMock.SetupGet(c => c.Location).Returns(new Uri("http://acme.d/acct/1"));
+            acctMock.Setup(c => c.Resource()).ReturnsAsync(account.data);
+            acctMock.SetupGet(c => c.Location).Returns(account.location);
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
             var proc = new AccountCommand(new AccountOptions
@@ -122,16 +126,20 @@ namespace Certes.Cli.Processors
         public async Task CanDeactivateAccount()
         {
             var keyPath = $"./Data/{nameof(CanDeactivateAccount)}/key.pem";
-            var account = new Account
+            var account = new
             {
-                Status = AccountStatus.Deactivated,
+                location = new Uri("http://acme.d/acct/1"),
+                data = new Account
+                {
+                    Status = AccountStatus.Deactivated,
+                }
             };
 
             var acctMock = new Mock<IAccountContext>();
             var ctxMock = new Mock<IAcmeContext>();
             ctxMock.Setup(c => c.Account()).ReturnsAsync(acctMock.Object);
-            acctMock.Setup(c => c.Deactivate()).ReturnsAsync(account);
-            acctMock.SetupGet(c => c.Location).Returns(new Uri("http://acme.d/acct/1"));
+            acctMock.Setup(c => c.Deactivate()).ReturnsAsync(account.data);
+            acctMock.SetupGet(c => c.Location).Returns(account.location);
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
             var proc = new AccountCommand(new AccountOptions
@@ -150,16 +158,20 @@ namespace Certes.Cli.Processors
         [Fact]
         public async Task ShouldNotShowAccountInfoWhenNoKey()
         {
-            var account = new Account
+            var account = new
             {
-                TermsOfServiceAgreed = true,
-                Contact = new[] { "mailto:admin@example.com" }
+                location = new Uri("http://acme.d/acct/1"),
+                data = new Account
+                {
+                    TermsOfServiceAgreed = true,
+                    Contact = new[] { "mailto:admin@example.com" }
+                }
             };
 
             var acctMock = new Mock<IAccountContext>();
             var ctxMock = new Mock<IAcmeContext>();
             ctxMock.Setup(c => c.Account()).ReturnsAsync(acctMock.Object);
-            acctMock.Setup(c => c.Resource()).ReturnsAsync(account);
+            acctMock.Setup(c => c.Resource()).ReturnsAsync(account.data);
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
             var proc = new AccountCommand(new AccountOptions

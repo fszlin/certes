@@ -72,6 +72,14 @@ namespace Certes.Cli
                     return true;
                 }
 
+                if (orderOptions != null)
+                {
+                    var cmd = new OrderCommand(orderOptions);
+                    var result = await cmd.Process();
+                    consoleLogger.Info(JsonConvert.SerializeObject(result, Formatting.Indented, jsonSettings));
+                    return true;
+                }
+
                 switch (command)
                 {
                     case Command.Register:
@@ -124,7 +132,7 @@ namespace Certes.Cli
         private CertificateOptions DefineCertificateCommand(ArgumentSyntax syntax)
         {
             var options = new CertificateOptions();
-            syntax.DefineCommand("cert", ref command, Command.Certificate, "Authorization");
+            syntax.DefineCommand("cert", ref command, Command.Certificate, "Certificate");
 
             syntax.DefineOption("n|name", ref options.Name, "Friendly name of the cert.");
 

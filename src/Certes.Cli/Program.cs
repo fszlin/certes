@@ -24,7 +24,7 @@ namespace Certes.Cli
             var config = new LoggingConfiguration();
             var consoleTarget = new ColoredConsoleTarget
             {
-                Layout = @"${message}"
+                Layout = @"${message}${onexception:${newline}${exception:format=tostring}}"
             };
 
             config.AddTarget(ConsoleLoggerName, consoleTarget);
@@ -34,7 +34,11 @@ namespace Certes.Cli
 
             if (verbose)
             {
-                config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, LogLevel.Debug, new ColoredConsoleTarget()));
+                config.LoggingRules.Add(
+                    new LoggingRule("*", LogLevel.Debug, LogLevel.Debug, new ColoredConsoleTarget
+                    {
+                        Layout = "${time} ${message}${onexception:${newline}${exception:format=tostring}}",
+                    }));
             }
 
             LogManager.Configuration = config;

@@ -88,7 +88,11 @@ namespace Certes.Cli.Processors
             Logger.Debug("Deactivate account at {0}", acctCtx.Location);
             var acct = await acctCtx.Deactivate();
             File.Delete(Args.GetKeyPath());
-            return acct;
+            return new
+            {
+                location = acctCtx.Location,
+                data = acct,
+            };
         }
 
         private async Task<object> NewAccount()
@@ -109,7 +113,11 @@ namespace Certes.Cli.Processors
             var path = Args.GetKeyPath();
             await FileUtil.WriteAllTexts(path, ctx.AccountKey.ToPem());
 
-            return await acctCtx.Resource();
+            return new
+            {
+                location = acctCtx.Location,
+                data = acctCtx.Resource(),
+            };
         }
 
         private async Task<object> LoadAccountInfo()
@@ -121,7 +129,11 @@ namespace Certes.Cli.Processors
             var acctCtx = await ctx.Account();
 
             Logger.Debug("Retrieve account at {0}", acctCtx.Location);
-            return await acctCtx.Resource();
+            return new
+            {
+                location = acctCtx.Location,
+                data = await acctCtx.Resource(),
+            };
         }
     }
 }

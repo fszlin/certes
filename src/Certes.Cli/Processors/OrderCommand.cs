@@ -62,10 +62,14 @@ namespace Certes.Cli.Processors
             Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, null);
 
-            var order = await ctx.NewOrder(Args.Values.ToArray());
+            var orderCtx = await ctx.NewOrder(Args.Values.ToArray());
 
-            Logger.Debug("Created new order at {0}", order.Location);
-            return await order.Resource();
+            Logger.Debug("Created new order at {0}", orderCtx.Location);
+            return new
+            {
+                location = orderCtx.Location,
+                data = await orderCtx.Resource(),
+            };
         }
     }
 }

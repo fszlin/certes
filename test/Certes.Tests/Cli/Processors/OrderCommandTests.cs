@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
-using System.IO;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
@@ -38,14 +37,19 @@ namespace Certes.Cli.Processors
             Helper.SaveKey(keyPath);
 
             var hosts = new List<string> { "www.certes.com", "mail.certes.com" };
-            var order = new Order();
+            var order = new
+            {
+                location = new Uri("http://acme.d/order/1"),
+                data = new Order()
+            };
 
             var orderMock = new Mock<IOrderContext>();
             var ctxMock = new Mock<IAcmeContext>();
             ctxMock.SetupGet(c => c.AccountKey).Returns(Helper.GetKeyV2());
             ctxMock.Setup(c => c.NewOrder(It.IsAny<IList<string>>(), null, null))
                 .ReturnsAsync(orderMock.Object);
-            orderMock.Setup(c => c.Resource()).ReturnsAsync(order);
+            orderMock.Setup(c => c.Resource()).ReturnsAsync(order.data);
+            orderMock.Setup(c => c.Location).Returns(order.location);
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
             var proc = new OrderCommand(new OrderOptions
@@ -56,7 +60,7 @@ namespace Certes.Cli.Processors
             });
 
             var ret = await proc.Process();
-            Assert.Equal(order, ret);
+            Assert.Equal(JsonConvert.SerializeObject(order), JsonConvert.SerializeObject(ret));
         }
 
         [Fact]
