@@ -12,5 +12,7 @@
 
         // ACME v2 commands
         Account,
+        Order,
+        Azure,
     }
 }

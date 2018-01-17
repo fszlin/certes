@@ -22,7 +22,7 @@ namespace Certes.Cli.Processors
             var options = new OrderOptions();
 
             var command = Command.Undefined;
-            syntax.DefineCommand("order", ref command, Command.Account, "Manange ACME orders.");
+            syntax.DefineCommand("order", ref command, Command.Order, "Manange ACME orders.");
             if (command == Command.Undefined)
             {
                 return null;
