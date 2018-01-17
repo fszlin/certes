@@ -2,7 +2,9 @@
 {
     internal enum OrderAction
     {
+        Info,
         List,
         New,
+        Authz,
     }
 }

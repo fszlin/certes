@@ -90,7 +90,7 @@ namespace Certes.Cli.Processors
             File.Delete(Args.GetKeyPath());
             return new
             {
-                location = acctCtx.Location,
+                uri = acctCtx.Location,
                 data = acct,
             };
         }
@@ -115,7 +115,7 @@ namespace Certes.Cli.Processors
 
             return new
             {
-                location = acctCtx.Location,
+                uri = acctCtx.Location,
                 data = acctCtx.Resource(),
             };
         }
@@ -131,7 +131,7 @@ namespace Certes.Cli.Processors
             Logger.Debug("Retrieve account at {0}", acctCtx.Location);
             return new
             {
-                location = acctCtx.Location,
+                uri = acctCtx.Location,
                 data = await acctCtx.Resource(),
             };
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Certes.Cli.Options
 {
@@ -6,5 +7,7 @@ namespace Certes.Cli.Options
     {
         public OrderAction Action;
         public IReadOnlyList<string> Values;
+        public AuthorizationType Validate;
+        public Uri Location;
     }
 }

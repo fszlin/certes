@@ -28,6 +28,9 @@ namespace Certes.Cli.Processors
                 return null;
             }
 
+            syntax.DefineOption("validate", ref options.Validate, a => (AuthorizationType)Enum.Parse(typeof(AuthorizationType), a?.Replace("-", ""), true), $"Validate the authz.");
+            syntax.DefineOption("uri", ref options.Location, s => new Uri(s), $"The order resource's URI.");
+            
             syntax.DefineOption("server", ref options.Server, s => new Uri(s), $"ACME Directory Resource URI.");
             syntax.DefineOption("key", ref options.Path, $"File path to the account key to use.");
             syntax.DefineOption("force", ref options.Force, $"Overwrite exising account key.");
@@ -50,9 +53,47 @@ namespace Certes.Cli.Processors
             {
                 case OrderAction.New:
                     return await NewOrder();
+                case OrderAction.Authz:
+                    return await ProcessAuthz();
             }
 
             throw new NotSupportedException();
+        }
+
+        private async Task<object> ProcessAuthz()
+        {
+            var key = await Args.LoadKey(true);
+            var name = Args.Values[0];
+
+            Logger.Debug("Using ACME server {0}.", Args.Server);
+            var ctx = ContextFactory.Create(Args.Server, key);
+
+            var orderCtx = ctx.Order(Args.Location);
+            var authzCtx = await orderCtx.Authorization(name);
+            if (authzCtx == null)
+            {
+                throw new Exception($"Authz not found for {name}.");
+            }
+
+            var challengeCtx =
+                Args.Validate == AuthorizationType.Dns ? await authzCtx.Dns() :
+                Args.Validate == AuthorizationType.Http ? await authzCtx.Http() :
+                null;
+
+            if (challengeCtx != null)
+            {
+                await challengeCtx.Validate();
+            }
+            else if (Args.Validate != AuthorizationType.Unspecific)
+            {
+                throw new Exception($"{Args.Validate} challenge for {name} not found.");
+            }
+
+            return new
+            {
+                uri = authzCtx.Location,
+                data = await authzCtx.Resource()
+            };
         }
 
         private async Task<object> NewOrder()
@@ -60,14 +101,14 @@ namespace Certes.Cli.Processors
             var key = await Args.LoadKey(true);
 
             Logger.Debug("Using ACME server {0}.", Args.Server);
-            var ctx = ContextFactory.Create(Args.Server, null);
+            var ctx = ContextFactory.Create(Args.Server, key);
 
             var orderCtx = await ctx.NewOrder(Args.Values.ToArray());
 
             Logger.Debug("Created new order at {0}", orderCtx.Location);
             return new
             {
-                location = orderCtx.Location,
+                uri = orderCtx.Location,
                 data = await orderCtx.Resource(),
             };
         }

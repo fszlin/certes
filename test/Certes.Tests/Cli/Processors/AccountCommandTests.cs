@@ -95,7 +95,7 @@ namespace Certes.Cli.Processors
             var keyPath = $"./Data/{nameof(CanShowAccountInfo)}/key.pem";
             var account = new
             {
-                location = new Uri("http://acme.d/acct/1"),
+                uri = new Uri("http://acme.d/acct/1"),
                 data = new Account
                 {
                     TermsOfServiceAgreed = true,
@@ -107,7 +107,7 @@ namespace Certes.Cli.Processors
             var ctxMock = new Mock<IAcmeContext>();
             ctxMock.Setup(c => c.Account()).ReturnsAsync(acctMock.Object);
             acctMock.Setup(c => c.Resource()).ReturnsAsync(account.data);
-            acctMock.SetupGet(c => c.Location).Returns(account.location);
+            acctMock.SetupGet(c => c.Location).Returns(account.uri);
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
             var proc = new AccountCommand(new AccountOptions
@@ -128,7 +128,7 @@ namespace Certes.Cli.Processors
             var keyPath = $"./Data/{nameof(CanDeactivateAccount)}/key.pem";
             var account = new
             {
-                location = new Uri("http://acme.d/acct/1"),
+                uri = new Uri("http://acme.d/acct/1"),
                 data = new Account
                 {
                     Status = AccountStatus.Deactivated,
@@ -139,7 +139,7 @@ namespace Certes.Cli.Processors
             var ctxMock = new Mock<IAcmeContext>();
             ctxMock.Setup(c => c.Account()).ReturnsAsync(acctMock.Object);
             acctMock.Setup(c => c.Deactivate()).ReturnsAsync(account.data);
-            acctMock.SetupGet(c => c.Location).Returns(account.location);
+            acctMock.SetupGet(c => c.Location).Returns(account.uri);
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
             var proc = new AccountCommand(new AccountOptions
@@ -160,7 +160,7 @@ namespace Certes.Cli.Processors
         {
             var account = new
             {
-                location = new Uri("http://acme.d/acct/1"),
+                uri = new Uri("http://acme.d/acct/1"),
                 data = new Account
                 {
                     TermsOfServiceAgreed = true,
