@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Certes.Acme;
 using Certes.Acme.Resource;
-using Certes.Crypto;
 using Certes.Pkcs;
-using Org.BouncyCastle.OpenSsl;
 
-namespace Certes.Acme
+namespace Certes
 {
     /// <summary>
     /// Extension methods for <see cref="IOrderContext"/>.
@@ -62,6 +62,27 @@ namespace Certes.Acme
             var pem = await context.Download();
 
             return new CertificateInfo(pem, key);
+        }
+
+        /// <summary>
+        /// Gets the authorization by identifier.
+        /// </summary>
+        /// <param name="context">The order context.</param>
+        /// <param name="value">The identifier value.</param>
+        /// <param name="type">The identifier type.</param>
+        /// <returns>The authorization found.</returns>
+        public static async Task<IAuthorizationContext> Authorization(this IOrderContext context, string value, IdentifierType type = IdentifierType.Dns)
+        {
+            foreach (var authzCtx in await context.Authorizations())
+            {
+                var authz = await authzCtx.Resource();
+                if (string.Equals(authz.Identifier.Value, value, StringComparison.OrdinalIgnoreCase) && authz.Identifier.Type == type)
+                {
+                    return authzCtx;
+                }
+            }
+
+            return null;
         }
     }
 }

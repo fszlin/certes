@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Certes.Acme;
 
-namespace Certes.Acme
+namespace Certes
 {
     /// <summary>
     /// Extension methods for <see cref="IAuthorizationContext"/>.
