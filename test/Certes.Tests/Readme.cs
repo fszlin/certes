@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Certes.Acme;
 using Certes.Acme.Resource;
 using Xunit;
 
 namespace Certes
 {
+    [Collection(nameof(IntegrationTests))]
     public class Readme
     {
         [Fact]
