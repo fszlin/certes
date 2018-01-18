@@ -40,16 +40,12 @@ namespace Certes.Cli.Processors
             syntax.DefineOption("email", ref options.Email, "Email used for registration and recovery contact. (default: None)");
             syntax.DefineOption("agree-tos", ref options.AgreeTos, $"Agree to the ACME Subscriber Agreement. (default: {options.AgreeTos})");
 
-            syntax.DefineOption("server", ref options.Server, s => new Uri(s), $"ACME Directory Resource URI.");
+            syntax.DefineOption<Uri>("server", ref options.Server, $"ACME Directory Resource URI.");
             syntax.DefineOption("key", ref options.Path, $"File path to the account key to use.");
             syntax.DefineOption("force", ref options.Force, $"Overwrite exising account key.");
             syntax.DefineOption("verbose", ref options.Verbose, $"Print process log.");
 
-            syntax.DefineParameter(
-                "action",
-                ref options.Action,
-                a => (AccountAction)Enum.Parse(typeof(AccountAction), a?.Replace("-", ""), true),
-                "Account action");
+            syntax.DefineEnumParameter("action", ref options.Action, "Account action");
 
             foreach (var validation in validations)
             {

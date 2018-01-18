@@ -28,20 +28,15 @@ namespace Certes.Cli.Processors
                 return null;
             }
 
-            syntax.DefineOption("validate", ref options.Validate, a => (AuthorizationType)Enum.Parse(typeof(AuthorizationType), a?.Replace("-", ""), true), $"Validate the authz.");
-            syntax.DefineOption("uri", ref options.Location, s => new Uri(s), $"The order resource's URI.");
+            syntax.DefineEnumOption("validate", ref options.Validate, $"Validate the authz.");
+            syntax.DefineOption<Uri>("uri", ref options.Location, $"The order resource's URI.");
             
-            syntax.DefineOption("server", ref options.Server, s => new Uri(s), $"ACME Directory Resource URI.");
+            syntax.DefineOption<Uri>("server", ref options.Server, $"ACME Directory Resource URI.");
             syntax.DefineOption("key", ref options.Path, $"File path to the account key to use.");
             syntax.DefineOption("force", ref options.Force, $"Overwrite exising account key.");
             syntax.DefineOption("verbose", ref options.Verbose, $"Print process log.");
 
-            syntax.DefineParameter(
-                "action",
-                ref options.Action,
-                a => (OrderAction)Enum.Parse(typeof(OrderAction), a?.Replace("-", ""), true),
-                "Order action");
-
+            syntax.DefineEnumParameter("action", ref options.Action, "Order action");
             syntax.DefineParameterList("name", ref options.Values, "Domain names");
 
             return options;

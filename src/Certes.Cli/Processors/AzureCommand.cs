@@ -35,20 +35,16 @@ namespace Certes.Cli.Processors
 
             syntax.DefineOption("user", ref options.UserName, $"Azure user name or client ID.");
             syntax.DefineOption("pwd", ref options.Password, $"Azure password or client secret.");
-            syntax.DefineOption("talent", ref options.Talent, s => new Guid(s), $"Azure talent ID.");
-            syntax.DefineOption("subscription", ref options.Subscription, s => new Guid(s), $"Azure subscription ID.");
-            syntax.DefineOption("order", ref options.OrderUri, s => new Uri(s), $"ACME order URI.");
-            syntax.DefineOption("cloud", ref options.CloudEnvironment, a => (AzureCloudEnvironment)Enum.Parse(typeof(AzureCloudEnvironment), a?.Replace("-", ""), true), $"ACME order URI.");
+            syntax.DefineOption<Guid>("talent", ref options.Talent, $"Azure talent ID.");
+            syntax.DefineOption<Guid>("subscription", ref options.Subscription, $"Azure subscription ID.");
+            syntax.DefineOption<Uri>("order", ref options.OrderUri, $"ACME order URI.");
+            syntax.DefineEnumOption("cloud", ref options.CloudEnvironment, $"ACME order URI.");
 
-            syntax.DefineOption("server", ref options.Server, s => new Uri(s), $"ACME Directory Resource URI.");
+            syntax.DefineOption<Uri>("server", ref options.Server, $"ACME Directory Resource URI.");
             syntax.DefineOption("key", ref options.Path, $"File path to the account key to use.");
             syntax.DefineOption("verbose", ref options.Verbose, $"Print process log.");
 
-            syntax.DefineParameter(
-                "action",
-                ref options.Action,
-                a => (AzureAction)Enum.Parse(typeof(AzureAction), a?.Replace("-", ""), true),
-                "Order action");
+            syntax.DefineEnumParameter("action", ref options.Action, "Order action");
             syntax.DefineParameter("name", ref options.Value, "Domain name");
 
             return options;
@@ -85,7 +81,7 @@ namespace Certes.Cli.Processors
             var challengeCtx = await authzCtx.Dns();
             if (challengeCtx == null)
             {
-                throw new Exception($"Challenge for {Args.Value} not found.");
+                throw new Exception($"DNS challenge for {Args.Value} not found.");
             }
 
             var dnsValue = ctx.AccountKey.DnsTxtRecord(challengeCtx.Token);
