@@ -5,7 +5,7 @@ namespace Certes.Cli.Options
     internal class AzureOptions : OptionsV2Base
     {
         public AzureAction Action;
-        public AuzreCloudEnvironment CloudEnvironment;
+        public AzureCloudEnvironment CloudEnvironment;
         public string UserName;
         public string Password;
         public Guid Talent;

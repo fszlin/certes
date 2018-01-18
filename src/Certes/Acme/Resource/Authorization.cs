@@ -54,5 +54,14 @@ namespace Certes.Acme.Resource
         [JsonProperty("challenges")]
         public IList<Challenge> Challenges { get; set; }
 
+        /// <summary>
+        /// Gets or sets the flag indicating if this authorization is for wildcard.
+        /// </summary>
+        /// <value>
+        /// The flag indicating if this authorization is for wildcard.
+        /// </value>
+        [JsonProperty("wildcard")]
+        public bool? Wildcard { get; set; }
+
     }
 }

@@ -8,31 +8,39 @@
     </TargetFrameworks>
     <RootNamespace>Certes</RootNamespace>
     <NoWarn>1701;1702;1705;0618</NoWarn>
+    <IncludeCli Condition="'$(TargetFramework)' == 'netcoreapp1.0' OR '$(TargetFramework)' == 'netcoreapp2.0'">True</IncludeCli>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;1705;0618</NoWarn>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(IncludeCli)' != 'True'">
+    <Compile Remove="Cli\**" />
+    <EmbeddedResource Remove="Cli\**" />
+    <None Remove="Cli\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <Compile Include="..\..\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.4.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <PackageReference Include="Microsoft.CodeCoverage" Version="1.0.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0-*" />
     <PackageReference Include="Moq" Version="4.8.1" />
     <PackageReference Include="NLog" Version="4.5.0-*" />
     <PackageReference Include="OpenCover" Version="4.6.519" />
-    <PackageReference Include="System.CommandLine" Version="0.1.0-*" Condition="'$(TargetFramework)' == 'netcoreapp1.0' OR '$(TargetFramework)' == 'netcoreapp2.0'" />
+    <PackageReference Include="System.CommandLine" Version="0.1.0-*" Condition="'$(IncludeCli)' == 'True'" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Certes.Cli\Certes.Cli.csproj" Condition="'$(TargetFramework)' == 'netcoreapp1.0' OR '$(TargetFramework)' == 'netcoreapp2.0'" />
+    <ProjectReference Include="..\..\src\Certes.Cli\Certes.Cli.csproj" Condition="'$(IncludeCli)' == 'True'" />
     <ProjectReference Include="..\..\src\Certes\Certes.csproj" />
   </ItemGroup>
 

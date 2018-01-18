@@ -1,4 +1,6 @@
 ﻿using System;
+using Microsoft.Azure.Management.Dns.Fluent;
+using Microsoft.Rest;
 
 namespace Certes.Cli
 {
@@ -8,5 +10,8 @@ namespace Certes.Cli
             (directoryUri, accountKey) => new Certes.AcmeContext(directoryUri, accountKey);
 
         public static Func<Uri, IKey, IAcmeContext> Create { get; set; } = DefaultCreate;
+
+        public static Func<ServiceClientCredentials, IDnsManagementClient> CreateDnsManagementClient { get; set; } =
+            credentials => new DnsManagementClient(credentials);
     }
 }

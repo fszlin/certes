@@ -1,6 +1,6 @@
 ﻿namespace Certes.Cli.Options
 {
-    public enum AuzreCloudEnvironment
+    public enum AzureCloudEnvironment
     {
         Global,
         China,

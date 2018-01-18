@@ -1,6 +1,4 @@
-﻿#if NETCOREAPP1_0 || NETCOREAPP2_0
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
@@ -221,5 +219,3 @@ namespace Certes.Cli.Processors
         }
     }
 }
-
-#endif

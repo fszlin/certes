@@ -73,10 +73,18 @@ namespace Certes
         /// <returns>The authorization found.</returns>
         public static async Task<IAuthorizationContext> Authorization(this IOrderContext context, string value, IdentifierType type = IdentifierType.Dns)
         {
+            var wildcard = value.StartsWith("*.");
+            if (wildcard)
+            {
+                value = value.Substring(2);
+            }
+
             foreach (var authzCtx in await context.Authorizations())
             {
                 var authz = await authzCtx.Resource();
-                if (string.Equals(authz.Identifier.Value, value, StringComparison.OrdinalIgnoreCase) && authz.Identifier.Type == type)
+                if (string.Equals(authz.Identifier.Value, value, StringComparison.OrdinalIgnoreCase) &&
+                    wildcard == authz.Wildcard.GetValueOrDefault() &&
+                    authz.Identifier.Type == type)
                 {
                     return authzCtx;
                 }

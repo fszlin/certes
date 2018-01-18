@@ -24,6 +24,7 @@ namespace Certes.Cli
         private ImportOptions importOptions;
         private AccountOptions accountOptions;
         private OrderOptions orderOptions;
+        private AzureOptions azureOptions;
 
         public async Task<bool> Process(string[] args)
         {
@@ -36,6 +37,7 @@ namespace Certes.Cli
 
                     accountOptions = AccountCommand.TryParse(syntax);
                     orderOptions = OrderCommand.TryParse(syntax);
+                    azureOptions = AzureCommand.TryParse(syntax);
 
                     registerOptions = DefineRegisterCommand(syntax);
                     authorizationOptions = DefineAuthorizationCommand(syntax);
@@ -75,6 +77,14 @@ namespace Certes.Cli
                 if (orderOptions != null)
                 {
                     var cmd = new OrderCommand(orderOptions);
+                    var result = await cmd.Process();
+                    consoleLogger.Info(JsonConvert.SerializeObject(result, Formatting.Indented, jsonSettings));
+                    return true;
+                }
+
+                if (azureOptions != null)
+                {
+                    var cmd = new AzureCommand(azureOptions);
                     var result = await cmd.Process();
                     consoleLogger.Info(JsonConvert.SerializeObject(result, Formatting.Indented, jsonSettings));
                     return true;

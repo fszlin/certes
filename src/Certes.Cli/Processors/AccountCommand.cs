@@ -116,7 +116,7 @@ namespace Certes.Cli.Processors
             return new
             {
                 uri = acctCtx.Location,
-                data = acctCtx.Resource(),
+                data = await acctCtx.Resource(),
             };
         }
 

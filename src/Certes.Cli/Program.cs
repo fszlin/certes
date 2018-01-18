@@ -22,23 +22,31 @@ namespace Certes.Cli
         private static void ConfigureConsoleLogger(bool verbose)
         {
             var config = new LoggingConfiguration();
-            var consoleTarget = new ColoredConsoleTarget
-            {
-                Layout = @"${message}${onexception:${newline}${exception:format=tostring}}"
-            };
+            //var consoleTarget = new ColoredConsoleTarget
+            //{
+            //    Layout = @"${message}"
+            //};
 
-            config.AddTarget(ConsoleLoggerName, consoleTarget);
+            //config.AddTarget(ConsoleLoggerName, consoleTarget);
 
-            var consoleRule = new LoggingRule("*", LogLevel.Info, consoleTarget);
-            config.LoggingRules.Add(consoleRule);
+            //var consoleRule = new LoggingRule("*", LogLevel.Info, consoleTarget);
+            //config.LoggingRules.Add(consoleRule);
 
             if (verbose)
             {
                 config.LoggingRules.Add(
-                    new LoggingRule("*", LogLevel.Debug, LogLevel.Debug, new ColoredConsoleTarget
+                    new LoggingRule("*", LogLevel.Debug, new ColoredConsoleTarget
                     {
-                        Layout = "${time} ${message}${onexception:${newline}${exception:format=tostring}}",
+                        Layout = "${message}${onexception:${newline}${exception:format=tostring}}",
                     }));
+            }
+            else
+            {
+                var consoleRule = new LoggingRule("*", LogLevel.Info, new ColoredConsoleTarget
+                {
+                    Layout = "${message}",
+                });
+                config.LoggingRules.Add(consoleRule);
             }
 
             LogManager.Configuration = config;
