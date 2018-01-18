@@ -63,7 +63,7 @@ namespace Certes
             Assert.Equal(AccountStatus.Deactivated, account.Status);
         }
 
-        [Fact(Skip = "https://github.com/letsencrypt/boulder/issues/3340")]
+        [Fact]
         public async Task CanChangeAccountKey()
         {
             var dirUri = await Helper.GetAvailableStagingServerV2();
