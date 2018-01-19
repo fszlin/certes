@@ -1,8 +1,8 @@
 ﻿using System;
 using System.CommandLine;
-using System.Linq;
 using System.Threading.Tasks;
 using Certes.Cli.Options;
+using Microsoft.Azure.Management.AppService.Fluent;
 using Microsoft.Azure.Management.Dns.Fluent;
 using Microsoft.Azure.Management.Dns.Fluent.Models;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
@@ -39,6 +39,7 @@ namespace Certes.Cli.Processors
             syntax.DefineOption<Guid>("subscription", ref options.Subscription, $"Azure subscription ID.");
             syntax.DefineOption<Uri>("order", ref options.OrderUri, $"ACME order URI.");
             syntax.DefineEnumOption("cloud", ref options.CloudEnvironment, $"ACME order URI.");
+            syntax.DefineOption("resourceGroup", ref options.ResourceGroup, $"The resource group.");
 
             syntax.DefineOption<Uri>("server", ref options.Server, $"ACME Directory Resource URI.");
             syntax.DefineOption("key", ref options.Path, $"File path to the account key to use.");
@@ -60,7 +61,7 @@ namespace Certes.Cli.Processors
 
             throw new NotSupportedException();
         }
-        
+
         private async Task<object> SetDns()
         {
             var key = await Args.LoadKey(true);
@@ -86,23 +87,11 @@ namespace Certes.Cli.Processors
 
             var dnsValue = ctx.AccountKey.DnsTxtRecord(challengeCtx.Token);
 
-            var loginInfo = new ServicePrincipalLoginInformation
-            {
-                ClientId = Args.UserName,
-                ClientSecret = Args.Password,
-            };
-
-            var env =
-                Args.CloudEnvironment == AzureCloudEnvironment.China ? AzureEnvironment.AzureChinaCloud :
-                Args.CloudEnvironment == AzureCloudEnvironment.German ? AzureEnvironment.AzureGermanCloud :
-                Args.CloudEnvironment == AzureCloudEnvironment.USGovernment ? AzureEnvironment.AzureUSGovernment :
-                AzureEnvironment.AzureGlobalCloud;
-
-            var credentials = new AzureCredentials(loginInfo, Args.Talent.ToString(), env);
+            var credentials = GetAuzreCredentials();
             using (var client = ContextFactory.CreateDnsManagementClient(credentials))
             {
                 client.SubscriptionId = Args.Subscription.ToString();
-                
+
                 ZoneInner idZone = null;
                 var zones = await client.Zones.ListAsync();
                 while (idZone == null && zones != null)
@@ -128,16 +117,11 @@ namespace Certes.Cli.Processors
                     Logger.Debug("DNS zone:\n{0}", JsonConvert.SerializeObject(idZone, Formatting.Indented));
                 }
 
-                var resourceGroup = idZone.Id.Split('/')
-                    .SkipWhile(s => !"resourceGroups".Equals(s, StringComparison.OrdinalIgnoreCase))
-                    .Skip(1)
-                    .First();
-
                 var name = "_acme-challenge." + idValue.Substring(0, idValue.Length - idZone.Name.Length - 1);
                 Logger.Debug("Adding TXT record '{0}' for '{1}' in '{2}' zone.", dnsValue, name, idZone.Name);
 
                 var recordSet = await client.RecordSets.CreateOrUpdateAsync(
-                    resourceGroup,
+                    Args.ResourceGroup,
                     idZone.Name,
                     name,
                     RecordType.TXT,
@@ -145,12 +129,30 @@ namespace Certes.Cli.Processors
                         name: name,
                         tTL: 300,
                         txtRecords: new[] { new TxtRecord(new[] { dnsValue }) }));
-                
+
                 return new
                 {
                     data = recordSet
                 };
             }
+        }
+
+        private AzureCredentials GetAuzreCredentials()
+        {
+            var loginInfo = new ServicePrincipalLoginInformation
+            {
+                ClientId = Args.UserName,
+                ClientSecret = Args.Password,
+            };
+
+            var env =
+                Args.CloudEnvironment == AzureCloudEnvironment.China ? AzureEnvironment.AzureChinaCloud :
+                Args.CloudEnvironment == AzureCloudEnvironment.German ? AzureEnvironment.AzureGermanCloud :
+                Args.CloudEnvironment == AzureCloudEnvironment.USGovernment ? AzureEnvironment.AzureUSGovernment :
+                AzureEnvironment.AzureGlobalCloud;
+
+            var credentials = new AzureCredentials(loginInfo, Args.Talent.ToString(), env);
+            return credentials;
         }
     }
 }

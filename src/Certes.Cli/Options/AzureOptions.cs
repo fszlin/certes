@@ -11,6 +11,7 @@ namespace Certes.Cli.Options
         public Guid Talent;
         public Guid Subscription;
         public Uri OrderUri;
+        public string ResourceGroup;
         public string Value;
     }
 }

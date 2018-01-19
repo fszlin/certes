@@ -23,6 +23,7 @@ namespace Certes.Cli.Processors
         {
             var talentId = Guid.NewGuid();
             var subscriptionId = Guid.NewGuid();
+            var resourceGroup = "res";
             var orderUir = new Uri("http://acme.d/order/1");
             var host = "example-domain.com";
 
@@ -30,7 +31,10 @@ namespace Certes.Cli.Processors
             Assert.Null(options);
 
             // deploy dns using service-principal
-            options = Parse($"azure dns --user certes --pwd abcd1234 --talent {talentId} --subscription {subscriptionId} --order {orderUir} {host}");
+            options = Parse(
+                $"azure dns --user certes --pwd abcd1234 " +
+                $"--resourceGroup {resourceGroup} --talent {talentId} --subscription {subscriptionId} " +
+                $"--order {orderUir} {host}");
             Assert.Equal(AzureAction.Dns, options.Action);
             Assert.Equal("certes", options.UserName);
             Assert.Equal("abcd1234", options.Password);
@@ -38,6 +42,7 @@ namespace Certes.Cli.Processors
             Assert.Equal(subscriptionId, options.Subscription);
             Assert.Equal(orderUir, options.OrderUri);
             Assert.Equal(host, options.Value);
+            Assert.Equal(resourceGroup, options.ResourceGroup);
             Assert.Equal(AzureCloudEnvironment.Global, options.CloudEnvironment);
         }
 
