@@ -94,8 +94,7 @@ namespace Certes.Cli.Processors
         private void ShowThumbprint(AcmeContext context)
         {
             var account = new AccountKey(context.Account.Key);
-            var thumbprint = JwsConvert.ToBase64String(account.GenerateThumbprint());
-            ConsoleLogger.Info(thumbprint);
+            ConsoleLogger.Info(account.Thumbprint());
         }
     }
 }

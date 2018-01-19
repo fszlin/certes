@@ -90,12 +90,7 @@ namespace Certes.Acme
         /// <param name="key">The key.</param>
         /// <returns>The key authorization string.</returns>
         public static string ComputeKeyAuthorization(this Challenge challenge, IAccountKey key)
-        {
-            var jwkThumbprint = key.GenerateThumbprint();
-            var jwkThumbprintEncoded = JwsConvert.ToBase64String(jwkThumbprint);
-            var token = challenge.Token;
-            return $"{token}.{jwkThumbprintEncoded}";
-        }
+            => $"{challenge.Token}.{key.Thumbprint()}";
 
         /// <summary>
         /// Computes the DNS value for the <paramref name="challenge"/>.
