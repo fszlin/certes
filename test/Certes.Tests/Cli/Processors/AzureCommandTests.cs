@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Cli.Options;
+using Microsoft.Azure.Management.AppService.Fluent;
+using Microsoft.Azure.Management.AppService.Fluent.Models;
 using Microsoft.Azure.Management.Dns.Fluent;
 using Microsoft.Azure.Management.Dns.Fluent.Models;
 using Microsoft.Rest.Azure;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
+
+using ZoneInnerPage = Microsoft.Azure.Management.Dns.Fluent.Models.Page<Microsoft.Azure.Management.Dns.Fluent.Models.ZoneInner>;
 
 namespace Certes.Cli.Processors
 {
@@ -44,6 +50,87 @@ namespace Certes.Cli.Processors
             Assert.Equal(host, options.Value);
             Assert.Equal(resourceGroup, options.ResourceGroup);
             Assert.Equal(AzureCloudEnvironment.Global, options.CloudEnvironment);
+        }
+
+        [Fact]
+        public async Task CanSetSsl()
+        {
+            var keyPath = $"./Data/{nameof(CanSetDns)}/key.pem";
+            var certKeyPath = $"./Data/{nameof(CanSetDns)}/cert.pem";
+            Helper.SaveKey(keyPath);
+
+            if (File.Exists(certKeyPath))
+            {
+                File.Delete(certKeyPath);
+            }
+
+            var hosts = new List<string> { "www.example.com" };
+            var order = new
+            {
+                uri = new Uri("http://acme.d/order/1"),
+                data = new Order
+                {
+                    Status = OrderStatus.Valid,
+                    Identifiers = hosts.Select(h => new Identifier { Value = h, Type = IdentifierType.Dns }).ToArray(),
+                    //Authorizations = hosts.Select((i, a) => new Uri("http://acme.d/authz/{i}")).ToArray(),
+                },
+            };
+
+            //var challengeMock = new Mock<IChallengeContext>();
+            //var authzMock = new Mock<IAuthorizationContext>();
+            var orderMock = new Mock<IOrderContext>();
+            var ctxMock = new Mock<IAcmeContext>();
+
+            var appSvcMock = new Mock<IWebSiteManagementClient>();
+            var certOpMock = new Mock<ICertificatesOperations>();
+            var webAppOpMock = new Mock<IWebAppsOperations>();
+
+            ContextFactory.Create = (uri, key) => ctxMock.Object;
+            ContextFactory.CreateAppServiceManagementClient = (c) => appSvcMock.Object;
+
+            ctxMock.SetupGet(c => c.AccountKey).Returns(Helper.GetKeyV2());
+            ctxMock.Setup(c => c.Order(order.uri)).Returns(orderMock.Object);
+
+            //orderMock.Setup(c => c.Authorizations()).ReturnsAsync(order.data.Identifiers.Select(a => authzMock.Object));
+            orderMock.Setup(c => c.Location).Returns(order.uri);
+            orderMock.Setup(m => m.Resource()).ReturnsAsync(order.data);
+            orderMock.Setup(m => m.Download()).ReturnsAsync(File.ReadAllText("./Data/cert-es256.pem"));
+
+            //authzMock.Setup(c => c.Location).Returns(order.data.Authorizations[0]);
+            //authzMock.Setup(c => c.Resource()).ReturnsAsync(authz.data);
+            //authzMock.Setup(c => c.Challenges()).ReturnsAsync(new[] { challengeMock.Object });
+
+            appSvcMock.SetupGet(m => m.WebApps).Returns(webAppOpMock.Object);
+            appSvcMock.SetupGet(m => m.Certificates).Returns(certOpMock.Object);
+
+            certOpMock.Setup(m => m.CreateOrUpdateWithHttpMessagesAsync("res", hosts[0], It.IsAny<CertificateInner>(), default, default))
+                .ReturnsAsync((string r, string n, CertificateInner c, Dictionary<string, List<string>> h, CancellationToken t)
+                    => new AzureOperationResponse<CertificateInner> { Body = c });
+
+            webAppOpMock.Setup(m => m.CreateOrUpdateHostNameBindingWithHttpMessagesAsync(
+                "res", "certes", hosts[0], It.IsAny<HostNameBindingInner>(), default, default))
+                .ReturnsAsync((string r, string a, string n, HostNameBindingInner d, Dictionary<string, List<string>> h, CancellationToken t)
+                    => new AzureOperationResponse<HostNameBindingInner> { Body = d });
+
+            var proc = new AzureCommand(new AzureOptions
+            {
+                Action = AzureAction.Ssl,
+                Value = hosts[0],
+                OrderUri = order.uri,
+                PrivateKey = certKeyPath,
+                Issuers = new List<string> { "./Data/test-ca2.pem", "./Data/test-root.pem" }.AsReadOnly(),
+                
+                UserName = "certes",
+                Password = "abcd1234",
+                Talent = Guid.NewGuid(),
+                Subscription = Guid.NewGuid(),
+                ResourceGroup = "res",
+                AppServiceName = "certes",
+                Path = keyPath,
+            });
+
+            var ret = await proc.Process();
+            Assert.True(File.Exists(certKeyPath));
         }
 
         [Fact]
@@ -105,10 +192,10 @@ namespace Certes.Cli.Processors
             zonesOpMock.Setup(m => m.ListWithHttpMessagesAsync(default, default, default))
                 .ReturnsAsync(new AzureOperationResponse<IPage<ZoneInner>>
                 {
-                    Body = JsonConvert.DeserializeObject<Page<ZoneInner>>(
-                        JsonConvert.SerializeObject(new 
+                    Body = JsonConvert.DeserializeObject<ZoneInnerPage>(
+                        JsonConvert.SerializeObject(new
                         {
-                            value = new[] { new ZoneInner(id: "/s/abcd1234/resourceGroups/res/a", name: "certes.com" ) }
+                            value = new[] { new ZoneInner(id: "/s/abcd1234/resourceGroups/res/a", name: "certes.com") }
                         })
                     )
                 });
@@ -128,6 +215,7 @@ namespace Certes.Cli.Processors
                 Password = "abcd1234",
                 Talent = Guid.NewGuid(),
                 Subscription = Guid.NewGuid(),
+                ResourceGroup = "res",
                 Path = keyPath,
             });
 

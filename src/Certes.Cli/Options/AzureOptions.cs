@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Certes.Cli.Options
 {
@@ -13,5 +14,9 @@ namespace Certes.Cli.Options
         public Uri OrderUri;
         public string ResourceGroup;
         public string Value;
+        public string PrivateKey;
+        public string Slot;
+        public string AppServiceName;
+        public IReadOnlyList<string> Issuers;
     }
 }

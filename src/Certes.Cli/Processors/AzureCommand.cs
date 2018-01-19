@@ -1,8 +1,13 @@
 ﻿using System;
 using System.CommandLine;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
+using Certes.Acme.Resource;
 using Certes.Cli.Options;
+using Certes.Pkcs;
 using Microsoft.Azure.Management.AppService.Fluent;
+using Microsoft.Azure.Management.AppService.Fluent.Models;
 using Microsoft.Azure.Management.Dns.Fluent;
 using Microsoft.Azure.Management.Dns.Fluent.Models;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
@@ -40,6 +45,10 @@ namespace Certes.Cli.Processors
             syntax.DefineOption<Uri>("order", ref options.OrderUri, $"ACME order URI.");
             syntax.DefineEnumOption("cloud", ref options.CloudEnvironment, $"ACME order URI.");
             syntax.DefineOption("resourceGroup", ref options.ResourceGroup, $"The resource group.");
+            syntax.DefineOption("cert-key", ref options.PrivateKey, $"The certificate private key.");
+            syntax.DefineOption("app", ref options.AppServiceName, $"The app service name.");
+            syntax.DefineOption("slot", ref options.Slot, $"The deployment slot.");
+            syntax.DefineOptionList("issuer", ref options.Issuers, $"The issuer certificates.");
 
             syntax.DefineOption<Uri>("server", ref options.Server, $"ACME Directory Resource URI.");
             syntax.DefineOption("key", ref options.Path, $"File path to the account key to use.");
@@ -57,9 +66,102 @@ namespace Certes.Cli.Processors
             {
                 case AzureAction.Dns:
                     return await SetDns();
+                case AzureAction.Ssl:
+                    return await SetSslBinding();
             }
 
             throw new NotSupportedException();
+        }
+
+        private async Task<object> SetSslBinding()
+        {
+            var key = await Args.LoadKey(true);
+            Logger.Debug("Using ACME server {0}.", Args.Server);
+            var ctx = ContextFactory.Create(Args.Server, key);
+
+            var orderCtx = ctx.Order(Args.OrderUri);
+
+            var order = await orderCtx.Resource();
+
+            byte[] pfx = null;
+            var pfxPwd = Guid.NewGuid().ToString("N");
+            var pfxName = order.Identifiers[0].Value;
+
+            var hasCertKey = File.Exists(Args.PrivateKey);
+            var certKey = hasCertKey ? 
+                KeyFactory.FromPem(await FileUtil.ReadAllText(Args.PrivateKey)) :
+                KeyFactory.NewKey(KeyAlgorithm.ES256);
+            if (!hasCertKey)
+            {
+                await FileUtil.WriteAllTexts(Args.PrivateKey, certKey.ToPem());
+            }
+
+            byte[] issuers = null;
+            if (Args.Issuers?.Count > 1)
+            {
+                using (var buffer = new MemoryStream())
+                {
+                    foreach (var issuer in Args.Issuers)
+                    {
+                        using (var stream = File.OpenRead(issuer))
+                        {
+                            stream.CopyTo(buffer);
+                        }
+                    }
+
+                    issuers = buffer.ToArray();
+                }
+            }
+
+            // try to finalize the order
+            if (order.Status == OrderStatus.Pending)
+            {
+                var cert = await orderCtx.Generate(new CsrInfo
+                {
+                    CommonName = pfxName
+                }, certKey);
+
+                pfx = cert.ToPfx(pfxName, pfxPwd, issuers: issuers);
+            }
+            else
+            {
+                var pem = await orderCtx.Download();
+                var pfxBuilder = new PfxBuilder(Encoding.UTF8.GetBytes(pem), certKey);
+                if (issuers != null)
+                {
+                    pfxBuilder.AddIssuers(issuers);
+                }
+
+                pfx = pfxBuilder.Build(pfxName, pfxPwd);
+            }
+
+            var certData = new CertificateInner
+            {
+                PfxBlob = pfx,
+                Password = pfxPwd,
+            };
+           
+            var credentials = GetAuzreCredentials();
+            using (var client = ContextFactory.CreateAppServiceManagementClient(credentials))
+            {
+                client.SubscriptionId = Args.Subscription.ToString();
+
+                certData = await client.Certificates.CreateOrUpdateAsync(Args.ResourceGroup, pfxName, certData);
+
+                var hostNameBinding = new HostNameBindingInner
+                {
+                    SslState = SslState.SniEnabled,
+                    Thumbprint = certData.Thumbprint,
+                };
+                
+                var hostName = string.IsNullOrWhiteSpace(Args.Slot) ?
+                    await client.WebApps.CreateOrUpdateHostNameBindingAsync(
+                        Args.ResourceGroup, Args.AppServiceName, Args.Value, hostNameBinding) :
+                    await client.WebApps.CreateOrUpdateHostNameBindingSlotAsync(
+                            Args.ResourceGroup, Args.AppServiceName, Args.Value, hostNameBinding, Args.Slot);
+
+                return hostName;
+            }
         }
 
         private async Task<object> SetDns()

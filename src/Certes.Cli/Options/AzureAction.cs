@@ -3,6 +3,7 @@
     public enum AzureAction
     {
         Set,
-        Dns
+        Dns,
+        Ssl,
     }
 }
