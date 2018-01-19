@@ -50,6 +50,44 @@ namespace Certes.Cli.Processors
         }
 
         [Fact]
+        public async Task CanShowOrder()
+        {
+            var keyPath = $"./Data/{nameof(CanShowOrder)}/key.pem";
+            Helper.SaveKey(keyPath);
+
+            var hosts = new List<string> { "www.certes.com", "mail.certes.com" };
+            var order = new
+            {
+                uri = new Uri("http://acme.d/order/1"),
+                data = new Order
+                {
+                    Identifiers = hosts.Select(h => new Identifier { Value = h, Type = IdentifierType.Dns }).ToArray(),
+                    Authorizations = hosts.Select((i, a) => new Uri("http://acme.d/authz/{i}")).ToArray(),
+                },
+            };
+
+            var orderMock = new Mock<IOrderContext>();
+            var ctxMock = new Mock<IAcmeContext>();
+            ctxMock.SetupGet(c => c.AccountKey).Returns(Helper.GetKeyV2());
+            ctxMock.Setup(c => c.Order(order.uri)).Returns(orderMock.Object);
+
+            orderMock.Setup(c => c.Location).Returns(order.uri);
+            orderMock.Setup(c => c.Resource()).ReturnsAsync(order.data);
+
+            ContextFactory.Create = (uri, key) => ctxMock.Object;
+
+            var proc = new OrderCommand(new OrderOptions
+            {
+                Action = OrderAction.Info,
+                Location = order.uri,
+                Path = keyPath,
+            });
+
+            var ret = await proc.Process();
+            Assert.Equal(JsonConvert.SerializeObject(order), JsonConvert.SerializeObject(ret));
+        }
+
+        [Fact]
         public async Task CanProcessAuthz()
         {
             var keyPath = $"./Data/{nameof(CanProcessAuthz)}/key.pem";

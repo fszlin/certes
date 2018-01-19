@@ -45,6 +45,11 @@ namespace Certes.Acme
         public virtual async Task<T> Resource()
         {
             var resp = await Context.HttpClient.Get<T>(Location);
+            if (resp.Error != null)
+            {
+                throw new Exception(resp.Error.Detail);
+            }
+
             return resp.Resource;
         }
     }

@@ -46,6 +46,8 @@ namespace Certes.Cli.Processors
         {
             switch (Args.Action)
             {
+                case OrderAction.Info:
+                    return await ShowOrder();
                 case OrderAction.New:
                     return await NewOrder();
                 case OrderAction.Authz:
@@ -53,6 +55,21 @@ namespace Certes.Cli.Processors
             }
 
             throw new NotSupportedException();
+        }
+
+        private async Task<object> ShowOrder()
+        {
+            var key = await Args.LoadKey(true);
+
+            Logger.Debug("Using ACME server {0}.", Args.Server);
+            var ctx = ContextFactory.Create(Args.Server, key);
+
+            var orderCtx = ctx.Order(Args.Location);
+            return new
+            {
+                uri = orderCtx.Location,
+                data = await orderCtx.Resource()
+            };
         }
 
         private async Task<object> ProcessAuthz()
