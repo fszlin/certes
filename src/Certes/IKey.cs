@@ -52,7 +52,7 @@ namespace Certes
         /// </summary>
         /// <param name="key">The account key.</param>
         /// <returns>The thumbprint.</returns>
-        private static byte[] GenerateThumbprint(this IKey key)
+        internal static byte[] GenerateThumbprint(this IKey key)
         {
             var jwk = key.JsonWebKey;
             var json = JsonConvert.SerializeObject(jwk, Formatting.None, thumbprintSettings);

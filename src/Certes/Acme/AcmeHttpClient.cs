@@ -16,7 +16,6 @@ namespace Certes.Acme
     internal class AcmeHttpClient : IAcmeHttpClient
     {
         private const string MimeJoseJson = "application/jose+json";
-        private const string MimeJson = "application/json";
 
         private readonly static JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
         private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(() => new HttpClient());
@@ -25,6 +24,15 @@ namespace Certes.Acme
 
         private Uri newNonceUri;
         private string nonce;
+
+        /// <summary>
+        /// Gets the HTTP client.
+        /// </summary>
+        /// <value>
+        /// The HTTP client.
+        /// </value>
+        private HttpClient Http { get => http.Value; }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeHttpClient" /> class.
@@ -46,7 +54,7 @@ namespace Certes.Acme
         /// <returns></returns>
         public async Task<AcmeHttpResponse<T>> Get<T>(Uri uri)
         {
-            using (var response = await http.Value.GetAsync(uri))
+            using (var response = await Http.GetAsync(uri))
             {
                 return await ProcessResponse<T>(response);
             }
@@ -63,7 +71,7 @@ namespace Certes.Acme
         {
             var payloadJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
             var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
-            using (var response = await http.Value.PostAsync(uri, content))
+            using (var response = await Http.PostAsync(uri, content))
             {
                 return await ProcessResponse<T>(response);
             }
@@ -150,7 +158,7 @@ namespace Certes.Acme
         private async Task FetchNonce()
         {
             var newNonceUri = this.newNonceUri ?? (this.newNonceUri = await context.GetResourceUri(d => d.NewNonce));
-            var response = await http.Value.SendAsync(new HttpRequestMessage
+            var response = await Http.SendAsync(new HttpRequestMessage
             {
                 RequestUri = newNonceUri,
                 Method = HttpMethod.Head,

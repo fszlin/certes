@@ -79,26 +79,14 @@ namespace Certes.Jws
         /// </summary>
         /// <param name="key">The account key.</param>
         /// <returns>The thumbprint.</returns>
-        public static byte[] GenerateThumbprint(this IAccountKey key)
-        {
-            var jwk = key.JsonWebKey;
-            var json = JsonConvert.SerializeObject(jwk, Formatting.None, thumbprintSettings);
-            var bytes = Encoding.UTF8.GetBytes(json);
-            var hashed = key.ComputeHash(bytes);
-
-            return hashed;
-        }
+        public static byte[] GenerateThumbprint(this IAccountKey key) => key.GenerateThumbprint();
 
         /// <summary>
         /// Generates the base64 encoded thumbprint for the given account <paramref name="key"/>.
         /// </summary>
         /// <param name="key">The account key.</param>
         /// <returns>The thumbprint.</returns>
-        public static string Thumbprint(this IAccountKey key)
-        {
-            var jwkThumbprint = key.GenerateThumbprint();
-            return JwsConvert.ToBase64String(jwkThumbprint);
-        }
+        public static string Thumbprint(this IAccountKey key) => key.SignatureKey.Thumbprint();
 
         /// <summary>
         /// Generates key authorization string.
@@ -106,23 +94,6 @@ namespace Certes.Jws
         /// <param name="key">The key.</param>
         /// <param name="token">The challenge token.</param>
         /// <returns></returns>
-        public static string KeyAuthorization(this IAccountKey key, string token)
-        {
-            var jwkThumbprintEncoded = key.Thumbprint();
-            return $"{token}.{jwkThumbprintEncoded}";
-        }
-
-        /// <summary>
-        /// Generates the value for DNS TXT record.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="token">The challenge token.</param>
-        /// <returns></returns>
-        public static string DnsTxtRecord(this IAccountKey key, string token)
-        {
-            var keyAuthz = key.KeyAuthorization(token);
-            var hashed = DigestUtilities.CalculateDigest("SHA256", Encoding.UTF8.GetBytes(keyAuthz));
-            return JwsConvert.ToBase64String(hashed);
-        }
+        public static string KeyAuthorization(this IAccountKey key, string token) => $"{token}.{key.Thumbprint()}";
     }
 }
