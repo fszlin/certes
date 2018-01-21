@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
-using Certes.Crypto;
 using Certes.Jws;
-using Certes.Pkcs;
 using Identifier = Certes.Acme.Resource.Identifier;
 using IdentifierType = Certes.Acme.Resource.IdentifierType;
 
@@ -148,7 +146,7 @@ namespace Certes
         /// <returns>
         /// The awaitable.
         /// </returns>
-        public async Task RevokeCertificate(byte[] certificate, RevocationReason reason, IAccountKey certificatePrivateKey)
+        public async Task RevokeCertificate(byte[] certificate, RevocationReason reason, IKey certificatePrivateKey)
         {
             var endpoint = await this.GetResourceUri(d => d.RevokeCert);
 
@@ -162,7 +160,7 @@ namespace Certes
             JwsPayload payload;
             if (certificatePrivateKey != null)
             {
-                var jws = new JwsSigner(certificatePrivateKey.SignatureKey);
+                var jws = new JwsSigner(certificatePrivateKey);
                 payload = jws.Sign(body, url: endpoint, nonce: await HttpClient.ConsumeNonce());
             }
             else

@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Text;
+using System.Threading.Tasks;
+using Certes.Acme.Resource;
+using Moq;
 using Xunit;
 
 namespace Certes.Acme
@@ -23,6 +27,26 @@ namespace Certes.Acme
             var authz = ctx.Authorization(loc);
 
             Assert.Equal(loc, authz.Location);
+        }
+
+        [Fact]
+        public async Task CanRevokeCertByPrivateKey()
+        {
+            var directoryUri = new Uri("http://acme.d/dict");
+            var httpClientMock = new Mock<IAcmeHttpClient>();
+            var certData = Encoding.UTF8.GetBytes("cert");
+
+            httpClientMock.Setup(m => m.Get<Directory>(directoryUri))
+                .ReturnsAsync(new AcmeHttpResponse<Directory>(directoryUri, Helper.MockDirectoryV2, default, default));
+            httpClientMock.Setup(m => m.ConsumeNonce()).ReturnsAsync("nonce");
+
+            httpClientMock.Setup(m => m.Post<string>(Helper.MockDirectoryV2.RevokeCert, It.IsAny<object>()))
+                .ReturnsAsync(new AcmeHttpResponse<string>(default, default, default, default));
+
+            var certKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
+
+            var client = new AcmeContext(directoryUri, http: httpClientMock.Object);
+            await client.RevokeCertificate(certData, RevocationReason.KeyCompromise, certKey);
         }
     }
 }

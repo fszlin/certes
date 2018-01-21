@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
-using Certes.Crypto;
 using Certes.Jws;
 
 namespace Certes
@@ -70,7 +69,7 @@ namespace Certes
         /// <returns>
         /// The awaitable.
         /// </returns>
-        Task RevokeCertificate(byte[] certificate, RevocationReason reason = RevocationReason.Unspecified, IAccountKey certificatePrivateKey = null);
+        Task RevokeCertificate(byte[] certificate, RevocationReason reason = RevocationReason.Unspecified, IKey certificatePrivateKey = null);
 
         /// <summary>
         /// Changes the account key.
