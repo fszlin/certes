@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
-using System.IO;
 using System.Threading.Tasks;
 using Certes.Cli.Options;
+using Certes.Cli.Settings;
 using NLog;
 using ValidationFunc = System.Func<Certes.Cli.Options.AccountOptions, bool>;
 
@@ -75,15 +75,20 @@ namespace Certes.Cli.Processors
 
         private async Task<object> DeactivateAccount()
         {
-            var key = await Args.LoadKey(true);
+            var key = await UserSettings.GetAccountKey(Args, true);
 
             Logger.Debug("Using ACME server {0}.", Args.Server);
-            var ctx = ContextFactory.Create(Args.Server, null);
+            var ctx = ContextFactory.Create(Args.Server, key);
             var acctCtx = await ctx.Account();
 
             Logger.Debug("Deactivate account at {0}", acctCtx.Location);
             var acct = await acctCtx.Deactivate();
-            File.Delete(Args.GetKeyPath());
+            await UserSettings.SetAcmeSettings(new AcmeSettings
+            {
+                ServerUri = Args.Server,
+                AccountKey = null
+            }, Args);
+
             return new
             {
                 uri = acctCtx.Location,
@@ -93,7 +98,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> NewAccount()
         {
-            var key = await Args.LoadKey();
+            var key = await UserSettings.GetAccountKey(Args);
             if (key != null && !Args.Force)
             {
                 throw new Exception("An account key already exists, use '--force' option to overwrite the existing key.");
@@ -106,8 +111,11 @@ namespace Certes.Cli.Processors
             var acctCtx = await ctx.NewAccount(Args.Email, Args.AgreeTos);
             Logger.Debug("Created new account at {0}", acctCtx.Location);
 
-            var path = Args.GetKeyPath();
-            await FileUtil.WriteAllTexts(path, ctx.AccountKey.ToPem());
+            await UserSettings.SetAcmeSettings(new AcmeSettings
+            {
+                AccountKey = ctx.AccountKey.ToPem(),
+                ServerUri = Args.Server
+            }, Args);
 
             return new
             {
@@ -118,7 +126,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> LoadAccountInfo()
         {
-            var key = await Args.LoadKey(true);
+            var key = await UserSettings.GetAccountKey(Args, true);
 
             Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, key);

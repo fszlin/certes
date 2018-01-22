@@ -1,11 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Certes.Acme;
+using Certes.Cli.Options;
+using Certes.Cli.Settings;
 using Xunit;
 
-namespace Certes.Cli.Options
+namespace Certes.Cli
 {
-    public class OptionsExtensionsTests
+    [Collection(nameof(IntegrationTests))]
+    public class UserSettingsTests
     {
         [Fact]
         public async Task CanLoadKeyFromPath()
@@ -18,7 +22,7 @@ namespace Certes.Cli.Options
                 Path = "./Data/key-es256.pem",
             };
 
-            var key = await options.LoadKey();
+            var key = await UserSettings.GetAccountKey(options, false);
 
             Assert.Equal(Helper.GetKeyV2(KeyAlgorithm.ES256).Thumbprint(), key.Thumbprint());
         }
@@ -26,13 +30,6 @@ namespace Certes.Cli.Options
         [Fact]
         public async Task CanLoadKeyFromUnixEvn()
         {
-            if (!Directory.Exists("./.certes/"))
-            {
-                Directory.CreateDirectory("./.certes/");
-            }
-
-            File.WriteAllText("./.certes/account.pem", Helper.GetTestKey(KeyAlgorithm.ES256));
-
             var fullPath = Path.GetFullPath("./");
             Environment.SetEnvironmentVariable("HOMEDRIVE", "");
             Environment.SetEnvironmentVariable("HOMEPATH", "");
@@ -43,7 +40,13 @@ namespace Certes.Cli.Options
                 Action = AccountAction.Info,
             };
 
-            var key = await options.LoadKey();
+            await UserSettings.SetAcmeSettings(new AcmeSettings
+            {
+                ServerUri = WellKnownServers.LetsEncryptStagingV2,
+                AccountKey = Helper.GetTestKey(KeyAlgorithm.ES256),
+            }, options);
+
+            var key = await UserSettings.GetAccountKey(options, false);
 
             Assert.Equal(Helper.GetKeyV2(KeyAlgorithm.ES256).Thumbprint(), key.Thumbprint());
         }
@@ -51,13 +54,6 @@ namespace Certes.Cli.Options
         [Fact]
         public async Task CanLoadKeyFromWinEvn()
         {
-            if (!Directory.Exists("./.certes/"))
-            {
-                Directory.CreateDirectory("./.certes/");
-            }
-
-            File.WriteAllText("./.certes/account.pem", Helper.GetTestKey(KeyAlgorithm.ES256));
-
             var fullPath = Path.GetFullPath("./");
             var drive = Path.GetPathRoot(fullPath);
             Environment.SetEnvironmentVariable("HOME", "");
@@ -69,7 +65,13 @@ namespace Certes.Cli.Options
                 Action = AccountAction.Info,
             };
 
-            var key = await options.LoadKey();
+            await UserSettings.SetAcmeSettings(new AcmeSettings
+            {
+                ServerUri = WellKnownServers.LetsEncryptStagingV2,
+                AccountKey = Helper.GetTestKey(KeyAlgorithm.ES256),
+            }, options);
+
+            var key = await UserSettings.GetAccountKey(options, false);
 
             Assert.Equal(Helper.GetKeyV2(KeyAlgorithm.ES256).Thumbprint(), key.Thumbprint());
         }
@@ -87,7 +89,7 @@ namespace Certes.Cli.Options
                 Action = AccountAction.Info,
             };
 
-            var key = await options.LoadKey();
+            var key = await UserSettings.GetAccountKey(options, false);
             Assert.Null(key);
         }
     }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
 using Certes.Cli.Options;
+using Certes.Cli.Settings;
 using Certes.Pkcs;
 using Microsoft.Azure.Management.AppService.Fluent;
 using Microsoft.Azure.Management.AppService.Fluent.Models;
@@ -75,7 +76,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> SetSslBinding()
         {
-            var key = await Args.LoadKey(true);
+            var key = await UserSettings.GetAccountKey(Args, true);
             Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, key);
 
@@ -166,7 +167,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> SetDns()
         {
-            var key = await Args.LoadKey(true);
+            var key = await UserSettings.GetAccountKey(Args, true);
 
             Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, key);

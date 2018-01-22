@@ -21,7 +21,7 @@ using ZoneInnerPage = Microsoft.Azure.Management.Dns.Fluent.Models.Page<Microsof
 
 namespace Certes.Cli.Processors
 {
-    [Collection(nameof(ContextFactory))]
+    [Collection(nameof(IntegrationTests))]
     public class AzureCommandTests
     {
         [Fact]

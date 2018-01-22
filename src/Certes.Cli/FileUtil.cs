@@ -8,6 +8,11 @@ namespace Certes.Cli
     {
         internal static async Task<string> ReadAllText(string path)
         {
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+
             using (var stream = File.OpenRead(path))
             {
                 using (var reader = new StreamReader(stream))

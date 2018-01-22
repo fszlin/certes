@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Certes.Cli.Processors
 {
-    [Collection(nameof(ContextFactory))]
+    [Collection(nameof(IntegrationTests))]
     public class OrderCommandTests
     {
         [Fact]

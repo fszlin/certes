@@ -3,6 +3,7 @@ using System.CommandLine;
 using System.Linq;
 using System.Threading.Tasks;
 using Certes.Cli.Options;
+using Certes.Cli.Settings;
 using NLog;
 
 namespace Certes.Cli.Processors
@@ -59,7 +60,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> ShowOrder()
         {
-            var key = await Args.LoadKey(true);
+            var key = await UserSettings.GetAccountKey(Args, true);
 
             Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, key);
@@ -74,7 +75,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> ProcessAuthz()
         {
-            var key = await Args.LoadKey(true);
+            var key = await UserSettings.GetAccountKey(Args, true);
             var name = Args.Values[0];
 
             Logger.Debug("Using ACME server {0}.", Args.Server);
@@ -110,7 +111,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> NewOrder()
         {
-            var key = await Args.LoadKey(true);
+            var key = await UserSettings.GetAccountKey(Args, true);
 
             Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, key);

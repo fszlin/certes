@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Cli.Options;
+using Certes.Cli.Settings;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace Certes.Cli.Processors
 {
-    [Collection(nameof(ContextFactory))]
+    [Collection(nameof(IntegrationTests))]
     public class AccountCommandTests
     {
         [Fact]
@@ -52,9 +53,9 @@ namespace Certes.Cli.Processors
         public async Task CanNewAccount()
         {
             var keyPath = $"./Data/{nameof(CanNewAccount)}/key.pem";
-            if (System.IO.Directory.Exists(Path.GetDirectoryName(keyPath)))
+            if (File.Exists(keyPath))
             {
-                System.IO.Directory.Delete(Path.GetDirectoryName(keyPath), true);
+                File.Delete(keyPath);
             }
 
             var account = new Account
@@ -71,17 +72,19 @@ namespace Certes.Cli.Processors
             acctMock.Setup(c => c.Resource()).ReturnsAsync(account);
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
-            var proc = new AccountCommand(new AccountOptions
+            var options = new AccountOptions
             {
                 Action = AccountAction.New,
                 Email = "admin@example.com",
                 AgreeTos = true,
                 Path = keyPath,
-            });
+            };
+
+            var proc = new AccountCommand(options);
 
             var ret = await proc.Process();
             Assert.NotNull(ret);
-            Assert.True(File.Exists(keyPath));
+            Assert.NotNull(UserSettings.GetAccountKey(options));
 
             // should not allow to overwrite the key file
             await Assert.ThrowsAsync<Exception>(() => proc.Process());
@@ -140,17 +143,18 @@ namespace Certes.Cli.Processors
             acctMock.SetupGet(c => c.Location).Returns(account.uri);
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
-            var proc = new AccountCommand(new AccountOptions
+            var args = new AccountOptions
             {
                 Action = AccountAction.Deactivate,
                 Path = keyPath,
-            });
+            };
+
+            var proc = new AccountCommand(args);
 
             Helper.SaveKey(keyPath);
 
             var ret = await proc.Process();
             Assert.Equal(JsonConvert.SerializeObject(account), JsonConvert.SerializeObject(ret));
-            Assert.False(File.Exists(keyPath));
         }
 
         [Fact]
