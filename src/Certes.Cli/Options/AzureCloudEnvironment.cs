@@ -2,6 +2,7 @@
 {
     public enum AzureCloudEnvironment
     {
+        Default,
         Global,
         China,
         USGovernment,

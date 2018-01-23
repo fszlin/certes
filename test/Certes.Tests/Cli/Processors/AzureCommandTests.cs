@@ -49,7 +49,7 @@ namespace Certes.Cli.Processors
             Assert.Equal(orderUir, options.OrderUri);
             Assert.Equal(host, options.Value);
             Assert.Equal(resourceGroup, options.ResourceGroup);
-            Assert.Equal(AzureCloudEnvironment.Global, options.CloudEnvironment);
+            Assert.Equal(AzureCloudEnvironment.Default, options.CloudEnvironment);
         }
 
         [Fact]

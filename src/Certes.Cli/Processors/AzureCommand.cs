@@ -141,11 +141,12 @@ namespace Certes.Cli.Processors
                 PfxBlob = pfx,
                 Password = pfxPwd,
             };
-           
-            var credentials = GetAuzreCredentials();
+
+            var azureSettings = await UserSettings.GetAzureSettings(Args);
+            var credentials = GetAuzreCredentials(azureSettings);
             using (var client = ContextFactory.CreateAppServiceManagementClient(credentials))
             {
-                client.SubscriptionId = Args.Subscription.ToString();
+                client.SubscriptionId = azureSettings.SubscriptionId.ToString();
 
                 certData = await client.Certificates.CreateOrUpdateAsync(Args.ResourceGroup, pfxName, certData);
 
@@ -190,10 +191,11 @@ namespace Certes.Cli.Processors
 
             var dnsValue = ctx.AccountKey.DnsTxtRecord(challengeCtx.Token);
 
-            var credentials = GetAuzreCredentials();
+            var azureSettings = await UserSettings.GetAzureSettings(Args);
+            var credentials = GetAuzreCredentials(azureSettings);
             using (var client = ContextFactory.CreateDnsManagementClient(credentials))
             {
-                client.SubscriptionId = Args.Subscription.ToString();
+                client.SubscriptionId = azureSettings.SubscriptionId.ToString();
 
                 ZoneInner idZone = null;
                 var zones = await client.Zones.ListAsync();
@@ -240,21 +242,21 @@ namespace Certes.Cli.Processors
             }
         }
 
-        private AzureCredentials GetAuzreCredentials()
+        private AzureCredentials GetAuzreCredentials(AzureSettings settings)
         {
             var loginInfo = new ServicePrincipalLoginInformation
             {
-                ClientId = Args.UserName,
-                ClientSecret = Args.Password,
+                ClientId = settings.ClientId,
+                ClientSecret = settings.Secret,
             };
 
             var env =
-                Args.CloudEnvironment == AzureCloudEnvironment.China ? AzureEnvironment.AzureChinaCloud :
-                Args.CloudEnvironment == AzureCloudEnvironment.German ? AzureEnvironment.AzureGermanCloud :
-                Args.CloudEnvironment == AzureCloudEnvironment.USGovernment ? AzureEnvironment.AzureUSGovernment :
+                settings.Environment == AzureCloudEnvironment.China ? AzureEnvironment.AzureChinaCloud :
+                settings.Environment == AzureCloudEnvironment.German ? AzureEnvironment.AzureGermanCloud :
+                settings.Environment == AzureCloudEnvironment.USGovernment ? AzureEnvironment.AzureUSGovernment :
                 AzureEnvironment.AzureGlobalCloud;
 
-            var credentials = new AzureCredentials(loginInfo, Args.Talent.ToString(), env);
+            var credentials = new AzureCredentials(loginInfo, settings.Talent.ToString(), env);
             return credentials;
         }
     }

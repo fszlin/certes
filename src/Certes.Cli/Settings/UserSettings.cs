@@ -57,6 +57,38 @@ namespace Certes.Cli.Settings
             }
         }
 
+        public static async Task<AzureSettings> GetAzureSettings(AzureOptions options)
+        {
+            var settings = await LoadUserSettings();
+
+            var azure = settings.Azure ?? new AzureSettings();
+
+            azure.Environment = options.CloudEnvironment == AzureCloudEnvironment.Default ?
+                AzureCloudEnvironment.Global : options.CloudEnvironment;
+
+            if (options.Talent != null)
+            {
+                azure.Talent = options.Talent;
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.UserName))
+            {
+                azure.ClientId = options.UserName;
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.Password))
+            {
+                azure.Secret = options.Password;
+            }
+
+            if (options.Subscription != null)
+            {
+                azure.SubscriptionId = options.Subscription;
+            }
+
+            return azure;
+        }
+
         public static async Task<AcmeSettings> GetAcmeSettings(OptionsBase options)
         {
             var settings = await LoadUserSettings();
