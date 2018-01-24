@@ -41,5 +41,16 @@ namespace Certes
         /// </returns>
         public static Task<IAccountContext> NewAccount(this IAcmeContext context, string email, bool termsOfServiceAgreed = false)
             => context.NewAccount(new[] { $"mailto:{email}" }, termsOfServiceAgreed);
+
+        /// <summary>
+        /// Gets the terms of service link from the ACME server.
+        /// </summary>
+        /// <param name="context">The ACME context.</param>
+        /// <returns>The terms of service link.</returns>
+        public static async Task<Uri> TermsOfService(this IAcmeContext context)
+        {
+            var dir = await context.GetDirectory();
+            return dir.Meta?.TermsOfService;
+        }
     }
 }

@@ -76,6 +76,11 @@ namespace Certes.Acme
                 Contact = contact
             };
 
+            if (agreeTermsOfService)
+            {
+                account.TermsOfServiceAgreed = true;
+            }
+
             var payload = await Context.Sign(account, location);
             await Context.HttpClient.Post<Account>(location, payload, true);
             return this;
