@@ -53,12 +53,27 @@ namespace Certes
         /// </returns>
         public static async Task<CertificateInfo> Generate(this IOrderContext context, CsrInfo csr, IKey key = null)
         {
-            if (key == null)
+            var order = await context.Resource();
+            if (order.Status == OrderStatus.Pending)
             {
-                key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+                if (key == null)
+                {
+                    key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+                }
+
+                order = await context.Finalize(csr, key);
             }
 
-            await context.Finalize(csr, key);
+            if (order.Status != OrderStatus.Valid)
+            {
+                throw new Exception("Invalid order status.");
+            }
+
+            if (key == null)
+            {
+                throw new Exception("Certificate key must be provied for finalized order.");
+            }
+
             var pem = await context.Download();
 
             return new CertificateInfo(pem, key);

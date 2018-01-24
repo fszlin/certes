@@ -15,7 +15,7 @@ namespace Certes.Acme
         /// <value>
         /// The context.
         /// </value>
-        public IAcmeContext Context { get; }
+        protected IAcmeContext Context { get; }
 
         /// <summary>
         /// Gets the entity location.

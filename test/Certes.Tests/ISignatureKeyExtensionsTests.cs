@@ -15,7 +15,7 @@ namespace Certes
             {
                 Assert.Equal(
                     JwsConvert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(key.KeyAuthorization("token")))),
-                    key.DnsTxtRecord("token"));
+                    key.DnsTxt("token"));
             }
         }
     }
