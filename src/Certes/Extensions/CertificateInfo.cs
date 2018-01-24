@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Certes.Pkcs;
 using Org.BouncyCastle.X509;
 
@@ -42,6 +43,11 @@ namespace Certes
         /// </returns>
         public byte[] ToPfx(string friendlyName, string password, bool fullChain = true, byte[] issuers = null)
         {
+            if (PrivateKey == null)
+            {
+                throw new InvalidOperationException("Private key not avaliable.");
+            }
+
             var pfxBuilder = new PfxBuilder(Encoding.UTF8.GetBytes(pem), PrivateKey);
             pfxBuilder.FullChain = fullChain;
             if (issuers != null)

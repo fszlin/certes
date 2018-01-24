@@ -15,7 +15,7 @@ namespace Certes
         /// Finalizes the certificate order.
         /// </summary>
         /// <param name="context">The order context.</param>
-        /// <param name="csr">The CSR in DER.</param>
+        /// <param name="csr">The CSR.</param>
         /// <param name="key">The private key for the certificate.</param>
         /// <returns>
         /// The order finalized.
@@ -23,10 +23,10 @@ namespace Certes
         public static async Task<Order> Finalize(this IOrderContext context, CsrInfo csr, IKey key)
         {
             var builder = new CertificationRequestBuilder(key);
-            foreach (var authzCtx in await context.Authorizations())
+            var order = await context.Resource();
+            foreach (var identifier in order.Identifiers)
             {
-                var authz = await authzCtx.Resource();
-                builder.SubjectAlternativeNames.Add(authz.Identifier.Value);
+                builder.SubjectAlternativeNames.Add(identifier.Value);
             }
 
             foreach (var (name, value) in csr.Fields)
@@ -43,10 +43,10 @@ namespace Certes
         }
 
         /// <summary>
-        /// Generates the certifcate for the order.
+        /// Finalizes and download the certifcate for the order.
         /// </summary>
         /// <param name="context">The order context.</param>
-        /// <param name="csr">The CSR in DER.</param>
+        /// <param name="csr">The CSR.</param>
         /// <param name="key">The private key for the certificate.</param>
         /// <returns>
         /// The certificate generated.
@@ -54,24 +54,21 @@ namespace Certes
         public static async Task<CertificateInfo> Generate(this IOrderContext context, CsrInfo csr, IKey key = null)
         {
             var order = await context.Resource();
-            if (order.Status == OrderStatus.Pending)
+            if (order.Status != OrderStatus.Pending)
             {
-                if (key == null)
-                {
-                    key = KeyFactory.NewKey(KeyAlgorithm.RS256);
-                }
-
-                order = await context.Finalize(csr, key);
-            }
-
-            if (order.Status != OrderStatus.Valid)
-            {
-                throw new Exception("Invalid order status.");
+                throw new Exception($"Can not finalize order with status {order.Status}.");
             }
 
             if (key == null)
             {
-                throw new Exception("Certificate key must be provied for finalized order.");
+                key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+            }
+
+            order = await context.Finalize(csr, key);
+
+            if (order.Status != OrderStatus.Valid)
+            {
+                throw new Exception("Failto finalize order.");
             }
 
             var pem = await context.Download();

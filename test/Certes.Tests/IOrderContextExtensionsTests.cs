@@ -30,7 +30,7 @@ namespace Certes
                     },
                     Status = OrderStatus.Valid,
                 });
-
+            
             var certInfoWithRandomKey = await orderCtxMock.Object.Generate(new CsrInfo
             {
                 CountryName = "C",

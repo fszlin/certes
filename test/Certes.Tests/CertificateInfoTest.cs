@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Xunit;
 
 namespace Certes
@@ -13,8 +14,15 @@ namespace Certes
 
             var data = new CertificateInfo(cert, key);
             var pfx = data.ToPfx("my-pfx", "abcd1234", false);
+        }
 
-            File.WriteAllBytes("./Data/cert-es256.pfx", pfx);
+        [Fact]
+        public void PreventPfxWhenNoKey()
+        {
+            var cert = File.ReadAllText("./Data/cert-es256.pem");
+
+            var data = new CertificateInfo(cert, null);
+            Assert.Throws<InvalidOperationException>(() => data.ToPfx("my-pfx", "abcd1234", false));
         }
     }
 }
