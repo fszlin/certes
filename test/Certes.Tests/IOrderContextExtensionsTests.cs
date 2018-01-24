@@ -13,23 +13,23 @@ namespace Certes
         {
             var pem = "certes-pem";
 
-            var authzCtxMock = new Mock<IAuthorizationContext>();
-            authzCtxMock.Setup(m => m.Resource())
-                .ReturnsAsync(new Acme.Resource.Authorization
-                {
-                    Identifier = new Identifier
-                    {
-                        Type = IdentifierType.Dns,
-                        Value = "www.certes.com",
-                    }
-                });
-
             var orderCtxMock = new Mock<IOrderContext>();
             orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>()))
                 .ReturnsAsync(new Order());
             orderCtxMock.Setup(m => m.Download()).ReturnsAsync(pem);
-            orderCtxMock.Setup(m => m.Authorizations()).ReturnsAsync(new[] { authzCtxMock.Object });
-
+            orderCtxMock.Setup(m => m.Resource())
+                .ReturnsAsync(new Order
+                {
+                    Identifiers = new[]
+                    {
+                        new Identifier
+                        {
+                            Type = IdentifierType.Dns,
+                            Value = "www.certes.com",
+                        }
+                    }
+                });
+            
             var certInfoWithRandomKey = await orderCtxMock.Object.Generate(new CsrInfo
             {
                 CountryName = "C",

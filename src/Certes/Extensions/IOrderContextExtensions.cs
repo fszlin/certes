@@ -23,10 +23,10 @@ namespace Certes
         public static async Task<Order> Finalize(this IOrderContext context, CsrInfo csr, IKey key)
         {
             var builder = new CertificationRequestBuilder(key);
-            foreach (var authzCtx in await context.Authorizations())
+            var order = await context.Resource();
+            foreach (var identifier in order.Identifiers)
             {
-                var authz = await authzCtx.Resource();
-                builder.SubjectAlternativeNames.Add(authz.Identifier.Value);
+                builder.SubjectAlternativeNames.Add(identifier.Value);
             }
 
             foreach (var (name, value) in csr.Fields)
