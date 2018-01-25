@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Certes.Cli
 {
-    [Collection(nameof(IntegrationTests))]
+    [Collection(nameof(ContextFactory))]
     public class UserSettingsTests
     {
         [Fact]

@@ -15,7 +15,7 @@ namespace Certes
         /// Finalizes the certificate order.
         /// </summary>
         /// <param name="context">The order context.</param>
-        /// <param name="csr">The CSR in DER.</param>
+        /// <param name="csr">The CSR.</param>
         /// <param name="key">The private key for the certificate.</param>
         /// <returns>
         /// The order finalized.
@@ -43,22 +43,34 @@ namespace Certes
         }
 
         /// <summary>
-        /// Generates the certifcate for the order.
+        /// Finalizes and download the certifcate for the order.
         /// </summary>
         /// <param name="context">The order context.</param>
-        /// <param name="csr">The CSR in DER.</param>
+        /// <param name="csr">The CSR.</param>
         /// <param name="key">The private key for the certificate.</param>
         /// <returns>
         /// The certificate generated.
         /// </returns>
         public static async Task<CertificateInfo> Generate(this IOrderContext context, CsrInfo csr, IKey key = null)
         {
+            var order = await context.Resource();
+            if (order.Status != OrderStatus.Pending)
+            {
+                throw new Exception($"Can not finalize order with status {order.Status}.");
+            }
+
             if (key == null)
             {
                 key = KeyFactory.NewKey(KeyAlgorithm.RS256);
             }
 
-            await context.Finalize(csr, key);
+            order = await context.Finalize(csr, key);
+
+            if (order.Status != OrderStatus.Valid)
+            {
+                throw new Exception("Failto finalize order.");
+            }
+
             var pem = await context.Download();
 
             return new CertificateInfo(pem, key);

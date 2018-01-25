@@ -91,7 +91,7 @@ namespace Certes
         /// <param name="key">The key.</param>
         /// <param name="token">The challenge token.</param>
         /// <returns></returns>
-        public static string DnsTxtRecord(this IKey key, string token)
+        public static string DnsTxt(this IKey key, string token)
         {
             var keyAuthz = key.KeyAuthorization(token);
             var hashed = DigestUtilities.CalculateDigest("SHA256", Encoding.UTF8.GetBytes(keyAuthz));

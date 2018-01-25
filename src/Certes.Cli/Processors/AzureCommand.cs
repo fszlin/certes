@@ -189,7 +189,7 @@ namespace Certes.Cli.Processors
                 throw new Exception($"DNS challenge for {Args.Value} not found.");
             }
 
-            var dnsValue = ctx.AccountKey.DnsTxtRecord(challengeCtx.Token);
+            var dnsValue = ctx.AccountKey.DnsTxt(challengeCtx.Token);
 
             var azureSettings = await UserSettings.GetAzureSettings(Args);
             var credentials = GetAuzreCredentials(azureSettings);

@@ -59,6 +59,8 @@ Export PFX
 cert.ToPfx("my-cert.pfx", "abcd1234");
 ```
 
+Check the [APIs](/docs/APIv2.md) for more details.
+
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/fszlin/certes/tags). 
