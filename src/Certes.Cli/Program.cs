@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using NLog;
 using NLog.Config;
@@ -12,27 +13,17 @@ namespace Certes.Cli
 
         public static async Task<int> Main(string[] args)
         {
-            ConfigureConsoleLogger(
-                string.Equals("true", Environment.GetEnvironmentVariable("CERTES_DEBUG"), StringComparison.OrdinalIgnoreCase));
+            ConfigureConsoleLogger();
 
             var succeed = await new CliCore().Process(args);
             return succeed ? 0 : 1;
         }
 
-        private static void ConfigureConsoleLogger(bool verbose)
+        private static void ConfigureConsoleLogger()
         {
             var config = new LoggingConfiguration();
-            //var consoleTarget = new ColoredConsoleTarget
-            //{
-            //    Layout = @"${message}"
-            //};
 
-            //config.AddTarget(ConsoleLoggerName, consoleTarget);
-
-            //var consoleRule = new LoggingRule("*", LogLevel.Info, consoleTarget);
-            //config.LoggingRules.Add(consoleRule);
-
-            if (verbose)
+            if (HasFlags("CERTES_DEBUG"))
             {
                 config.LoggingRules.Add(
                     new LoggingRule("*", LogLevel.Debug, new ColoredConsoleTarget
@@ -51,5 +42,8 @@ namespace Certes.Cli
 
             LogManager.Configuration = config;
         }
+
+        private static bool HasFlags(string environmentVariableName)
+            => string.Equals("true", Environment.GetEnvironmentVariable(environmentVariableName), StringComparison.OrdinalIgnoreCase);
     }
 }
