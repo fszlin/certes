@@ -89,10 +89,18 @@ var orders = await account.Orders();
 Apply for certificate issuance.
  
 ```C#
-var order = await orders.NewOrder(new [] { "*.example.com" });
+var order = await context.NewOrder(new [] { "*.example.com" });
+var orderUri = order.Location;
+```
+
+Retrieve order by URI.
+ 
+```C#
+var order = await context.Order(orderUri);
 ```
 
 Finalize the order.
+
 ```C#
 var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
 await orderCtx.Finalize(
@@ -146,6 +154,13 @@ Search authorization by domain name.
  
 ```C#
 var authz = await order.Authorization("*.example.com");
+var authzUri = authz.Location;
+```
+
+Retrieve authorization by URI.
+ 
+```C#
+var authz = await context.Authorization(authzUri);
 ```
  
 ## Challenges
@@ -207,6 +222,18 @@ var der = cert.ToDer();
 var pfx = cert.ToPfx("cert-name", "abcd1234");
 
 var keyPem = cert.Key.ToPem();
+```
+
+Revoke certificate with account key.
+
+```C#
+context.RevokeCertificate(cert.ToDer(), RevocationReason.KeyCompromise);
+```
+
+Revoke certificate with certificate private key.
+
+```C#
+context.RevokeCertificate(cert.ToDer(), RevocationReason.KeyCompromise, certKey);
 ```
 
 <!---
