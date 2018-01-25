@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -8,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Certes
 {
-    public class StagingServers
+    public class IntegrationHelper
     {
         private static Uri[] StagingServersV1 = new[]
         {
@@ -17,12 +18,31 @@ namespace Certes
             WellKnownServers.LetsEncryptStaging,
         };
 
-        private static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() => new HttpClient());
+        private static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() =>
+        {
+#if NETCOREAPP2_0
+            var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
+#elif NETCOREAPP1_0
+            var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (msg, cert, chains, errors) => true };
+#else
+            ServicePointManager.ServerCertificateValidationCallback = (msg, cert, chains, errors) => true;
+            var handler = new HttpClientHandler();
+#endif
+            
+            return new HttpClient(handler);
+        });
+
         private static Uri stagingServerV1;
         private static Uri stagingServerV2;
 
+#if NETCOREAPP2_0 || NETCOREAPP1_0
+        public static void SkipCertificateCheck()
+        {
+            Helper.SetContextFactory(http.Value);
+        }
+#endif
 
-        public static async Task<Uri> GetUriV1()
+        public static async Task<Uri> GetAcmeUriV1()
         {
             if (stagingServerV1 != null)
             {
@@ -67,7 +87,7 @@ namespace Certes
             throw new Exception("Staging server unavailable.");
         }
 
-        public static async Task<Uri> GetUriV2()
+        public static async Task<Uri> GetAcmeUriV2()
         {
             if (stagingServerV2 != null)
             {

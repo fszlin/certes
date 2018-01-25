@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Certes.Acme.Resource;
 using Certes.Json;
 using Newtonsoft.Json;
 
@@ -19,10 +20,10 @@ namespace Certes.Acme
 
         private readonly static JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
         private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(() => new HttpClient());
-        private readonly IAcmeContext context;
         private readonly Lazy<HttpClient> http;
 
         private Uri newNonceUri;
+        private readonly Uri directoryUri;
         private string nonce;
 
         /// <summary>
@@ -37,12 +38,12 @@ namespace Certes.Acme
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeHttpClient" /> class.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="directoryUri">The ACME directory URI.</param>
         /// <param name="http">The HTTP.</param>
         /// <exception cref="ArgumentNullException">directoryUri</exception>
-        public AcmeHttpClient(IAcmeContext context, HttpClient http = null)
+        public AcmeHttpClient(Uri directoryUri, HttpClient http = null)
         {
-            this.context = context ?? throw new ArgumentNullException(nameof(newNonceUri));
+            this.directoryUri = directoryUri;
             this.http = http == null ? SharedHttp : new Lazy<HttpClient>(() => http);
         }
 
@@ -78,9 +79,11 @@ namespace Certes.Acme
         }
 
         /// <summary>
-        /// Consumes the nonce.
+        /// Gets the nonce for next request.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The nonce.
+        /// </returns>
         public async Task<string> ConsumeNonce()
         {
             var nonce = Interlocked.Exchange(ref this.nonce, null);
@@ -157,7 +160,7 @@ namespace Certes.Acme
 
         private async Task FetchNonce()
         {
-            var newNonceUri = this.newNonceUri ?? (this.newNonceUri = await context.GetResourceUri(d => d.NewNonce));
+            newNonceUri = newNonceUri ?? (await Get<Directory>(directoryUri)).Resource.NewNonce;
             var response = await Http.SendAsync(new HttpRequestMessage
             {
                 RequestUri = newNonceUri,

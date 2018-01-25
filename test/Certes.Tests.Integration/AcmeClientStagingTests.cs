@@ -17,7 +17,7 @@ namespace Certes
         public async Task RunAccountFlow(KeyAlgorithm algorithm)
         {
             var key = new AccountKey(algorithm);
-            using (var client = new AcmeClient(await StagingServers.GetUriV1()))
+            using (var client = new AcmeClient(await IntegrationHelper.GetAcmeUriV1()))
             {
                 client.Use(key.Export());
                 var reg = await client.NewRegistraton();
@@ -37,7 +37,7 @@ namespace Certes
             csr.SubjectAlternativeNames.Add("mail.certes-ci.dymetis.com");
             csr.SubjectAlternativeNames.Add("sso.certes-ci.dymetis.com");
 
-            using (var client = new AcmeClient(await StagingServers.GetUriV1()))
+            using (var client = new AcmeClient(await IntegrationHelper.GetAcmeUriV1()))
             {
                 client.Use(accountKey.Export());
 

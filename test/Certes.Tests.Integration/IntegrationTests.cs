@@ -31,7 +31,7 @@ namespace Certes
         [Fact]
         public async Task CanDiscoverAccountByKey()
         {
-            var dirUri = await StagingServers.GetUriV2();
+            var dirUri = await IntegrationHelper.GetAcmeUriV2();
 
             var ctx = new AcmeContext(dirUri, Helper.GetKeyV2());
             var acct = await ctx.Account();
@@ -44,7 +44,7 @@ namespace Certes
         [Fact]
         public async Task CanRunAccountFlows()
         {
-            var dirUri = await StagingServers.GetUriV2();
+            var dirUri = await IntegrationHelper.GetAcmeUriV2();
 
             var ctx = new AcmeContext(dirUri);
             var accountCtx = await ctx.NewAccount(
@@ -66,7 +66,7 @@ namespace Certes
         [Fact]
         public async Task CanChangeAccountKey()
         {
-            var dirUri = await StagingServers.GetUriV2();
+            var dirUri = await IntegrationHelper.GetAcmeUriV2();
 
             var ctx = new AcmeContext(dirUri);
             var account = await ctx.NewAccount(
@@ -85,7 +85,7 @@ namespace Certes
         public async Task CanGenerateCertificateDns()
         {
             var hosts = new[] { $"www-dns-{domainSuffix}.es256.certes-ci.dymetis.com", $"mail-dns-{domainSuffix}.es256.certes-ci.dymetis.com" };
-            var ctx = new AcmeContext(await StagingServers.GetUriV2(), Helper.GetKeyV2());
+            var ctx = new AcmeContext(await IntegrationHelper.GetAcmeUriV2(), Helper.GetKeyV2());
             var orderCtx = await AuthzDns(ctx, hosts);
             while (orderCtx == null)
             {
@@ -119,7 +119,7 @@ namespace Certes
         public async Task CanGenerateWildcard()
         {
             var hosts = new[] { $"wildcard-{domainSuffix}.es256.certes-ci.dymetis.com" };
-            var ctx = new AcmeContext(await StagingServers.GetUriV2(), Helper.GetKeyV2());
+            var ctx = new AcmeContext(await IntegrationHelper.GetAcmeUriV2(), Helper.GetKeyV2());
 
             var orderCtx = await AuthzDns(ctx, hosts);
             var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
@@ -141,7 +141,7 @@ namespace Certes
         public async Task CanGenerateCertificateWithEC(KeyAlgorithm algo)
         {
             var hosts = new[] { $"www-ec-{domainSuffix}.es256.certes-ci.dymetis.com".ToLower() };
-            var ctx = new AcmeContext(await StagingServers.GetUriV2(), Helper.GetKeyV2());
+            var ctx = new AcmeContext(await IntegrationHelper.GetAcmeUriV2(), Helper.GetKeyV2());
             var orderCtx = await ctx.NewOrder(hosts);
             var order = await orderCtx.Resource();
             Assert.NotNull(order);
@@ -197,7 +197,7 @@ namespace Certes
         public async Task CanGenerateCertificateHttp()
         {
             var hosts = new[] { $"www-http-{domainSuffix}.es256.certes-ci.dymetis.com", $"mail-http-{domainSuffix}.es256.certes-ci.dymetis.com" };
-            var ctx = new AcmeContext(await StagingServers.GetUriV2(), Helper.GetKeyV2());
+            var ctx = new AcmeContext(await IntegrationHelper.GetAcmeUriV2(), Helper.GetKeyV2());
             var orderCtx = await ctx.NewOrder(hosts);
             var order = await orderCtx.Resource();
             Assert.NotNull(order);
@@ -279,7 +279,7 @@ namespace Certes
                 tokens.Add(res.Identifier.Value, dnsChallenge.Token);
             }
 
-            await StagingServers.DeployDns01(KeyAlgorithm.ES256, tokens);
+            await IntegrationHelper.DeployDns01(KeyAlgorithm.ES256, tokens);
 
             foreach (var authz in authrizations)
             {

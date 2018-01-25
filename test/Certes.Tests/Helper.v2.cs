@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
-
 using Directory = Certes.Acme.Resource.Directory;
 
 namespace Certes
@@ -23,5 +20,12 @@ namespace Certes
         {
             return KeyFactory.FromPem(algo.GetTestKey());
         }
+
+#if NETCOREAPP2_0 || NETCOREAPP1_0
+        public static void SetContextFactory(HttpClient http)
+        {
+            Certes.Cli.ContextFactory.Create = (u, k) => new Certes.AcmeContext(u, k, new AcmeHttpClient(u, http)); ;
+        }
+#endif
     }
 }

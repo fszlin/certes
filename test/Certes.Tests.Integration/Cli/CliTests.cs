@@ -22,7 +22,7 @@ namespace Certes.Cli
         [Fact]
         public async Task RunStaging()
         {
-            var server = await StagingServers.GetUriV1();
+            var server = await IntegrationHelper.GetAcmeUriV1();
 
             // Create new Registration
             cmd = $"register --register-unsafely-without-email --agree-tos --server {server} --path {AccountPath} --force";
