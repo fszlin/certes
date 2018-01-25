@@ -18,12 +18,11 @@ namespace Certes
 {
     public static partial class Helper
     {
-        private static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() => new HttpClient());
         private static readonly KeyAlgorithmProvider signatureAlgorithmProvider = new KeyAlgorithmProvider();
 
         // shouldn't need to add intermediate certificate
         // seems the 'up' link provided for test config is pointing to staging's cert
-        internal static readonly byte[] TestCertificates = 
+        public static readonly byte[] TestCertificates = 
             File.ReadAllBytes("./Data/test-ca2.pem")
                 .Concat(File.ReadAllBytes("./Data/test-root.pem")).ToArray();
 
@@ -69,7 +68,7 @@ namespace Certes
             }
         }
 
-        internal static void VerifyGetterSetter<TSource, TProperty>(
+        public static void VerifyGetterSetter<TSource, TProperty>(
             this TSource source,
             Expression<Func<TSource, TProperty>> propertyLambda,
             TProperty value)
@@ -83,7 +82,7 @@ namespace Certes
             Assert.Equal(value, (TProperty)actualValue);
         }
 
-        internal static string GetTestKey(this KeyAlgorithm algo)
+        public static string GetTestKey(this KeyAlgorithm algo)
         {
             switch (algo)
             {
@@ -98,11 +97,6 @@ namespace Certes
             }
         }
 
-        internal static async Task DeployDns01(KeyAlgorithm algo, Dictionary<string, string> tokens)
-        {
-            using (await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens)))) { }
-        }
-
-        internal static void AddTestCert(this PfxBuilder pfx) => pfx.AddIssuers(TestCertificates);
+        public static void AddTestCert(this PfxBuilder pfx) => pfx.AddIssuers(TestCertificates);
     }
 }

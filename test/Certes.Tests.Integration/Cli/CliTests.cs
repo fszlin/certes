@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 using Certes.Acme;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using NLog;
-using NLog.Config;
-using NLog.Targets;
 using Xunit;
 
 namespace Certes.Cli
@@ -25,7 +22,7 @@ namespace Certes.Cli
         [Fact]
         public async Task RunStaging()
         {
-            var server = await Helper.GetStagingServerV1();
+            var server = await StagingServers.GetUriV1();
 
             // Create new Registration
             cmd = $"register --register-unsafely-without-email --agree-tos --server {server} --path {AccountPath} --force";
