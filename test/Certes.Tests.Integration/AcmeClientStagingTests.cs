@@ -43,10 +43,9 @@ namespace Certes
             {
                 client.Use(accountKey.Export());
 
-                await Task.WhenAll(
-                    AuthorizeDns(client, "www.certes-ci.dymetis.com"),
-                    AuthorizeDns(client, "mail.certes-ci.dymetis.com"),
-                    AuthorizeDns(client, "sso.certes-ci.dymetis.com"));
+                await AuthorizeDns(client, "www.certes-ci.dymetis.com");
+                await AuthorizeDns(client, "mail.certes-ci.dymetis.com");
+                await AuthorizeDns(client, "sso.certes-ci.dymetis.com");
 
                 var cert = await client.NewCertificate(csr);
                 var pfx = cert.ToPfx();

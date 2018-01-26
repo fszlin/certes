@@ -24,7 +24,7 @@ namespace Certes
 #elif NETCOREAPP1_0
             var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (msg, cert, chains, errors) => true };
 #else
-            ServicePointManager.ServerCertificateValidationCallback = (msg, cert, chains, errors) => true;
+            System.Net.ServicePointManager.ServerCertificateValidationCallback = (msg, cert, chains, errors) => true;
             var handler = new HttpClientHandler();
 #endif
 
