@@ -247,16 +247,16 @@ namespace Certes
                 OrganizationUnit = "Dev",
                 CommonName = hosts[0],
             }, certKey);
-            var pem = await orderCtx.Download();
+            var certChain = await orderCtx.Download();
             
-            var pfxBuilder = new PfxBuilder(Encoding.UTF8.GetBytes(pem), certKey);
-            pfxBuilder.AddIssuers(Helper.TestCertificates);
+            var pfxBuilder = certChain.ToPfx(certKey);
+            pfxBuilder.AddIssuers(IntegrationHelper.TestCertificates);
 
             var pfx = pfxBuilder.Build("my-pfx", "abcd1234");
 
             // revoke certificate
             var certParser = new X509CertificateParser();
-            var certificate = certParser.ReadCertificate(Encoding.UTF8.GetBytes(pem));
+            var certificate = certParser.ReadCertificate(Encoding.UTF8.GetBytes(certChain.Certificate));
             var der = certificate.GetEncoded();
 
             await ctx.RevokeCertificate(der, RevocationReason.Unspecified, null);

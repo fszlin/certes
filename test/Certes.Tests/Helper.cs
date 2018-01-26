@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Net.Http;
 using System.Reflection;
-using System.Threading.Tasks;
 using Certes.Crypto;
 using Certes.Pkcs;
-using Newtonsoft.Json;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
@@ -19,12 +15,6 @@ namespace Certes
     public static partial class Helper
     {
         private static readonly KeyAlgorithmProvider signatureAlgorithmProvider = new KeyAlgorithmProvider();
-
-        // shouldn't need to add intermediate certificate
-        // seems the 'up' link provided for test config is pointing to staging's cert
-        public static readonly byte[] TestCertificates = 
-            File.ReadAllBytes("./Data/test-ca2.pem")
-                .Concat(File.ReadAllBytes("./Data/test-root.pem")).ToArray();
 
         public static IList<string> Logs
         {
@@ -96,7 +86,5 @@ namespace Certes
                     return Keys.RS256Key;
             }
         }
-
-        public static void AddTestCert(this PfxBuilder pfx) => pfx.AddIssuers(TestCertificates);
     }
 }

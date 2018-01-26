@@ -51,16 +51,15 @@ namespace Certes.Acme
         }
 
         /// <summary>
-        /// Downloads this certificate.
+        /// Downloads the certificate chain in PEM.
         /// </summary>
-        /// <returns>
-        /// The certificate in PEM.
-        /// </returns>
-        public async Task<string> Download()
+        /// <returns>The certificate chain in PEM.</returns>
+        public async Task<CertificateChain> Download()
         {
             var order = await Resource();
             var resp = await Context.HttpClient.Get<string>(order.Certificate);
-            return resp.Resource;
+
+            return new CertificateChain(resp.Resource);
         }
     }
 }

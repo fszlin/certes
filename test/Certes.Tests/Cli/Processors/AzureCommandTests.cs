@@ -72,12 +72,9 @@ namespace Certes.Cli.Processors
                 {
                     Status = OrderStatus.Valid,
                     Identifiers = hosts.Select(h => new Identifier { Value = h, Type = IdentifierType.Dns }).ToArray(),
-                    //Authorizations = hosts.Select((i, a) => new Uri("http://acme.d/authz/{i}")).ToArray(),
                 },
             };
 
-            //var challengeMock = new Mock<IChallengeContext>();
-            //var authzMock = new Mock<IAuthorizationContext>();
             var orderMock = new Mock<IOrderContext>();
             var ctxMock = new Mock<IAcmeContext>();
 
@@ -91,14 +88,13 @@ namespace Certes.Cli.Processors
             ctxMock.SetupGet(c => c.AccountKey).Returns(Helper.GetKeyV2());
             ctxMock.Setup(c => c.Order(order.uri)).Returns(orderMock.Object);
 
-            //orderMock.Setup(c => c.Authorizations()).ReturnsAsync(order.data.Identifiers.Select(a => authzMock.Object));
             orderMock.Setup(c => c.Location).Returns(order.uri);
             orderMock.Setup(m => m.Resource()).ReturnsAsync(order.data);
-            orderMock.Setup(m => m.Download()).ReturnsAsync(File.ReadAllText("./Data/cert-es256.pem"));
-
-            //authzMock.Setup(c => c.Location).Returns(order.data.Authorizations[0]);
-            //authzMock.Setup(c => c.Resource()).ReturnsAsync(authz.data);
-            //authzMock.Setup(c => c.Challenges()).ReturnsAsync(new[] { challengeMock.Object });
+            orderMock.Setup(m => m.Download())
+                .ReturnsAsync(new CertificateChain(
+                    File.ReadAllText("./Data/cert-es256.pem") + 
+                    Environment.NewLine +
+                    File.ReadAllText("./Data/test-ca2.pem")));
 
             appSvcMock.SetupGet(m => m.WebApps).Returns(webAppOpMock.Object);
             appSvcMock.SetupGet(m => m.Certificates).Returns(certOpMock.Object);
@@ -118,7 +114,7 @@ namespace Certes.Cli.Processors
                 Value = hosts[0],
                 OrderUri = order.uri,
                 PrivateKey = certKeyPath,
-                Issuers = new List<string> { "./Data/test-ca2.pem", "./Data/test-root.pem" }.AsReadOnly(),
+                Issuers = new List<string> { "./Data/test-root.pem" }.AsReadOnly(),
                 
                 UserName = "certes",
                 Password = "abcd1234",

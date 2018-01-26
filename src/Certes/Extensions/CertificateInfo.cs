@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using Certes.Pkcs;
+using Certes.Acme;
 using Org.BouncyCastle.X509;
 
 namespace Certes
@@ -10,7 +10,7 @@ namespace Certes
     /// </summary>
     public class CertificateInfo
     {
-        private readonly string pem;
+        private readonly CertificateChain certificateChain;
 
         /// <summary>
         /// Gets the private key of the certificate.
@@ -23,11 +23,11 @@ namespace Certes
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificateInfo" /> class.
         /// </summary>
-        /// <param name="pem">The certificate in PEM.</param>
+        /// <param name="certificateChain">The certificate chain.</param>
         /// <param name="privateKey">The private key.</param>
-        public CertificateInfo(string pem, IKey privateKey)
+        public CertificateInfo(CertificateChain certificateChain, IKey privateKey)
         {
-            this.pem = pem;
+            this.certificateChain = certificateChain;
             PrivateKey = privateKey;
         }
 
@@ -48,13 +48,14 @@ namespace Certes
                 throw new InvalidOperationException("Private key not avaliable.");
             }
 
-            var pfxBuilder = new PfxBuilder(Encoding.UTF8.GetBytes(pem), PrivateKey);
+            var pfxBuilder = certificateChain.ToPfx(PrivateKey);
             pfxBuilder.FullChain = fullChain;
+
             if (issuers != null)
             {
                 pfxBuilder.AddIssuers(issuers);
             }
-
+            
             return pfxBuilder.Build(friendlyName, password);
         }
 
@@ -65,7 +66,8 @@ namespace Certes
         public byte[] ToDer()
         {
             var certParser = new X509CertificateParser();
-            var cert = certParser.ReadCertificate(Encoding.UTF8.GetBytes(pem));
+            var cert = certParser.ReadCertificate(
+                Encoding.UTF8.GetBytes(certificateChain.Certificate));
             return cert.GetEncoded();
         }
 
@@ -73,6 +75,6 @@ namespace Certes
         /// Exports the certificate to PEM.
         /// </summary>
         /// <returns>The certificate.</returns>
-        public string ToPem() => pem;
+        public string ToPem() => certificateChain.Certificate;
     }
 }

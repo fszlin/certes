@@ -98,7 +98,7 @@ namespace Certes.Cli.Processors
             }
 
             byte[] issuers = null;
-            if (Args.Issuers?.Count > 1)
+            if (Args.Issuers?.Count > 0)
             {
                 using (var buffer = new MemoryStream())
                 {
@@ -126,8 +126,8 @@ namespace Certes.Cli.Processors
             }
             else
             {
-                var pem = await orderCtx.Download();
-                var pfxBuilder = new PfxBuilder(Encoding.UTF8.GetBytes(pem), certKey);
+                var certChain = await orderCtx.Download();
+                var pfxBuilder = certChain.ToPfx(certKey);
                 if (issuers != null)
                 {
                     pfxBuilder.AddIssuers(issuers);

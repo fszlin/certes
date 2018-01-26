@@ -71,9 +71,9 @@ namespace Certes
                 throw new Exception("Failto finalize order.");
             }
 
-            var pem = await context.Download();
+            var certChain = await context.Download();
 
-            return new CertificateInfo(pem, key);
+            return new CertificateInfo(certChain, key);
         }
 
         /// <summary>

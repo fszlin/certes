@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Moq;
@@ -11,10 +13,10 @@ namespace Certes
         [Fact]
         public async Task CanGenerateCertificate()
         {
-            var pem = "certes-pem";
+            var pem = File.ReadAllText("./Data/cert-es256.pem");
 
             var orderCtxMock = new Mock<IOrderContext>();
-            orderCtxMock.Setup(m => m.Download()).ReturnsAsync(pem);
+            orderCtxMock.Setup(m => m.Download()).ReturnsAsync(new CertificateChain(pem));
             orderCtxMock.Setup(m => m.Resource()).ReturnsAsync(new Order
             {
                 Identifiers = new[] {
@@ -37,7 +39,9 @@ namespace Certes
                 CommonName = "www.certes.com",
             });
 
-            Assert.Equal(pem, certInfoWithRandomKey.ToPem());
+            Assert.Equal(
+                pem.Where(c => !char.IsWhiteSpace(c)),
+                certInfoWithRandomKey.ToPem().Where(c => !char.IsWhiteSpace(c)));
             Assert.NotNull(certInfoWithRandomKey.PrivateKey);
 
             var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
@@ -47,7 +51,9 @@ namespace Certes
                 CommonName = "www.certes.com",
             }, key);
 
-            Assert.Equal(pem, certInfo.ToPem());
+            Assert.Equal(
+                pem.Where(c => !char.IsWhiteSpace(c)),
+                certInfo.ToPem().Where(c => !char.IsWhiteSpace(c)));
             Assert.Equal(key, certInfo.PrivateKey);
 
             var certInfoNoCn = await orderCtxMock.Object.Generate(new CsrInfo
@@ -55,7 +61,9 @@ namespace Certes
                 CountryName = "C",
             });
 
-            Assert.Equal(pem, certInfoNoCn.ToPem());
+            Assert.Equal(
+                pem.Where(c => !char.IsWhiteSpace(c)),
+                certInfoNoCn.ToPem().Where(c => !char.IsWhiteSpace(c)));
             Assert.NotNull(certInfoNoCn.PrivateKey);
         }
     }

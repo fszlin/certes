@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Certes.Acme;
+using Certes.Pkcs;
 using Newtonsoft.Json;
 
 namespace Certes
 {
-    public class IntegrationHelper
+    public static class IntegrationHelper
     {
+        public static readonly byte[] TestCertificates =
+            File.ReadAllBytes("./Data/test-root.pem");
+
         private static Uri[] StagingServersV1 = new[]
         {
             new Uri("https://localhost:4430/directory"),
@@ -140,5 +145,7 @@ namespace Certes
         {
             using (await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens)))) { }
         }
+
+        public static void AddTestCert(this PfxBuilder pfx) => pfx.AddIssuers(TestCertificates);
     }
 }

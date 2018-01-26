@@ -48,7 +48,7 @@ namespace Certes
                 CommonName = "www.certes-ci.dymetis.com",
             });
 
-            cert.ToPfx("my-cert.pfx", "abcd1234", issuers: Helper.TestCertificates);
+            cert.ToPfx("my-cert.pfx", "abcd1234", issuers: IntegrationHelper.TestCertificates);
         }
     }
 }
