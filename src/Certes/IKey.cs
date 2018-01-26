@@ -57,7 +57,7 @@ namespace Certes
             var jwk = key.JsonWebKey;
             var json = JsonConvert.SerializeObject(jwk, Formatting.None, thumbprintSettings);
             var bytes = Encoding.UTF8.GetBytes(json);
-            var hashed = key.GetSigner().ComputeHash(bytes);
+            var hashed = DigestUtilities.CalculateDigest("SHA256", bytes);
 
             return hashed;
         }

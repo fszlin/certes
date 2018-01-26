@@ -61,7 +61,7 @@ namespace Certes.Acme
         {
             var payload = await Context.Sign(
                 new Resource.Challenge {
-                    KeyAuthorization = Context.AccountKey.KeyAuthorization(Token)
+                    KeyAuthorization = KeyAuthz
                 }, Location);
             var resp = await Context.HttpClient.Post<Resource.Challenge>(Location, payload, true);
             return resp.Resource;
