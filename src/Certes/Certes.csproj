@@ -25,10 +25,6 @@
   
   <ItemGroup>
     <None Remove="Resources\Certificates\dst-root-ca-x3.cer" />
-    <None Remove="Resources\Certificates\fake-le-intermediate-x1.cer" />
-    <None Remove="Resources\Certificates\fake-le-root-x1.cer" />
-    <None Remove="Resources\Certificates\lets-encrypt-x3-cross-signed.cer" />
-    <None Remove="Resources\Certificates\lets-encrypt-x4-cross-signed.cer" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,10 +33,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\Certificates\dst-root-ca-x3.cer" />
-    <EmbeddedResource Include="Resources\Certificates\fake-le-intermediate-x1.cer" />
-    <EmbeddedResource Include="Resources\Certificates\fake-le-root-x1.cer" />
-    <EmbeddedResource Include="Resources\Certificates\lets-encrypt-x3-cross-signed.cer" />
-    <EmbeddedResource Include="Resources\Certificates\lets-encrypt-x4-cross-signed.cer" />
   </ItemGroup>
 
   <ItemGroup>
