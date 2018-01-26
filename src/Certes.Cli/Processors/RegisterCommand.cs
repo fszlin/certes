@@ -13,7 +13,7 @@ namespace Certes.Cli.Processors
             : base(options)
         {
         }
-        
+
         public override async Task<AcmeContext> Process(AcmeContext context)
         {
             if (Options.Thumbprint)
@@ -39,22 +39,21 @@ namespace Certes.Cli.Processors
                 throw new Exception($"A config exists at {Options.Path}, use a different path or --force option.");
             }
 
-            using (var client = new AcmeClient(Options.Server))
-            {
-                var account = Options.NoEmail ? 
-                    await client.NewRegistraton() : 
-                    await client.NewRegistraton($"mailto:{Options.Email}");
-                if (Options.AgreeTos)
-                {
-                    account.Data.Agreement = account.GetTermsOfServiceUri();
-                    account = await client.UpdateRegistration(account);
-                }
+            var client = ContextFactory.CreateClient(Options.Server);
 
-                context = new AcmeContext
-                {
-                    Account = account
-                };
+            var account = Options.NoEmail ?
+                await client.NewRegistraton() :
+                await client.NewRegistraton($"mailto:{Options.Email}");
+            if (Options.AgreeTos)
+            {
+                account.Data.Agreement = account.GetTermsOfServiceUri();
+                account = await client.UpdateRegistration(account);
             }
+
+            context = new AcmeContext
+            {
+                Account = account
+            };
 
             ConsoleLogger.Info("Registration created.");
             return context;
@@ -64,33 +63,32 @@ namespace Certes.Cli.Processors
         {
             bool changed = false;
             var account = context.Account;
-            using (var client = new AcmeClient(Options.Server))
+
+            var client = ContextFactory.CreateClient(Options.Server);
+            client.Use(account.Key);
+
+            if (!string.IsNullOrWhiteSpace(Options.Email))
             {
-                client.Use(account.Key);
+                account.Data.Contact = new[] { $"mailto:{Options.Email}" };
+                changed = true;
+            }
 
-                if (!string.IsNullOrWhiteSpace(Options.Email))
-                {
-                    account.Data.Contact = new[] { $"mailto:{Options.Email}" };
-                    changed = true;
-                }
+            var currentTos = account.GetTermsOfServiceUri();
+            if (Options.AgreeTos && account.Data.Agreement != currentTos)
+            {
+                account.Data.Agreement = currentTos;
+                changed = true;
+            }
 
-                var currentTos = account.GetTermsOfServiceUri();
-                if (Options.AgreeTos && account.Data.Agreement != currentTos)
-                {
-                    account.Data.Agreement = currentTos;
-                    changed = true;
-                }
-
-                if (changed)
-                {
-                    account = await client.UpdateRegistration(account);
-                }
+            if (changed)
+            {
+                account = await client.UpdateRegistration(account);
             }
 
             ConsoleLogger.Info("Registration updated.");
             return context;
         }
-        
+
         private void ShowThumbprint(AcmeContext context)
         {
             var account = new AccountKey(context.Account.Key);

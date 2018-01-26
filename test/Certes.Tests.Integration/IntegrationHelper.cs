@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -13,8 +12,8 @@ namespace Certes
     {
         private static Uri[] StagingServersV1 = new[]
         {
-            new Uri("http://localhost:4000/directory"),
-            new Uri("http://boulder-certes-ci.dymetis.com:4000/directory"),
+            new Uri("https://localhost:4430/directory"),
+            new Uri("https://boulder-certes-ci.dymetis.com:4430/directory"),
             WellKnownServers.LetsEncryptStaging,
         };
 
@@ -28,17 +27,24 @@ namespace Certes
             ServicePointManager.ServerCertificateValidationCallback = (msg, cert, chains, errors) => true;
             var handler = new HttpClientHandler();
 #endif
-            
+
             return new HttpClient(handler);
         });
 
         private static Uri stagingServerV1;
         private static Uri stagingServerV2;
 
+        public static IAcmeHttpClient GetAcmeHttpClient(Uri uri) => Helper.CreateHttp(uri, http.Value);
+
+        public static IAcmeHttpHandler GetAcmeHttpHandler(Uri uri) => new AcmeHttpHandler(uri, http.Value);
+
 #if NETCOREAPP2_0 || NETCOREAPP1_0
         public static void SkipCertificateCheck()
         {
-            Helper.SetContextFactory(http.Value);
+            Helper.ContextFactory =
+                (uri, key) => new AcmeContext(uri, key, Helper.CreateHttp(uri, http.Value));
+            Helper.ClientFactory =
+                (uri) => new AcmeClient(new AcmeHttpHandler(uri, http.Value));
         }
 #endif
 
@@ -64,7 +70,7 @@ namespace Certes
 
                 if (httpSucceed)
                 {
-                    using (var client = new AcmeClient(uri))
+                    using (var client = new AcmeClient(new AcmeHttpHandler(uri, http.Value)))
                     {
                         client.Use(key.Export());
 
@@ -95,40 +101,39 @@ namespace Certes
             }
 
             var servers = new[] {
-                new Uri("http://localhost:4001/directory"),
-                new Uri("http://boulder-certes-ci.dymetis.com:4001/directory"),
+                new Uri("https://localhost:4431/directory"),
+                new Uri("https://boulder-certes-ci.dymetis.com:4431/directory"),
                 WellKnownServers.LetsEncryptStagingV2,
             };
 
-            using (var http = new HttpClient())
+            var exceptions = new List<Exception>();
+            foreach (var uri in servers)
             {
-                foreach (var uri in servers)
+                try
                 {
-                    try
-                    {
-                        await http.GetStringAsync(uri);
+                    await http.Value.GetStringAsync(uri);
 
-                        foreach (var algo in Enum.GetValues(typeof(KeyAlgorithm)).OfType<KeyAlgorithm>())
+                    foreach (var algo in Enum.GetValues(typeof(KeyAlgorithm)).OfType<KeyAlgorithm>())
+                    {
+                        try
                         {
-                            try
-                            {
-                                var ctx = new AcmeContext(uri, Helper.GetKeyV2(algo));
-                                await ctx.NewAccount(new[] { "mailto:fszlin@example.com" }, true);
-                            }
-                            catch
-                            {
-                            }
+                            var ctx = new AcmeContext(uri, Helper.GetKeyV2(algo), GetAcmeHttpClient(uri));
+                            await ctx.NewAccount(new[] { "mailto:fszlin@example.com" }, true);
                         }
+                        catch
+                        {
+                        }
+                    }
 
-                        return stagingServerV2 = uri;
-                    }
-                    catch
-                    {
-                    }
+                    return stagingServerV2 = uri;
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
                 }
             }
 
-            throw new Exception("No staging server available.");
+            throw new AggregateException("No staging server available.", exceptions);
         }
 
         public static async Task DeployDns01(KeyAlgorithm algo, Dictionary<string, string> tokens)

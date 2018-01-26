@@ -25,7 +25,7 @@ namespace Certes.Cli.Processors
                 throw new Exception("Account not specified.");
             }
 
-            if ( string.IsNullOrWhiteSpace(Options.Name))
+            if (string.IsNullOrWhiteSpace(Options.Name))
             {
                 throw new Exception("Certificate name not specficied.");
             }
@@ -94,14 +94,12 @@ namespace Certes.Cli.Processors
                     throw new Exception($"Cert {Options.Name} not found.");
                 }
 
-                using (var client = new AcmeClient(Options.Server))
-                {
-                    client.Use(context.Account.Key);
+                var client = ContextFactory.CreateClient(Options.Server);
+                client.Use(context.Account.Key);
 
-                    cert = await client.RevokeCertificate(cert);
+                cert = await client.RevokeCertificate(cert);
 
-                    context.Certificates[Options.Name] = cert;
-                }
+                context.Certificates[Options.Name] = cert;
             }
             else
             {
@@ -119,14 +117,12 @@ namespace Certes.Cli.Processors
                     csrBuilder.SubjectAlternativeNames.Add(value);
                 }
 
-                using (var client = new AcmeClient(Options.Server))
-                {
-                    client.Use(context.Account.Key);
+                var client = ContextFactory.CreateClient(Options.Server);
+                client.Use(context.Account.Key);
 
-                    var cert = await client.NewCertificate(csrBuilder);
+                var cert = await client.NewCertificate(csrBuilder);
 
-                    context.Certificates[Options.Name] = cert;
-                }
+                context.Certificates[Options.Name] = cert;
             }
 
             return context;

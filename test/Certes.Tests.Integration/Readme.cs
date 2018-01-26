@@ -13,8 +13,9 @@ namespace Certes
         {
             var acmeDir = await IntegrationHelper.GetAcmeUriV2();
             var accountKey = Helper.GetKeyV2(KeyAlgorithm.RS256);
+            var httpClient = IntegrationHelper.GetAcmeHttpClient(acmeDir);
 
-            var acme = new AcmeContext(acmeDir, accountKey);
+            var acme = new AcmeContext(acmeDir, accountKey, httpClient);
             var account = await acme.NewAccount("admin@example.com", true);
 
             var order = await acme.NewOrder(new[] { "www.certes-ci.dymetis.com" });
@@ -35,7 +36,7 @@ namespace Certes
                 res = await authz.Resource();
             }
 
-            acme = new AcmeContext(acmeDir, accountKey);
+            acme = new AcmeContext(acmeDir, accountKey, httpClient);
             order = acme.Order(orderUri);
             var cert = await order.Generate(new CsrInfo
             {

@@ -21,10 +21,20 @@ namespace Certes
             return KeyFactory.FromPem(algo.GetTestKey());
         }
 
+        public static IAcmeHttpClient CreateHttp(Uri dirUri, HttpClient http)
+            => new AcmeHttpClient(dirUri, http);
+
 #if NETCOREAPP2_0 || NETCOREAPP1_0
-        public static void SetContextFactory(HttpClient http)
+        public static Func<Uri, IKey, IAcmeContext> ContextFactory
         {
-            Certes.Cli.ContextFactory.Create = (u, k) => new Certes.AcmeContext(u, k, new AcmeHttpClient(u, http)); ;
+            get => Cli.ContextFactory.Create;
+            set => Cli.ContextFactory.Create = value;
+        }
+
+        public static Func<Uri, IAcmeClient> ClientFactory
+        {
+            get => Cli.ContextFactory.CreateClient;
+            set => Cli.ContextFactory.CreateClient = value;
         }
 #endif
     }

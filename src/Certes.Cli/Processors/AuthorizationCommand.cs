@@ -84,51 +84,49 @@ namespace Certes.Cli.Processors
 
             var authorizations = context.Authorizations[Options.Type] =
                 context.Authorizations.TryGet(Options.Type) ?? new Dictionary<string, AcmeResult<Authorization>>();
-            
+
             var errors = new List<Exception>();
-            using (var client = new AcmeClient(Options.Server))
+            var client = ContextFactory.CreateClient(Options.Server);
+            client.Use(context.Account.Key);
+
+            foreach (var name in values)
             {
-                client.Use(context.Account.Key);
-
-                foreach (var name in values)
+                if (!Options.Force)
                 {
-                    if (!Options.Force)
+                    var auth = authorizations.TryGet(name);
+                    if (auth != null)
                     {
-                        var auth = authorizations.TryGet(name);
-                        if (auth != null)
+                        if (auth.Data.Status == EntityStatus.Pending ||
+                            auth.Data.Status == EntityStatus.Processing ||
+                            auth.Data.Status == EntityStatus.Valid && auth.Data.Expires > DateTimeOffset.Now)
                         {
-                            if (auth.Data.Status == EntityStatus.Pending ||
-                                auth.Data.Status == EntityStatus.Processing ||
-                                auth.Data.Status == EntityStatus.Valid && auth.Data.Expires > DateTimeOffset.Now)
-                            {
-                                ConsoleLogger.Warn("Authorization for identifier {0} {1} already exists, use --force option to create a new authorization.", auth.Data.Identifier.Type, auth.Data.Identifier.Value);
-                                continue;
-                            }
+                            ConsoleLogger.Warn("Authorization for identifier {0} {1} already exists, use --force option to create a new authorization.", auth.Data.Identifier.Type, auth.Data.Identifier.Value);
+                            continue;
                         }
                     }
+                }
 
-                    var id = new AuthorizationIdentifier()
+                var id = new AuthorizationIdentifier()
+                {
+                    Type = Options.Type,
+                    Value = name
+                };
+
+                try
+                {
+                    var auth = await client.NewAuthorization(id);
+                    authorizations[auth.Data.Identifier.Value] = auth;
+
+                    ConsoleLogger.Info("Authorization for identifier {0} {1} created", auth.Data.Identifier.Type, auth.Data.Identifier.Value);
+                    foreach (var challenge in auth.Data.Challenges ?? Array.Empty<Challenge>())
                     {
-                        Type = Options.Type,
-                        Value = name
-                    };
-
-                    try
-                    {
-                        var auth = await client.NewAuthorization(id);
-                        authorizations[auth.Data.Identifier.Value] = auth;
-
-                        ConsoleLogger.Info("Authorization for identifier {0} {1} created", auth.Data.Identifier.Type, auth.Data.Identifier.Value);
-                        foreach (var challenge in auth.Data.Challenges ?? Array.Empty<Challenge>())
-                        {
-                            challenge.KeyAuthorization = client.ComputeKeyAuthorization(challenge);
-                            ConsoleLogger.Info("{0}: {1}", challenge.Type, challenge.KeyAuthorization);
-                        }
+                        challenge.KeyAuthorization = client.ComputeKeyAuthorization(challenge);
+                        ConsoleLogger.Info("{0}: {1}", challenge.Type, challenge.KeyAuthorization);
                     }
-                    catch (Exception ex)
-                    {
-                        errors.Add(ex);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    errors.Add(ex);
                 }
             }
 
@@ -141,33 +139,31 @@ namespace Certes.Cli.Processors
         private void ComputeKeyAuthorization(AcmeContext context, string[] values)
         {
             var authorizations = context.Authorizations?.TryGet(Options.Type);
-            using (var client = new AcmeClient(Options.Server))
+            var client = ContextFactory.CreateClient(Options.Server);
+            client.Use(context.Account.Key);
+
+            foreach (var name in values)
             {
-                client.Use(context.Account.Key);
+                var auth = authorizations?.TryGet(name);
 
-                foreach (var name in values)
+                var challenge = auth?
+                    .Data?
+                    .Challenges?
+                    .Where(c => c.Type == Options.KeyAuthentication)
+                    .FirstOrDefault();
+
+                if (challenge == null)
                 {
-                    var auth = authorizations?.TryGet(name);
-
-                    var challenge = auth?
-                        .Data?
-                        .Challenges?
-                        .Where(c => c.Type == Options.KeyAuthentication)
-                        .FirstOrDefault();
-
-                    if (challenge == null)
+                    ConsoleLogger.Warn("{0} NotFound", name);
+                }
+                else
+                {
+                    if (string.IsNullOrWhiteSpace(challenge.KeyAuthorization) || Options.Force)
                     {
-                        ConsoleLogger.Warn("{0} NotFound", name);
+                        challenge.KeyAuthorization = client.ComputeKeyAuthorization(challenge);
                     }
-                    else
-                    {
-                        if (string.IsNullOrWhiteSpace(challenge.KeyAuthorization) || Options.Force)
-                        {
-                            challenge.KeyAuthorization = client.ComputeKeyAuthorization(challenge);
-                        }
 
-                        ConsoleLogger.Info("{0} {1}", name, challenge.KeyAuthorization);
-                    }
+                    ConsoleLogger.Info("{0} {1}", name, challenge.KeyAuthorization);
                 }
             }
         }
@@ -175,25 +171,24 @@ namespace Certes.Cli.Processors
         private async Task RefreshAuthorization(AcmeContext context, string[] values)
         {
             var authorizations = context.Authorizations?.TryGet(Options.Type);
-            using (var client = new AcmeClient(Options.Server))
+
+            var client = ContextFactory.CreateClient(Options.Server);
+            client.Use(context.Account.Key);
+
+            foreach (var name in values)
             {
-                client.Use(context.Account.Key);
-
-                foreach (var name in values)
+                var auth = authorizations?.TryGet(name);
+                if (auth != null)
                 {
-                    var auth = authorizations?.TryGet(name);
-                    if (auth != null)
-                    {
-                        auth = authorizations[name] = await client.GetAuthorization(auth.Location);
+                    auth = authorizations[name] = await client.GetAuthorization(auth.Location);
 
-                        var challenge = auth?
-                            .Data?
-                            .Challenges?
-                            .Where(c => c.Type == Options.Refresh)
-                            .FirstOrDefault();
+                    var challenge = auth?
+                        .Data?
+                        .Challenges?
+                        .Where(c => c.Type == Options.Refresh)
+                        .FirstOrDefault();
 
-                        ConsoleLogger.Info("{0} {1}", name, challenge.Status);
-                    }
+                    ConsoleLogger.Info("{0} {1}", name, challenge.Status);
                 }
             }
         }
@@ -201,38 +196,36 @@ namespace Certes.Cli.Processors
         private async Task CompleteChallenge(AcmeContext context, string[] values)
         {
             var authorizations = context.Authorizations?.TryGet(Options.Type);
-            using (var client = new AcmeClient(Options.Server))
+
+            var client = ContextFactory.CreateClient(Options.Server);
+            client.Use(context.Account.Key);
+
+            foreach (var name in values)
             {
-                client.Use(context.Account.Key);
+                var auth = authorizations?.TryGet(name);
 
-                foreach (var name in values)
+                var challenge = auth
+                    .Data?
+                    .Challenges?
+                    .Where(c => c.Type == Options.Complete)
+                    .FirstOrDefault();
+
+                if (challenge == null)
                 {
-                    var auth = authorizations?.TryGet(name);
+                    ConsoleLogger.Warn("{0} NotFound", name);
+                }
+                else
+                {
+                    var challengeResult = await client.CompleteChallenge(challenge);
+                    challenge = challengeResult.Data;
 
-                    var challenge = auth
-                        .Data?
-                        .Challenges?
-                        .Where(c => c.Type == Options.Complete)
-                        .FirstOrDefault();
-
-                    if (challenge == null)
-                    {
-                        ConsoleLogger.Warn("{0} NotFound", name);
-                    }
-                    else
-                    {
-                        var challengeResult = await client.CompleteChallenge(challenge);
-                        challenge = challengeResult.Data;
-
-                        auth.Data.Challenges = auth.Data.Challenges
-                            .Where(c => c.Type != challenge.Type)
-                            .Union(new[] { challenge })
-                            .ToArray();
-                        ConsoleLogger.Info("{0} {1}", name, challenge.Status);
-                    }
+                    auth.Data.Challenges = auth.Data.Challenges
+                        .Where(c => c.Type != challenge.Type)
+                        .Union(new[] { challenge })
+                        .ToArray();
+                    ConsoleLogger.Info("{0} {1}", name, challenge.Status);
                 }
             }
         }
     }
-
 }

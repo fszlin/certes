@@ -18,6 +18,8 @@ namespace Certes.Cli
 
         public static Func<Uri, IKey, IAcmeContext> Create { get; set; } = DefaultCreate;
 
+        public static Func<Uri, IAcmeClient> CreateClient { get; set; } = uri => new AcmeClient(uri);
+
         public static Func<ServiceClientCredentials, IDnsManagementClient> CreateDnsManagementClient { get; set; } = DefaultCreateDnsManagementClient;
 
         public static Func<ServiceClientCredentials, IWebSiteManagementClient> CreateAppServiceManagementClient { get; set; } = DefaultCreateAppServiceManagementClient;

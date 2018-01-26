@@ -13,11 +13,15 @@ namespace Certes.Cli
     [Collection(nameof(IntegrationTests))]
     public class CliTests
     {
-        // TODO: Setup boulder for testing
         private const string Host = "certes-ci.dymetis.com";
         private const string OutputPrefix = "./_test/cli-example";
         private readonly string AccountPath = $"{OutputPrefix}/context.json";
         private string cmd;
+
+        public CliTests()
+        {
+            IntegrationHelper.SkipCertificateCheck();
+        }
 
         [Fact]
         public async Task RunStaging()

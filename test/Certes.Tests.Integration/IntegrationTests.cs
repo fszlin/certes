@@ -10,6 +10,9 @@ using Org.BouncyCastle.X509;
 using Xunit;
 using Xunit.Abstractions;
 
+using static Certes.Helper;
+using static Certes.IntegrationHelper;
+
 namespace Certes
 {
     [Collection(nameof(IntegrationTests))]
@@ -31,9 +34,9 @@ namespace Certes
         [Fact]
         public async Task CanDiscoverAccountByKey()
         {
-            var dirUri = await IntegrationHelper.GetAcmeUriV2();
+            var dirUri = await GetAcmeUriV2();
 
-            var ctx = new AcmeContext(dirUri, Helper.GetKeyV2());
+            var ctx = new AcmeContext(dirUri, GetKeyV2(), GetAcmeHttpClient(dirUri));
             var acct = await ctx.Account();
 
             Assert.NotNull(acct.Location);
@@ -44,9 +47,9 @@ namespace Certes
         [Fact]
         public async Task CanRunAccountFlows()
         {
-            var dirUri = await IntegrationHelper.GetAcmeUriV2();
+            var dirUri = await GetAcmeUriV2();
 
-            var ctx = new AcmeContext(dirUri);
+            var ctx = new AcmeContext(dirUri, http: GetAcmeHttpClient(dirUri));
             var accountCtx = await ctx.NewAccount(
                 new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
             var account = await accountCtx.Resource();
@@ -66,9 +69,9 @@ namespace Certes
         [Fact]
         public async Task CanChangeAccountKey()
         {
-            var dirUri = await IntegrationHelper.GetAcmeUriV2();
+            var dirUri = await GetAcmeUriV2();
 
-            var ctx = new AcmeContext(dirUri);
+            var ctx = new AcmeContext(dirUri, http: GetAcmeHttpClient(dirUri));
             var account = await ctx.NewAccount(
                 new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
             var location = await ctx.Account().Location();
@@ -76,7 +79,7 @@ namespace Certes
             var newKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
             await ctx.ChangeKey(newKey);
 
-            var ctxWithNewKey = new AcmeContext(dirUri, newKey);
+            var ctxWithNewKey = new AcmeContext(dirUri, newKey, http: GetAcmeHttpClient(dirUri));
             var locationWithNewKey = await ctxWithNewKey.Account().Location();
             Assert.Equal(location, locationWithNewKey);
         }
@@ -84,8 +87,10 @@ namespace Certes
         [Fact(Skip = "https://github.com/letsencrypt/boulder/issues/3333")]
         public async Task CanGenerateCertificateDns()
         {
+            var dirUri = await GetAcmeUriV2();
+
             var hosts = new[] { $"www-dns-{domainSuffix}.es256.certes-ci.dymetis.com", $"mail-dns-{domainSuffix}.es256.certes-ci.dymetis.com" };
-            var ctx = new AcmeContext(await IntegrationHelper.GetAcmeUriV2(), Helper.GetKeyV2());
+            var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
             var orderCtx = await AuthzDns(ctx, hosts);
             while (orderCtx == null)
             {
@@ -118,8 +123,9 @@ namespace Certes
         [Fact(Skip = "https://github.com/letsencrypt/boulder/issues/3333")]
         public async Task CanGenerateWildcard()
         {
+            var dirUri = await GetAcmeUriV2();
             var hosts = new[] { $"wildcard-{domainSuffix}.es256.certes-ci.dymetis.com" };
-            var ctx = new AcmeContext(await IntegrationHelper.GetAcmeUriV2(), Helper.GetKeyV2());
+            var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
 
             var orderCtx = await AuthzDns(ctx, hosts);
             var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
@@ -140,8 +146,9 @@ namespace Certes
         [InlineData(KeyAlgorithm.ES384)]
         public async Task CanGenerateCertificateWithEC(KeyAlgorithm algo)
         {
-            var hosts = new[] { $"www-ec-{domainSuffix}.es256.certes-ci.dymetis.com".ToLower() };
-            var ctx = new AcmeContext(await IntegrationHelper.GetAcmeUriV2(), Helper.GetKeyV2());
+            var dirUri = await GetAcmeUriV2();
+            var hosts = new[] { $"www-ec-{domainSuffix}.{algo}.certes-ci.dymetis.com".ToLower() };
+            var ctx = new AcmeContext(dirUri, GetKeyV2(algo), http: GetAcmeHttpClient(dirUri));
             var orderCtx = await ctx.NewOrder(hosts);
             var order = await orderCtx.Resource();
             Assert.NotNull(order);
@@ -196,8 +203,9 @@ namespace Certes
         [Fact]
         public async Task CanGenerateCertificateHttp()
         {
+            var dirUri = await GetAcmeUriV2();
             var hosts = new[] { $"www-http-{domainSuffix}.es256.certes-ci.dymetis.com", $"mail-http-{domainSuffix}.es256.certes-ci.dymetis.com" };
-            var ctx = new AcmeContext(await IntegrationHelper.GetAcmeUriV2(), Helper.GetKeyV2());
+            var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
             var orderCtx = await ctx.NewOrder(hosts);
             var order = await orderCtx.Resource();
             Assert.NotNull(order);

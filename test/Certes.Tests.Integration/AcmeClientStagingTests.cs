@@ -16,8 +16,9 @@ namespace Certes
         [InlineData(KeyAlgorithm.ES384)]
         public async Task RunAccountFlow(KeyAlgorithm algorithm)
         {
+            var dirUri = await IntegrationHelper.GetAcmeUriV1();
             var key = new AccountKey(algorithm);
-            using (var client = new AcmeClient(await IntegrationHelper.GetAcmeUriV1()))
+            using (var client = new AcmeClient(IntegrationHelper.GetAcmeHttpHandler(dirUri)))
             {
                 client.Use(key.Export());
                 var reg = await client.NewRegistraton();
@@ -37,7 +38,8 @@ namespace Certes
             csr.SubjectAlternativeNames.Add("mail.certes-ci.dymetis.com");
             csr.SubjectAlternativeNames.Add("sso.certes-ci.dymetis.com");
 
-            using (var client = new AcmeClient(await IntegrationHelper.GetAcmeUriV1()))
+            var dirUri = await IntegrationHelper.GetAcmeUriV1();
+            using (var client = new AcmeClient(IntegrationHelper.GetAcmeHttpHandler(dirUri)))
             {
                 client.Use(accountKey.Export());
 
@@ -48,7 +50,7 @@ namespace Certes
 
                 var cert = await client.NewCertificate(csr);
                 var pfx = cert.ToPfx();
-                
+
                 pfx.AddTestCert();
 
                 pfx.Build("my.pfx", "abcd1234");
