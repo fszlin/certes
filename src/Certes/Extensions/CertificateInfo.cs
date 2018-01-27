@@ -10,7 +10,13 @@ namespace Certes
     /// </summary>
     public class CertificateInfo
     {
-        private readonly CertificateChain certificateChain;
+        /// <summary>
+        /// Gets the certificate chain.
+        /// </summary>
+        /// <value>
+        /// The certificate chain.
+        /// </value>
+        public CertificateChain Chain { get; }
 
         /// <summary>
         /// Gets the private key of the certificate.
@@ -27,7 +33,7 @@ namespace Certes
         /// <param name="privateKey">The private key.</param>
         public CertificateInfo(CertificateChain certificateChain, IKey privateKey)
         {
-            this.certificateChain = certificateChain;
+            Chain = certificateChain;
             PrivateKey = privateKey;
         }
 
@@ -48,7 +54,7 @@ namespace Certes
                 throw new InvalidOperationException("Private key not avaliable.");
             }
 
-            var pfxBuilder = certificateChain.ToPfx(PrivateKey);
+            var pfxBuilder = Chain.ToPfx(PrivateKey);
             pfxBuilder.FullChain = fullChain;
 
             if (issuers != null)
@@ -67,7 +73,7 @@ namespace Certes
         {
             var certParser = new X509CertificateParser();
             var cert = certParser.ReadCertificate(
-                Encoding.UTF8.GetBytes(certificateChain.Certificate));
+                Encoding.UTF8.GetBytes(Chain.Certificate));
             return cert.GetEncoded();
         }
 
@@ -75,6 +81,6 @@ namespace Certes
         /// Exports the certificate to PEM.
         /// </summary>
         /// <returns>The certificate.</returns>
-        public string ToPem() => certificateChain.Certificate;
+        public string ToPem() => Chain.Certificate;
     }
 }
