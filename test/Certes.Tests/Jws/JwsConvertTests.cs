@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Text;
 using Xunit;
 
 namespace Certes.Jws
@@ -9,16 +9,16 @@ namespace Certes.Jws
         [Fact]
         public void CanConvertToBase64String()
         {
-            var data = Enumerable
-                .Range(0, 1000)
-                .Select(i => (byte)i)
-                .ToArray();
-
-            var str = JwsConvert.ToBase64String(data);
-
-            var reverted = JwsConvert.FromBase64String(str);
-
-            Assert.Equal(data, reverted);
+            foreach (var s in new[]
+            {
+                "a", "ab", "abc", "abcd"
+            })
+            {
+                var data = Encoding.UTF8.GetBytes(s);
+                var str = JwsConvert.ToBase64String(data);
+                var reverted = JwsConvert.FromBase64String(str);
+                Assert.Equal(data, reverted);
+            }
 
             Assert.Throws<Exception>(() => JwsConvert.FromBase64String("/not a valid base 64 string/!"));
         }

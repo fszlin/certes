@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Xunit;
 
 namespace Certes.Pkcs
@@ -17,6 +18,13 @@ namespace Certes.Pkcs
             var exported = keyPair.Export();
 
             Assert.Equal(Helper.GetTestKeyV1(), Convert.ToBase64String(exported.PrivateKeyInfo));
+        }
+
+        [Fact]
+        public void LoadKeyWithInvalidObject()
+        {
+            Assert.Throws<Exception>(() => KeyInfo.From(new MemoryStream()));
+
         }
     }
 }
