@@ -125,7 +125,7 @@ await orderCtx.Finalize(csr.Generate());
 Download the certificate PEM.
 
 ```C#
-var pem = await order.Download();
+var certChain = await order.Download();
 ```
 
 Finalize and download the certificate.
@@ -210,13 +210,14 @@ var cert = await order.Generate(
 Download the certifcate for a finalized order.
 
 ```C#
-var pem = await order.Download();
-var cert = new CertificateInfo(pem, certKey);
+var certChain = await order.Download();
 ```
 
 Export the certificate to PEM, DER, or PFX.
 
 ```C#
+var cert = new CertificateInfo(certChain, certKey);
+
 var pem = cert.ToPem();
 var der = cert.ToDer();
 var pfx = cert.ToPfx("cert-name", "abcd1234");
