@@ -22,12 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Data\fake-le-root-x1.cer" />
-    <None Remove="Data\lets-encrypt-x3-cross-signed.cer" />
-    <None Remove="Data\lets-encrypt-x4-cross-signed.cer" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Include="..\..\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
   </ItemGroup>
 
@@ -45,18 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Data\fake-le-root-x1.cer">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Data\lets-encrypt-x3-cross-signed.cer">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Data\lets-encrypt-x4-cross-signed.cer">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\src\Certes.Cli\Certes.Cli.csproj" Condition="'$(IncludeCli)' == 'True'" />
     <ProjectReference Include="..\..\src\Certes\Certes.csproj" />
   </ItemGroup>
@@ -69,10 +51,16 @@
     <None Update="Data\cert-es256.pem">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Data\fake-le-intermediate-x1.cer">
+    <None Update="Data\fake-le-intermediate-x1.pem">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Data\leaf-cert.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\lets-encrypt-x3-cross-signed.pem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\lets-encrypt-x4-cross-signed.pem">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Data\test-ca2.pem">

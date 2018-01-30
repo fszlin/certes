@@ -16,7 +16,7 @@ namespace Certes
             var httpClient = IntegrationHelper.GetAcmeHttpClient(acmeDir);
 
             var acme = new AcmeContext(acmeDir, accountKey, httpClient);
-            var account = await acme.NewAccount("admin@example.com", true);
+            var account = await acme.Account();
 
             var order = await acme.NewOrder(new[] { "www.certes-ci.dymetis.com" });
 

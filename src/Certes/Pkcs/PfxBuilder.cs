@@ -45,7 +45,7 @@ namespace Certes.Pkcs
                     var assembly = typeof(PfxBuilder).GetTypeInfo().Assembly;
                     embeddedIssuers = assembly
                         .GetManifestResourceNames()
-                        .Where(n => n.EndsWith(".cer"))
+                        .Where(n => n.EndsWith(".pem"))
                         .Select(n =>
                         {
                             using (var stream = assembly.GetManifestResourceStream(n))

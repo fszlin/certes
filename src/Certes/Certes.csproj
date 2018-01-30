@@ -24,7 +24,8 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <None Remove="Resources\Certificates\dst-root-ca-x3.cer" />
+    <None Remove="Resources\Certificates\dst-root-ca-x3.pem" />
+    <None Remove="Resources\Certificates\fake-le-root-x1.pem" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,7 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Certificates\dst-root-ca-x3.cer" />
+    <EmbeddedResource Include="Resources\Certificates\dst-root-ca-x3.pem" />
+    <EmbeddedResource Include="Resources\Certificates\fake-le-root-x1.pem" />
   </ItemGroup>
 
   <ItemGroup>
