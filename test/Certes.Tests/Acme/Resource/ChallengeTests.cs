@@ -1,10 +1,10 @@
-﻿using Certes.Acme.Resource;
-using System;
+﻿using System;
+using Certes.Acme.Resource;
 using Xunit;
 
 namespace Certes.Tests.Acme.Resource
 {
-    public class AuthorizationIdentifierChallengeTests
+    public class ChallengeTests
     {
         [Fact]
         public void CanGetSetProperties()
