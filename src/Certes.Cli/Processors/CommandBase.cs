@@ -15,6 +15,6 @@ namespace Certes.Cli.Processors
             this.Options = options;
         }
 
-        public abstract Task<AcmeContext> Process(AcmeContext context);
+        public abstract Task<CliContext> Process(CliContext context);
     }
 }

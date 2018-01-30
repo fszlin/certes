@@ -15,7 +15,7 @@ namespace Certes.Cli.Processors
         {
         }
 
-        public override Task<AcmeContext> Process(AcmeContext context)
+        public override Task<CliContext> Process(CliContext context)
         {
             if (context != null && !Options.Force)
             {
@@ -30,7 +30,7 @@ namespace Certes.Cli.Processors
             using (var stream = File.OpenRead(Options.KeyFile))
             {
                 var keyInfo = KeyInfo.From(stream);
-                context = new AcmeContext
+                context = new CliContext
                 {
                     Account = new AcmeAccount
                     {

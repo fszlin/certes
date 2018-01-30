@@ -1,11 +1,10 @@
-﻿using Certes.Acme;
-using Certes.Cli.Options;
-using NLog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Certes.Acme;
+using Certes.Cli.Options;
 
 namespace Certes.Cli.Processors
 {
@@ -17,7 +16,7 @@ namespace Certes.Cli.Processors
         {
         }
 
-        public override async Task<AcmeContext> Process(AcmeContext context)
+        public override async Task<CliContext> Process(CliContext context)
         {
             if (context?.Account == null)
             {
@@ -75,7 +74,7 @@ namespace Certes.Cli.Processors
             return values;
         }
 
-        private async Task NewAuthorization(AcmeContext context, string[] values)
+        private async Task NewAuthorization(CliContext context, string[] values)
         {
             if (context.Authorizations == null)
             {
@@ -136,7 +135,7 @@ namespace Certes.Cli.Processors
             }
         }
 
-        private void ComputeKeyAuthorization(AcmeContext context, string[] values)
+        private void ComputeKeyAuthorization(CliContext context, string[] values)
         {
             var authorizations = context.Authorizations?.TryGet(Options.Type);
             var client = ContextFactory.CreateClient(Options.Server);
@@ -168,7 +167,7 @@ namespace Certes.Cli.Processors
             }
         }
 
-        private async Task RefreshAuthorization(AcmeContext context, string[] values)
+        private async Task RefreshAuthorization(CliContext context, string[] values)
         {
             var authorizations = context.Authorizations?.TryGet(Options.Type);
 
@@ -193,7 +192,7 @@ namespace Certes.Cli.Processors
             }
         }
 
-        private async Task CompleteChallenge(AcmeContext context, string[] values)
+        private async Task CompleteChallenge(CliContext context, string[] values)
         {
             var authorizations = context.Authorizations?.TryGet(Options.Type);
 

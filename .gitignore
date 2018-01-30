@@ -247,3 +247,4 @@ build/
 .certes/
 data.json
 gh-pages/
+launchSettings.json

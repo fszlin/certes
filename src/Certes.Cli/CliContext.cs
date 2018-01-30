@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Certes.Cli
 {
-    public class AcmeContext
+    public class CliContext
     {
         public AcmeAccount Account { get; set; }
         public IDictionary<string, IDictionary<string, AcmeResult<Authorization>>> Authorizations { get; set; }

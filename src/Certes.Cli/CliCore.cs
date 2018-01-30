@@ -211,7 +211,7 @@ namespace Certes.Cli
             where TOptions : OptionsBase
         {
             var options = command.Options;
-            var context = await Load<AcmeContext>(options.Path);
+            var context = await Load<CliContext>(options.Path);
             context = await command.Process(context);
             await Save(options.Path, context);
         }

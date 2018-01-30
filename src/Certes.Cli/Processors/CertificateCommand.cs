@@ -18,7 +18,7 @@ namespace Certes.Cli.Processors
         {
         }
 
-        public override async Task<AcmeContext> Process(AcmeContext context)
+        public override async Task<CliContext> Process(CliContext context)
         {
             if (context?.Account == null)
             {

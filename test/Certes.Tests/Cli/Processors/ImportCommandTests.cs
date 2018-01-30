@@ -21,7 +21,7 @@ namespace Certes.Cli.Processors
 
             var cmd = new ImportCommand(options);
             await Assert.ThrowsAsync<Exception>(() =>
-                cmd.Process(new AcmeContext()));
+                cmd.Process(new CliContext()));
         }
 
         [Fact]

@@ -14,7 +14,7 @@ namespace Certes.Cli.Processors
         {
         }
 
-        public override async Task<AcmeContext> Process(AcmeContext context)
+        public override async Task<CliContext> Process(CliContext context)
         {
             if (Options.Thumbprint)
             {
@@ -32,7 +32,7 @@ namespace Certes.Cli.Processors
             return context;
         }
 
-        private async Task<AcmeContext> RegisterAccount(AcmeContext context)
+        private async Task<CliContext> RegisterAccount(CliContext context)
         {
             if (context != null && !Options.Force)
             {
@@ -50,7 +50,7 @@ namespace Certes.Cli.Processors
                 account = await client.UpdateRegistration(account);
             }
 
-            context = new AcmeContext
+            context = new CliContext
             {
                 Account = account
             };
@@ -59,7 +59,7 @@ namespace Certes.Cli.Processors
             return context;
         }
 
-        private async Task<AcmeContext> UpdateAccount(AcmeContext context)
+        private async Task<CliContext> UpdateAccount(CliContext context)
         {
             bool changed = false;
             var account = context.Account;
@@ -89,7 +89,7 @@ namespace Certes.Cli.Processors
             return context;
         }
 
-        private void ShowThumbprint(AcmeContext context)
+        private void ShowThumbprint(CliContext context)
         {
             var account = new AccountKey(context.Account.Key);
             ConsoleLogger.Info(account.Thumbprint());
