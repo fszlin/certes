@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -47,6 +48,56 @@ namespace Certes.Cli.Processors
             Assert.Equal(new Uri("http://acme.d/order/1"), options.Location);
             Assert.Equal(AuthorizationType.Dns, options.Validate);
             Assert.Equal(new[] { "www.certes.com" }, options.Values);
+
+            // finalize order
+            options = Parse("order finalize --uri http://acme.d/order/1 --dn CN=www.certes.com,C=Canada --cert-key ./cert-key.pem");
+            Assert.Equal(OrderAction.Finalize, options.Action);
+            Assert.Equal(new Uri("http://acme.d/order/1"), options.Location);
+            Assert.Equal("CN=www.certes.com,C=Canada", options.DistinguishName);
+            Assert.Equal("./cert-key.pem", options.CertKeyPath);
+        }
+
+        [Fact]
+        public async Task CanFinalizeOrder()
+        {
+            var keyPath = $"./Data/{nameof(CanFinalizeOrder)}/key.pem";
+            Helper.SaveKey(keyPath);
+
+            var hosts = new List<string> { "www.certes.com" };
+            var order = new
+            {
+                uri = new Uri("http://acme.d/order/1"),
+                data = new Order
+                {
+                    Identifiers = hosts.Select(h => new Identifier { Value = h, Type = IdentifierType.Dns }).ToArray(),
+                    Authorizations = hosts.Select((i, a) => new Uri("http://acme.d/authz/{i}")).ToArray(),
+                },
+            };
+
+            var orderMock = new Mock<IOrderContext>();
+            var ctxMock = new Mock<IAcmeContext>();
+            ctxMock.SetupGet(c => c.AccountKey).Returns(Helper.GetKeyV2());
+            ctxMock.Setup(c => c.Order(order.uri)).Returns(orderMock.Object);
+
+            orderMock.Setup(c => c.Location).Returns(order.uri);
+            orderMock.Setup(m => m.Finalize(It.IsAny<byte[]>()))
+                .ReturnsAsync(order.data);
+
+            ContextFactory.Create = (uri, key) => ctxMock.Object;
+            var options = new OrderOptions
+            {
+                Action = OrderAction.Finalize,
+                Location = order.uri,
+                Path = keyPath,
+                DistinguishName = "CN=www.certes.com,C=Canada",
+                CertKeyPath = $"./Data/{nameof(CanFinalizeOrder)}/cert-key.pem",
+            };
+
+            var proc = new OrderCommand(options);
+
+            var ret = await proc.Process();
+            Assert.Equal(JsonConvert.SerializeObject(order), JsonConvert.SerializeObject(ret));
+            Assert.True(File.Exists(options.CertKeyPath));
         }
 
         [Fact]

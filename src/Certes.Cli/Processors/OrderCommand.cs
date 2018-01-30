@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Certes.Cli.Options;
 using Certes.Cli.Settings;
+using Certes.Pkcs;
 using NLog;
 
 namespace Certes.Cli.Processors
@@ -34,6 +35,8 @@ namespace Certes.Cli.Processors
             
             syntax.DefineOption<Uri>("server", ref options.Server, $"ACME Directory Resource URI.");
             syntax.DefineOption("key", ref options.Path, $"File path to the account key to use.");
+            syntax.DefineOption("cert-key", ref options.CertKeyPath, $"File path to the certificate private key to use.");
+            syntax.DefineOption("dn", ref options.DistinguishName, $"Distinguish name for the certificate.");
             syntax.DefineOption("force", ref options.Force, $"Overwrite exising account key.");
 
             syntax.DefineEnumParameter("action", ref options.Action, "Order action");
@@ -48,13 +51,47 @@ namespace Certes.Cli.Processors
             {
                 case OrderAction.Info:
                     return await ShowOrder();
+                //case OrderAction.List:
+                //    throw new NotImplementedException();
                 case OrderAction.New:
                     return await NewOrder();
                 case OrderAction.Authz:
                     return await ProcessAuthz();
+                case OrderAction.Finalize:
+                    return await FinalizeOrder();
             }
 
             throw new NotSupportedException();
+        }
+
+        private async Task<object> FinalizeOrder()
+        {
+            var key = await UserSettings.GetAccountKey(Args, true);
+            Logger.Debug("Using ACME server {0}.", Args.Server);
+            var ctx = ContextFactory.Create(Args.Server, key);
+
+            var orderCtx = ctx.Order(Args.Location);
+
+            var certKeyPem = await FileUtil.ReadAllText(Args.CertKeyPath);
+            var certKey = string.IsNullOrWhiteSpace(certKeyPem) ?
+                KeyFactory.NewKey(KeyAlgorithm.RS256) :
+                KeyFactory.FromPem(certKeyPem);
+
+            var csrBuilder = new CertificationRequestBuilder(certKey);
+            csrBuilder.AddName(Args.DistinguishName);
+
+            var order = await orderCtx.Finalize(csrBuilder.Generate());
+
+            if (string.IsNullOrWhiteSpace(certKeyPem))
+            {
+                await FileUtil.WriteAllTexts(Args.CertKeyPath, csrBuilder.Key.ToPem());
+            }
+
+            return new
+            {
+                uri = orderCtx.Location,
+                data = order
+            };
         }
 
         private async Task<object> ShowOrder()
@@ -92,7 +129,7 @@ namespace Certes.Cli.Processors
                 Args.Validate == AuthorizationType.Http ? await authzCtx.Http() :
                 null;
 
-            if (challengeCtx != null)
+            if (challengeCtx != null) // if validate option is set
             {
                 await challengeCtx.Validate();
             }

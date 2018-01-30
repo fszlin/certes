@@ -6,5 +6,6 @@
         List,
         New,
         Authz,
+        Finalize,
     }
 }
