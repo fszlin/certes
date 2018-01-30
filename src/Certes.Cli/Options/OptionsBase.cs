@@ -12,6 +12,5 @@ namespace Certes.Cli.Options
 #endif
         public string Path = "./data.json";
         public bool Force = false;
-        public bool Verbose = false;
     }
 }

@@ -43,7 +43,6 @@ namespace Certes.Cli.Processors
             syntax.DefineOption<Uri>("server", ref options.Server, $"ACME Directory Resource URI.");
             syntax.DefineOption("key", ref options.Path, $"File path to the account key to use.");
             syntax.DefineOption("force", ref options.Force, $"Overwrite exising account key.");
-            syntax.DefineOption("verbose", ref options.Verbose, $"Print process log.");
 
             syntax.DefineEnumParameter("action", ref options.Action, "Account action");
 
