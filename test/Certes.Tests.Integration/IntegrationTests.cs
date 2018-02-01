@@ -84,7 +84,7 @@ namespace Certes
             Assert.Equal(location, locationWithNewKey);
         }
 
-        [Fact(Skip = "https://github.com/letsencrypt/boulder/issues/3333")]
+        [Fact]
         public async Task CanGenerateCertificateDns()
         {
             var dirUri = await GetAcmeUriV2();
@@ -120,7 +120,7 @@ namespace Certes
             }
         }
 
-        [Fact(Skip = "https://github.com/letsencrypt/boulder/issues/3333")]
+        [Fact]
         public async Task CanGenerateWildcard()
         {
             var dirUri = await GetAcmeUriV2();
@@ -274,7 +274,7 @@ namespace Certes
             var orderCtx = await ctx.NewOrder(hosts);
             var order = await orderCtx.Resource();
             Assert.NotNull(order);
-            Assert.Equal(2, order.Authorizations?.Count);
+            Assert.Equal(hosts.Length, order.Authorizations?.Count);
             Assert.True(OrderStatus.Pending == order.Status || OrderStatus.Processing == order.Status);
 
             var authrizations = await orderCtx.Authorizations();
