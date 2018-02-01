@@ -61,7 +61,12 @@ namespace Certes.Cli.Processors
         public async Task CanFinalizeOrder()
         {
             var keyPath = $"./Data/{nameof(CanFinalizeOrder)}/key.pem";
+            var certKeyPath = $"./Data/{nameof(CanFinalizeOrder)}/cert-key.pem";
             Helper.SaveKey(keyPath);
+            if (File.Exists(certKeyPath))
+            {
+                File.Delete(certKeyPath);
+            }
 
             var hosts = new List<string> { "www.certes.com" };
             var order = new
@@ -72,6 +77,7 @@ namespace Certes.Cli.Processors
                     Identifiers = hosts.Select(h => new Identifier { Value = h, Type = IdentifierType.Dns }).ToArray(),
                     Authorizations = hosts.Select((i, a) => new Uri("http://acme.d/authz/{i}")).ToArray(),
                 },
+                certKey = (string)null,
             };
 
             var orderMock = new Mock<IOrderContext>();
@@ -90,14 +96,42 @@ namespace Certes.Cli.Processors
                 Location = order.uri,
                 Path = keyPath,
                 DistinguishName = "CN=www.certes.com,C=Canada",
-                CertKeyPath = $"./Data/{nameof(CanFinalizeOrder)}/cert-key.pem",
+                CertKeyPath = certKeyPath,
             };
 
             var proc = new OrderCommand(options);
 
-            var ret = await proc.Process();
+            dynamic ret = await proc.Process();
             Assert.Equal(JsonConvert.SerializeObject(order), JsonConvert.SerializeObject(ret));
             Assert.True(File.Exists(options.CertKeyPath));
+
+            options = new OrderOptions
+            {
+                Action = OrderAction.Finalize,
+                Location = order.uri,
+                Path = keyPath,
+                DistinguishName = "CN=www.certes.com,C=Canada",
+                CertKeyPath = certKeyPath,
+            };
+
+            // use speific key for CSR
+            proc = new OrderCommand(options);
+            ret = await proc.Process();
+            Assert.Null(ret.certKey);
+
+            File.Delete(certKeyPath);
+            options = new OrderOptions
+            {
+                Action = OrderAction.Finalize,
+                Location = order.uri,
+                Path = keyPath,
+                DistinguishName = "CN=www.certes.com,C=Canada",
+            };
+
+            // result should contain the generated key
+            proc = new OrderCommand(options);
+            ret = await proc.Process();
+            Assert.NotNull(ret.certKey);
         }
 
         [Fact]

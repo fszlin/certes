@@ -73,7 +73,7 @@ namespace Certes.Cli.Processors
             var orderCtx = ctx.Order(Args.Location);
 
             var certKeyPem = await FileUtil.ReadAllText(Args.CertKeyPath);
-            var certKey = string.IsNullOrWhiteSpace(certKeyPem) ?
+            var certKey = certKeyPem == null ?
                 KeyFactory.NewKey(KeyAlgorithm.RS256) :
                 KeyFactory.FromPem(certKeyPem);
 
@@ -82,15 +82,17 @@ namespace Certes.Cli.Processors
 
             var order = await orderCtx.Finalize(csrBuilder.Generate());
 
-            if (string.IsNullOrWhiteSpace(certKeyPem))
+            // key output path is specificed
+            if (certKeyPem == null && !string.IsNullOrWhiteSpace(Args.CertKeyPath))
             {
-                await FileUtil.WriteAllTexts(Args.CertKeyPath, csrBuilder.Key.ToPem());
+                await FileUtil.WriteAllTexts(Args.CertKeyPath, certKey.ToPem());
             }
 
             return new
             {
                 uri = orderCtx.Location,
-                data = order
+                data = order,
+                certKey = string.IsNullOrWhiteSpace(Args.CertKeyPath) ? certKey.ToPem() : null
             };
         }
 
