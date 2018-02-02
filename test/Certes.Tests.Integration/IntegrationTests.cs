@@ -95,7 +95,6 @@ namespace Certes
             while (orderCtx == null)
             {
                 output.WriteLine("DNS authz faild, retrying...");
-                await Task.Delay(1000);
                 orderCtx = await AuthzDns(ctx, hosts);
             }
 
@@ -287,7 +286,8 @@ namespace Certes
                 tokens.Add(res.Identifier.Value, dnsChallenge.Token);
             }
 
-            await IntegrationHelper.DeployDns01(KeyAlgorithm.ES256, tokens);
+            await DeployDns01(KeyAlgorithm.ES256, tokens);
+            await Task.Delay(1000);
 
             foreach (var authz in authrizations)
             {
