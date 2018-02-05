@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Certes.Cli
 {
-    [Collection(nameof(IntegrationTests))]
+    //[Collection(nameof(IntegrationTests))]
     public class CliTests
     {
         private const string Host = "certes-ci.dymetis.com";
