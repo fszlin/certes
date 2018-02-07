@@ -5,7 +5,6 @@ using Xunit;
 
 namespace Certes
 {
-    //[Collection(nameof(IntegrationTests))]
     public class Readme
     {
         [Fact]

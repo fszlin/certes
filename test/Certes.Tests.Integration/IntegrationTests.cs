@@ -15,7 +15,6 @@ using static Certes.IntegrationHelper;
 
 namespace Certes
 {
-    //[Collection(nameof(IntegrationTests))]
     public class IntegrationTests
     {
         private readonly ITestOutputHelper output;
