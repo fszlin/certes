@@ -30,6 +30,10 @@ namespace Certes.Cli.Processors
             options = Parse("order --uri http://acme.d/order/1");
             Assert.Equal(OrderAction.Info, options.Action);
 
+            // show order by location
+            options = Parse("order list");
+            Assert.Equal(OrderAction.List, options.Action);
+
             // new order with names
             options = Parse("order new www.certes.com mail.certes.com");
             Assert.Equal(OrderAction.New, options.Action);
@@ -132,6 +136,51 @@ namespace Certes.Cli.Processors
             proc = new OrderCommand(options);
             ret = await proc.Process();
             Assert.NotNull(ret.certKey);
+        }
+
+        [Fact]
+        public async Task CanListOrder()
+        {
+            var keyPath = $"./Data/{nameof(CanListOrder)}/key.pem";
+            Helper.SaveKey(keyPath);
+
+            var hosts = new List<string> { "www.certes.com", "mail.certes.com" };
+            var order = new
+            {
+                uri = new Uri("http://acme.d/order/1"),
+                data = new Order
+                {
+                    Identifiers = hosts.Select(h => new Identifier { Value = h, Type = IdentifierType.Dns }).ToArray(),
+                    Authorizations = hosts.Select((i, a) => new Uri("http://acme.d/authz/{i}")).ToArray(),
+                },
+            };
+
+            var orderMock = new Mock<IOrderContext>();
+            var accountMock = new Mock<IAccountContext>();
+            var orderListMock = new Mock<IOrderListContext>();
+            var ctxMock = new Mock<IAcmeContext>();
+            ctxMock.SetupGet(m => m.AccountKey).Returns(Helper.GetKeyV2());
+            ctxMock.Setup(m => m.Account()).ReturnsAsync(accountMock.Object);
+
+            orderMock.Setup(m => m.Location).Returns(order.uri);
+            orderMock.Setup(m => m.Resource()).ReturnsAsync(order.data);
+
+            accountMock.Setup(m => m.Orders()).ReturnsAsync(orderListMock.Object);
+
+            orderListMock.Setup(m => m.Orders()).ReturnsAsync(new[] { orderMock.Object, orderMock.Object });
+
+            ContextFactory.Create = (uri, key) => ctxMock.Object;
+
+            var proc = new OrderCommand(new OrderOptions
+            {
+                Action = OrderAction.List,
+                Path = keyPath,
+            });
+
+            var ret = await proc.Process();
+            Assert.Equal(
+                JsonConvert.SerializeObject(new[] { order, order }),
+                JsonConvert.SerializeObject(ret));
         }
 
         [Fact]
