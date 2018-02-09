@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
 using System.Threading.Tasks;
+using Certes.Acme.Resource;
 using Certes.Cli.Options;
 using Certes.Cli.Settings;
 using Certes.Pkcs;
@@ -51,8 +53,8 @@ namespace Certes.Cli.Processors
             {
                 case OrderAction.Info:
                     return await ShowOrder();
-                //case OrderAction.List:
-                //    throw new NotImplementedException();
+                case OrderAction.List:
+                    return await ListOrder();
                 case OrderAction.New:
                     return await NewOrder();
                 case OrderAction.Authz:
@@ -94,6 +96,29 @@ namespace Certes.Cli.Processors
                 data = order,
                 certKey = string.IsNullOrWhiteSpace(Args.CertKeyPath) ? certKey.ToPem() : null
             };
+        }
+
+        private async Task<object> ListOrder()
+        {
+            var key = await UserSettings.GetAccountKey(Args, true);
+
+            Logger.Debug("Using ACME server {0}.", Args.Server);
+            var ctx = ContextFactory.Create(Args.Server, key);
+
+            var accountCtx = await ctx.Account();
+            var orderListCtx = await accountCtx.Orders();
+
+            var orders = new List<object>();
+            foreach (var orderCtx in await orderListCtx.Orders())
+            {
+                orders.Add(new
+                {
+                    uri = orderCtx.Location,
+                    data = await orderCtx.Resource(),
+                });
+            }
+
+            return orders;
         }
 
         private async Task<object> ShowOrder()
