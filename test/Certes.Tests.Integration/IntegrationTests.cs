@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -188,7 +189,11 @@ namespace Certes
                 OrganizationUnit = "Dev",
                 CommonName = hosts[0],
             }, certKey);
-            var pem = await orderCtx.Download();
+            var cert = await orderCtx.Download();
+
+            var certInfo = new CertificateInfo(cert, certKey);
+            var x509 = new X509Certificate2(certInfo.ToDer());
+            Assert.Contains(hosts[0], x509.Subject);
 
             // deactivate authz so the subsequence can trigger challenge validation
             foreach (var authz in authrizations)
@@ -196,6 +201,7 @@ namespace Certes
                 var authzRes = await authz.Deactivate();
                 Assert.Equal(AuthorizationStatus.Deactivated, authzRes.Status);
             }
+
         }
 
         [Fact]
