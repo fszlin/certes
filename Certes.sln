@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{E9E7371E-A
 		docs\APIv2.md = docs\APIv2.md
 		docs\CHANGELOG.md = docs\CHANGELOG.md
 		docs\CODE_OF_CONDUCT.md = docs\CODE_OF_CONDUCT.md
+		docs\CONTRIBUTING.md = docs\CONTRIBUTING.md
 		docs\implementation-status.md = docs\implementation-status.md
 		LICENSE = LICENSE
 		docs\README.md = docs\README.md
