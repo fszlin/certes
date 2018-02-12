@@ -1,7 +1,7 @@
-# Contributing to certes
+# Contributing to Certes
 
 First and foremost, thank you! We appreciate that you want
-to contribute to [certes](README.md), your time is valuable,
+to contribute to [Certes](README.md), your time is valuable,
 and your contributions mean a lot to us.
 
 All members of our community are expected to follow our
@@ -39,17 +39,17 @@ If you'd like to learn more about contributing in general,
 the [Guide to Idiomatic Contributing](https://github.com/jonschlinkert/idiomatic-contributing) 
 has a lot of useful information.
 
-**Showing support for certes**
+**Showing support for Certes**
 
 Please keep in mind that open source software is built by people 
 like you, who spend their free time creating things the 
 rest the community can use.
 
 Don't have time to contribute? No worries, here are some 
-other ways to show your support for [certes]:
+other ways to show your support for Certes:
 
 - star the [project](https://github.com/fszlin/certes)
-- [tweet][tw] your support for [certes]
+- [tweet][tw] your support for Certes
 
 
 ## Issues
@@ -116,7 +116,7 @@ in your issue:
 - **description**: (required) What is the bug you're experiencing? 
   How are you using this library/app?
 - **OS**: (required) what operating system are you on?
-- **version**: (required) please note the version of [certes] are you using
+- **version**: (required) please note the version of Certes are you using
 - **error messages**: (required) please paste any error messages 
   into the issue, or a [gist](https://gist.github.com/)
 - **extensions, plugins, helpers, etc** (if applicable): please 
@@ -125,7 +125,7 @@ in your issue:
 
 ### Closing issues
 
-The original poster or the maintainers of [certes] may close an issue 
+The original poster or the maintainers of Certes may close an issue 
 at any time. Typically, but not exclusively, issues are closed when:
 
 - The issue is resolved
