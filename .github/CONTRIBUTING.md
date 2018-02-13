@@ -1,7 +1,7 @@
 # Contributing to Certes
 
 First and foremost, thank you! We appreciate that you want
-to contribute to [Certes](README.md), your time is valuable,
+to contribute to [Certes](../docs/README.md), your time is valuable,
 and your contributions mean a lot to us.
 
 All members of our community are expected to follow our

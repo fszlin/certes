@@ -1,5 +1,5 @@
 
-# Design
+# API for ACME v2
  
 This document details the API exposed for handling ACME flows, as of [draft-09][draft-09].
  
