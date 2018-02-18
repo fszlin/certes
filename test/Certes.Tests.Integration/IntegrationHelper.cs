@@ -17,7 +17,7 @@ namespace Certes
 
         private static Uri[] StagingServersV1 = new[]
         {
-            new Uri("https://localhost:4430/directory"),
+            new Uri("https://lo0.in:4430/directory"),
             new Uri("https://boulder-certes-ci.dymetis.com:4430/directory"),
             WellKnownServers.LetsEncryptStaging,
         };
@@ -106,7 +106,7 @@ namespace Certes
             }
 
             var servers = new[] {
-                new Uri("https://localhost:4431/directory"),
+                new Uri("https://lo0.in:4431/directory"),
                 new Uri("https://boulder-certes-ci.dymetis.com:4431/directory"),
                 WellKnownServers.LetsEncryptStagingV2,
             };
