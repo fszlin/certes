@@ -21,8 +21,6 @@ environment:
   ver_offset: 360
   beta_build_Ver: 1
   rc_build_Ver: 1
-  codecov_upload_token:
-    secure: DxYtxftZ1rpZhZzixRqY3hHFrlEZlh62XPV4tcO+zxdsRNZWPSEl967VpRevAPSo
 
 branches:
   # whitelist
@@ -84,9 +82,9 @@ test_script:
   - ps: cd ../../
 
 after_test:
-  - IF NOT "%codecov_upload_token%" == "" npm install codecov -g
-  - IF NOT "%codecov_upload_token%" == "" codecov -f "./build/Certes.Tests.coverage.xml" -t %codecov_upload_token%
-  - IF NOT "%codecov_upload_token%" == "" codecov -f "./build/Certes.Tests.Integration.coverage.xml" -t %codecov_upload_token%
+  - npm install codecov -g
+  - codecov -f "./build/Certes.Tests.coverage.xml"
+  - codecov -f "./build/Certes.Tests.Integration.coverage.xml"
 
 configuration: Release
 
