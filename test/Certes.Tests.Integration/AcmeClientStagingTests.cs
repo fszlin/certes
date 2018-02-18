@@ -21,6 +21,7 @@ namespace Certes
             {
                 client.Use(key.Export());
                 var reg = await client.NewRegistraton();
+                reg.Data.Agreement = reg.GetTermsOfServiceUri();
 
                 var newKey = new AccountKey().Export();
                 await client.ChangeKey(reg, newKey);
@@ -54,7 +55,7 @@ namespace Certes
                 pfx.Build("my.pfx", "abcd1234");
             }
         }
-
+        
         private static async Task AuthorizeDns(AcmeClient client, string name)
         {
             var authz = await client.NewAuthorization(new AuthorizationIdentifier
