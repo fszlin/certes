@@ -4,12 +4,6 @@
     {
         Undefined,
 
-        // ACME v1 commands
-        Register,
-        Authorization,
-        Certificate,
-        Import,
-
         // ACME v2 commands
         Account,
         Order,

@@ -48,8 +48,6 @@ namespace Certes
         {
             Helper.ContextFactory =
                 (uri, key) => new AcmeContext(uri, key, Helper.CreateHttp(uri, http.Value));
-            Helper.ClientFactory =
-                (uri) => new AcmeClient(new AcmeHttpHandler(uri, http.Value));
         }
 #endif
 

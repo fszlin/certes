@@ -30,12 +30,6 @@ namespace Certes
             get => Cli.ContextFactory.Create;
             set => Cli.ContextFactory.Create = value;
         }
-
-        public static Func<Uri, IAcmeClient> ClientFactory
-        {
-            get => Cli.ContextFactory.CreateClient;
-            set => Cli.ContextFactory.CreateClient = value;
-        }
 #endif
     }
 }
