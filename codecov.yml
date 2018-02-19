@@ -1,15 +1,9 @@
-#
-# This codecov.yml is the default configuration for
-# all repositories on Codecov. You may adjust the settings
-# below in your own codecov.yml in your repository.
-#
 coverage:
   precision: 2
   round: down
   range: 70...100
 
   status:
-    # Learn more at http://docs.codecov.io/docs/codecov-yaml
     project:
       default:
         target: auto
