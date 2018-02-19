@@ -69,8 +69,8 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 [![NuGet](https://img.shields.io/nuget/v/certes.svg)](https://www.nuget.org/packages/certes/)
 [![NuGet](https://img.shields.io/nuget/vpre/certes.svg)](https://www.nuget.org/packages/certes/absoluteLatest/)
 [![NuGet](https://img.shields.io/nuget/dt/certes.svg)](https://www.nuget.org/packages/certes/)
-[![AppVeyor](https://img.shields.io/appveyor/ci/fszlin/certes.svg)](https://ci.appveyor.com/project/fszlin/certes)
-[![AppVeyor](https://img.shields.io/appveyor/tests/fszlin/certes.svg)](https://ci.appveyor.com/project/fszlin/certes/build/tests)
+[![AppVeyor](https://img.shields.io/appveyor/ci/fszlin/certes/master.svg)](https://ci.appveyor.com/project/fszlin/certes)
+[![AppVeyor](https://img.shields.io/appveyor/tests/fszlin/certes/master.svg)](https://ci.appveyor.com/project/fszlin/certes/build/tests)
 [![codecov](https://codecov.io/gh/fszlin/certes/branch/master/graph/badge.svg)](https://codecov.io/gh/fszlin/certes)
 
 [tw]: https://twitter.com/share?url=https%3A%2F%2Fgithub.com%2Ffszlin%2Fcertes&via=certes2ssl&related=fszlin&hashtags=certes%2Cssl%2Clets-encrypt%2Cacme%2Chttps&text=get%20free%20SSL%20via%20certes

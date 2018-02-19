@@ -3,9 +3,9 @@
 [![NuGet](https://img.shields.io/nuget/v/certes.svg)](https://www.nuget.org/packages/certes/)
 [![NuGet](https://img.shields.io/nuget/dt/certes.svg)](https://www.nuget.org/packages/certes/)
 
-[![Travis](https://img.shields.io/travis/fszlin/certes.svg)](https://travis-ci.org/fszlin/certes)
-[![AppVeyor](https://img.shields.io/appveyor/ci/fszlin/certes.svg)](https://ci.appveyor.com/project/fszlin/certes)
-[![AppVeyor](https://img.shields.io/appveyor/tests/fszlin/certes.svg)](https://ci.appveyor.com/project/fszlin/certes)
+[![Travis](https://img.shields.io/travis/fszlin/certes/master.svg)](https://travis-ci.org/fszlin/certes)
+[![AppVeyor](https://img.shields.io/appveyor/ci/fszlin/certes/master.svg)](https://ci.appveyor.com/project/fszlin/certes)
+[![AppVeyor](https://img.shields.io/appveyor/tests/fszlin/certes/master.svg)](https://ci.appveyor.com/project/fszlin/certes)
 [![codecov](https://codecov.io/gh/fszlin/certes/branch/master/graph/badge.svg)](https://codecov.io/gh/fszlin/certes)
 
 Certes is a client implementation for the Automated Certificate Management
