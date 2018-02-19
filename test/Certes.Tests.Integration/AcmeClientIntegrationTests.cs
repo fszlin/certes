@@ -67,7 +67,6 @@ namespace Certes
                 pfx.AddTestCert();
 
                 pfx.Build("my.pfx", "abcd1234");
-
                 await client.RevokeCertificate(cert);
             }
         }
