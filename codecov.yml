@@ -1,19 +1,32 @@
-#
-# This codecov.yml is the default configuration for
-# all repositories on Codecov. You may adjust the settings
-# below in your own codecov.yml in your repository.
-#
 coverage:
   precision: 2
   round: down
   range: 70...100
 
   status:
-    # Learn more at http://docs.codecov.io/docs/codecov-yaml
-    project: true
+    project:
+      default:
+        target: auto
+      acme:
+        target: auto
+        flags: acme
+      cli:
+        target: auto
+        flags: cli
     patch: true
     changes: false
+
+flags:
+  acme:
+    paths:
+      - src/Certes/
+  cli:
+    paths:
+      - src/Certes.Cli/
 
 comment:
   layout: "header, diff"
   behavior: default  # update if exists else create new
+ 
+codecov:
+  strict_yaml_branch: master  # only use the latest copy on master branch
