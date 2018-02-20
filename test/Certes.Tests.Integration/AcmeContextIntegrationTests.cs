@@ -16,12 +16,12 @@ using static Certes.IntegrationHelper;
 
 namespace Certes
 {
-    public class IntegrationTests
+    public class AcmeContextIntegrationTests
     {
         private readonly ITestOutputHelper output;
         private readonly string domainSuffix;
 
-        public IntegrationTests(ITestOutputHelper output)
+        public AcmeContextIntegrationTests(ITestOutputHelper output)
         {
             this.output = output;
 

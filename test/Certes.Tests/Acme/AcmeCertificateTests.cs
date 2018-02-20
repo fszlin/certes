@@ -23,5 +23,13 @@ namespace Certes.Acme
         {
             var ex = Assert.Throws<ArgumentNullException>(() => AcmeCertificateExtensions.ToPfx(null));
         }
+
+        [Fact]
+        public void CanGetSetProperties()
+        {
+            var authz = new AcmeCertificate();
+            authz.VerifyGetterSetter(a => a.Revoked, true);
+            authz.VerifyGetterSetter(a => a.Issuer, new AcmeCertificate());
+        }
     }
 }

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Certes
 {
-    public class AcmeClientStagingTests
+    public class AcmeClientIntegrationTests
     {
         [Theory]
         [InlineData(KeyAlgorithm.RS256)]
@@ -21,6 +21,9 @@ namespace Certes
             {
                 client.Use(key.Export());
                 var reg = await client.NewRegistraton();
+                reg.Data.Agreement = reg.GetTermsOfServiceUri();
+
+                await client.UpdateRegistration(reg);
 
                 var newKey = new AccountKey().Export();
                 await client.ChangeKey(reg, newKey);
@@ -46,15 +49,28 @@ namespace Certes
                 await AuthorizeDns(client, "mail.certes-ci.dymetis.com");
                 await AuthorizeDns(client, "sso.certes-ci.dymetis.com");
 
+                // should returns the valid ID
+                var authz = await client.NewAuthorization(new AuthorizationIdentifier
+                {
+                    Type = AuthorizationIdentifierTypes.Dns,
+                    Value = "www.certes-ci.dymetis.com",
+                });
+
+                Assert.Equal(EntityStatus.Valid, authz.Data.Status);
+
+                var authzByLoc = await client.GetAuthorization(authz.Location);
+                Assert.Equal(authz.Data.Identifier.Value, authzByLoc.Data.Identifier.Value);
+
                 var cert = await client.NewCertificate(csr);
                 var pfx = cert.ToPfx();
 
                 pfx.AddTestCert();
 
                 pfx.Build("my.pfx", "abcd1234");
+                await client.RevokeCertificate(cert);
             }
         }
-
+        
         private static async Task AuthorizeDns(AcmeClient client, string name)
         {
             var authz = await client.NewAuthorization(new AuthorizationIdentifier

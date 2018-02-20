@@ -8,7 +8,6 @@ namespace Certes
     /// The supported algorithms.
     /// </summary>
     public enum KeyAlgorithm
-
     {
         /// <summary>
         /// RSASSA-PKCS1-v1_5 using SHA-256.
