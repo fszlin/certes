@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CommandLine;
 using System.Threading.Tasks;
+using Certes.Cli.Commands;
 using Certes.Cli.Options;
 using Certes.Cli.Processors;
 using Newtonsoft.Json;
@@ -19,8 +20,14 @@ namespace Certes.Cli
         private OrderOptions orderOptions;
         private AzureOptions azureOptions;
 
+        private readonly ICliCommand[] commands = new ICliCommand[]
+        {
+            new SetServerCommand()
+        };
+
         public async Task<bool> Process(string[] args)
         {
+            ICliCommand commandFound = null;
             try
             {
                 ArgumentSyntax.Parse(args, syntax =>
@@ -28,9 +35,21 @@ namespace Certes.Cli
                     syntax.ApplicationName = "certes";
                     syntax.HandleErrors = false;
 
-                    accountOptions = AccountCommand.TryParse(syntax);
-                    orderOptions = OrderCommand.TryParse(syntax);
-                    azureOptions = AzureCommand.TryParse(syntax);
+                    foreach (var cmd in commands)
+                    {
+                        if (cmd.Define(syntax))
+                        {
+                            commandFound = cmd;
+                            break;
+                        }
+                    }
+
+                    if (commandFound == null)
+                    {
+                        accountOptions = AccountCommand.TryParse(syntax);
+                        orderOptions = OrderCommand.TryParse(syntax);
+                        azureOptions = AzureCommand.TryParse(syntax);
+                    }
 
                 });
             }
@@ -50,6 +69,14 @@ namespace Certes.Cli
 
             try
             {
+                if (commandFound != null)
+                {
+                    var result = await commandFound.Execute();
+                    consoleLogger.Info(JsonConvert.SerializeObject(
+                        result, Formatting.Indented, jsonSettings));
+                    return true;
+                }
+
                 if (accountOptions != null)
                 {
                     var cmd = new AccountCommand(accountOptions);

@@ -20,5 +20,9 @@ namespace Certes.Cli
         public static Argument<T> DefineEnumParameter<T>(
             this ArgumentSyntax syntax, string name, ref T value, string help)
             => syntax.DefineParameter(name, ref value, a => (T)Enum.Parse(typeof(T), a?.Replace("-", ""), true), help);
+
+        public static Argument<Uri> DefineParameter<T>(
+            this ArgumentSyntax syntax, string name, ref Uri value, string help)
+            => syntax.DefineParameter(name, ref value, s => new Uri(s), help);
     }
 }

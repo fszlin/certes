@@ -11,6 +11,7 @@ namespace Certes.Cli.Settings
 {
     internal class UserSettings
     {
+        public Uri Server { get; set; }
         public IList<AcmeSettings> Servers { get; set; }
         public AzureSettings Azure { get; set; }
 
@@ -25,6 +26,17 @@ namespace Certes.Cli.Settings
 
                 return Path.Combine(homePath, ".certes", "certes.json");
             });
+
+        public static async Task SetServer(Uri serverUri)
+        {
+            var settings = File.Exists(SettingsPath.Value) ?
+                JsonConvert.DeserializeObject<UserSettings>(await FileUtil.ReadAllText(SettingsPath.Value)) :
+                new UserSettings();
+
+            settings.Server = serverUri;
+            var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
+            await FileUtil.WriteAllTexts(SettingsPath.Value, json);
+        }
 
         public static async Task SetAcmeSettings(AcmeSettings acme, OptionsBase options)
         {

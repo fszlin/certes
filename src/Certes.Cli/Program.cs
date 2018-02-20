@@ -8,8 +8,6 @@ namespace Certes.Cli
 {
     public class Program
     {
-        internal const string ConsoleLoggerName = "certes-cli-console-logger";
-
         public static async Task<int> Main(string[] args)
         {
             ConfigureConsoleLogger();
