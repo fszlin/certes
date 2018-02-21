@@ -20,7 +20,7 @@ namespace Certes.Cli.Commands
             var serverUri = new Uri("http://acme.com/d");
 
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
-            settingsMock.Setup(m => m.SetServer(serverUri)).Returns(Task.CompletedTask);
+            settingsMock.Setup(m => m.SetDefaultServer(serverUri)).Returns(Task.CompletedTask);
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);

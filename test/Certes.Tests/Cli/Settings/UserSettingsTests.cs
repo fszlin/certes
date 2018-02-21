@@ -21,12 +21,12 @@ namespace Certes.Cli
 
             var uri = new Uri("http://acme.d/d");
             var settings = new UserSettings();
-            await settings.SetServer(uri);
-            Assert.Equal(uri, await settings.GetServer());
+            await settings.SetDefaultServer(uri);
+            Assert.Equal(uri, await settings.GetDefaultServer());
 
             uri = new Uri("http://acme.d/d2");
-            await settings.SetServer(uri);
-            Assert.Equal(uri, await settings.GetServer());
+            await settings.SetDefaultServer(uri);
+            Assert.Equal(uri, await settings.GetDefaultServer());
         }
 
         [Fact]

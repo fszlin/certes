@@ -40,7 +40,7 @@ namespace Certes.Cli.Commands
             var ctx = contextFactory(serverUriParam.Value, null);
             logger.Debug("Loading directory from '{0}'", serverUriParam.Value);
             var directory = await ctx.GetDirectory();
-            await Settings.SetServer(serverUriParam.Value);
+            await Settings.SetDefaultServer(serverUriParam.Value);
             return new
             {
                 location = serverUriParam.Value,

@@ -14,7 +14,7 @@ namespace Certes.Cli.Settings
     {
         private class Model
         {
-            public Uri Server { get; set; }
+            public Uri DefaultServer { get; set; }
             public IList<AcmeSettings> Servers { get; set; }
             public AzureSettings Azure { get; set; }
         }
@@ -32,20 +32,20 @@ namespace Certes.Cli.Settings
 
         public Lazy<string> SettingsFile { get; set; } = new Lazy<string>(SettingsPathFactory);
 
-        public async Task SetServer(Uri serverUri)
+        public async Task SetDefaultServer(Uri serverUri)
         {
             var settings = await LoadUserSettings();
 
-            settings.Server = serverUri;
+            settings.DefaultServer = serverUri;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
             await FileUtil.WriteAllTexts(SettingsFile.Value, json);
         }
 
-        public async Task<Uri> GetServer()
+        public async Task<Uri> GetDefaultServer()
         {
             var settings = await LoadUserSettings();
 
-            return settings.Server ?? WellKnownServers.LetsEncryptV2;
+            return settings.DefaultServer ?? WellKnownServers.LetsEncryptV2;
         }
 
         public async Task SetAcmeSettings(AcmeSettings acme, OptionsBase options)

@@ -5,7 +5,7 @@ namespace Certes.Cli.Settings
 {
     internal interface IUserSettings
     {
-        Task SetServer(Uri serverUri);
+        Task SetDefaultServer(Uri serverUri);
+        Task<Uri> GetDefaultServer();
     }
-
 }
