@@ -63,7 +63,7 @@ namespace Certes.Cli
             var userSettings = new UserSettings();
             await userSettings.SetAcmeSettings(new AcmeSettings
             {
-                ServerUri = WellKnownServers.LetsEncryptStagingV2,
+                ServerUri = WellKnownServers.LetsEncryptV2,
                 AccountKey = Helper.GetTestKey(KeyAlgorithm.ES256),
             }, options);
 
@@ -87,7 +87,7 @@ namespace Certes.Cli
             var userSettings = new UserSettings();
             await userSettings.SetAcmeSettings(new AcmeSettings
             {
-                ServerUri = WellKnownServers.LetsEncryptStagingV2,
+                ServerUri = WellKnownServers.LetsEncryptV2,
                 AccountKey = Helper.GetTestKey(KeyAlgorithm.ES256),
             }, options);
 
