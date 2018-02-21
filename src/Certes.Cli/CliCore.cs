@@ -1,5 +1,7 @@
 ﻿using System;
 using System.CommandLine;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Certes.Cli.Commands;
 using Certes.Cli.Options;
@@ -26,10 +28,13 @@ namespace Certes.Cli
 
         public CliCore()
         {
-            commands = new ICliCommand[]
-            {
-                new SetServerCommand(userSettings)
-            };
+            commands = typeof(CliCore).GetTypeInfo().Assembly
+                .GetTypes()
+                .Where(t => t.GetTypeInfo().IsClass)
+                .Where(t => typeof(ICliCommand).IsAssignableFrom(t))
+                .Select(t => Activator.CreateInstance(t, userSettings))
+                .Cast<ICliCommand>()
+                .ToArray();
         }
 
         public async Task<bool> Process(string[] args)

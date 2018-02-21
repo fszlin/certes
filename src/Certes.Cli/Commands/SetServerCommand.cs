@@ -18,8 +18,13 @@ namespace Certes.Cli.Commands
         private readonly Func<Uri, IKey, IAcmeContext> contextFactory;
 
         public IUserSettings Settings { get; private set; }
-        
-        public SetServerCommand(IUserSettings userSettings, Func<Uri, IKey, IAcmeContext> contextFactory = null)
+
+        public SetServerCommand(IUserSettings userSettings)
+            : this(userSettings, null)
+        {
+        }
+
+        public SetServerCommand(IUserSettings userSettings, Func<Uri, IKey, IAcmeContext> contextFactory)
         {
             Settings = userSettings;
             this.contextFactory = contextFactory ?? ContextFactory.Create;
