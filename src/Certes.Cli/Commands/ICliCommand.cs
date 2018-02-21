@@ -5,7 +5,7 @@ namespace Certes.Cli.Commands
 {
     internal interface ICliCommand
     {
-        bool Define(ArgumentSyntax syntax);
-        Task<object> Execute();
+        ArgumentCommand<string> Define(ArgumentSyntax syntax);
+        Task<object> Execute(ArgumentSyntax syntax);
     }
 }

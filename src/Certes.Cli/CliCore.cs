@@ -35,16 +35,18 @@ namespace Certes.Cli
         public async Task<bool> Process(string[] args)
         {
             ICliCommand commandFound = null;
+            ArgumentSyntax argSyntax = null;
             try
             {
-                ArgumentSyntax.Parse(args, syntax =>
+                argSyntax = ArgumentSyntax.Parse(args, syntax =>
                 {
                     syntax.ApplicationName = "certes";
                     syntax.HandleErrors = false;
-
+                    
                     foreach (var cmd in commands)
                     {
-                        if (cmd.Define(syntax))
+                        var argCmd = cmd.Define(syntax);
+                        if (argCmd.IsActive)
                         {
                             commandFound = cmd;
                             break;
@@ -78,7 +80,7 @@ namespace Certes.Cli
             {
                 if (commandFound != null)
                 {
-                    var result = await commandFound.Execute();
+                    var result = await commandFound.Execute(argSyntax);
                     consoleLogger.Info(JsonConvert.SerializeObject(
                         result, Formatting.Indented, jsonSettings));
                     return true;
