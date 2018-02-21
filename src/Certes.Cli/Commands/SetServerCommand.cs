@@ -54,7 +54,7 @@ namespace Certes.Cli.Commands
             cmd.Help = Strings.SetServerHelp;
 
             var arg = syntax.DefineParameter(
-                ParamUri, WellKnownServers.LetsEncryptStagingV2, Strings.ServerUriHelper);
+                ParamUri, WellKnownServers.LetsEncryptV2, Strings.ServerUriHelper);
             
             return cmd;
         }

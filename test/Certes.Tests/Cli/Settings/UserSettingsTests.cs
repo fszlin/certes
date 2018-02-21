@@ -69,7 +69,7 @@ namespace Certes.Cli
 
             var key = await userSettings.GetAccountKey(options, false);
 
-            Assert.Equal(Path.Combine(fullPath, ".certes", "certes.json"), userSettings.SettingsPath.Value);
+            Assert.Equal(Path.Combine(fullPath, ".certes", "certes.json"), userSettings.SettingsFile.Value);
             Assert.Equal(Helper.GetKeyV2(KeyAlgorithm.ES256).Thumbprint(), key.Thumbprint());
         }
 
@@ -93,7 +93,7 @@ namespace Certes.Cli
 
             var key = await userSettings.GetAccountKey(options, false);
 
-            Assert.Equal(Path.Combine(fullPath, ".certes", "certes.json"), userSettings.SettingsPath.Value);
+            Assert.Equal(Path.Combine(fullPath, ".certes", "certes.json"), userSettings.SettingsFile.Value);
             Assert.Equal(Helper.GetKeyV2(KeyAlgorithm.ES256).Thumbprint(), key.Thumbprint());
         }
 
@@ -104,9 +104,9 @@ namespace Certes.Cli
             SetHomePath(fullPath);
 
             var userSettings = new UserSettings();
-            if (Directory.Exists(userSettings.SettingsPath.Value))
+            if (Directory.Exists(userSettings.SettingsFile.Value))
             {
-                Directory.Delete(userSettings.SettingsPath.Value, true);
+                Directory.Delete(userSettings.SettingsFile.Value, true);
             }
 
             var options = new AccountOptions

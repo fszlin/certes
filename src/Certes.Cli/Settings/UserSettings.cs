@@ -19,7 +19,7 @@ namespace Certes.Cli.Settings
             public AzureSettings Azure { get; set; }
         }
 
-        public readonly static Func<string> SettingsPathFactory = () =>
+        private readonly static Func<string> SettingsPathFactory = () =>
         {
             var homePath = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
             if (!Directory.Exists(homePath))
@@ -30,7 +30,7 @@ namespace Certes.Cli.Settings
             return Path.Combine(homePath, ".certes", "certes.json");
         };
 
-        public Lazy<string> SettingsPath { get; set; } = new Lazy<string>(SettingsPathFactory);
+        public Lazy<string> SettingsFile { get; set; } = new Lazy<string>(SettingsPathFactory);
 
         public async Task SetServer(Uri serverUri)
         {
@@ -38,14 +38,14 @@ namespace Certes.Cli.Settings
 
             settings.Server = serverUri;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-            await FileUtil.WriteAllTexts(SettingsPath.Value, json);
+            await FileUtil.WriteAllTexts(SettingsFile.Value, json);
         }
 
         public async Task<Uri> GetServer()
         {
             var settings = await LoadUserSettings();
 
-            return settings.Server ?? WellKnownServers.LetsEncryptStagingV2;
+            return settings.Server ?? WellKnownServers.LetsEncryptV2;
         }
 
         public async Task SetAcmeSettings(AcmeSettings acme, OptionsBase options)
@@ -71,7 +71,7 @@ namespace Certes.Cli.Settings
                 }
 
                 var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-                await FileUtil.WriteAllTexts(SettingsPath.Value, json);
+                await FileUtil.WriteAllTexts(SettingsFile.Value, json);
             }
             else if (!string.IsNullOrWhiteSpace(acme.AccountKey))
             {
@@ -152,9 +152,9 @@ namespace Certes.Cli.Settings
         private async Task<Model> LoadUserSettings()
         {
             Model settings;
-            if (File.Exists(SettingsPath.Value))
+            if (File.Exists(SettingsFile.Value))
             {
-                var json = await FileUtil.ReadAllText(SettingsPath.Value);
+                var json = await FileUtil.ReadAllText(SettingsFile.Value);
                 settings = JsonConvert.DeserializeObject<Model>(json, JsonUtil.CreateSettings());
             }
             else
