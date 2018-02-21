@@ -14,6 +14,22 @@ namespace Certes.Cli
     public class UserSettingsTests
     {
         [Fact]
+        public async Task CanGetSetServer()
+        {
+            var fullPath = Path.GetFullPath($"./{nameof(CanGetSetServer)}");
+            SetHomePath(fullPath);
+
+            var uri = new Uri("http://acme.d/d");
+            var settings = new UserSettings();
+            await settings.SetServer(uri);
+            Assert.Equal(uri, await settings.GetServer());
+
+            uri = new Uri("http://acme.d/d2");
+            await settings.SetServer(uri);
+            Assert.Equal(uri, await settings.GetServer());
+        }
+
+        [Fact]
         public async Task CanLoadKeyFromPath()
         {
             var fullPath = Path.GetFullPath($"./{nameof(CanLoadKeyFromPath)}");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Certes.Acme;
 using Certes.Cli.Options;
 using Certes.Json;
 using Newtonsoft.Json;
@@ -11,9 +12,12 @@ namespace Certes.Cli.Settings
 {
     internal class UserSettings : IUserSettings
     {
-        public Uri Server { get; set; }
-        public IList<AcmeSettings> Servers { get; set; }
-        public AzureSettings Azure { get; set; }
+        private class Model
+        {
+            public Uri Server { get; set; }
+            public IList<AcmeSettings> Servers { get; set; }
+            public AzureSettings Azure { get; set; }
+        }
 
         public readonly static Func<string> SettingsPathFactory = () =>
         {
@@ -30,13 +34,18 @@ namespace Certes.Cli.Settings
 
         public async Task SetServer(Uri serverUri)
         {
-            var settings = File.Exists(SettingsPath.Value) ?
-                JsonConvert.DeserializeObject<UserSettings>(await FileUtil.ReadAllText(SettingsPath.Value)) :
-                new UserSettings();
+            var settings = await LoadUserSettings();
 
             settings.Server = serverUri;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
             await FileUtil.WriteAllTexts(SettingsPath.Value, json);
+        }
+
+        public async Task<Uri> GetServer()
+        {
+            var settings = await LoadUserSettings();
+
+            return settings.Server ?? WellKnownServers.LetsEncryptStagingV2;
         }
 
         public async Task SetAcmeSettings(AcmeSettings acme, OptionsBase options)
@@ -140,17 +149,17 @@ namespace Certes.Cli.Settings
             return KeyFactory.FromPem(settings.AccountKey);
         }
 
-        private async Task<UserSettings> LoadUserSettings()
+        private async Task<Model> LoadUserSettings()
         {
-            UserSettings settings;
+            Model settings;
             if (File.Exists(SettingsPath.Value))
             {
                 var json = await FileUtil.ReadAllText(SettingsPath.Value);
-                settings = JsonConvert.DeserializeObject<UserSettings>(json, JsonUtil.CreateSettings());
+                settings = JsonConvert.DeserializeObject<Model>(json, JsonUtil.CreateSettings());
             }
             else
             {
-                settings = new UserSettings();
+                settings = new Model();
             }
 
             return settings;
