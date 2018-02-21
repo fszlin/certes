@@ -9,25 +9,26 @@ using Newtonsoft.Json;
 
 namespace Certes.Cli.Settings
 {
-    internal class UserSettings
+    internal class UserSettings : IUserSettings
     {
         public Uri Server { get; set; }
         public IList<AcmeSettings> Servers { get; set; }
         public AzureSettings Azure { get; set; }
 
-        public static Lazy<string> SettingsPath = new Lazy<string>(
-            () =>
+        public readonly static Func<string> SettingsPathFactory = () =>
+        {
+            var homePath = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
+            if (!Directory.Exists(homePath))
             {
-                var homePath = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
-                if (!Directory.Exists(homePath))
-                {
-                    homePath = Environment.GetEnvironmentVariable("HOME");
-                }
+                homePath = Environment.GetEnvironmentVariable("HOME");
+            }
 
-                return Path.Combine(homePath, ".certes", "certes.json");
-            });
+            return Path.Combine(homePath, ".certes", "certes.json");
+        };
 
-        public static async Task SetServer(Uri serverUri)
+        public Lazy<string> SettingsPath { get; set; } = new Lazy<string>(SettingsPathFactory);
+
+        public async Task SetServer(Uri serverUri)
         {
             var settings = File.Exists(SettingsPath.Value) ?
                 JsonConvert.DeserializeObject<UserSettings>(await FileUtil.ReadAllText(SettingsPath.Value)) :
@@ -38,7 +39,7 @@ namespace Certes.Cli.Settings
             await FileUtil.WriteAllTexts(SettingsPath.Value, json);
         }
 
-        public static async Task SetAcmeSettings(AcmeSettings acme, OptionsBase options)
+        public async Task SetAcmeSettings(AcmeSettings acme, OptionsBase options)
         {
             if (string.IsNullOrWhiteSpace(options.Path))
             {
@@ -69,7 +70,7 @@ namespace Certes.Cli.Settings
             }
         }
 
-        public static async Task<AzureSettings> GetAzureSettings(AzureOptions options)
+        public async Task<AzureSettings> GetAzureSettings(AzureOptions options)
         {
             var settings = await LoadUserSettings();
 
@@ -101,7 +102,7 @@ namespace Certes.Cli.Settings
             return azure;
         }
 
-        public static async Task<AcmeSettings> GetAcmeSettings(OptionsBase options)
+        public async Task<AcmeSettings> GetAcmeSettings(OptionsBase options)
         {
             var settings = await LoadUserSettings();
 
@@ -122,7 +123,7 @@ namespace Certes.Cli.Settings
             return acme;
         }
 
-        public static async Task<IKey> GetAccountKey(OptionsBase options, bool accountKeyRequired = false)
+        public async Task<IKey> GetAccountKey(OptionsBase options, bool accountKeyRequired = false)
         {
             var settings = await GetAcmeSettings(options);
 
@@ -139,7 +140,7 @@ namespace Certes.Cli.Settings
             return KeyFactory.FromPem(settings.AccountKey);
         }
 
-        private static async Task<UserSettings> LoadUserSettings()
+        private async Task<UserSettings> LoadUserSettings()
         {
             UserSettings settings;
             if (File.Exists(SettingsPath.Value))

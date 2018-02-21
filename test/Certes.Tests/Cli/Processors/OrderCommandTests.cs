@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Cli.Options;
+using Certes.Cli.Settings;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -103,7 +104,8 @@ namespace Certes.Cli.Processors
                 CertKeyPath = certKeyPath,
             };
 
-            var proc = new OrderCommand(options);
+            var userSettings = new UserSettings();
+            var proc = new OrderCommand(options, userSettings);
 
             dynamic ret = await proc.Process();
             Assert.Equal(JsonConvert.SerializeObject(order), JsonConvert.SerializeObject(ret));
@@ -119,7 +121,7 @@ namespace Certes.Cli.Processors
             };
 
             // use speific key for CSR
-            proc = new OrderCommand(options);
+            proc = new OrderCommand(options, userSettings);
             ret = await proc.Process();
             Assert.Null(ret.certKey);
 
@@ -133,7 +135,7 @@ namespace Certes.Cli.Processors
             };
 
             // result should contain the generated key
-            proc = new OrderCommand(options);
+            proc = new OrderCommand(options, userSettings);
             ret = await proc.Process();
             Assert.NotNull(ret.certKey);
         }
@@ -171,11 +173,12 @@ namespace Certes.Cli.Processors
 
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
+            var userSettings = new UserSettings();
             var proc = new OrderCommand(new OrderOptions
             {
                 Action = OrderAction.List,
                 Path = keyPath,
-            });
+            }, userSettings);
 
             var ret = await proc.Process();
             Assert.Equal(
@@ -210,12 +213,13 @@ namespace Certes.Cli.Processors
 
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
+            var userSettings = new UserSettings();
             var proc = new OrderCommand(new OrderOptions
             {
                 Action = OrderAction.Info,
                 Location = order.uri,
                 Path = keyPath,
-            });
+            }, userSettings);
 
             var ret = await proc.Process();
             Assert.Equal(JsonConvert.SerializeObject(order), JsonConvert.SerializeObject(ret));
@@ -260,14 +264,15 @@ namespace Certes.Cli.Processors
             authzMock.Setup(c => c.Resource()).ReturnsAsync(authz.data);
 
             ContextFactory.Create = (uri, key) => ctxMock.Object;
-
+            
+            var userSettings = new UserSettings();
             var proc = new OrderCommand(new OrderOptions
             {
                 Action = OrderAction.Authz,
                 Values = hosts,
                 Location = order.uri,
                 Path = keyPath,
-            });
+            }, userSettings);
 
             var ret = await proc.Process();
             Assert.Equal(JsonConvert.SerializeObject(authz), JsonConvert.SerializeObject(ret));
@@ -319,6 +324,7 @@ namespace Certes.Cli.Processors
 
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
+            var userSettings = new UserSettings();
             var proc = new OrderCommand(new OrderOptions
             {
                 Action = OrderAction.Authz,
@@ -326,7 +332,7 @@ namespace Certes.Cli.Processors
                 Location = order.uri,
                 Validate = authzType,
                 Path = keyPath,
-            });
+            }, userSettings);
 
             var ret = await proc.Process();
             challengeMock.Verify(c => c.Validate(), Times.Once);
@@ -355,12 +361,13 @@ namespace Certes.Cli.Processors
             orderMock.Setup(c => c.Location).Returns(order.uri);
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
+            var userSettings = new UserSettings();
             var proc = new OrderCommand(new OrderOptions
             {
                 Action = OrderAction.New,
                 Values = hosts.AsReadOnly(),
                 Path = keyPath,
-            });
+            }, userSettings);
 
             var ret = await proc.Process();
             Assert.Equal(JsonConvert.SerializeObject(order), JsonConvert.SerializeObject(ret));
@@ -369,10 +376,11 @@ namespace Certes.Cli.Processors
         [Fact]
         public async Task InvalidAction()
         {
+            var userSettings = new UserSettings();
             var proc = new OrderCommand(new OrderOptions
             {
                 Action = (OrderAction)int.MaxValue,
-            });
+            }, userSettings);
 
             await Assert.ThrowsAsync<NotSupportedException>(() => proc.Process());
         }

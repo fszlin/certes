@@ -15,10 +15,12 @@ namespace Certes.Cli.Processors
     {
         public ILogger Logger { get; } = LogManager.GetCurrentClassLogger();
         private OrderOptions Args { get; }
+        public UserSettings Settings { get; private set; }
 
-        public OrderCommand(OrderOptions args)
+        public OrderCommand(OrderOptions args, UserSettings userSettings)
         {
             Args = args;
+            Settings = userSettings;
         }
 
         public static OrderOptions TryParse(ArgumentSyntax syntax)
@@ -68,7 +70,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> FinalizeOrder()
         {
-            var key = await UserSettings.GetAccountKey(Args, true);
+            var key = await Settings.GetAccountKey(Args, true);
             Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, key);
 
@@ -100,7 +102,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> ListOrder()
         {
-            var key = await UserSettings.GetAccountKey(Args, true);
+            var key = await Settings.GetAccountKey(Args, true);
 
             Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, key);
@@ -123,7 +125,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> ShowOrder()
         {
-            var key = await UserSettings.GetAccountKey(Args, true);
+            var key = await Settings.GetAccountKey(Args, true);
 
             Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, key);
@@ -138,7 +140,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> ProcessAuthz()
         {
-            var key = await UserSettings.GetAccountKey(Args, true);
+            var key = await Settings.GetAccountKey(Args, true);
             var name = Args.Values[0];
 
             Logger.Debug("Using ACME server {0}.", Args.Server);
@@ -174,7 +176,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> NewOrder()
         {
-            var key = await UserSettings.GetAccountKey(Args, true);
+            var key = await Settings.GetAccountKey(Args, true);
 
             Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, key);

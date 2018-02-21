@@ -6,6 +6,8 @@ using Certes.Cli.Options;
 using Certes.Cli.Settings;
 using Xunit;
 
+using static Certes.Helper;
+
 namespace Certes.Cli
 {
     [Collection(nameof(ContextFactory))]
@@ -14,6 +16,9 @@ namespace Certes.Cli
         [Fact]
         public async Task CanLoadKeyFromPath()
         {
+            var fullPath = Path.GetFullPath($"./{nameof(CanLoadKeyFromPath)}");
+            SetHomePath(fullPath);
+
             File.WriteAllText("./Data/key-es256.pem", Helper.GetTestKey(KeyAlgorithm.ES256));
 
             var options = new AccountOptions
@@ -22,7 +27,8 @@ namespace Certes.Cli
                 Path = "./Data/key-es256.pem",
             };
 
-            var key = await UserSettings.GetAccountKey(options, false);
+            var userSettings = new UserSettings();
+            var key = await userSettings.GetAccountKey(options, false);
 
             Assert.Equal(Helper.GetKeyV2(KeyAlgorithm.ES256).Thumbprint(), key.Thumbprint());
         }
@@ -30,58 +36,61 @@ namespace Certes.Cli
         [Fact]
         public async Task CanLoadKeyFromUnixEvn()
         {
-            var fullPath = Path.GetFullPath("./");
-            Environment.SetEnvironmentVariable("HOMEDRIVE", "");
-            Environment.SetEnvironmentVariable("HOMEPATH", "");
-            Environment.SetEnvironmentVariable("HOME", fullPath);
+            var fullPath = Path.GetFullPath($"./{nameof(CanLoadKeyFromUnixEvn)}");
+            SetHomePath(fullPath, false);
 
             var options = new AccountOptions
             {
                 Action = AccountAction.Info,
             };
 
-            await UserSettings.SetAcmeSettings(new AcmeSettings
+            var userSettings = new UserSettings();
+            await userSettings.SetAcmeSettings(new AcmeSettings
             {
                 ServerUri = WellKnownServers.LetsEncryptStagingV2,
                 AccountKey = Helper.GetTestKey(KeyAlgorithm.ES256),
             }, options);
 
-            var key = await UserSettings.GetAccountKey(options, false);
+            var key = await userSettings.GetAccountKey(options, false);
 
+            Assert.Equal(Path.Combine(fullPath, ".certes", "certes.json"), userSettings.SettingsPath.Value);
             Assert.Equal(Helper.GetKeyV2(KeyAlgorithm.ES256).Thumbprint(), key.Thumbprint());
         }
 
         [Fact]
         public async Task CanLoadKeyFromWinEvn()
         {
-            var fullPath = Path.GetFullPath("./");
-            var drive = Path.GetPathRoot(fullPath);
-            Environment.SetEnvironmentVariable("HOME", "");
-            Environment.SetEnvironmentVariable("HOMEDRIVE", drive);
-            Environment.SetEnvironmentVariable("HOMEPATH", fullPath.Substring(drive.Length));
+            var fullPath = Path.GetFullPath($"./{nameof(CanLoadKeyFromWinEvn)}");
+            SetHomePath(fullPath);
 
             var options = new AccountOptions
             {
                 Action = AccountAction.Info,
             };
 
-            await UserSettings.SetAcmeSettings(new AcmeSettings
+            var userSettings = new UserSettings();
+            await userSettings.SetAcmeSettings(new AcmeSettings
             {
                 ServerUri = WellKnownServers.LetsEncryptStagingV2,
                 AccountKey = Helper.GetTestKey(KeyAlgorithm.ES256),
             }, options);
 
-            var key = await UserSettings.GetAccountKey(options, false);
+            var key = await userSettings.GetAccountKey(options, false);
 
+            Assert.Equal(Path.Combine(fullPath, ".certes", "certes.json"), userSettings.SettingsPath.Value);
             Assert.Equal(Helper.GetKeyV2(KeyAlgorithm.ES256).Thumbprint(), key.Thumbprint());
         }
 
         [Fact]
         public async Task NullWhenKeyNotExist()
         {
-            if (Directory.Exists("./.certes/"))
+            var fullPath = Path.GetFullPath($"./{nameof(NullWhenKeyNotExist)}");
+            SetHomePath(fullPath);
+
+            var userSettings = new UserSettings();
+            if (Directory.Exists(userSettings.SettingsPath.Value))
             {
-                Directory.Delete("./.certes/", true);
+                Directory.Delete(userSettings.SettingsPath.Value, true);
             }
 
             var options = new AccountOptions
@@ -89,7 +98,7 @@ namespace Certes.Cli
                 Action = AccountAction.Info,
             };
 
-            var key = await UserSettings.GetAccountKey(options, false);
+            var key = await userSettings.GetAccountKey(options, false);
             Assert.Null(key);
         }
     }

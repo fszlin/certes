@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Certes.Cli.Commands;
 using Certes.Cli.Options;
 using Certes.Cli.Processors;
+using Certes.Cli.Settings;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -20,10 +21,16 @@ namespace Certes.Cli
         private OrderOptions orderOptions;
         private AzureOptions azureOptions;
 
-        private readonly ICliCommand[] commands = new ICliCommand[]
+        private readonly UserSettings userSettings = new UserSettings();
+        private readonly ICliCommand[] commands;
+
+        public CliCore()
         {
-            new SetServerCommand()
-        };
+            commands = new ICliCommand[]
+            {
+                new SetServerCommand(userSettings)
+            };
+        }
 
         public async Task<bool> Process(string[] args)
         {
@@ -79,7 +86,7 @@ namespace Certes.Cli
 
                 if (accountOptions != null)
                 {
-                    var cmd = new AccountCommand(accountOptions);
+                    var cmd = new AccountCommand(accountOptions, userSettings);
                     var result = await cmd.Process();
                     consoleLogger.Info(JsonConvert.SerializeObject(result, Formatting.Indented, jsonSettings));
                     return true;
@@ -87,7 +94,7 @@ namespace Certes.Cli
 
                 if (orderOptions != null)
                 {
-                    var cmd = new OrderCommand(orderOptions);
+                    var cmd = new OrderCommand(orderOptions, userSettings);
                     var result = await cmd.Process();
                     consoleLogger.Info(JsonConvert.SerializeObject(result, Formatting.Indented, jsonSettings));
                     return true;
@@ -95,7 +102,7 @@ namespace Certes.Cli
 
                 if (azureOptions != null)
                 {
-                    var cmd = new AzureCommand(azureOptions);
+                    var cmd = new AzureCommand(azureOptions, userSettings);
                     var result = await cmd.Process();
                     consoleLogger.Info(JsonConvert.SerializeObject(result, Formatting.Indented, jsonSettings));
                     return true;
