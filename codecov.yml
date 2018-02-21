@@ -7,22 +7,8 @@ coverage:
     project:
       default:
         target: auto
-      acme:
-        target: auto
-        flags: acme
-      cli:
-        target: auto
-        flags: cli
     patch: true
     changes: false
-
-flags:
-  acme:
-    paths:
-      - src/Certes/
-  cli:
-    paths:
-      - src/Certes.Cli/
 
 comment:
   layout: "header, diff"
