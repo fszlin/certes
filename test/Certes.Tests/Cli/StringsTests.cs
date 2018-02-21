@@ -19,5 +19,11 @@ namespace Certes.Cli
         {
             Assert.NotNull(Strings.ResourceManager);
         }
+
+        [Fact]
+        public void Ctor()
+        {
+            var instance = new Strings();
+        }
     }
 }
