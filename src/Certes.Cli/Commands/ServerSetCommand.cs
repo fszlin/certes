@@ -2,7 +2,6 @@
 using System.CommandLine;
 using System.Linq;
 using System.Threading.Tasks;
-using Certes.Acme;
 using Certes.Cli.Settings;
 using NLog;
 
@@ -56,9 +55,8 @@ namespace Certes.Cli.Commands
 
         public ArgumentCommand<string> Define(ArgumentSyntax syntax)
         {
-            var cmd = syntax.DefineCommand("set", help: Strings.HelpCommandServerSet);
-            syntax.DefineOption(
-                "server", WellKnownServers.LetsEncryptV2, true, Strings.HelpOptionServer);
+            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandServerSet);
+            syntax.DefineServerOption(true);
 
             return cmd;
         }

@@ -62,6 +62,24 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Manage ACME accounts..
+        /// </summary>
+        internal static string HelpCommandAccount {
+            get {
+                return ResourceManager.GetString("HelpCommandAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create new ACME account..
+        /// </summary>
+        internal static string HelpCommandAccountNew {
+            get {
+                return ResourceManager.GetString("HelpCommandAccountNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manage ACME servers..
         /// </summary>
         internal static string HelpCommandServer {
@@ -85,6 +103,15 @@ namespace Certes.Cli {
         internal static string HelpCommandServerShow {
             get {
                 return ResourceManager.GetString("HelpCommandServerShow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path to the ACME account key..
+        /// </summary>
+        internal static string HelpOptionKey {
+            get {
+                return ResourceManager.GetString("HelpOptionKey", resourceCulture);
             }
         }
         
