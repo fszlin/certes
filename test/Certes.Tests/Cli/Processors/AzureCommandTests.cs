@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Cli.Options;
+using Certes.Cli.Settings;
 using Microsoft.Azure.Management.AppService.Fluent;
 using Microsoft.Azure.Management.AppService.Fluent.Models;
 using Microsoft.Azure.Management.Dns.Fluent;
@@ -108,6 +109,7 @@ namespace Certes.Cli.Processors
                 .ReturnsAsync((string r, string a, string n, HostNameBindingInner d, Dictionary<string, List<string>> h, CancellationToken t)
                     => new AzureOperationResponse<HostNameBindingInner> { Body = d });
 
+            var userSettings = new UserSettings();
             var proc = new AzureCommand(new AzureOptions
             {
                 Action = AzureAction.Ssl,
@@ -123,7 +125,7 @@ namespace Certes.Cli.Processors
                 ResourceGroup = "res",
                 AppServiceName = "certes",
                 Path = keyPath,
-            });
+            }, userSettings);
 
             var ret = await proc.Process();
             Assert.True(File.Exists(certKeyPath));
@@ -202,6 +204,7 @@ namespace Certes.Cli.Processors
                     Body = expectedRecordSet.data
                 });
 
+            var userSettings = new UserSettings();
             var proc = new AzureCommand(new AzureOptions
             {
                 Action = AzureAction.Dns,
@@ -213,7 +216,7 @@ namespace Certes.Cli.Processors
                 Subscription = Guid.NewGuid(),
                 ResourceGroup = "res",
                 Path = keyPath,
-            });
+            }, userSettings);
 
             var ret = await proc.Process();
             Assert.Equal(JsonConvert.SerializeObject(expectedRecordSet), JsonConvert.SerializeObject(ret));
