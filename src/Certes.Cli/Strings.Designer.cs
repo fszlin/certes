@@ -62,29 +62,47 @@ namespace Certes.Cli {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;{0}&apos; is required..
+        ///   Looks up a localized string similar to Manage ACME servers..
         /// </summary>
-        internal static string ParameterMissing {
+        internal static string HelpCommandServer {
             get {
-                return ResourceManager.GetString("ParameterMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The dictionary URI to an ACME server..
-        /// </summary>
-        internal static string ServerUriHelper {
-            get {
-                return ResourceManager.GetString("ServerUriHelper", resourceCulture);
+                return ResourceManager.GetString("HelpCommandServer", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Configure the default ACME server..
         /// </summary>
-        internal static string SetServerHelp {
+        internal static string HelpCommandServerSet {
             get {
-                return ResourceManager.GetString("SetServerHelp", resourceCulture);
+                return ResourceManager.GetString("HelpCommandServerSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Get the details of a ACME server..
+        /// </summary>
+        internal static string HelpCommandServerShow {
+            get {
+                return ResourceManager.GetString("HelpCommandServerShow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The dictionary URI to an ACME server..
+        /// </summary>
+        internal static string HelpOptionServer {
+            get {
+                return ResourceManager.GetString("HelpOptionServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option &apos;--{0}&apos; is required..
+        /// </summary>
+        internal static string OptionMissing {
+            get {
+                return ResourceManager.GetString("OptionMissing", resourceCulture);
             }
         }
     }

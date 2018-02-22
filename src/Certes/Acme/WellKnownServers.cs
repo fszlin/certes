@@ -21,7 +21,7 @@ namespace Certes.Acme
         /// <value>
         /// The URI for Let's Encrypt ACME v2 production server.
         /// </value>
-        public static Uri LetsEncryptV2 { get; } = LetsEncryptStagingV2;
+        public static Uri LetsEncryptV2 { get; } = new Uri("https://acme-v02.api.letsencrypt.org/directory");
 
         /// <summary>
         /// Gets the URI for Let's Encrypt staging server.

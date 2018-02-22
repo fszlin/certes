@@ -117,13 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ParameterMissing" xml:space="preserve">
-    <value>Parameter '{0}' is required.</value>
+  <data name="HelpCommandServer" xml:space="preserve">
+    <value>Manage ACME servers.</value>
   </data>
-  <data name="ServerUriHelper" xml:space="preserve">
+  <data name="HelpCommandServerSet" xml:space="preserve">
+    <value>Configure the default ACME server.</value>
+  </data>
+  <data name="HelpCommandServerShow" xml:space="preserve">
+    <value>Get the details of a ACME server.</value>
+  </data>
+  <data name="HelpOptionServer" xml:space="preserve">
     <value>The dictionary URI to an ACME server.</value>
   </data>
-  <data name="SetServerHelp" xml:space="preserve">
-    <value>Configure the default ACME server.</value>
+  <data name="OptionMissing" xml:space="preserve">
+    <value>Option '--{0}' is required.</value>
   </data>
 </root>

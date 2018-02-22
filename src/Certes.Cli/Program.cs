@@ -12,7 +12,8 @@ namespace Certes.Cli
         {
             ConfigureConsoleLogger();
 
-            var succeed = await new CliCore().Process(args);
+            var processor = new CliCore();
+            var succeed = await processor.Run(args);
             return succeed ? 0 : 1;
         }
 

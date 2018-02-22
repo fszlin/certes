@@ -8,23 +8,24 @@ using NLog;
 
 namespace Certes.Cli.Commands
 {
-    // e.x: set-server https://acme-staging-v02.api.letsencrypt.org/directory
-    internal class SetServerCommand : ICliCommand
+    // e.x: server set --server https://acme-staging-v02.api.letsencrypt.org/directory
+    internal class ServerSetCommand : ICliCommand
     {
-        private const string CommandText = "set-server";
-        private const string ParamUri = "server-uri";
-        private readonly ILogger logger = LogManager.GetLogger(nameof(SetServerCommand));
+        private const string CommandText = "set";
+        private const string ParamServer = "server";
+        private readonly ILogger logger = LogManager.GetLogger(nameof(ServerSetCommand));
 
         private readonly Func<Uri, IKey, IAcmeContext> contextFactory;
 
+        public CommandGroup Group { get; } = CommandGroup.Server;
         public IUserSettings Settings { get; private set; }
 
-        public SetServerCommand(IUserSettings userSettings)
+        public ServerSetCommand(IUserSettings userSettings)
             : this(userSettings, null)
         {
         }
 
-        public SetServerCommand(IUserSettings userSettings, Func<Uri, IKey, IAcmeContext> contextFactory)
+        public ServerSetCommand(IUserSettings userSettings, Func<Uri, IKey, IAcmeContext> contextFactory)
         {
             Settings = userSettings;
             this.contextFactory = contextFactory ?? ContextFactory.Create;
@@ -32,14 +33,14 @@ namespace Certes.Cli.Commands
 
         public async Task<object> Execute(ArgumentSyntax syntax)
         {
-            var serverUriParam = syntax.GetActiveParameters()
-                .Where(p => p.Name == ParamUri)
+            var serverUriParam = syntax.GetActiveOptions()
+                .Where(p => p.Name == ParamServer)
                 .OfType<Argument<Uri>>()
                 .First();
 
             if (!serverUriParam.IsSpecified)
             {
-                syntax.ReportError(string.Format(Strings.ParameterMissing, ParamUri));
+                syntax.ReportError(string.Format(Strings.OptionMissing, ParamServer));
             }
 
             var ctx = contextFactory(serverUriParam.Value, null);
@@ -55,12 +56,10 @@ namespace Certes.Cli.Commands
 
         public ArgumentCommand<string> Define(ArgumentSyntax syntax)
         {
-            var cmd = syntax.DefineCommand(CommandText);
-            cmd.Help = Strings.SetServerHelp;
+            var cmd = syntax.DefineCommand("set", help: Strings.HelpCommandServerSet);
+            syntax.DefineOption(
+                "server", WellKnownServers.LetsEncryptV2, true, Strings.HelpOptionServer);
 
-            syntax.DefineParameter(
-                ParamUri, WellKnownServers.LetsEncryptV2, Strings.ServerUriHelper);
-            
             return cmd;
         }
     }

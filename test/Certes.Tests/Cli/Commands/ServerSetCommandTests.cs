@@ -12,7 +12,7 @@ using static Certes.Helper;
 
 namespace Certes.Cli.Commands
 {
-    public class SetServerCommandTests
+    public class ServerSetCommandTests
     {
         [Fact]
         public async Task CanProcessCommand()
@@ -25,8 +25,8 @@ namespace Certes.Cli.Commands
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
 
-            var cmd = new SetServerCommand(settingsMock.Object, (l, k) => ctxMock.Object);
-            var syntax = DefineCommand($"set-server {serverUri}");
+            var cmd = new ServerSetCommand(settingsMock.Object, (l, k) => ctxMock.Object);
+            var syntax = DefineCommand($"set --server {serverUri}");
 
             var ret = await cmd.Execute(syntax);
             Assert.Equal(
@@ -37,26 +37,26 @@ namespace Certes.Cli.Commands
                     directory = MockDirectoryV2
                 }));
 
-            syntax = DefineCommand($"set-server");
+            syntax = DefineCommand($"set");
             await Assert.ThrowsAsync<ArgumentSyntaxException>(() => cmd.Execute(syntax));
         }
 
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"set-server {LetsEncryptStagingV2}";
+            var args = $"set --server {LetsEncryptStagingV2}";
             var syntax = DefineCommand(args);
 
-            Assert.Equal("set-server", syntax.ActiveCommand.Value);
-            ValidateParameter(syntax, "server-uri", LetsEncryptStagingV2);
+            Assert.Equal("set", syntax.ActiveCommand.Value);
+            ValidateOption(syntax, "server", LetsEncryptStagingV2);
 
             syntax = DefineCommand("noop");
-            Assert.NotEqual("set-server", syntax.ActiveCommand.Value);
+            Assert.NotEqual("set", syntax.ActiveCommand.Value);
         }
 
         private static ArgumentSyntax DefineCommand(string args)
         {
-            var cmd = new SetServerCommand(new UserSettings());
+            var cmd = new ServerSetCommand(new UserSettings());
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
                 syntax.HandleErrors = false;
@@ -65,9 +65,9 @@ namespace Certes.Cli.Commands
             });
         }
 
-        private static void ValidateParameter<T>(ArgumentSyntax syntax, string name, T value)
+        private static void ValidateOption<T>(ArgumentSyntax syntax, string name, T value)
         {
-            var arg = syntax.GetActiveParameters()
+            var arg = syntax.GetActiveOptions()
                 .Where(p => p.Name == name)
                 .OfType<Argument<T>>()
                 .FirstOrDefault();
