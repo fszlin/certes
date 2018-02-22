@@ -2,15 +2,28 @@
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using Moq;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 using Xunit;
 
 namespace Certes.Cli
 {
+    [Collection(nameof(ContextFactory))]
     public class CliCoreTests
     {
         [Fact]
         public async Task CanRunCommand()
         {
+            var config = new LoggingConfiguration();
+
+            config.LoggingRules.Add(
+                new LoggingRule("*", LogLevel.Debug, new ColoredConsoleTarget
+                {
+                    Layout = "${message}${onexception:${newline}${exception:format=tostring}}",
+                }));
+
+            LogManager.Configuration = config;
             var serverUri = new Uri("http://acme.com/d");
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
             settingsMock.Setup(m => m.SetDefaultServer(serverUri)).Returns(Task.CompletedTask);
