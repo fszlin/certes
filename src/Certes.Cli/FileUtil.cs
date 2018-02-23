@@ -9,9 +9,9 @@ namespace Certes.Cli
         private static readonly IFileUtil file = new FileUtilImpl();
 
         internal static Task<string> ReadAllText(string path)
-            => file.ReadAllTexts(path);
+            => file.ReadAllText(path);
 
         internal static Task WriteAllTexts(string path, string texts)
-            => file.WriteAllTexts(path, texts);
+            => file.WriteAllText(path, texts);
     }
 }

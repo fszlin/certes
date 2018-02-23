@@ -22,7 +22,7 @@ namespace Certes.Cli.Commands
             var serverUri = new Uri("http://acme.com/d");
             var email = "abc@example.com";
             var acctLoc = new Uri("http://acme.com/a/11");
-            var outPath = "./my-key.pem";
+            var keyPath = "./my-key.pem";
             var acct = new Account
             {
                 Status = AccountStatus.Valid
@@ -43,8 +43,10 @@ namespace Certes.Cli.Commands
                 .ReturnsAsync(acctCtxMock.Object);
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
-            fileMock.Setup(m => m.WriteAllTexts(It.IsAny<string>(), It.IsAny<string>()))
+            fileMock.Setup(m => m.WriteAllText(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.CompletedTask);
+            fileMock.Setup(m => m.ReadAllText(It.IsAny<string>()))
+                .ReturnsAsync(KeyAlgorithm.ES256.GetTestKey());
 
             var cmd = new AccountNewCommand(
                 settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
@@ -61,7 +63,7 @@ namespace Certes.Cli.Commands
 
             fileMock.ResetCalls();
 
-            syntax = DefineCommand($"new {email} --server {serverUri} --out {outPath}");
+            syntax = DefineCommand($"new {email} --server {serverUri} --out {keyPath}");
             ret = await cmd.Execute(syntax);
             Assert.Equal(
                 JsonConvert.SerializeObject(new
@@ -72,10 +74,21 @@ namespace Certes.Cli.Commands
                 JsonConvert.SerializeObject(ret));
 
             // key should be saved to '--out'
-            fileMock.Verify(m => m.WriteAllTexts(outPath, It.IsAny<string>()), Times.Once);
+            fileMock.Verify(m => m.WriteAllText(keyPath, It.IsAny<string>()), Times.Once);
 
             syntax = DefineCommand($"new");
             await Assert.ThrowsAsync<ArgumentSyntaxException>(() => cmd.Execute(syntax));
+
+            syntax = DefineCommand($"new {email} --server {serverUri} --key {keyPath}");
+            ret = await cmd.Execute(syntax);
+            Assert.Equal(
+                JsonConvert.SerializeObject(new
+                {
+                    location = acctLoc,
+                    resource = acct
+                }),
+                JsonConvert.SerializeObject(ret));
+            fileMock.Verify(m => m.ReadAllText(keyPath), Times.Once);
         }
 
         [Fact]
