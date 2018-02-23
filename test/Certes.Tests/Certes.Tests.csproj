@@ -54,7 +54,10 @@
     <None Update="Data\fake-le-intermediate-x1.pem">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Data\leaf-cert.cer">
+    <None Update="Data\leaf-cert-expire.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\leaf-cert.pem">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Data\lets-encrypt-x3-cross-signed.pem">
