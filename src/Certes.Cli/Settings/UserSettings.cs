@@ -3,30 +3,52 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Certes.Acme;
 using Certes.Cli.Options;
 using Certes.Json;
 using Newtonsoft.Json;
 
 namespace Certes.Cli.Settings
 {
-    internal class UserSettings
+    internal class UserSettings : IUserSettings
     {
-        public IList<AcmeSettings> Servers { get; set; }
-        public AzureSettings Azure { get; set; }
+        private class Model
+        {
+            public Uri DefaultServer { get; set; }
+            public IList<AcmeSettings> Servers { get; set; }
+            public AzureSettings Azure { get; set; }
+        }
 
-        public static Lazy<string> SettingsPath = new Lazy<string>(
-            () =>
+        private readonly static Func<string> SettingsPathFactory = () =>
+        {
+            var homePath = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
+            if (!Directory.Exists(homePath))
             {
-                var homePath = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
-                if (!Directory.Exists(homePath))
-                {
-                    homePath = Environment.GetEnvironmentVariable("HOME");
-                }
+                homePath = Environment.GetEnvironmentVariable("HOME");
+            }
 
-                return Path.Combine(homePath, ".certes", "certes.json");
-            });
+            return Path.Combine(homePath, ".certes", "certes.json");
+        };
 
-        public static async Task SetAcmeSettings(AcmeSettings acme, OptionsBase options)
+        public Lazy<string> SettingsFile { get; set; } = new Lazy<string>(SettingsPathFactory);
+
+        public async Task SetDefaultServer(Uri serverUri)
+        {
+            var settings = await LoadUserSettings();
+
+            settings.DefaultServer = serverUri;
+            var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
+            await FileUtil.WriteAllTexts(SettingsFile.Value, json);
+        }
+
+        public async Task<Uri> GetDefaultServer()
+        {
+            var settings = await LoadUserSettings();
+
+            return settings.DefaultServer ?? WellKnownServers.LetsEncryptV2;
+        }
+
+        public async Task SetAcmeSettings(AcmeSettings acme, OptionsBase options)
         {
             if (string.IsNullOrWhiteSpace(options.Path))
             {
@@ -49,7 +71,7 @@ namespace Certes.Cli.Settings
                 }
 
                 var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-                await FileUtil.WriteAllTexts(SettingsPath.Value, json);
+                await FileUtil.WriteAllTexts(SettingsFile.Value, json);
             }
             else if (!string.IsNullOrWhiteSpace(acme.AccountKey))
             {
@@ -57,7 +79,7 @@ namespace Certes.Cli.Settings
             }
         }
 
-        public static async Task<AzureSettings> GetAzureSettings(AzureOptions options)
+        public async Task<AzureSettings> GetAzureSettings(AzureOptions options)
         {
             var settings = await LoadUserSettings();
 
@@ -89,7 +111,7 @@ namespace Certes.Cli.Settings
             return azure;
         }
 
-        public static async Task<AcmeSettings> GetAcmeSettings(OptionsBase options)
+        public async Task<AcmeSettings> GetAcmeSettings(OptionsBase options)
         {
             var settings = await LoadUserSettings();
 
@@ -110,7 +132,7 @@ namespace Certes.Cli.Settings
             return acme;
         }
 
-        public static async Task<IKey> GetAccountKey(OptionsBase options, bool accountKeyRequired = false)
+        public async Task<IKey> GetAccountKey(OptionsBase options, bool accountKeyRequired = false)
         {
             var settings = await GetAcmeSettings(options);
 
@@ -127,17 +149,17 @@ namespace Certes.Cli.Settings
             return KeyFactory.FromPem(settings.AccountKey);
         }
 
-        private static async Task<UserSettings> LoadUserSettings()
+        private async Task<Model> LoadUserSettings()
         {
-            UserSettings settings;
-            if (File.Exists(SettingsPath.Value))
+            Model settings;
+            if (File.Exists(SettingsFile.Value))
             {
-                var json = await FileUtil.ReadAllText(SettingsPath.Value);
-                settings = JsonConvert.DeserializeObject<UserSettings>(json, JsonUtil.CreateSettings());
+                var json = await FileUtil.ReadAllText(SettingsFile.Value);
+                settings = JsonConvert.DeserializeObject<Model>(json, JsonUtil.CreateSettings());
             }
             else
             {
-                settings = new UserSettings();
+                settings = new Model();
             }
 
             return settings;

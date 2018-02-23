@@ -22,10 +22,12 @@ namespace Certes.Cli.Processors
     {
         public ILogger Logger { get; } = LogManager.GetCurrentClassLogger();
         private AzureOptions Args { get; }
+        public UserSettings Settings { get; private set; }
 
-        public AzureCommand(AzureOptions args)
+        public AzureCommand(AzureOptions args, UserSettings userSettings)
         {
             Args = args;
+            Settings = userSettings;
         }
 
         public static AzureOptions TryParse(ArgumentSyntax syntax)
@@ -75,7 +77,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> SetSslBinding()
         {
-            var key = await UserSettings.GetAccountKey(Args, true);
+            var key = await Settings.GetAccountKey(Args, true);
             Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, key);
 
@@ -141,7 +143,7 @@ namespace Certes.Cli.Processors
                 Password = pfxPwd,
             };
 
-            var azureSettings = await UserSettings.GetAzureSettings(Args);
+            var azureSettings = await Settings.GetAzureSettings(Args);
             var credentials = GetAuzreCredentials(azureSettings);
             using (var client = ContextFactory.CreateAppServiceManagementClient(credentials))
             {
@@ -167,7 +169,7 @@ namespace Certes.Cli.Processors
 
         private async Task<object> SetDns()
         {
-            var key = await UserSettings.GetAccountKey(Args, true);
+            var key = await Settings.GetAccountKey(Args, true);
 
             Logger.Debug("Using ACME server {0}.", Args.Server);
             var ctx = ContextFactory.Create(Args.Server, key);
@@ -190,7 +192,7 @@ namespace Certes.Cli.Processors
 
             var dnsValue = ctx.AccountKey.DnsTxt(challengeCtx.Token);
 
-            var azureSettings = await UserSettings.GetAzureSettings(Args);
+            var azureSettings = await Settings.GetAzureSettings(Args);
             var credentials = GetAuzreCredentials(azureSettings);
             using (var client = ContextFactory.CreateDnsManagementClient(credentials))
             {

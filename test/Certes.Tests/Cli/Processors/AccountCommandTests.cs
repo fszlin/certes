@@ -80,11 +80,12 @@ namespace Certes.Cli.Processors
                 Path = keyPath,
             };
 
-            var proc = new AccountCommand(options);
+            var userSettings = new UserSettings();
+            var proc = new AccountCommand(options, userSettings);
 
             var ret = await proc.Process();
             Assert.NotNull(ret);
-            Assert.NotNull(UserSettings.GetAccountKey(options));
+            Assert.NotNull(userSettings.GetAccountKey(options));
 
             // should not allow to overwrite the key file
             await Assert.ThrowsAsync<Exception>(() => proc.Process());
@@ -111,11 +112,12 @@ namespace Certes.Cli.Processors
             acctMock.SetupGet(c => c.Location).Returns(account.uri);
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
+            var userSettings = new UserSettings();
             var proc = new AccountCommand(new AccountOptions
             {
                 Action = AccountAction.Info,
                 Path = keyPath,
-            });
+            }, userSettings);
 
             Helper.SaveKey(keyPath);
 
@@ -149,7 +151,8 @@ namespace Certes.Cli.Processors
                 Path = keyPath,
             };
 
-            var proc = new AccountCommand(args);
+            var userSettings = new UserSettings();
+            var proc = new AccountCommand(args, userSettings);
 
             Helper.SaveKey(keyPath);
 
@@ -176,11 +179,12 @@ namespace Certes.Cli.Processors
             acctMock.Setup(c => c.Resource()).ReturnsAsync(account.data);
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
+            var userSettings = new UserSettings();
             var proc = new AccountCommand(new AccountOptions
             {
                 Action = AccountAction.Info,
                 Path = "./nokey.pem"
-            });
+            }, userSettings);
 
             await Assert.ThrowsAsync<Exception>(() => proc.Process());
         }
@@ -188,10 +192,11 @@ namespace Certes.Cli.Processors
         [Fact]
         public async Task InvalidAction()
         {
+            var userSettings = new UserSettings();
             var proc = new AccountCommand(new AccountOptions
             {
                 Action = (AccountAction)int.MaxValue,
-            });
+            }, userSettings);
 
             await Assert.ThrowsAsync<NotSupportedException>(() => proc.Process());
         }
