@@ -43,12 +43,12 @@ namespace Certes.Cli.Commands
 
             var acme = ContextFactory.Create(serverUri, key);
             var acctCtx = await acme.Account();
-            await acctCtx.Update(new[] { $"mailto://{email}" }, true);
+            var acct = await acctCtx.Update(new[] { $"mailto://{email}" }, true);
 
             return new
             {
                 location = acctCtx.Location,
-                resource = await acctCtx.Resource()
+                resource = acct,
             };
         }
     }
