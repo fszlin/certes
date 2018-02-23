@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using System.Threading.Tasks;
-using Certes.Jws;
+using System.Text;
+using Org.BouncyCastle.Pkix;
 using Xunit;
 
 namespace Certes.Pkcs
@@ -12,16 +12,32 @@ namespace Certes.Pkcs
         [InlineData(KeyAlgorithm.ES256)]
         [InlineData(KeyAlgorithm.ES384)]
         [InlineData(KeyAlgorithm.ES512)]
-        public async Task CanCreatePfxChain(KeyAlgorithm alog)
+        public void CanCreatePfxChain(KeyAlgorithm alog)
         {
-            await Task.Yield();
-            var leafCert = File.ReadAllBytes("./Data/leaf-cert.cer");
+            var leafCert = File.ReadAllText("./Data/leaf-cert.pem");
 
-            var pfxBuilder = new PfxBuilder(leafCert, new AccountKey(alog).Export());
+            var pfxBuilder = new PfxBuilder(
+                Encoding.UTF8.GetBytes(leafCert), KeyFactory.NewKey(alog));
 
             pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-ca2.pem"));
             pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
             var pfx = pfxBuilder.Build("my-cert", "abcd1234");
+        }
+
+        [Theory]
+        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES384)]
+        [InlineData(KeyAlgorithm.ES512)]
+        public void FailChainForExpiredCert(KeyAlgorithm alog)
+        {
+            var leafCert = File.ReadAllBytes("./Data/leaf-cert-expire.cer");
+
+            var pfxBuilder = new PfxBuilder(leafCert, KeyFactory.NewKey(alog));
+
+            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-ca2.pem"));
+            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
+            Assert.Throws<PkixCertPathBuilderException>(() => pfxBuilder.Build("my-cert", "abcd1234"));
         }
     }
 }
