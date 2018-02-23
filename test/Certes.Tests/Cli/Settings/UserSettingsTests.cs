@@ -20,7 +20,7 @@ namespace Certes.Cli
             SetHomePath(fullPath);
 
             var uri = new Uri("http://acme.d/d");
-            var settings = new UserSettings();
+            var settings = new UserSettings(new FileUtilImpl());
             await settings.SetDefaultServer(uri);
             Assert.Equal(uri, await settings.GetDefaultServer());
 
@@ -43,7 +43,7 @@ namespace Certes.Cli
                 Path = "./Data/key-es256.pem",
             };
 
-            var userSettings = new UserSettings();
+            var userSettings = new UserSettings(new FileUtilImpl());
             var key = await userSettings.GetAccountKey(options, false);
 
             Assert.Equal(Helper.GetKeyV2(KeyAlgorithm.ES256).Thumbprint(), key.Thumbprint());
@@ -60,7 +60,7 @@ namespace Certes.Cli
                 Action = AccountAction.Info,
             };
 
-            var userSettings = new UserSettings();
+            var userSettings = new UserSettings(new FileUtilImpl());
             await userSettings.SetAcmeSettings(new AcmeSettings
             {
                 ServerUri = WellKnownServers.LetsEncryptV2,
@@ -84,7 +84,7 @@ namespace Certes.Cli
                 Action = AccountAction.Info,
             };
 
-            var userSettings = new UserSettings();
+            var userSettings = new UserSettings(new FileUtilImpl());
             await userSettings.SetAcmeSettings(new AcmeSettings
             {
                 ServerUri = WellKnownServers.LetsEncryptV2,
@@ -103,7 +103,7 @@ namespace Certes.Cli
             var fullPath = Path.GetFullPath($"./{nameof(NullWhenKeyNotExist)}");
             SetHomePath(fullPath);
 
-            var userSettings = new UserSettings();
+            var userSettings = new UserSettings(new FileUtilImpl());
             if (Directory.Exists(userSettings.SettingsFile.Value))
             {
                 Directory.Delete(userSettings.SettingsFile.Value, true);

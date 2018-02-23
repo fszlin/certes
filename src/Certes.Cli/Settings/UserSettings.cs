@@ -19,6 +19,13 @@ namespace Certes.Cli.Settings
             public AzureSettings Azure { get; set; }
         }
 
+        private readonly IFileUtil fileUtil;
+
+        public UserSettings(IFileUtil fileUtil)
+        {
+            this.fileUtil = fileUtil;
+        }
+
         private readonly static Func<string> SettingsPathFactory = () =>
         {
             var homePath = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
@@ -38,7 +45,7 @@ namespace Certes.Cli.Settings
 
             settings.DefaultServer = serverUri;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-            await FileUtil.WriteAllTexts(SettingsFile.Value, json);
+            await fileUtil.WriteAllTexts(SettingsFile.Value, json);
         }
 
         public async Task<Uri> GetDefaultServer()
@@ -46,6 +53,27 @@ namespace Certes.Cli.Settings
             var settings = await LoadUserSettings();
 
             return settings.DefaultServer ?? WellKnownServers.LetsEncryptV2;
+        }
+
+        public async Task SetAccountKey(Uri serverUri, IKey key)
+        {
+            var settings = await LoadUserSettings();
+            if (settings.Servers == null)
+            {
+                settings.Servers = new AcmeSettings[0];
+            }
+
+            var servers = settings.Servers.ToList();
+            var serverSetting = servers.FirstOrDefault(s => s.ServerUri == serverUri);
+            if (serverSetting == null)
+            {
+                servers.Add(serverSetting = new AcmeSettings { ServerUri = serverUri });
+            }
+
+            serverSetting.Key = key.ToDer();
+            settings.Servers = servers;
+            var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
+            await fileUtil.WriteAllTexts(SettingsFile.Value, json);
         }
 
         public async Task SetAcmeSettings(AcmeSettings acme, OptionsBase options)
@@ -71,11 +99,11 @@ namespace Certes.Cli.Settings
                 }
 
                 var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-                await FileUtil.WriteAllTexts(SettingsFile.Value, json);
+                await fileUtil.WriteAllTexts(SettingsFile.Value, json);
             }
             else if (!string.IsNullOrWhiteSpace(acme.AccountKey))
             {
-                await FileUtil.WriteAllTexts(options.Path, acme.AccountKey);
+                await fileUtil.WriteAllTexts(options.Path, acme.AccountKey);
             }
         }
 
@@ -126,7 +154,7 @@ namespace Certes.Cli.Settings
 
             if (!string.IsNullOrWhiteSpace(options.Path))
             {
-                acme.AccountKey = await FileUtil.ReadAllText(options.Path);
+                acme.AccountKey = await fileUtil.ReadAllTexts(options.Path);
             }
 
             return acme;
@@ -154,7 +182,7 @@ namespace Certes.Cli.Settings
             Model settings;
             if (File.Exists(SettingsFile.Value))
             {
-                var json = await FileUtil.ReadAllText(SettingsFile.Value);
+                var json = await fileUtil.ReadAllTexts(SettingsFile.Value);
                 settings = JsonConvert.DeserializeObject<Model>(json, JsonUtil.CreateSettings());
             }
             else
@@ -163,6 +191,14 @@ namespace Certes.Cli.Settings
             }
 
             return settings;
+        }
+
+        public async Task<IKey> GetAccountKey(Uri serverUri)
+        {
+            var settings = await LoadUserSettings();
+            var serverSetting = settings.Servers?.FirstOrDefault(s => s.ServerUri == serverUri);
+            var der = serverSetting?.Key;
+            return der == null ? KeyFactory.FromDer(der) : null;
         }
     }
 

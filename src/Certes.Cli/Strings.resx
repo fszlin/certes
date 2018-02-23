@@ -117,6 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ErrorNoAccountKey" xml:space="preserve">
+    <value>No account available for ACME server '{0}'.</value>
+  </data>
+  <data name="ErrorOptionMissing" xml:space="preserve">
+    <value>Option '--{0}' is required.</value>
+  </data>
+  <data name="ErrorParameterMissing" xml:space="preserve">
+    <value>Parameter '{0}' is required.</value>
+  </data>
+  <data name="HelpCommandAccount" xml:space="preserve">
+    <value>Manage ACME accounts.</value>
+  </data>
+  <data name="HelpCommandAccountNew" xml:space="preserve">
+    <value>Create new ACME account.</value>
+  </data>
   <data name="HelpCommandServer" xml:space="preserve">
     <value>Manage ACME servers.</value>
   </data>
@@ -126,10 +141,13 @@
   <data name="HelpCommandServerShow" xml:space="preserve">
     <value>Get the details of a ACME server.</value>
   </data>
-  <data name="HelpOptionServer" xml:space="preserve">
-    <value>The dictionary URI to an ACME server.</value>
+  <data name="HelpEmail" xml:space="preserve">
+    <value>The E-mail for ACME account.</value>
   </data>
-  <data name="OptionMissing" xml:space="preserve">
-    <value>Option '--{0}' is required.</value>
+  <data name="HelpKey" xml:space="preserve">
+    <value>Path to the ACME account key.</value>
+  </data>
+  <data name="HelpServer" xml:space="preserve">
+    <value>The dictionary URI to an ACME server.</value>
   </data>
 </root>

@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Certes.Cli.Commands;
-using Certes.Cli.Settings;
 using Certes.Json;
 using Newtonsoft.Json;
 using NLog;
@@ -16,7 +14,12 @@ namespace Certes.Cli
     {
         private readonly ILogger consoleLogger = LogManager.GetLogger(nameof(CliCore));
         private readonly JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
-        internal IUserSettings Settings { get; set; }
+        private readonly IEnumerable<ICliCommand> commands;
+
+        public CliCore(IEnumerable<ICliCommand> commands)
+        {
+            this.commands = commands;
+        }
 
         public async Task<bool> Run(string[] args)
         {
@@ -43,13 +46,7 @@ namespace Certes.Cli
 
         private (ICliCommand Command, ArgumentSyntax Syntax)? MatchCommand(string[] args)
         {
-            var commandGroups = typeof(CliCore).GetTypeInfo().Assembly
-            .GetTypes()
-            .Where(t => t.GetTypeInfo().IsClass)
-            .Where(t => typeof(ICliCommand).IsAssignableFrom(t))
-            .Select(t => Activator.CreateInstance(t, Settings))
-            .Cast<ICliCommand>()
-            .ToLookup(c => c.Group);
+            var commandGroups = commands.ToLookup(c => c.Group);
 
             var group = MatchCommandGroup(args, commandGroups);
             if (group == null)

@@ -6,5 +6,6 @@ namespace Certes.Cli.Settings
     {
         public Uri ServerUri { get; set; }
         public string AccountKey { get; set; }
+        public byte[] Key { get; set; }
     }
 }

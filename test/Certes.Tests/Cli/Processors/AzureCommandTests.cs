@@ -109,7 +109,7 @@ namespace Certes.Cli.Processors
                 .ReturnsAsync((string r, string a, string n, HostNameBindingInner d, Dictionary<string, List<string>> h, CancellationToken t)
                     => new AzureOperationResponse<HostNameBindingInner> { Body = d });
 
-            var userSettings = new UserSettings();
+            var userSettings = new UserSettings(new FileUtilImpl());
             var proc = new AzureCommand(new AzureOptions
             {
                 Action = AzureAction.Ssl,
@@ -204,7 +204,7 @@ namespace Certes.Cli.Processors
                     Body = expectedRecordSet.data
                 });
 
-            var userSettings = new UserSettings();
+            var userSettings = new UserSettings(new FileUtilImpl());
             var proc = new AzureCommand(new AzureOptions
             {
                 Action = AzureAction.Dns,

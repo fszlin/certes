@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Certes.Cli.Commands;
 using Certes.Cli.Settings;
 using Moq;
 using Xunit;
 
 namespace Certes.Cli
 {
-    [Collection(nameof(ContextFactory))]
     public class CliCoreTests
     {
         [Fact]
@@ -16,14 +16,16 @@ namespace Certes.Cli
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
             settingsMock.Setup(m => m.SetDefaultServer(serverUri)).Returns(Task.CompletedTask);
 
-            var cli = new CliCore
+            var ctxMock = new Mock<IAcmeContext>();
+            ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(Helper.MockDirectoryV2);
+
+            var cli = new CliCore(new[]
             {
-                Settings = settingsMock.Object
-            };
+                new ServerSetCommand(settingsMock.Object, CliTestHelper.MakeFactory(ctxMock))
+            });
 
             var succeed = await cli.Run(new[] { "server", "set", "--server", $"{serverUri}" });
             Assert.True(succeed);
-
         }
 
         [Fact]
@@ -31,10 +33,13 @@ namespace Certes.Cli
         {
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
 
-            var cli = new CliCore
+            var ctxMock = new Mock<IAcmeContext>();
+            ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(Helper.MockDirectoryV2);
+
+            var cli = new CliCore(new[]
             {
-                Settings = settingsMock.Object
-            };
+                new ServerSetCommand(settingsMock.Object, CliTestHelper.MakeFactory(null))
+            });
 
             Assert.False(await cli.Run(new[] { "-h" }));
         }
@@ -44,12 +49,16 @@ namespace Certes.Cli
         {
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
 
-            var cli = new CliCore
+            var ctxMock = new Mock<IAcmeContext>();
+            ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(Helper.MockDirectoryV2);
+
+            var cli = new CliCore(new[]
             {
-                Settings = settingsMock.Object
-            };
-            
+                new ServerSetCommand(settingsMock.Object, CliTestHelper.MakeFactory(null))
+            });
+
             Assert.False(await cli.Run(new[] { "server", "-h" }));
+            Assert.False(await cli.Run(new[] { "server", "set", "-h" }));
         }
 
         [Fact]
@@ -57,10 +66,13 @@ namespace Certes.Cli
         {
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
 
-            var cli = new CliCore
+            var ctxMock = new Mock<IAcmeContext>();
+            ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(Helper.MockDirectoryV2);
+
+            var cli = new CliCore(new[]
             {
-                Settings = settingsMock.Object
-            };
+                new ServerSetCommand(settingsMock.Object, CliTestHelper.MakeFactory(null))
+            });
 
             Assert.False(await cli.Run(new string[0]));
         }

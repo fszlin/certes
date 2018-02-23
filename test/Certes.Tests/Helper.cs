@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 using Certes.Crypto;
-using Certes.Pkcs;
 using NLog;
 using NLog.Config;
 using NLog.Targets;

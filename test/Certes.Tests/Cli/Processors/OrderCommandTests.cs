@@ -104,7 +104,7 @@ namespace Certes.Cli.Processors
                 CertKeyPath = certKeyPath,
             };
 
-            var userSettings = new UserSettings();
+            var userSettings = new UserSettings(new FileUtilImpl());
             var proc = new OrderCommand(options, userSettings);
 
             dynamic ret = await proc.Process();
@@ -173,7 +173,7 @@ namespace Certes.Cli.Processors
 
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
-            var userSettings = new UserSettings();
+            var userSettings = new UserSettings(new FileUtilImpl());
             var proc = new OrderCommand(new OrderOptions
             {
                 Action = OrderAction.List,
@@ -213,7 +213,7 @@ namespace Certes.Cli.Processors
 
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
-            var userSettings = new UserSettings();
+            var userSettings = new UserSettings(new FileUtilImpl());
             var proc = new OrderCommand(new OrderOptions
             {
                 Action = OrderAction.Info,
@@ -265,7 +265,7 @@ namespace Certes.Cli.Processors
 
             ContextFactory.Create = (uri, key) => ctxMock.Object;
             
-            var userSettings = new UserSettings();
+            var userSettings = new UserSettings(new FileUtilImpl());
             var proc = new OrderCommand(new OrderOptions
             {
                 Action = OrderAction.Authz,
@@ -324,7 +324,7 @@ namespace Certes.Cli.Processors
 
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
-            var userSettings = new UserSettings();
+            var userSettings = new UserSettings(new FileUtilImpl());
             var proc = new OrderCommand(new OrderOptions
             {
                 Action = OrderAction.Authz,
@@ -361,7 +361,7 @@ namespace Certes.Cli.Processors
             orderMock.Setup(c => c.Location).Returns(order.uri);
             ContextFactory.Create = (uri, key) => ctxMock.Object;
 
-            var userSettings = new UserSettings();
+            var userSettings = new UserSettings(new FileUtilImpl());
             var proc = new OrderCommand(new OrderOptions
             {
                 Action = OrderAction.New,
@@ -376,7 +376,7 @@ namespace Certes.Cli.Processors
         [Fact]
         public async Task InvalidAction()
         {
-            var userSettings = new UserSettings();
+            var userSettings = new UserSettings(new FileUtilImpl());
             var proc = new OrderCommand(new OrderOptions
             {
                 Action = (OrderAction)int.MaxValue,
