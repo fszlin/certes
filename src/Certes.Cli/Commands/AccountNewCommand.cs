@@ -12,21 +12,16 @@ namespace Certes.Cli.Commands
         private const string EmailParam = "email";
         private const string OutOption = "out";
 
-        private readonly Func<Uri, IKey, IAcmeContext> contextFactory;
+        private readonly IAcmeContextFactory contextFactory;
+        private readonly IUserSettings userSettings;
         private readonly ILogger logger = LogManager.GetLogger(nameof(ServerSetCommand));
 
         public CommandGroup Group { get; } = CommandGroup.Account;
-        public IUserSettings Settings { get; private set; }
-
-        public AccountNewCommand(IUserSettings userSettings)
-            : this(userSettings, null)
+        
+        public AccountNewCommand(IUserSettings userSettings, IAcmeContextFactory contextFactory)
         {
-        }
-
-        public AccountNewCommand(IUserSettings userSettings, Func<Uri, IKey, IAcmeContext> contextFactory)
-        {
-            Settings = userSettings;
-            this.contextFactory = contextFactory ?? ContextFactory.Create;
+            this.userSettings = userSettings;
+            this.contextFactory = contextFactory;
         }
 
         public ArgumentCommand<string> Define(ArgumentSyntax syntax)
@@ -55,7 +50,7 @@ namespace Certes.Cli.Commands
                     string.Format(Strings.ErrorParameterMissing, EmailParam));
             }
 
-            var acme = contextFactory(acct.Server, key);
+            var acme = contextFactory.Create(acct.Server, key);
             var acctCtx = await acme.NewAccount(email, true);
 
             var outPath = syntax.GetOption<string>(OutOption);
@@ -66,7 +61,7 @@ namespace Certes.Cli.Commands
             }
             else
             {
-                await Settings.SetAccountKey(acct.Server, key);
+                await userSettings.SetAccountKey(acct.Server, key);
             }
 
             return new
@@ -80,7 +75,7 @@ namespace Certes.Cli.Commands
             ArgumentSyntax syntax)
         {
             var serverUri = syntax.GetServerOption() ??
-                await Settings.GetDefaultServer();
+                await userSettings.GetDefaultServer();
 
             var keyPath = syntax.GetKeyOption();
             if (!string.IsNullOrWhiteSpace(keyPath))

@@ -10,21 +10,16 @@ namespace Certes.Cli.Commands
     internal class ServerShowCommand : ICliCommand
     {
         private const string ParamServer = "server";
-        private readonly Func<Uri, IKey, IAcmeContext> contextFactory;
         private readonly ILogger logger = LogManager.GetLogger(nameof(ServerSetCommand));
 
+        private readonly IAcmeContextFactory contextFactory;
+        private readonly IUserSettings userSettings;
         public CommandGroup Group { get; } = CommandGroup.Server;
-        public IUserSettings Settings { get; private set; }
 
-        public ServerShowCommand(IUserSettings userSettings)
-            : this(userSettings, null)
+        public ServerShowCommand(IUserSettings userSettings, IAcmeContextFactory contextFactory)
         {
-        }
-
-        public ServerShowCommand(IUserSettings userSettings, Func<Uri, IKey, IAcmeContext> contextFactory)
-        {
-            Settings = userSettings;
-            this.contextFactory = contextFactory ?? ContextFactory.Create;
+            this.userSettings = userSettings;
+            this.contextFactory = contextFactory;
         }
 
         public ArgumentCommand<string> Define(ArgumentSyntax syntax)
@@ -38,9 +33,9 @@ namespace Certes.Cli.Commands
         public async Task<object> Execute(ArgumentSyntax syntax)
         {
             var serverUri = syntax.GetServerOption() ??
-                await Settings.GetDefaultServer();
+                await userSettings.GetDefaultServer();
 
-            var ctx = contextFactory(serverUri, null);
+            var ctx = contextFactory.Create(serverUri, null);
             logger.Debug("Loading directory from '{0}'", serverUri);
             var directory = await ctx.GetDirectory();
 

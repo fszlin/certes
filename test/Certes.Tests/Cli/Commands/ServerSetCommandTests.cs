@@ -24,7 +24,7 @@ namespace Certes.Cli.Commands
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
 
-            var cmd = new ServerSetCommand(settingsMock.Object, (l, k) => ctxMock.Object);
+            var cmd = new ServerSetCommand(settingsMock.Object, MakeFactory(ctxMock));
             var syntax = DefineCommand($"set --server {serverUri}");
 
             var ret = await cmd.Execute(syntax);
@@ -55,7 +55,7 @@ namespace Certes.Cli.Commands
 
         private static ArgumentSyntax DefineCommand(string args)
         {
-            var cmd = new ServerSetCommand(new UserSettings());
+            var cmd = new ServerSetCommand(new UserSettings(), MakeFactory(null));
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
                 syntax.HandleErrors = false;

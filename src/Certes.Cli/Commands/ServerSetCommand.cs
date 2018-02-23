@@ -14,20 +14,15 @@ namespace Certes.Cli.Commands
         private const string ParamServer = "server";
         private readonly ILogger logger = LogManager.GetLogger(nameof(ServerSetCommand));
 
-        private readonly Func<Uri, IKey, IAcmeContext> contextFactory;
+        private readonly IAcmeContextFactory contextFactory;
+        private readonly IUserSettings userSettings;
 
         public CommandGroup Group { get; } = CommandGroup.Server;
-        public IUserSettings Settings { get; private set; }
 
-        public ServerSetCommand(IUserSettings userSettings)
-            : this(userSettings, null)
+        public ServerSetCommand(IUserSettings userSettings, IAcmeContextFactory contextFactory)
         {
-        }
-
-        public ServerSetCommand(IUserSettings userSettings, Func<Uri, IKey, IAcmeContext> contextFactory)
-        {
-            Settings = userSettings;
-            this.contextFactory = contextFactory ?? ContextFactory.Create;
+            this.userSettings = userSettings;
+            this.contextFactory = contextFactory;
         }
 
         public async Task<object> Execute(ArgumentSyntax syntax)
@@ -42,10 +37,10 @@ namespace Certes.Cli.Commands
                 syntax.ReportError(string.Format(Strings.ErrorOptionMissing, ParamServer));
             }
 
-            var ctx = contextFactory(serverUriParam.Value, null);
+            var ctx = contextFactory.Create(serverUriParam.Value, null);
             logger.Debug("Loading directory from '{0}'", serverUriParam.Value);
             var directory = await ctx.GetDirectory();
-            await Settings.SetDefaultServer(serverUriParam.Value);
+            await userSettings.SetDefaultServer(serverUriParam.Value);
             return new
             {
                 location = serverUriParam.Value,
