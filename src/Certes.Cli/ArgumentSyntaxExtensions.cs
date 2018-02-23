@@ -61,20 +61,15 @@ namespace Certes.Cli
 
         public static Uri GetServerOption(this ArgumentSyntax syntax)
             => syntax.GetOption<Uri>(ServerOptionName);
-        public static string GetKeyOption(this ArgumentSyntax syntax, bool isRequired = false)
-            => syntax.GetOption<string>(KeyOptionName, isRequired);
+        public static string GetKeyOption(this ArgumentSyntax syntax)
+            => syntax.GetOption<string>(KeyOptionName);
 
-        public static T GetOption<T>(this ArgumentSyntax syntax, string name, bool isRequired = false)
+        public static T GetOption<T>(this ArgumentSyntax syntax, string name)
         {
             var values = syntax.GetActiveOptions()
                 .OfType<Argument<T>>()
                 .Where(a => name.Equals(a.Name, StringComparison.Ordinal))
                 .Select(a => a.Value);
-
-            if (isRequired && !values.Any())
-            {
-                syntax.ReportError(string.Format(Strings.ErrorOptionMissing, name));
-            }
 
             return values.FirstOrDefault();
         }

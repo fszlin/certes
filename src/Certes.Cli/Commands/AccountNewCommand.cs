@@ -37,7 +37,7 @@ namespace Certes.Cli.Commands
                 .DefineServerOption()
                 .DefineKeyOption()
                 .DefineOption(OutOption)
-                .DefineParameter(EmailParam);
+                .DefineParameter(EmailParam, Strings.HelpEmail);
 
             return cmd;
         }
