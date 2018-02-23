@@ -54,7 +54,7 @@ namespace Certes.Cli
         public static ArgumentSyntax DefineParameter(
             this ArgumentSyntax syntax, string name, string help = null)
         {
-            var arg = syntax.DefineParameter(name, "");
+            var arg = syntax.DefineParameter(name, null);
             arg.Help = help;
             return syntax;
         }
@@ -79,11 +79,19 @@ namespace Certes.Cli
             return values.FirstOrDefault();
         }
 
-        public static T GetParameter<T>(this ArgumentSyntax syntax, string name)
-            => syntax.GetActiveParameters()
+        public static T GetParameter<T>(this ArgumentSyntax syntax, string name, bool isRequired = false)
+        {
+            var values = syntax.GetActiveArguments()
                 .OfType<Argument<T>>()
                 .Where(a => name.Equals(a.Name, StringComparison.Ordinal))
-                .Select(a => a.Value)
-                .First();
+                .Select(a => a.Value);
+
+            if (isRequired && values.All(v => Equals(v, default(T))))
+            {
+                syntax.ReportError(string.Format(Strings.ErrorParameterMissing, name));
+            }
+
+            return values.FirstOrDefault();
+        }
     }
 }

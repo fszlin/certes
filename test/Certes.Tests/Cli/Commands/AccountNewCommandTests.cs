@@ -22,6 +22,7 @@ namespace Certes.Cli.Commands
             var serverUri = new Uri("http://acme.com/d");
             var email = "abc@example.com";
             var acctLoc = new Uri("http://acme.com/a/11");
+            var outPath = "./my-key.pem";
             var acct = new Account
             {
                 Status = AccountStatus.Valid
@@ -45,9 +46,10 @@ namespace Certes.Cli.Commands
             fileMock.Setup(m => m.WriteAllTexts(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.CompletedTask);
 
-            var cmd = new AccountNewCommand(settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
-            var syntax = DefineCommand($"new {email} --server {serverUri}");
+            var cmd = new AccountNewCommand(
+                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
 
+            var syntax = DefineCommand($"new {email} --server {serverUri}");
             var ret = await cmd.Execute(syntax);
             Assert.Equal(
                 JsonConvert.SerializeObject(new
@@ -57,6 +59,23 @@ namespace Certes.Cli.Commands
                 }),
                 JsonConvert.SerializeObject(ret));
 
+            fileMock.ResetCalls();
+
+            syntax = DefineCommand($"new {email} --server {serverUri} --out {outPath}");
+            ret = await cmd.Execute(syntax);
+            Assert.Equal(
+                JsonConvert.SerializeObject(new
+                {
+                    location = acctLoc,
+                    resource = acct
+                }),
+                JsonConvert.SerializeObject(ret));
+
+            // key should be saved to '--out'
+            fileMock.Verify(m => m.WriteAllTexts(outPath, It.IsAny<string>()), Times.Once);
+
+            syntax = DefineCommand($"new");
+            await Assert.ThrowsAsync<ArgumentSyntaxException>(() => cmd.Execute(syntax));
         }
 
         [Fact]
@@ -75,7 +94,8 @@ namespace Certes.Cli.Commands
 
         private static ArgumentSyntax DefineCommand(string args)
         {
-            var cmd = new AccountNewCommand(new UserSettings(), MakeFactory(null), new FileUtilImpl());
+            var cmd = new AccountNewCommand(
+                new UserSettings(new FileUtilImpl()), MakeFactory(null), new FileUtilImpl());
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
                 syntax.HandleErrors = false;

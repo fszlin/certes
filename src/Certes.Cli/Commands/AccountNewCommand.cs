@@ -48,12 +48,7 @@ namespace Certes.Cli.Commands
 
             logger.Debug("Creating new account on '{0}'.", acct.Server);
             var key = acct.Key ?? KeyFactory.NewKey(KeyAlgorithm.ES256);
-            var email = syntax.GetParameter<string>(EmailParam);
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                throw new ArgumentSyntaxException(
-                    string.Format(Strings.ErrorParameterMissing, EmailParam));
-            }
+            var email = syntax.GetParameter<string>(EmailParam, true);
 
             var acme = contextFactory.Create(acct.Server, key);
             var acctCtx = await acme.NewAccount(email, true);

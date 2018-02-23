@@ -58,6 +58,7 @@ namespace Certes.Cli
             });
 
             Assert.False(await cli.Run(new[] { "server", "-h" }));
+            Assert.False(await cli.Run(new[] { "server", "set", "-h" }));
         }
 
         [Fact]

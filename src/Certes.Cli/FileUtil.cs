@@ -13,8 +13,5 @@ namespace Certes.Cli
 
         internal static Task WriteAllTexts(string path, string texts)
             => file.WriteAllTexts(path, texts);
-
-        internal static Task WriteAllBytes(string path, byte[] data)
-            => file.WriteAllBytes(path, data);
     }
 }

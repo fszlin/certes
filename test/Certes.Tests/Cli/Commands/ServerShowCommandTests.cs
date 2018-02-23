@@ -63,7 +63,7 @@ namespace Certes.Cli.Commands
 
         private static ArgumentSyntax DefineCommand(string args)
         {
-            var cmd = new ServerShowCommand(new UserSettings(), MakeFactory(null));
+            var cmd = new ServerShowCommand(new UserSettings(new FileUtilImpl()), MakeFactory(null));
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
                 syntax.HandleErrors = false;
