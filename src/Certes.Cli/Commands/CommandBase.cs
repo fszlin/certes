@@ -24,7 +24,9 @@ namespace Certes.Cli.Commands
         }
 
         protected async Task<(Uri Server, IKey Key)> ReadAccountKey(
-            ArgumentSyntax syntax, bool fallbackToSettings = false, bool required = false)
+            ArgumentSyntax syntax, 
+            bool fallbackToSettings = false,
+            bool required = false)
         {
             var serverUri = syntax.GetServerOption() ??
                 await UserSettings.GetDefaultServer();

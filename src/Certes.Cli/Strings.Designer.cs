@@ -116,6 +116,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Update ACME account..
+        /// </summary>
+        internal static string HelpCommandAccountUpdate {
+            get {
+                return ResourceManager.GetString("HelpCommandAccountUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manage ACME servers..
         /// </summary>
         internal static string HelpCommandServer {

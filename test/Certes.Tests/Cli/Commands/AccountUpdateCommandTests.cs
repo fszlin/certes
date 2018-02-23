@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -13,14 +14,14 @@ using static Certes.Helper;
 
 namespace Certes.Cli.Commands
 {
-    public class AccountShowCommandTests
+    public class AccountUpdateCommandTests
     {
         [Fact]
         public async Task CanProcessCommand()
         {
             var serverUri = new Uri("http://acme.com/d");
-            var acctLoc = new Uri("http://acme.com/a/12");
-            var keyPath = "./my-key.pem";
+            var email = "abc@example.com";
+            var acctLoc = new Uri("http://acme.com/a/11");
             var acct = new Account
             {
                 Status = AccountStatus.Valid
@@ -28,25 +29,24 @@ namespace Certes.Cli.Commands
 
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
             settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(serverUri);
-            settingsMock.Setup(m => m.GetAccountKey(serverUri))
-                .ReturnsAsync(GetKeyV2());
+            settingsMock.Setup(m => m.GetAccountKey(serverUri)).ReturnsAsync(GetKeyV2());
 
             var acctCtxMock = new Mock<IAccountContext>(MockBehavior.Strict);
             acctCtxMock.SetupGet(m => m.Location).Returns(acctLoc);
             acctCtxMock.Setup(m => m.Resource()).ReturnsAsync(acct);
+            acctCtxMock.Setup(m => m.Update(new[] { $"mailto://{email}" }, true))
+                .ReturnsAsync(acctCtxMock.Object);
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
             ctxMock.Setup(m => m.Account()).ReturnsAsync(acctCtxMock.Object);
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
-            fileMock.Setup(m => m.ReadAllText(It.IsAny<string>()))
-                .ReturnsAsync(KeyAlgorithm.ES256.GetTestKey());
 
-            var cmd = new AccountShowCommand(
+            var cmd = new AccountUpdateCommand(
                 settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
 
-            var syntax = DefineCommand($"show");
+            var syntax = DefineCommand($"update {email}");
             var ret = await cmd.Execute(syntax);
             Assert.Equal(
                 JsonConvert.SerializeObject(new
@@ -56,36 +56,26 @@ namespace Certes.Cli.Commands
                 }),
                 JsonConvert.SerializeObject(ret));
 
-            fileMock.ResetCalls();
-
-            syntax = DefineCommand($"show --key {keyPath} --server {serverUri}");
-            ret = await cmd.Execute(syntax);
-            Assert.Equal(
-                JsonConvert.SerializeObject(new
-                {
-                    location = acctLoc,
-                    resource = acct
-                }),
-                JsonConvert.SerializeObject(ret));
-            fileMock.Verify(m => m.ReadAllText(keyPath), Times.Once);
+            acctCtxMock.Verify(m => m.Update(new[] { $"mailto://{email}" }, true), Times.Once);
         }
 
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"show --server {LetsEncryptStagingV2}";
+            var args = $"update abc@example.com --server {LetsEncryptStagingV2}";
             var syntax = DefineCommand(args);
 
-            Assert.Equal("show", syntax.ActiveCommand.Value);
+            Assert.Equal("update", syntax.ActiveCommand.Value);
             ValidateOption(syntax, "server", LetsEncryptStagingV2);
+            ValidateParameter(syntax, "email", "abc@example.com");
 
             syntax = DefineCommand("noop");
-            Assert.NotEqual("show", syntax.ActiveCommand.Value);
+            Assert.NotEqual("update", syntax.ActiveCommand.Value);
         }
 
         private static ArgumentSyntax DefineCommand(string args)
         {
-            var cmd = new AccountShowCommand(
+            var cmd = new AccountUpdateCommand(
                 new UserSettings(new FileUtilImpl()), MakeFactory(null), new FileUtilImpl());
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
