@@ -33,9 +33,8 @@ namespace Certes.Cli.Commands
 
             var acctCtxMock = new Mock<IAccountContext>(MockBehavior.Strict);
             acctCtxMock.SetupGet(m => m.Location).Returns(acctLoc);
-            acctCtxMock.Setup(m => m.Resource()).ReturnsAsync(acct);
             acctCtxMock.Setup(m => m.Update(new[] { $"mailto://{email}" }, true))
-                .ReturnsAsync(acctCtxMock.Object);
+                .ReturnsAsync(acct);
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);

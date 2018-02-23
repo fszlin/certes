@@ -12,19 +12,6 @@ namespace Certes
     public static class IAccountContextExtensions
     {
         /// <summary>
-        /// Updates the current account.
-        /// </summary>
-        /// <param name="account">The account.</param>
-        /// <param name="contact">The contact infomation.</param>
-        /// <param name="agreeTermsOfService">Set to <c>true</c> to accept the terms of service.</param>
-        /// <returns>
-        /// The account.
-        /// </returns>
-        public static Task<IAccountContext> Update(
-            this Task<IAccountContext> account, IList<string> contact = null, bool agreeTermsOfService = false)
-            => account.ContinueWith(a => a.Result.Update(contact, agreeTermsOfService)).Unwrap();
-
-        /// <summary>
         /// Deactivates the current account.
         /// </summary>
         /// <returns>The account deactivated.</returns>
