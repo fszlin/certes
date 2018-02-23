@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CommandLine;
+using System.Linq;
 using Certes.Acme;
 
 namespace Certes.Cli
@@ -25,27 +26,23 @@ namespace Certes.Cli
             this ArgumentSyntax syntax, string name, ref T value, string help)
             => syntax.DefineParameter(name, ref value, a => (T)Enum.Parse(typeof(T), a?.Replace("-", ""), true), help);
 
-        public static Argument<Uri> DefineOption(
-            this ArgumentSyntax syntax, string name, Uri defaultValue, bool isRequired = false, string help = null)
+        public static ArgumentSyntax DefineServerOption(this ArgumentSyntax syntax)
         {
-            var arg = syntax.DefineOption(name, defaultValue, s => new Uri(s), isRequired);
-            arg.Help = help;
-            return arg;
-        }
-
-        public static ArgumentSyntax DefineServerOption(this ArgumentSyntax syntax, bool isRequired = false)
-        {
-            syntax.DefineOption(
-                ServerOptionName, WellKnownServers.LetsEncryptV2, isRequired, Strings.HelpOptionServer);
+            Uri value = null;
+            var arg = syntax.DefineOption(ServerOptionName, value, s => new Uri(s));
+            arg.Help = Strings.HelpServer;
             return syntax;
         }
 
-        public static ArgumentSyntax DefineKeyOption(this ArgumentSyntax syntax, bool isRequired = false)
+        public static ArgumentSyntax DefineOption(this ArgumentSyntax syntax, string name)
         {
-            syntax.DefineOption(
-                KeyOptionName, WellKnownServers.LetsEncryptV2, isRequired, Strings.HelpOptionKey);
+            string value = null;
+            var opt = syntax.DefineOption(name, ref value, true, Strings.HelpKey);
             return syntax;
         }
+
+        public static ArgumentSyntax DefineKeyOption(this ArgumentSyntax syntax)
+            => syntax.DefineOption(KeyOptionName);
 
         public static ArgumentCommand<string> DefineCommand(
             this ArgumentSyntax syntax, string name, string help = null)
@@ -54,5 +51,39 @@ namespace Certes.Cli
             arg.Help = help;
             return arg;
         }
+        public static ArgumentSyntax DefineParameter(
+            this ArgumentSyntax syntax, string name, string help = null)
+        {
+            var arg = syntax.DefineParameter(name, "");
+            arg.Help = help;
+            return syntax;
+        }
+
+        public static Uri GetServerOption(this ArgumentSyntax syntax)
+            => syntax.GetOption<Uri>(ServerOptionName);
+        public static string GetKeyOption(this ArgumentSyntax syntax, bool isRequired = false)
+            => syntax.GetOption<string>(KeyOptionName, isRequired);
+
+        public static T GetOption<T>(this ArgumentSyntax syntax, string name, bool isRequired = false)
+        {
+            var values = syntax.GetActiveOptions()
+                .OfType<Argument<T>>()
+                .Where(a => name.Equals(a.Name, StringComparison.Ordinal))
+                .Select(a => a.Value);
+
+            if (isRequired && !values.Any())
+            {
+                syntax.ReportError(string.Format(Strings.ErrorOptionMissing, name));
+            }
+
+            return values.FirstOrDefault();
+        }
+
+        public static T GetParameter<T>(this ArgumentSyntax syntax, string name)
+            => syntax.GetActiveParameters()
+                .OfType<Argument<T>>()
+                .Where(a => name.Equals(a.Name, StringComparison.Ordinal))
+                .Select(a => a.Value)
+                .First();
     }
 }

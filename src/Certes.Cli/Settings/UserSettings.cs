@@ -48,6 +48,27 @@ namespace Certes.Cli.Settings
             return settings.DefaultServer ?? WellKnownServers.LetsEncryptV2;
         }
 
+        public async Task SetAccountKey(Uri serverUri, IKey key)
+        {
+            var settings = await LoadUserSettings();
+            if (settings.Servers == null)
+            {
+                settings.Servers = new AcmeSettings[0];
+            }
+
+            var servers = settings.Servers.ToList();
+            var serverSetting = servers.FirstOrDefault(s => s.ServerUri == serverUri);
+            if (serverSetting == null)
+            {
+                servers.Add(serverSetting = new AcmeSettings { ServerUri = serverUri });
+            }
+
+            serverSetting.Key = key.ToDer();
+            settings.Servers = servers;
+            var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
+            await FileUtil.WriteAllTexts(SettingsFile.Value, json);
+        }
+
         public async Task SetAcmeSettings(AcmeSettings acme, OptionsBase options)
         {
             if (string.IsNullOrWhiteSpace(options.Path))
@@ -163,6 +184,14 @@ namespace Certes.Cli.Settings
             }
 
             return settings;
+        }
+
+        public async Task<IKey> GetAccountKey(Uri serverUri)
+        {
+            var settings = await LoadUserSettings();
+            var serverSetting = settings.Servers?.FirstOrDefault(s => s.ServerUri == serverUri);
+            var der = serverSetting?.Key;
+            return der == null ? KeyFactory.FromDer(der) : null;
         }
     }
 

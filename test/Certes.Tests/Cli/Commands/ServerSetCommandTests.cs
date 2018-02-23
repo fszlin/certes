@@ -33,7 +33,7 @@ namespace Certes.Cli.Commands
                 JsonConvert.SerializeObject(new
                 {
                     location = serverUri,
-                    directory = MockDirectoryV2
+                    resource = MockDirectoryV2
                 }));
 
             syntax = DefineCommand($"set");

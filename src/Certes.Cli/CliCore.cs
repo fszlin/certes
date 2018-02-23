@@ -16,7 +16,7 @@ namespace Certes.Cli
     {
         private readonly ILogger consoleLogger = LogManager.GetLogger(nameof(CliCore));
         private readonly JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
-        internal IUserSettings Settings { get; set; }
+        internal IUserSettings Settings { get; set; } = new UserSettings();
 
         public async Task<bool> Run(string[] args)
         {
@@ -44,12 +44,12 @@ namespace Certes.Cli
         private (ICliCommand Command, ArgumentSyntax Syntax)? MatchCommand(string[] args)
         {
             var commandGroups = typeof(CliCore).GetTypeInfo().Assembly
-            .GetTypes()
-            .Where(t => t.GetTypeInfo().IsClass)
-            .Where(t => typeof(ICliCommand).IsAssignableFrom(t))
-            .Select(t => Activator.CreateInstance(t, Settings))
-            .Cast<ICliCommand>()
-            .ToLookup(c => c.Group);
+                .GetTypes()
+                .Where(t => t.GetTypeInfo().IsClass)
+                .Where(t => typeof(ICliCommand).IsAssignableFrom(t))
+                .Select(t => Activator.CreateInstance(t, Settings))
+                .Cast<ICliCommand>()
+                .ToLookup(c => c.Group);
 
             var group = MatchCommandGroup(args, commandGroups);
             if (group == null)

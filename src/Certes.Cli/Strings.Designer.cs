@@ -62,6 +62,33 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No account available for ACME server &apos;{0}&apos;..
+        /// </summary>
+        internal static string ErrorNoAccountKey {
+            get {
+                return ResourceManager.GetString("ErrorNoAccountKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option &apos;--{0}&apos; is required..
+        /// </summary>
+        internal static string ErrorOptionMissing {
+            get {
+                return ResourceManager.GetString("ErrorOptionMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parameter &apos;{0}&apos; is required..
+        /// </summary>
+        internal static string ErrorParameterMissing {
+            get {
+                return ResourceManager.GetString("ErrorParameterMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manage ACME accounts..
         /// </summary>
         internal static string HelpCommandAccount {
@@ -107,29 +134,29 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The E-mail for ACME account..
+        /// </summary>
+        internal static string HelpEmail {
+            get {
+                return ResourceManager.GetString("HelpEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Path to the ACME account key..
         /// </summary>
-        internal static string HelpOptionKey {
+        internal static string HelpKey {
             get {
-                return ResourceManager.GetString("HelpOptionKey", resourceCulture);
+                return ResourceManager.GetString("HelpKey", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The dictionary URI to an ACME server..
         /// </summary>
-        internal static string HelpOptionServer {
+        internal static string HelpServer {
             get {
-                return ResourceManager.GetString("HelpOptionServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Option &apos;--{0}&apos; is required..
-        /// </summary>
-        internal static string OptionMissing {
-            get {
-                return ResourceManager.GetString("OptionMissing", resourceCulture);
+                return ResourceManager.GetString("HelpServer", resourceCulture);
             }
         }
     }

@@ -37,19 +37,17 @@ namespace Certes.Cli.Commands
 
         public async Task<object> Execute(ArgumentSyntax syntax)
         {
-            var serverUriParam = syntax.GetActiveOptions()
-                .Where(p => p.Name == ParamServer)
-                .OfType<Argument<Uri>>()
-                .First();
+            var serverUri = syntax.GetServerOption() ??
+                await Settings.GetDefaultServer();
 
-            var ctx = contextFactory(serverUriParam.Value, null);
-            logger.Debug("Loading directory from '{0}'", serverUriParam.Value);
+            var ctx = contextFactory(serverUri, null);
+            logger.Debug("Loading directory from '{0}'", serverUri);
             var directory = await ctx.GetDirectory();
 
             return new
             {
-                location = serverUriParam.Value,
-                directory,
+                location = serverUri,
+                resource = directory,
             };
         }
     }

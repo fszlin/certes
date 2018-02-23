@@ -39,7 +39,7 @@ namespace Certes.Cli.Commands
 
             if (!serverUriParam.IsSpecified)
             {
-                syntax.ReportError(string.Format(Strings.OptionMissing, ParamServer));
+                syntax.ReportError(string.Format(Strings.ErrorOptionMissing, ParamServer));
             }
 
             var ctx = contextFactory(serverUriParam.Value, null);
@@ -49,14 +49,14 @@ namespace Certes.Cli.Commands
             return new
             {
                 location = serverUriParam.Value,
-                directory,
+                resource = directory,
             };
         }
 
         public ArgumentCommand<string> Define(ArgumentSyntax syntax)
         {
             var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandServerSet);
-            syntax.DefineServerOption(true);
+            syntax.DefineServerOption();
 
             return cmd;
         }
