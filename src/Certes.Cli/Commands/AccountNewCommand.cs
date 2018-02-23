@@ -12,16 +12,21 @@ namespace Certes.Cli.Commands
         private const string EmailParam = "email";
         private const string OutOption = "out";
 
+        private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountNewCommand));
         private readonly IAcmeContextFactory contextFactory;
         private readonly IUserSettings userSettings;
-        private readonly ILogger logger = LogManager.GetLogger(nameof(ServerSetCommand));
+        private readonly IFileUtil fileUtil;
 
         public CommandGroup Group { get; } = CommandGroup.Account;
         
-        public AccountNewCommand(IUserSettings userSettings, IAcmeContextFactory contextFactory)
+        public AccountNewCommand(
+            IUserSettings userSettings,
+            IAcmeContextFactory contextFactory,
+            IFileUtil fileUtil)
         {
             this.userSettings = userSettings;
             this.contextFactory = contextFactory;
+            this.fileUtil = fileUtil;
         }
 
         public ArgumentCommand<string> Define(ArgumentSyntax syntax)
@@ -57,7 +62,7 @@ namespace Certes.Cli.Commands
             if (!string.IsNullOrWhiteSpace(outPath))
             {
                 var pem = key.ToPem();
-                await FileUtil.WriteAllTexts(outPath, pem);
+                await fileUtil.WriteAllTexts(outPath, pem);
             }
             else
             {
@@ -81,7 +86,7 @@ namespace Certes.Cli.Commands
             if (!string.IsNullOrWhiteSpace(keyPath))
             {
                 logger.Debug("Load account key form '{0}'.", keyPath);
-                var pem = await FileUtil.ReadAllText(keyPath);
+                var pem = await fileUtil.ReadAllTexts(keyPath);
                 return (serverUri, KeyFactory.FromPem(pem));
             }
         

@@ -8,6 +8,16 @@ namespace Certes.Cli
 {
     internal static class CliTestHelper
     {
+        public static void ValidateParameter<T>(ArgumentSyntax syntax, string name, T value)
+        {
+            var arg = syntax.GetActiveArguments()
+                .Where(p => p.Name == name)
+                .OfType<Argument<T>>()
+                .FirstOrDefault();
+            Assert.NotNull(arg);
+            Assert.Equal(value, arg.Value);
+        }
+
         public static void ValidateOption<T>(ArgumentSyntax syntax, string name, T value)
         {
             var arg = syntax.GetActiveOptions()

@@ -12,7 +12,7 @@ namespace Certes.Cli.Commands
     {
         private const string CommandText = "set";
         private const string ParamServer = "server";
-        private readonly ILogger logger = LogManager.GetLogger(nameof(ServerSetCommand));
+        private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountNewCommand));
 
         private readonly IAcmeContextFactory contextFactory;
         private readonly IUserSettings userSettings;
