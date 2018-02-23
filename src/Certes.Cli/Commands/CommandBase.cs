@@ -24,7 +24,7 @@ namespace Certes.Cli.Commands
         }
 
         protected async Task<(Uri Server, IKey Key)> ReadAccountKey(
-            ArgumentSyntax syntax)
+            ArgumentSyntax syntax, bool fallbackToSettings = false, bool required = false)
         {
             var serverUri = syntax.GetServerOption() ??
                 await UserSettings.GetDefaultServer();
@@ -37,7 +37,16 @@ namespace Certes.Cli.Commands
                 return (serverUri, KeyFactory.FromPem(pem));
             }
 
-            return (serverUri, null);
+            var key = fallbackToSettings ?
+                await UserSettings.GetAccountKey(serverUri) : null;
+            
+            if (required && key == null)
+            {
+                throw new Exception(
+                    string.Format(Strings.ErrorNoAccountKey, serverUri));
+            }
+
+            return (serverUri, key);
         }
     }
 }
