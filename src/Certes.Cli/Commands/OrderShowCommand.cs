@@ -10,7 +10,7 @@ namespace Certes.Cli.Commands
     {
         private const string CommandText = "show";
         private const string OrderIdParam = "order-id";
-        private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountNewCommand));
+        private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderShowCommand));
 
         public CommandGroup Group { get; } = CommandGroup.Order;
 

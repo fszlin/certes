@@ -9,7 +9,7 @@ namespace Certes.Cli.Commands
     internal class OrderListCommand : CommandBase, ICliCommand
     {
         private const string CommandText = "list";
-        private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountNewCommand));
+        private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderListCommand));
 
         public CommandGroup Group { get; } = CommandGroup.Order;
 

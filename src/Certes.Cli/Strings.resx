@@ -162,6 +162,9 @@
   <data name="HelpCommandOrderShow" xml:space="preserve">
     <value>Get the details of a certificate server.</value>
   </data>
+  <data name="HelpCommandOrderValidate" xml:space="preserve">
+    <value>Validate the authorization challenge.</value>
+  </data>
   <data name="HelpCommandServer" xml:space="preserve">
     <value>Manage ACME servers.</value>
   </data>

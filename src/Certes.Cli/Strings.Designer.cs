@@ -197,6 +197,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Validate the authorization challenge..
+        /// </summary>
+        internal static string HelpCommandOrderValidate {
+            get {
+                return ResourceManager.GetString("HelpCommandOrderValidate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manage ACME servers..
         /// </summary>
         internal static string HelpCommandServer {

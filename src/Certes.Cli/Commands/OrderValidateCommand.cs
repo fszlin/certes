@@ -9,17 +9,17 @@ using static Certes.Acme.Resource.ChallengeTypes;
 
 namespace Certes.Cli.Commands
 {
-    internal class OrderAuthzCommand : CommandBase, ICliCommand
+    internal class OrderValidateCommand : CommandBase, ICliCommand
     {
-        private const string CommandText = "authz";
+        private const string CommandText = "validate";
         private const string OrderIdParam = "order-id";
         private const string DomainParam = "domain";
         private const string ChallengeTypeParam = "challenge-type";
-        private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderAuthzCommand));
+        private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderValidateCommand));
 
         public CommandGroup Group { get; } = CommandGroup.Order;
 
-        public OrderAuthzCommand(
+        public OrderValidateCommand(
             IUserSettings userSettings,
             IAcmeContextFactory contextFactory,
             IFileUtil fileUtil)
@@ -29,7 +29,7 @@ namespace Certes.Cli.Commands
 
         public ArgumentCommand<string> Define(ArgumentSyntax syntax)
         {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandOrderAuthz);
+            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandOrderValidate);
 
             syntax
                 .DefineServerOption()
@@ -53,13 +53,13 @@ namespace Certes.Cli.Commands
                 string.Equals(typeStr, "http", OrdinalIgnoreCase) ? Http01 :
                 throw new ArgumentSyntaxException(string.Format(Strings.ErrorInvalidChallengeType, typeStr));
 
-            logger.Debug("Loading authz from '{0}'.", serverUri);
+            logger.Debug("Validating authz on '{0}'.", serverUri);
 
             var acme = ContextFactory.Create(serverUri, key);
             var orderCtx = acme.Order(orderUri);
             var authzCtx = await orderCtx.Authorization(domain);
             var challengeCtx = await authzCtx.Challenge(type);
-            var challenge = await challengeCtx.Resource();
+            var challenge = await challengeCtx.Validate();
 
             return new
             {

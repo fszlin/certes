@@ -10,7 +10,7 @@ namespace Certes.Cli.Commands
     internal class OrderNewCommand : CommandBase, ICliCommand
     {
         private const string CommandText = "new";
-        private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountNewCommand));
+        private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderNewCommand));
 
         public CommandGroup Group { get; } = CommandGroup.Order;
 
