@@ -31,7 +31,7 @@ namespace Certes.Cli
             var dir = Path.GetDirectoryName(path);
             if (!Directory.Exists(dir))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(dir));
+                Directory.CreateDirectory(dir);
             }
 
             using (var stream = File.Create(path))
