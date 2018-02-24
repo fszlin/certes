@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -13,13 +14,13 @@ using static Certes.Helper;
 
 namespace Certes.Cli.Commands
 {
-    public class AccountShowCommandTests
+    public class AccountSetCommandTests
     {
         [Fact]
         public async Task CanProcessCommand()
         {
             var serverUri = new Uri("http://acme.com/d");
-            var acctLoc = new Uri("http://acme.com/a/12");
+            var acctLoc = new Uri("http://acme.com/a/11");
             var keyPath = "./my-key.pem";
             var acct = new Account
             {
@@ -27,9 +28,9 @@ namespace Certes.Cli.Commands
             };
 
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
-            settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(serverUri);
-            settingsMock.Setup(m => m.GetAccountKey(serverUri))
-                .ReturnsAsync(GetKeyV2());
+            settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(LetsEncryptV2);
+            settingsMock.Setup(m => m.SetAccountKey(serverUri, It.IsAny<IKey>()))
+                .Returns(Task.CompletedTask);
 
             var acctCtxMock = new Mock<IAccountContext>(MockBehavior.Strict);
             acctCtxMock.SetupGet(m => m.Location).Returns(acctLoc);
@@ -44,10 +45,10 @@ namespace Certes.Cli.Commands
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>()))
                 .ReturnsAsync(KeyAlgorithm.ES256.GetTestKey());
 
-            var cmd = new AccountShowCommand(
+            var cmd = new AccountSetCommand(
                 settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
 
-            var syntax = DefineCommand($"show");
+            var syntax = DefineCommand($"set {keyPath} --server {serverUri}");
             var ret = await cmd.Execute(syntax);
             Assert.Equal(
                 JsonConvert.SerializeObject(new
@@ -57,36 +58,27 @@ namespace Certes.Cli.Commands
                 }),
                 JsonConvert.SerializeObject(ret));
 
-            fileMock.ResetCalls();
-
-            syntax = DefineCommand($"show --key {keyPath} --server {serverUri}");
-            ret = await cmd.Execute(syntax);
-            Assert.Equal(
-                JsonConvert.SerializeObject(new
-                {
-                    location = acctLoc,
-                    resource = acct
-                }),
-                JsonConvert.SerializeObject(ret));
             fileMock.Verify(m => m.ReadAllText(keyPath), Times.Once);
+            settingsMock.Verify(m => m.SetAccountKey(serverUri, It.IsAny<IKey>()), Times.Once);
         }
 
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"show --server {LetsEncryptStagingV2}";
+            var args = $"set ./acct-key.pem --server {LetsEncryptStagingV2}";
             var syntax = DefineCommand(args);
 
-            Assert.Equal("show", syntax.ActiveCommand.Value);
+            Assert.Equal("set", syntax.ActiveCommand.Value);
             ValidateOption(syntax, "server", LetsEncryptStagingV2);
+            ValidateParameter(syntax, "key", "./acct-key.pem");
 
             syntax = DefineCommand("noop");
-            Assert.NotEqual("show", syntax.ActiveCommand.Value);
+            Assert.NotEqual("new", syntax.ActiveCommand.Value);
         }
 
         private static ArgumentSyntax DefineCommand(string args)
         {
-            var cmd = new AccountShowCommand(
+            var cmd = new AccountSetCommand(
                 new UserSettings(new FileUtilImpl()), MakeFactory(null), new FileUtilImpl());
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {

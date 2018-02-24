@@ -132,6 +132,9 @@
   <data name="HelpCommandAccountNew" xml:space="preserve">
     <value>Create new ACME account.</value>
   </data>
+  <data name="HelpCommandAccountSet" xml:space="preserve">
+    <value>Set the default ACME account.</value>
+  </data>
   <data name="HelpCommandAccountShow" xml:space="preserve">
     <value>Get the ACME account.</value>
   </data>
