@@ -1,18 +1,19 @@
-﻿using System.CommandLine;
+﻿using System.Collections.Generic;
+using System.CommandLine;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using NLog;
 
 namespace Certes.Cli.Commands
 {
-    internal class AccountShowCommand : CommandBase, ICliCommand
+    internal class OrderListCommand : CommandBase, ICliCommand
     {
-        private const string CommandText = "show";
+        private const string CommandText = "list";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountNewCommand));
 
-        public CommandGroup Group { get; } = CommandGroup.Account;
+        public CommandGroup Group { get; } = CommandGroup.Order;
 
-        public AccountShowCommand(
+        public OrderListCommand(
             IUserSettings userSettings,
             IAcmeContextFactory contextFactory,
             IFileUtil fileUtil)
@@ -22,7 +23,7 @@ namespace Certes.Cli.Commands
 
         public ArgumentCommand<string> Define(ArgumentSyntax syntax)
         {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandAccountShow);
+            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandOrderList);
 
             syntax
                 .DefineServerOption()
@@ -35,16 +36,23 @@ namespace Certes.Cli.Commands
         {
             var (serverUri, key) = await ReadAccountKey(syntax, true, true);
 
-            logger.Debug("Loading account from '{0}'.", serverUri);
+            logger.Debug("Loading orders from '{0}'.", serverUri);
 
             var acme = ContextFactory.Create(serverUri, key);
             var acctCtx = await acme.Account();
+            var orderListCtx = await acctCtx.Orders();
 
-            return new
+            var orderList = new List<object>();
+            foreach (var orderCtx in await orderListCtx.Orders())
             {
-                location = acctCtx.Location,
-                resource = await acctCtx.Resource()
-            };
+                orderList.Add(new
+                {
+                    location = orderCtx.Location,
+                    resource = await orderCtx.Resource()
+                });
+            }
+
+            return orderList;
         }
     }
 }

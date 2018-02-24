@@ -141,6 +141,12 @@
   <data name="HelpCommandAccountUpdate" xml:space="preserve">
     <value>Update ACME account.</value>
   </data>
+  <data name="HelpCommandOrder" xml:space="preserve">
+    <value>Manage certificate orders.</value>
+  </data>
+  <data name="HelpCommandOrderList" xml:space="preserve">
+    <value>List all certificate orders.</value>
+  </data>
   <data name="HelpCommandServer" xml:space="preserve">
     <value>Manage ACME servers.</value>
   </data>
