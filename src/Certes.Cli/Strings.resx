@@ -147,6 +147,9 @@
   <data name="HelpCommandOrderList" xml:space="preserve">
     <value>List all certificate orders.</value>
   </data>
+  <data name="HelpCommandOrderNew" xml:space="preserve">
+    <value>Create new certificate order.</value>
+  </data>
   <data name="HelpCommandServer" xml:space="preserve">
     <value>Manage ACME servers.</value>
   </data>
@@ -155,6 +158,9 @@
   </data>
   <data name="HelpCommandServerShow" xml:space="preserve">
     <value>Get the details of a ACME server.</value>
+  </data>
+  <data name="HelpDomains" xml:space="preserve">
+    <value>The domains for the certificate order.</value>
   </data>
   <data name="HelpEmail" xml:space="preserve">
     <value>The E-mail for ACME account.</value>

@@ -198,7 +198,7 @@ namespace Certes.Cli.Settings
             var settings = await LoadUserSettings();
             var serverSetting = settings.Servers?.FirstOrDefault(s => s.ServerUri == serverUri);
             var der = serverSetting?.Key;
-            return der == null ? KeyFactory.FromDer(der) : null;
+            return der == null ? null : KeyFactory.FromDer(der);
         }
     }
 
