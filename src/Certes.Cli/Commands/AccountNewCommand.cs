@@ -1,21 +1,17 @@
-﻿using System;
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using NLog;
 
 namespace Certes.Cli.Commands
 {
-    internal class AccountNewCommand : ICliCommand
+    internal class AccountNewCommand : CommandBase, ICliCommand
     {
         private const string CommandText = "new";
         private const string EmailParam = "email";
         private const string OutOption = "out";
 
         private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountNewCommand));
-        private readonly IAcmeContextFactory contextFactory;
-        private readonly IUserSettings userSettings;
-        private readonly IFileUtil fileUtil;
 
         public CommandGroup Group { get; } = CommandGroup.Account;
         
@@ -23,10 +19,8 @@ namespace Certes.Cli.Commands
             IUserSettings userSettings,
             IAcmeContextFactory contextFactory,
             IFileUtil fileUtil)
+            : base(userSettings, contextFactory, fileUtil)
         {
-            this.userSettings = userSettings;
-            this.contextFactory = contextFactory;
-            this.fileUtil = fileUtil;
         }
 
         public ArgumentCommand<string> Define(ArgumentSyntax syntax)
@@ -50,18 +44,18 @@ namespace Certes.Cli.Commands
             var key = acct.Key ?? KeyFactory.NewKey(KeyAlgorithm.ES256);
             var email = syntax.GetParameter<string>(EmailParam, true);
 
-            var acme = contextFactory.Create(acct.Server, key);
+            var acme = ContextFactory.Create(acct.Server, key);
             var acctCtx = await acme.NewAccount(email, true);
 
             var outPath = syntax.GetOption<string>(OutOption);
             if (!string.IsNullOrWhiteSpace(outPath))
             {
                 var pem = key.ToPem();
-                await fileUtil.WriteAllTexts(outPath, pem);
+                await File.WriteAllText(outPath, pem);
             }
             else
             {
-                await userSettings.SetAccountKey(acct.Server, key);
+                await UserSettings.SetAccountKey(acct.Server, key);
             }
 
             return new
@@ -69,23 +63,6 @@ namespace Certes.Cli.Commands
                 location = acctCtx.Location,
                 resource = await acctCtx.Resource()
             };
-        }
-
-        private async Task<(Uri Server, IKey Key)> ReadAccountKey(
-            ArgumentSyntax syntax)
-        {
-            var serverUri = syntax.GetServerOption() ??
-                await userSettings.GetDefaultServer();
-
-            var keyPath = syntax.GetKeyOption();
-            if (!string.IsNullOrWhiteSpace(keyPath))
-            {
-                logger.Debug("Load account key form '{0}'.", keyPath);
-                var pem = await fileUtil.ReadAllTexts(keyPath);
-                return (serverUri, KeyFactory.FromPem(pem));
-            }
-        
-            return (serverUri, null);
         }
     }
 }

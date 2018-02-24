@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.CommandLine;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -14,14 +13,13 @@ using static Certes.Helper;
 
 namespace Certes.Cli.Commands
 {
-    public class AccountNewCommandTests
+    public class AccountShowCommandTests
     {
         [Fact]
         public async Task CanProcessCommand()
         {
             var serverUri = new Uri("http://acme.com/d");
-            var email = "abc@example.com";
-            var acctLoc = new Uri("http://acme.com/a/11");
+            var acctLoc = new Uri("http://acme.com/a/12");
             var keyPath = "./my-key.pem";
             var acct = new Account
             {
@@ -29,9 +27,9 @@ namespace Certes.Cli.Commands
             };
 
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
-            settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(LetsEncryptV2);
-            settingsMock.Setup(m => m.SetAccountKey(serverUri, It.IsAny<IKey>()))
-                .Returns(Task.CompletedTask);
+            settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(serverUri);
+            settingsMock.Setup(m => m.GetAccountKey(serverUri))
+                .ReturnsAsync(GetKeyV2());
 
             var acctCtxMock = new Mock<IAccountContext>(MockBehavior.Strict);
             acctCtxMock.SetupGet(m => m.Location).Returns(acctLoc);
@@ -39,19 +37,17 @@ namespace Certes.Cli.Commands
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
-            ctxMock.Setup(m => m.NewAccount(It.IsAny<IList<string>>(), true))
+            ctxMock.Setup(m => m.Account())
                 .ReturnsAsync(acctCtxMock.Object);
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
-            fileMock.Setup(m => m.WriteAllText(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.CompletedTask);
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>()))
                 .ReturnsAsync(KeyAlgorithm.ES256.GetTestKey());
 
-            var cmd = new AccountNewCommand(
+            var cmd = new AccountShowCommand(
                 settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
 
-            var syntax = DefineCommand($"new {email} --server {serverUri}");
+            var syntax = DefineCommand($"show");
             var ret = await cmd.Execute(syntax);
             Assert.Equal(
                 JsonConvert.SerializeObject(new
@@ -63,23 +59,7 @@ namespace Certes.Cli.Commands
 
             fileMock.ResetCalls();
 
-            syntax = DefineCommand($"new {email} --server {serverUri} --out {keyPath}");
-            ret = await cmd.Execute(syntax);
-            Assert.Equal(
-                JsonConvert.SerializeObject(new
-                {
-                    location = acctLoc,
-                    resource = acct
-                }),
-                JsonConvert.SerializeObject(ret));
-
-            // key should be saved to '--out'
-            fileMock.Verify(m => m.WriteAllText(keyPath, It.IsAny<string>()), Times.Once);
-
-            syntax = DefineCommand($"new");
-            await Assert.ThrowsAsync<ArgumentSyntaxException>(() => cmd.Execute(syntax));
-
-            syntax = DefineCommand($"new {email} --server {serverUri} --key {keyPath}");
+            syntax = DefineCommand($"show --key {keyPath} --server {serverUri}");
             ret = await cmd.Execute(syntax);
             Assert.Equal(
                 JsonConvert.SerializeObject(new
@@ -94,20 +74,19 @@ namespace Certes.Cli.Commands
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"new abc@example.com --server {LetsEncryptStagingV2}";
+            var args = $"show --server {LetsEncryptStagingV2}";
             var syntax = DefineCommand(args);
 
-            Assert.Equal("new", syntax.ActiveCommand.Value);
+            Assert.Equal("show", syntax.ActiveCommand.Value);
             ValidateOption(syntax, "server", LetsEncryptStagingV2);
-            ValidateParameter(syntax, "email", "abc@example.com");
 
             syntax = DefineCommand("noop");
-            Assert.NotEqual("new", syntax.ActiveCommand.Value);
+            Assert.NotEqual("show", syntax.ActiveCommand.Value);
         }
 
         private static ArgumentSyntax DefineCommand(string args)
         {
-            var cmd = new AccountNewCommand(
+            var cmd = new AccountShowCommand(
                 new UserSettings(new FileUtilImpl()), MakeFactory(null), new FileUtilImpl());
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {

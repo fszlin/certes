@@ -45,7 +45,7 @@ namespace Certes.Cli.Settings
 
             settings.DefaultServer = serverUri;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllTexts(SettingsFile.Value, json);
+            await fileUtil.WriteAllText(SettingsFile.Value, json);
         }
 
         public async Task<Uri> GetDefaultServer()
@@ -73,7 +73,7 @@ namespace Certes.Cli.Settings
             serverSetting.Key = key.ToDer();
             settings.Servers = servers;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllTexts(SettingsFile.Value, json);
+            await fileUtil.WriteAllText(SettingsFile.Value, json);
         }
 
         public async Task SetAcmeSettings(AcmeSettings acme, OptionsBase options)
@@ -99,11 +99,11 @@ namespace Certes.Cli.Settings
                 }
 
                 var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-                await fileUtil.WriteAllTexts(SettingsFile.Value, json);
+                await fileUtil.WriteAllText(SettingsFile.Value, json);
             }
             else if (!string.IsNullOrWhiteSpace(acme.AccountKey))
             {
-                await fileUtil.WriteAllTexts(options.Path, acme.AccountKey);
+                await fileUtil.WriteAllText(options.Path, acme.AccountKey);
             }
         }
 
@@ -154,7 +154,7 @@ namespace Certes.Cli.Settings
 
             if (!string.IsNullOrWhiteSpace(options.Path))
             {
-                acme.AccountKey = await fileUtil.ReadAllTexts(options.Path);
+                acme.AccountKey = await fileUtil.ReadAllText(options.Path);
             }
 
             return acme;
@@ -182,7 +182,7 @@ namespace Certes.Cli.Settings
             Model settings;
             if (File.Exists(SettingsFile.Value))
             {
-                var json = await fileUtil.ReadAllTexts(SettingsFile.Value);
+                var json = await fileUtil.ReadAllText(SettingsFile.Value);
                 settings = JsonConvert.DeserializeObject<Model>(json, JsonUtil.CreateSettings());
             }
             else

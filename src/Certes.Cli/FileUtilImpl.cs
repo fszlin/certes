@@ -6,7 +6,7 @@ namespace Certes.Cli
 {
     internal class FileUtilImpl : IFileUtil
     {
-        public async Task<string> ReadAllTexts(string path)
+        public async Task<string> ReadAllText(string path)
         {
             if (!File.Exists(path))
             {
@@ -22,7 +22,7 @@ namespace Certes.Cli
             }
         }
 
-        public Task WriteAllTexts(string path, string texts)
+        public Task WriteAllText(string path, string texts)
             => WriteAllBytes(path, Encoding.UTF8.GetBytes(texts));
 
         public async Task WriteAllBytes(string path, byte[] data)
