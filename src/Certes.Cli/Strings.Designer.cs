@@ -107,6 +107,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set the default ACME account..
+        /// </summary>
+        internal static string HelpCommandAccountSet {
+            get {
+                return ResourceManager.GetString("HelpCommandAccountSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Get the ACME account..
         /// </summary>
         internal static string HelpCommandAccountShow {
