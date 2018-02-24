@@ -107,20 +107,29 @@ namespace Certes.Cli {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Set the default ACME account..
-        /// </summary>
-        internal static string HelpCommandAccountSet {
-            get {
-                return ResourceManager.GetString("HelpCommandAccountSet", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Get the ACME account..
         /// </summary>
         internal static string HelpCommandAccountShow {
             get {
                 return ResourceManager.GetString("HelpCommandAccountShow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update ACME account..
+        /// </summary>
+        internal static string HelpCommandAccountUpdate {
+            get {
+                return ResourceManager.GetString("HelpCommandAccountUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set the default ACME account..
+        /// </summary>
+        internal static string HelpCommandAccountSet {
+            get {
+                return ResourceManager.GetString("HelpCommandAccountSet", resourceCulture);
             }
         }
         

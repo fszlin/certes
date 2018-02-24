@@ -138,6 +138,9 @@
   <data name="HelpCommandAccountShow" xml:space="preserve">
     <value>Get the ACME account.</value>
   </data>
+  <data name="HelpCommandAccountUpdate" xml:space="preserve">
+    <value>Update ACME account.</value>
+  </data>
   <data name="HelpCommandServer" xml:space="preserve">
     <value>Manage ACME servers.</value>
   </data>
