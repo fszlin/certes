@@ -22,14 +22,16 @@ namespace Certes.Cli
             }
         }
 
-        public Task WriteAllText(string path, string texts)
-            => WriteAllBytes(path, Encoding.UTF8.GetBytes(texts));
+        public Task WriteAllText(string path, string text)
+            => WriteAllBytes(path, Encoding.UTF8.GetBytes(text));
 
         public async Task WriteAllBytes(string path, byte[] data)
         {
-            if (!Directory.Exists(Path.GetDirectoryName(path)))
+            path = Path.GetFullPath(path);
+            var dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                Directory.CreateDirectory(Path.GetDirectoryName(dir));
             }
 
             using (var stream = File.Create(path))

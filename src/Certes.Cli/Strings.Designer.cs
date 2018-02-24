@@ -170,6 +170,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Finalize an order..
+        /// </summary>
+        internal static string HelpCommandOrderFinalize {
+            get {
+                return ResourceManager.GetString("HelpCommandOrderFinalize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to List all certificate orders..
         /// </summary>
         internal static string HelpCommandOrderList {
@@ -274,6 +283,15 @@ namespace Certes.Cli {
         internal static string HelpOrderId {
             get {
                 return ResourceManager.GetString("HelpOrderId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path to save the generated key..
+        /// </summary>
+        internal static string HelpOut {
+            get {
+                return ResourceManager.GetString("HelpOut", resourceCulture);
             }
         }
         

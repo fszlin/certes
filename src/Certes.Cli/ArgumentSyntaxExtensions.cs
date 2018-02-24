@@ -34,15 +34,15 @@ namespace Certes.Cli
             return syntax;
         }
 
-        public static ArgumentSyntax DefineOption(this ArgumentSyntax syntax, string name)
+        public static ArgumentSyntax DefineOption(this ArgumentSyntax syntax, string name, string help)
         {
             string value = null;
-            var opt = syntax.DefineOption(name, ref value, true, Strings.HelpKey);
+            var opt = syntax.DefineOption(name, ref value, true, help);
             return syntax;
         }
 
         public static ArgumentSyntax DefineKeyOption(this ArgumentSyntax syntax)
-            => syntax.DefineOption(KeyOptionName);
+            => syntax.DefineOption(KeyOptionName, help: Strings.HelpKey);
 
         public static ArgumentCommand<string> DefineCommand(
             this ArgumentSyntax syntax, string name, string help = null)
@@ -73,12 +73,17 @@ namespace Certes.Cli
         public static string GetKeyOption(this ArgumentSyntax syntax)
             => syntax.GetOption<string>(KeyOptionName);
 
-        public static T GetOption<T>(this ArgumentSyntax syntax, string name)
+        public static T GetOption<T>(this ArgumentSyntax syntax, string name, bool isRequired = false)
         {
             var values = syntax.GetActiveOptions()
                 .OfType<Argument<T>>()
                 .Where(a => name.Equals(a.Name, StringComparison.Ordinal))
                 .Select(a => a.Value);
+
+            if (isRequired && values.All(v => Equals(v, default(T))))
+            {
+                syntax.ReportError(string.Format(Strings.ErrorOptionMissing, name));
+            }
 
             return values.FirstOrDefault();
         }

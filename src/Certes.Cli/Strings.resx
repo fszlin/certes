@@ -153,6 +153,9 @@
   <data name="HelpCommandOrderAuthz" xml:space="preserve">
     <value>Get the details of an authorization.</value>
   </data>
+  <data name="HelpCommandOrderFinalize" xml:space="preserve">
+    <value>Finalize an order.</value>
+  </data>
   <data name="HelpCommandOrderList" xml:space="preserve">
     <value>List all certificate orders.</value>
   </data>
@@ -188,6 +191,9 @@
   </data>
   <data name="HelpOrderId" xml:space="preserve">
     <value>The URI of the certificate server.</value>
+  </data>
+  <data name="HelpOut" xml:space="preserve">
+    <value>Path to save the generated key.</value>
   </data>
   <data name="HelpServer" xml:space="preserve">
     <value>The dictionary URI to an ACME server.</value>
