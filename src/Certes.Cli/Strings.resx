@@ -150,6 +150,9 @@
   <data name="HelpCommandOrderNew" xml:space="preserve">
     <value>Create new certificate order.</value>
   </data>
+  <data name="HelpCommandOrderShow" xml:space="preserve">
+    <value>Get the details of a certificate server.</value>
+  </data>
   <data name="HelpCommandServer" xml:space="preserve">
     <value>Manage ACME servers.</value>
   </data>
@@ -167,6 +170,9 @@
   </data>
   <data name="HelpKey" xml:space="preserve">
     <value>Path to the ACME account key.</value>
+  </data>
+  <data name="HelpOrderId" xml:space="preserve">
+    <value>The URI of the certificate server.</value>
   </data>
   <data name="HelpServer" xml:space="preserve">
     <value>The dictionary URI to an ACME server.</value>

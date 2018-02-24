@@ -51,6 +51,15 @@ namespace Certes.Cli
             arg.Help = help;
             return arg;
         }
+
+        public static ArgumentSyntax DefineUriParameter(
+            this ArgumentSyntax syntax, string name, string help = null)
+        {
+            var arg = syntax.DefineParameter<Uri>(name, null, s => new Uri(s));
+            arg.Help = help;
+            return syntax;
+        }
+
         public static ArgumentSyntax DefineParameter(
             this ArgumentSyntax syntax, string name, string help = null)
         {

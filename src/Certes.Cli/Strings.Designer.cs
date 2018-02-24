@@ -161,6 +161,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Get the details of a certificate server..
+        /// </summary>
+        internal static string HelpCommandOrderShow {
+            get {
+                return ResourceManager.GetString("HelpCommandOrderShow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manage ACME servers..
         /// </summary>
         internal static string HelpCommandServer {
@@ -211,6 +220,15 @@ namespace Certes.Cli {
         internal static string HelpKey {
             get {
                 return ResourceManager.GetString("HelpKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The URI of the certificate server..
+        /// </summary>
+        internal static string HelpOrderId {
+            get {
+                return ResourceManager.GetString("HelpOrderId", resourceCulture);
             }
         }
         
