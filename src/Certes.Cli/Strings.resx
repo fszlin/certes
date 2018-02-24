@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ErrorInvalidChallengeType" xml:space="preserve">
+    <value>Challenge type '{0}' is not supported.</value>
+  </data>
   <data name="ErrorNoAccountKey" xml:space="preserve">
     <value>No account available for ACME server '{0}'.</value>
   </data>
@@ -125,6 +128,9 @@
   </data>
   <data name="ErrorParameterMissing" xml:space="preserve">
     <value>Parameter '{0}' is required.</value>
+  </data>
+  <data name="HelpChallengeType" xml:space="preserve">
+    <value>The challenge type, http or dns.</value>
   </data>
   <data name="HelpCommandAccount" xml:space="preserve">
     <value>Manage ACME accounts.</value>
@@ -144,6 +150,9 @@
   <data name="HelpCommandOrder" xml:space="preserve">
     <value>Manage certificate orders.</value>
   </data>
+  <data name="HelpCommandOrderAuthz" xml:space="preserve">
+    <value>Get the details of an authorization.</value>
+  </data>
   <data name="HelpCommandOrderList" xml:space="preserve">
     <value>List all certificate orders.</value>
   </data>
@@ -161,6 +170,9 @@
   </data>
   <data name="HelpCommandServerShow" xml:space="preserve">
     <value>Get the details of a ACME server.</value>
+  </data>
+  <data name="HelpDomain" xml:space="preserve">
+    <value>The domain.</value>
   </data>
   <data name="HelpDomains" xml:space="preserve">
     <value>The domains for the certificate order.</value>

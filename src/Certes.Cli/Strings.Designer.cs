@@ -62,6 +62,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Challenge type &apos;{0}&apos; is not supported..
+        /// </summary>
+        internal static string ErrorInvalidChallengeType {
+            get {
+                return ResourceManager.GetString("ErrorInvalidChallengeType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No account available for ACME server &apos;{0}&apos;..
         /// </summary>
         internal static string ErrorNoAccountKey {
@@ -85,6 +94,15 @@ namespace Certes.Cli {
         internal static string ErrorParameterMissing {
             get {
                 return ResourceManager.GetString("ErrorParameterMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The challenge type, http or dns..
+        /// </summary>
+        internal static string HelpChallengeType {
+            get {
+                return ResourceManager.GetString("HelpChallengeType", resourceCulture);
             }
         }
         
@@ -143,6 +161,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Get the details of an authorization..
+        /// </summary>
+        internal static string HelpCommandOrderAuthz {
+            get {
+                return ResourceManager.GetString("HelpCommandOrderAuthz", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to List all certificate orders..
         /// </summary>
         internal static string HelpCommandOrderList {
@@ -193,6 +220,15 @@ namespace Certes.Cli {
         internal static string HelpCommandServerShow {
             get {
                 return ResourceManager.GetString("HelpCommandServerShow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The domain..
+        /// </summary>
+        internal static string HelpDomain {
+            get {
+                return ResourceManager.GetString("HelpDomain", resourceCulture);
             }
         }
         
