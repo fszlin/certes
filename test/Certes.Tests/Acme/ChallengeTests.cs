@@ -8,7 +8,7 @@ namespace Certes.Acme
         [Fact]
         public async Task CanComputeDnsKeyAuth()
         {
-            var challenge = new Challenge
+            var challenge = new ChallengeEntity
             {
                 Token = "6csJt_REONi1guIpCqdw6wCP5hL8YxtOhTCETu7ECYY",
                 Type = "dns-01"

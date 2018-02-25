@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Authz = Certes.Acme.Resource.Authorization;
+using Certes.Acme.Resource;
 
 namespace Certes.Acme
 {
     /// <summary>
     /// Supports ACME authorization operations.
     /// </summary>
-    public interface IAuthorizationContext : IResourceContext<Authz>
+    public interface IAuthorizationContext : IResourceContext<Authorization>
     {
         /// <summary>
         /// Gets the challenges for this authorization.
@@ -21,6 +21,6 @@ namespace Certes.Acme
         /// <returns>
         /// The authorization deactivated.
         /// </returns>
-        Task<Authz> Deactivate();
+        Task<Authorization> Deactivate();
     }
 }

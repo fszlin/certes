@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Certes.Acme.Resource;
 using Moq;
 using Xunit;
-using Authz = Certes.Acme.Resource.Authorization;
-using AuthzChallenge = Certes.Acme.Resource.Challenge;
 
 namespace Certes.Acme
 {
@@ -17,16 +16,16 @@ namespace Certes.Acme
         [Fact]
         public async Task CanLoadChallenges()
         {
-            var authz = new Authz
+            var authz = new Authorization
             {
                 Challenges = new[] {
-                    new AuthzChallenge
+                    new Challenge
                     {
                         Url = new Uri("http://acme.d/c/1"),
                         Token = "token",
                         Type = "dns-01"
                     },
-                    new AuthzChallenge
+                    new Challenge
                     {
                         Url = new Uri("http://acme.d/c/1"),
                         Token = "token",
@@ -46,8 +45,8 @@ namespace Certes.Acme
                 .Returns(Helper.GetKeyV2());
             contextMock.SetupGet(c => c.HttpClient).Returns(httpClientMock.Object);
             httpClientMock
-                .Setup(m => m.Get<Authz>(location))
-                .ReturnsAsync(new AcmeHttpResponse<Authz>(location, authz, default, default));
+                .Setup(m => m.Get<Authorization>(location))
+                .ReturnsAsync(new AcmeHttpResponse<Authorization>(location, authz, default, default));
 
             var ctx = new AuthorizationContext(contextMock.Object, location);
             var challenges = await ctx.Challenges();
@@ -55,8 +54,8 @@ namespace Certes.Acme
 
             // check the context returns empty list instead of null
             httpClientMock
-                .Setup(m => m.Get<Authz>(location))
-                .ReturnsAsync(new AcmeHttpResponse<Authz>(location, new Authz(), default, default));
+                .Setup(m => m.Get<Authorization>(location))
+                .ReturnsAsync(new AcmeHttpResponse<Authorization>(location, new Authorization(), default, default));
             challenges = await ctx.Challenges();
             Assert.Empty(challenges);
 

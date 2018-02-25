@@ -6,12 +6,12 @@ namespace Certes.Acme
     /// Represents the ACME Certificate entity.
     /// </summary>
     /// <seealso cref="Certes.Acme.EntityBase" />
-    public class Certificate : EntityBase
+    public class CertificateEntity : EntityBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Certificate"/> class.
+        /// Initializes a new instance of the <see cref="CertificateEntity"/> class.
         /// </summary>
-        public Certificate()
+        public CertificateEntity()
         {
             Resource = ResourceTypes.Certificate;
         }
