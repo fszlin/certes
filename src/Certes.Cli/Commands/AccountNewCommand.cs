@@ -30,7 +30,7 @@ namespace Certes.Cli.Commands
             syntax
                 .DefineServerOption()
                 .DefineKeyOption()
-                .DefineOption(OutOption)
+                .DefineOption(OutOption, help: Strings.HelpOut)
                 .DefineParameter(EmailParam, help: Strings.HelpEmail);
 
             return cmd;
@@ -50,11 +50,13 @@ namespace Certes.Cli.Commands
             var outPath = syntax.GetOption<string>(OutOption);
             if (!string.IsNullOrWhiteSpace(outPath))
             {
+                logger.Debug("Saving new account key to '{0}'.", outPath);
                 var pem = key.ToPem();
                 await File.WriteAllText(outPath, pem);
             }
             else
             {
+                logger.Debug("Saving new account key to user settings.");
                 await UserSettings.SetAccountKey(acct.Server, key);
             }
 

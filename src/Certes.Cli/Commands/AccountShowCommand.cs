@@ -8,9 +8,9 @@ namespace Certes.Cli.Commands
     internal class AccountShowCommand : CommandBase, ICliCommand
     {
         private const string CommandText = "show";
-        private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountNewCommand));
+        private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountShowCommand));
 
-        public CommandGroup Group => CommandGroup.Account;
+        public CommandGroup Group { get; } = CommandGroup.Account;
 
         public AccountShowCommand(
             IUserSettings userSettings,
