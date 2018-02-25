@@ -199,18 +199,18 @@ namespace Certes.Cli {
         /// <summary>
         ///   Looks up a localized string similar to Export certificate to PEM for an order..
         /// </summary>
-        internal static string HelpCommandCertPem {
+        internal static string HelpCommandCertificatePem {
             get {
-                return ResourceManager.GetString("HelpCommandCertPem", resourceCulture);
+                return ResourceManager.GetString("HelpCommandCertificatePem", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Export certificate to PFX for an order..
         /// </summary>
-        internal static string HelpCommandCertPfx {
+        internal static string HelpCommandCertificatePfx {
             get {
-                return ResourceManager.GetString("HelpCommandCertPfx", resourceCulture);
+                return ResourceManager.GetString("HelpCommandCertificatePfx", resourceCulture);
             }
         }
         
@@ -364,6 +364,24 @@ namespace Certes.Cli {
         internal static string HelpOrderId {
             get {
                 return ResourceManager.GetString("HelpOrderId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The password for the PFX..
+        /// </summary>
+        internal static string HelpPfxPassword {
+            get {
+                return ResourceManager.GetString("HelpPfxPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The private key for the certificate..
+        /// </summary>
+        internal static string HelpPrivateKey {
+            get {
+                return ResourceManager.GetString("HelpPrivateKey", resourceCulture);
             }
         }
         

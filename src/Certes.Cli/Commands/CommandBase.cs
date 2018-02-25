@@ -6,7 +6,7 @@ using NLog;
 
 namespace Certes.Cli.Commands
 {
-    internal class CommandBase
+    internal abstract class CommandBase
     {
         private static readonly ILogger logger = LogManager.GetLogger(nameof(CommandBase));
         protected IFileUtil File { get; private set; }

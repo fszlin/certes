@@ -162,10 +162,10 @@
   <data name="HelpCommandCertificate" xml:space="preserve">
     <value>Export certificates.</value>
   </data>
-  <data name="HelpCommandCertPem" xml:space="preserve">
+  <data name="HelpCommandCertificatePem" xml:space="preserve">
     <value>Export certificate to PEM for an order.</value>
   </data>
-  <data name="HelpCommandCertPfx" xml:space="preserve">
+  <data name="HelpCommandCertificatePfx" xml:space="preserve">
     <value>Export certificate to PFX for an order.</value>
   </data>
   <data name="HelpCommandOrder" xml:space="preserve">
@@ -221,5 +221,11 @@
   </data>
   <data name="HelpServer" xml:space="preserve">
     <value>The dictionary URI to an ACME server.</value>
+  </data>
+  <data name="HelpPfxPassword" xml:space="preserve">
+    <value>The password for the PFX.</value>
+  </data>
+  <data name="HelpPrivateKey" xml:space="preserve">
+    <value>The private key for the certificate.</value>
   </data>
 </root>
