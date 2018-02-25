@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.Linq;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;

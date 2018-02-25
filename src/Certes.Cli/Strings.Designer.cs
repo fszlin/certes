@@ -71,6 +71,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can not export certificate for order with &apos;{0}&apos; status..
+        /// </summary>
+        internal static string ErrorExportInvalidOrder {
+            get {
+                return ResourceManager.GetString("ErrorExportInvalidOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Identifier &apos;{0}&apos; not found in the certificate order..
         /// </summary>
         internal static string ErrorIdentifierNotAvailable {
@@ -112,6 +121,15 @@ namespace Certes.Cli {
         internal static string ErrorParameterMissing {
             get {
                 return ResourceManager.GetString("ErrorParameterMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path to save the certificate..
+        /// </summary>
+        internal static string HelpCertificateOut {
+            get {
+                return ResourceManager.GetString("HelpCertificateOut", resourceCulture);
             }
         }
         
@@ -166,6 +184,33 @@ namespace Certes.Cli {
         internal static string HelpCommandAccountUpdate {
             get {
                 return ResourceManager.GetString("HelpCommandAccountUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export certificates..
+        /// </summary>
+        internal static string HelpCommandCertificate {
+            get {
+                return ResourceManager.GetString("HelpCommandCertificate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export certificate to PEM for an order..
+        /// </summary>
+        internal static string HelpCommandCertificatePem {
+            get {
+                return ResourceManager.GetString("HelpCommandCertificatePem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export certificate to PFX for an order..
+        /// </summary>
+        internal static string HelpCommandCertificatePfx {
+            get {
+                return ResourceManager.GetString("HelpCommandCertificatePfx", resourceCulture);
             }
         }
         
@@ -305,6 +350,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Path to save the generated key..
+        /// </summary>
+        internal static string HelpKeyOut {
+            get {
+                return ResourceManager.GetString("HelpKeyOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The URI of the certificate order..
         /// </summary>
         internal static string HelpOrderId {
@@ -314,11 +368,20 @@ namespace Certes.Cli {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Path to save the generated key..
+        ///   Looks up a localized string similar to The password for the PFX..
         /// </summary>
-        internal static string HelpOut {
+        internal static string HelpPfxPassword {
             get {
-                return ResourceManager.GetString("HelpOut", resourceCulture);
+                return ResourceManager.GetString("HelpPfxPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The private key for the certificate..
+        /// </summary>
+        internal static string HelpPrivateKey {
+            get {
+                return ResourceManager.GetString("HelpPrivateKey", resourceCulture);
             }
         }
         

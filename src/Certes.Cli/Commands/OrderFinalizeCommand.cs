@@ -32,7 +32,7 @@ namespace Certes.Cli.Commands
                 .DefineServerOption()
                 .DefineKeyOption()
                 .DefineOption(DnOption, help: Strings.HelpDn)
-                .DefineOption(OutOption, help: Strings.HelpOut)
+                .DefineOption(OutOption, help: Strings.HelpKeyOut)
                 .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId);
 
             return cmd;

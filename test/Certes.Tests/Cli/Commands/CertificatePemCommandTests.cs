@@ -1,5 +1,7 @@
 ﻿using System;
 using System.CommandLine;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
@@ -13,28 +15,37 @@ using static Certes.Helper;
 
 namespace Certes.Cli.Commands
 {
-    public class OrderFinalizeCommandTests
+    public class CertificatePemCommandTests
     {
         [Fact]
         public async Task CanProcessCommand()
         {
             var orderLoc = new Uri("http://acme.com/o/1");
+            var certLoc = new Uri("http://acme.com/c/1");
             var order = new Order
             {
+                Certificate = certLoc,
                 Identifiers = new[] {
                     new Identifier { Value = "*.a.com" },
                     new Identifier { Value = "*.b.com" },
-                }
+                },
+                Status = OrderStatus.Valid,
             };
+
+            var certChainContent = string.Join(
+                Environment.NewLine,
+                File.ReadAllText("./Data/leaf-cert.pem"),
+                File.ReadAllText("./Data/test-ca2.pem"),
+                File.ReadAllText("./Data/lets-encrypt-x3-cross-signed.pem"));
+            var certChain = new CertificateChain(certChainContent);
 
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
             settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(LetsEncryptV2);
             settingsMock.Setup(m => m.GetAccountKey(LetsEncryptV2)).ReturnsAsync(GetKeyV2());
 
             var orderMock = new Mock<IOrderContext>(MockBehavior.Strict);
-            orderMock.SetupGet(m => m.Location).Returns(orderLoc);
             orderMock.Setup(m => m.Resource()).ReturnsAsync(order);
-            orderMock.Setup(m => m.Finalize(It.IsAny<byte[]>())).ReturnsAsync(order);
+            orderMock.Setup(m => m.Download()).ReturnsAsync(certChain);
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
@@ -42,64 +53,66 @@ namespace Certes.Cli.Commands
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
 
-            var cmd = new OrderFinalizeCommand(
+            var cmd = new CertificatePemCommand(
                 settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
 
-            var syntax = DefineCommand($"finalize {orderLoc}");
-            dynamic ret = await cmd.Execute(syntax);
-            var privateKey = KeyFactory.FromDer(ret.privateKey);
-            Assert.NotNull(privateKey);
+            var syntax = DefineCommand($"pem {orderLoc}");
+            var ret = await cmd.Execute(syntax);
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
-                    location = orderLoc,
-                    resource = order,
+                    location = certLoc,
+                    resource = new
+                    {
+                        certificate = certChain.Certificate.ToDer(),
+                        issuers = certChain.Issuers.Select(i => i.ToDer()),
+                    },
                 }),
-                JsonConvert.SerializeObject(new
-                {
-                    ret.location,
-                    ret.resource,
-                }));
+                JsonConvert.SerializeObject(ret));
 
-            orderMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Once);
+            orderMock.Verify(m => m.Download(), Times.Once);
 
-            var outPath = "./private-key.pem";
-            orderMock.ResetCalls();
-            fileMock.Setup(m => m.WriteAllText(outPath, It.IsAny<string>())).Returns(Task.CompletedTask);
-
-            syntax = DefineCommand($"finalize {orderLoc} --dn CN=*.a.com --out {outPath}");
+            var outPath = "./cert.pem";
+            string saved = null;
+            fileMock.Setup(m => m.WriteAllText(outPath, It.IsAny<string>()))
+                .Callback((string path, string text) => saved = text)
+                .Returns(Task.CompletedTask);
+            syntax = DefineCommand($"pem --out {outPath} {orderLoc}");
             ret = await cmd.Execute(syntax);
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
-                    location = orderLoc,
-                    resource = order,
+                    location = certLoc,
                 }),
                 JsonConvert.SerializeObject(ret));
 
             fileMock.Verify(m => m.WriteAllText(outPath, It.IsAny<string>()), Times.Once);
-            orderMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Once);
+            Assert.Equal(
+                certChainContent.Replace("\r", "").Replace("\n", ""),
+                saved.Replace("\r", "").Replace("\n", ""));
+
+            order.Status = OrderStatus.Invalid;
+            syntax = DefineCommand($"pem {orderLoc}");
+            await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
         }
 
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"finalize http://a.com/o/1 --dn CN=www.m.com --out ./p.pem --server {LetsEncryptStagingV2}";
+            var args = $"pem http://acme.com/o/1 --server {LetsEncryptStagingV2}";
             var syntax = DefineCommand(args);
 
-            Assert.Equal("finalize", syntax.ActiveCommand.Value);
+            Assert.Equal("pem", syntax.ActiveCommand.Value);
             ValidateOption(syntax, "server", LetsEncryptStagingV2);
-            ValidateOption(syntax, "dn", "CN=www.m.com");
-            ValidateOption(syntax, "out", "./p.pem");
-            ValidateParameter(syntax, "order-id", new Uri("http://a.com/o/1"));
+            ValidateParameter(syntax, "order-id", new Uri("http://acme.com/o/1"));
 
             syntax = DefineCommand("noop");
-            Assert.NotEqual("finalize", syntax.ActiveCommand.Value);
+            Assert.NotEqual("pem", syntax.ActiveCommand.Value);
         }
 
         private static ArgumentSyntax DefineCommand(string args)
         {
-            var cmd = new OrderFinalizeCommand(
+            var cmd = new CertificatePemCommand(
                 new UserSettings(new FileUtilImpl()), MakeFactory(null), new FileUtilImpl());
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
