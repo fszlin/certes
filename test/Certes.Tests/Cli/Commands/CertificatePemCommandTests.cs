@@ -87,7 +87,9 @@ namespace Certes.Cli.Commands
                 JsonConvert.SerializeObject(ret));
 
             fileMock.Verify(m => m.WriteAllText(outPath, It.IsAny<string>()), Times.Once);
-            Assert.Equal(certChainContent.Replace(Environment.NewLine, ""), saved.Replace(Environment.NewLine, ""));
+            Assert.Equal(
+                certChainContent.Replace("\r", "").Replace("\n", ""),
+                saved.Replace("\r", "").Replace("\n", ""));
 
             order.Status = OrderStatus.Invalid;
             syntax = DefineCommand($"pem {orderLoc}");
