@@ -7,7 +7,7 @@ namespace Certes.Cli.Options
         public OptionsV2Base()
         {
             Path = "";
-            Server = WellKnownServers.LetsEncryptStagingV2;
+            Server = WellKnownServers.LetsEncryptV2;
         }
     }
 }

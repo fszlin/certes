@@ -68,7 +68,7 @@ namespace Certes.Acme
         /// <returns>
         /// The account.
         /// </returns>
-        public async Task<IAccountContext> Update(IList<string> contact = null, bool agreeTermsOfService = false)
+        public async Task<Account> Update(IList<string> contact = null, bool agreeTermsOfService = false)
         {
             var location = await Context.Account().Location();
             var account = new Account
@@ -82,8 +82,8 @@ namespace Certes.Acme
             }
 
             var payload = await Context.Sign(account, location);
-            await Context.HttpClient.Post<Account>(location, payload, true);
-            return this;
+            var response = await Context.HttpClient.Post<Account>(location, payload, true);
+            return response.Resource;
         }
 
         /// <summary>

@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.6.2" />
     <PackageReference Include="NLog" Version="4.5.0-*" PrivateAssets="all" />
     <PackageReference Include="System.CommandLine" Version="0.1.0-*" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.6.0" />
@@ -32,6 +33,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Certes\Certes.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <PropertyGroup>

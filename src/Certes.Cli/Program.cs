@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
+using Autofac;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
@@ -8,14 +10,24 @@ namespace Certes.Cli
 {
     public class Program
     {
-        internal const string ConsoleLoggerName = "certes-cli-console-logger";
-
-        public static async Task<int> Main(string[] args)
+        internal static async Task<int> Main(string[] args)
         {
             ConfigureConsoleLogger();
+            var container = ConfigureContainer();
 
-            var succeed = await new CliCore().Process(args);
+            var succeed = await container.Resolve<CliCore>().Run(args);
             return succeed ? 0 : 1;
+        }
+
+        internal static IContainer ConfigureContainer()
+        {
+            var builder = new ContainerBuilder();
+            builder
+                .RegisterAssemblyTypes(typeof(CliCore).GetTypeInfo().Assembly)
+                .AsImplementedInterfaces();
+            builder.RegisterType<CliCore>();
+
+            return builder.Build();
         }
 
         private static void ConfigureConsoleLogger()

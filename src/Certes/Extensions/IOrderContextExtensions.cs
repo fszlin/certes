@@ -22,13 +22,8 @@ namespace Certes
         /// </returns>
         public static async Task<Order> Finalize(this IOrderContext context, CsrInfo csr, IKey key)
         {
-            var builder = new CertificationRequestBuilder(key);
-            var order = await context.Resource();
-            foreach (var identifier in order.Identifiers)
-            {
-                builder.SubjectAlternativeNames.Add(identifier.Value);
-            }
-
+            var builder = await context.CreateCsr(key);
+            
             foreach (var (name, value) in csr.Fields)
             {
                 builder.AddName(name, value);
@@ -40,6 +35,24 @@ namespace Certes
             }
 
             return await context.Finalize(builder.Generate());
+        }
+
+        /// <summary>
+        /// Creates CSR from the order.
+        /// </summary>
+        /// <param name="context">The order context.</param>
+        /// <param name="key">The private key.</param>
+        /// <returns>The CSR.</returns>
+        public static async Task<CertificationRequestBuilder> CreateCsr(this IOrderContext context, IKey key)
+        {
+            var builder = new CertificationRequestBuilder(key);
+            var order = await context.Resource();
+            foreach (var identifier in order.Identifiers)
+            {
+                builder.SubjectAlternativeNames.Add(identifier.Value);
+            }
+
+            return builder;
         }
 
         /// <summary>

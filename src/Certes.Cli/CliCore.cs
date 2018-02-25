@@ -1,94 +1,151 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.CommandLine;
+using System.Linq;
 using System.Threading.Tasks;
-using Certes.Cli.Options;
-using Certes.Cli.Processors;
+using Certes.Cli.Commands;
+using Certes.Json;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using NLog;
 
 namespace Certes.Cli
 {
-    public class CliCore
+    internal class CliCore
     {
         private readonly ILogger consoleLogger = LogManager.GetLogger(nameof(CliCore));
+        private readonly JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
+        private readonly IEnumerable<ICliCommand> commands;
 
-        private JsonSerializerSettings jsonSettings;
-        private AccountOptions accountOptions;
-        private OrderOptions orderOptions;
-        private AzureOptions azureOptions;
+        public CliCore(IEnumerable<ICliCommand> commands)
+        {
+            this.commands = commands;
+        }
 
-        public async Task<bool> Process(string[] args)
+        public async Task<bool> Run(string[] args)
         {
             try
             {
-                ArgumentSyntax.Parse(args, syntax =>
+                var cmd = MatchCommand(args);
+                if (cmd == null)
                 {
-                    syntax.ApplicationName = "certes";
-                    syntax.HandleErrors = false;
-
-                    accountOptions = AccountCommand.TryParse(syntax);
-                    orderOptions = OrderCommand.TryParse(syntax);
-                    azureOptions = AzureCommand.TryParse(syntax);
-
-                });
-            }
-            catch (ArgumentSyntaxException ex)
-            {
-                consoleLogger.Error(ex, ex.Message);
-                return false;
-            }
-
-            jsonSettings = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                NullValueHandling = NullValueHandling.Ignore
-            };
-
-            jsonSettings.Converters.Add(new StringEnumConverter());
-
-            try
-            {
-                if (accountOptions != null)
-                {
-                    var cmd = new AccountCommand(accountOptions);
-                    var result = await cmd.Process();
-                    consoleLogger.Info(JsonConvert.SerializeObject(result, Formatting.Indented, jsonSettings));
-                    return true;
+                    return false;
                 }
 
-                if (orderOptions != null)
-                {
-                    var cmd = new OrderCommand(orderOptions);
-                    var result = await cmd.Process();
-                    consoleLogger.Info(JsonConvert.SerializeObject(result, Formatting.Indented, jsonSettings));
-                    return true;
-                }
-
-                if (azureOptions != null)
-                {
-                    var cmd = new AzureCommand(azureOptions);
-                    var result = await cmd.Process();
-                    consoleLogger.Info(JsonConvert.SerializeObject(result, Formatting.Indented, jsonSettings));
-                    return true;
-                }
-
-                return false;
-            }
-            catch (AggregateException ex)
-            {
-                foreach (var err in ex.InnerExceptions)
-                {
-                    consoleLogger.Error(err, err.Message);
-                }
+                var result = await cmd.Value.Command.Execute(cmd.Value.Syntax);
+                consoleLogger.Info(JsonConvert.SerializeObject(
+                    result, Formatting.Indented, jsonSettings));
+                return true;
             }
             catch (Exception ex)
             {
-                consoleLogger.Error(ex, ex.Message);
+                consoleLogger.Error(ex.Message);
+                consoleLogger.Debug(ex);
+                return false;
+            }
+        }
+
+        private (ICliCommand Command, ArgumentSyntax Syntax)? MatchCommand(string[] args)
+        {
+            var commandGroups = commands.ToLookup(c => c.Group);
+
+            var group = MatchCommandGroup(args, commandGroups);
+            if (group == null)
+            {
+                return null;
             }
 
-            return false;
+            return MatchCommand(args, group.Value.Commands, group.Value.Syntax);
         }
+
+        private (ICliCommand Command, ArgumentSyntax Syntax)? MatchCommand(
+            string[] args, IEnumerable<ICliCommand> groupCommands, ArgumentSyntax groupSyntax)
+        {
+            string helpText = null;
+            try
+            {
+                var isHelpRequested = IsHelpRequested(args);
+                ICliCommand matchCommand = null;
+                var cmdSyntax = ArgumentSyntax.Parse(args.Skip(1).ToArray(), s =>
+                {
+                    s.HandleErrors = false;
+                    s.HandleHelp = false;
+                    s.ErrorOnUnexpectedArguments = false;
+                    s.ApplicationName = $"{groupSyntax.ApplicationName} {groupSyntax.ActiveCommand}";
+                    foreach (var cmd in groupCommands)
+                    {
+                        var arg = cmd.Define(s);
+                        if (arg.IsActive)
+                        {
+                            matchCommand = cmd;
+                        }
+                    }
+
+                    if (isHelpRequested)
+                    {
+                        helpText = s.GetHelpText();
+                    }
+                });
+
+                if (!isHelpRequested)
+                {
+                    return (matchCommand, cmdSyntax);
+                }
+            }
+            catch (ArgumentSyntaxException)
+            {
+                if (!IsHelpRequested(args))
+                {
+                    throw;
+                }
+            }
+
+            consoleLogger.Info(helpText);
+            return null;
+        }
+
+        private (IEnumerable<ICliCommand> Commands, ArgumentSyntax Syntax)? MatchCommandGroup(
+            string[] args, ILookup<CommandGroup, ICliCommand> commandGroups)
+        {
+            string helpText = null;
+            var isHelpRequested = IsHelpRequested(args);
+            try
+            {
+                IEnumerable<ICliCommand> commands = null;
+                var groupSyntax = ArgumentSyntax.Parse(args, s =>
+                {
+                    s.HandleErrors = false;
+                    s.HandleHelp = false;
+                    s.ErrorOnUnexpectedArguments = false;
+                    foreach (var cmdGroup in commandGroups)
+                    {
+                        var cmd = s.DefineCommand(cmdGroup.Key.Command, help: cmdGroup.Key.Help);
+                        if (cmd.IsActive)
+                        {
+                            commands = cmdGroup;
+                        }
+                    }
+
+                    if (isHelpRequested)
+                    {
+                        helpText = s.GetHelpText();
+                    }
+                });
+
+                return (commands, groupSyntax);
+            }
+            catch (ArgumentSyntaxException)
+            {
+                if (isHelpRequested)
+                {
+                    consoleLogger.Info(helpText);
+                    return null;
+                }
+
+                throw;
+            }
+        }
+
+        private static bool IsHelpRequested(string[] args)
+            => args.Intersect(new[] { "-?", "-h", "-help" }).Any();
     }
 }
