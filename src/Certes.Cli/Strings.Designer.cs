@@ -260,6 +260,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The distinguished name for the certificate request..
+        /// </summary>
+        internal static string HelpDn {
+            get {
+                return ResourceManager.GetString("HelpDn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The domain..
         /// </summary>
         internal static string HelpDomain {

@@ -183,6 +183,9 @@
   <data name="HelpCommandServerShow" xml:space="preserve">
     <value>Get the details of a ACME server.</value>
   </data>
+  <data name="HelpDn" xml:space="preserve">
+    <value>The distinguished name for the certificate request.</value>
+  </data>
   <data name="HelpDomain" xml:space="preserve">
     <value>The domain.</value>
   </data>

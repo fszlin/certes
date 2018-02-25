@@ -11,6 +11,7 @@ namespace Certes.Cli.Commands
         private const string CommandText = "finalize";
         private const string OrderIdParam = "order-id";
         private const string OutOption = "out";
+        private const string DnOption = "dn";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderFinalizeCommand));
 
         public CommandGroup Group { get; } = CommandGroup.Order;
@@ -30,6 +31,7 @@ namespace Certes.Cli.Commands
             syntax
                 .DefineServerOption()
                 .DefineKeyOption()
+                .DefineOption(DnOption, help: Strings.HelpDn)
                 .DefineOption(OutOption, help: Strings.HelpOut)
                 .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId);
 
@@ -40,22 +42,42 @@ namespace Certes.Cli.Commands
         {
             var (serverUri, key) = await ReadAccountKey(syntax, true, false);
             var orderUri = syntax.GetParameter<Uri>(OrderIdParam, true);
+            var distinguishedName = syntax.GetOption<string>(DnOption);
             var outPath = syntax.GetOption<string>(OutOption);
 
             var certKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
-            await File.WriteAllText(outPath, certKey.ToPem());
 
-            logger.Debug("Loading order from '{0}'.", serverUri);
+            logger.Debug("Finalizing order from '{0}'.", serverUri);
 
             var acme = ContextFactory.Create(serverUri, key);
             var orderCtx = acme.Order(orderUri);
-            var order = await orderCtx.Finalize(new CsrInfo(), certKey);
 
-            return new
+            var csr = await orderCtx.CreateCsr(certKey);
+            if (!string.IsNullOrWhiteSpace(distinguishedName))
             {
-                location = orderCtx.Location,
-                resource = order,
-            };
+                csr.AddName(distinguishedName);
+            }
+
+            var order = await orderCtx.Finalize(csr.Generate());
+
+            if (string.IsNullOrWhiteSpace(outPath))
+            {
+                return new
+                {
+                    location = orderCtx.Location,
+                    privateKey = certKey.ToDer(),
+                    resource = order,
+                };
+            }
+            else
+            {
+                await File.WriteAllText(outPath, certKey.ToPem());
+                return new
+                {
+                    location = orderCtx.Location,
+                    resource = order,
+                };
+            }
         }
     }
 }
