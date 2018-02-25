@@ -30,7 +30,7 @@ namespace Certes.Cli.Commands
             syntax
                 .DefineServerOption()
                 .DefineKeyOption()
-                .DefineOption(OutOption, help: Strings.HelpOut)
+                .DefineOption(OutOption, help: Strings.HelpKeyOut)
                 .DefineParameter(EmailParam, help: Strings.HelpEmail);
 
             return cmd;

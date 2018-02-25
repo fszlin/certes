@@ -20,8 +20,8 @@ namespace Certes.Acme
                 .Where(c => !string.IsNullOrWhiteSpace(c))
                 .Select(c => c + "-----END CERTIFICATE-----");
 
-            Certificate = certificates.First();
-            Issuers = certificates.Skip(1).ToArray();
+            Certificate = new CertificateContent(certificates.First());
+            Issuers = certificates.Skip(1).Select(c => new CertificateContent(c)).ToArray();
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Certes.Acme
         /// <value>
         /// The certificate.
         /// </value>
-        public string Certificate { get; }
+        public IEncodable Certificate { get; }
 
         /// <summary>
         /// Gets or sets the issuers.
@@ -38,7 +38,7 @@ namespace Certes.Acme
         /// <value>
         /// The issuers.
         /// </value>
-        public IList<string> Issuers { get; }
+        public IList<IEncodable> Issuers { get; }
     }
 
 }

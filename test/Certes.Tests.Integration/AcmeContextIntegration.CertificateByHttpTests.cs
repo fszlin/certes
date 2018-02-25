@@ -77,7 +77,7 @@ namespace Certes
 
                 // revoke certificate
                 var certParser = new X509CertificateParser();
-                var certificate = certParser.ReadCertificate(Encoding.UTF8.GetBytes(certChain.Certificate));
+                var certificate = certParser.ReadCertificate(certChain.Certificate.ToDer());
                 var der = certificate.GetEncoded();
 
                 await ctx.RevokeCertificate(der, RevocationReason.Unspecified, null);

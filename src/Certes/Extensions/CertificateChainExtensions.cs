@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Certes.Acme;
+﻿using Certes.Acme;
 using Certes.Pkcs;
 
 namespace Certes
@@ -17,12 +16,12 @@ namespace Certes
         /// <returns>The PFX.</returns>
         public static PfxBuilder ToPfx(this CertificateChain certificateChain, IKey certKey)
         {
-            var pfx = new PfxBuilder(Encoding.UTF8.GetBytes(certificateChain.Certificate), certKey);
+            var pfx = new PfxBuilder(certificateChain.Certificate.ToDer(), certKey);
             if (certificateChain.Issuers != null)
             {
                 foreach (var issuer in certificateChain.Issuers)
                 {
-                    pfx.AddIssuer(Encoding.UTF8.GetBytes(issuer));
+                    pfx.AddIssuer(issuer.ToDer());
                 }
             }
 

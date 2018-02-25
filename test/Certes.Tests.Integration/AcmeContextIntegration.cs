@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
-using Certes.Pkcs;
-using Org.BouncyCastle.X509;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -30,9 +27,6 @@ namespace Certes
                 "dev";
         }
 
-        //[Theory]
-        //[InlineData(KeyAlgorithm.ES256)]
-        //[InlineData(KeyAlgorithm.ES384)]
         protected async Task CanGenerateCertificateWithEC(KeyAlgorithm algo)
         {
             var dirUri = await GetAcmeUriV2();
@@ -82,7 +76,7 @@ namespace Certes
             var cert = await orderCtx.Download();
 
             var certInfo = new CertificateInfo(cert, certKey);
-            var x509 = new X509Certificate2(certInfo.ToDer());
+            var x509 = new X509Certificate2(certInfo.Chain.Certificate.ToDer());
             Assert.Contains(hosts[0], x509.Subject);
 
             // deactivate authz so the subsequence can trigger challenge validation
