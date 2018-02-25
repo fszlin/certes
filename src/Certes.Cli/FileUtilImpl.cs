@@ -27,14 +27,14 @@ namespace Certes.Cli
 
         public async Task WriteAllBytes(string path, byte[] data)
         {
-            path = Path.GetFullPath(path);
-            var dir = Path.GetDirectoryName(path);
+            var fullPath = Path.GetFullPath(path);
+            var dir = Path.GetDirectoryName(fullPath);
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
             }
 
-            using (var stream = File.Create(path))
+            using (var stream = File.Create(fullPath))
             {
                 await stream.WriteAsync(data, 0, data.Length);
             }
