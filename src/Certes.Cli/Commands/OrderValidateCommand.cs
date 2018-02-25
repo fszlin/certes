@@ -63,8 +63,7 @@ namespace Certes.Cli.Commands
 
             return new
             {
-                location = orderCtx.Location,
-                keyAuthz = challengeCtx.KeyAuthz,
+                location = challengeCtx.Location,
                 resource = challenge,
             };
         }

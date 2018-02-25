@@ -62,6 +62,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Challenge with type &apos;{0}&apos; is not supported..
+        /// </summary>
+        internal static string ErrorChallengeNotAvailable {
+            get {
+                return ResourceManager.GetString("ErrorChallengeNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Challenge type &apos;{0}&apos; is not supported..
         /// </summary>
         internal static string ErrorInvalidChallengeType {

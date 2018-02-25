@@ -58,13 +58,24 @@ namespace Certes.Cli.Commands
             var acme = ContextFactory.Create(serverUri, key);
             var orderCtx = acme.Order(orderUri);
             var authzCtx = await orderCtx.Authorization(domain);
-            var challengeCtx = await authzCtx.Challenge(type);
+            var challengeCtx = await authzCtx.Challenge(type)
+                ?? throw new Exception(string.Format(Strings.ErrorChallengeNotAvailable, type));
+
             var challenge = await challengeCtx.Resource();
+
+            if (string.Equals(type, Dns01, OrdinalIgnoreCase))
+            {
+                return new
+                {
+                    location = challengeCtx.Location,
+                    dnsTxt = key.DnsTxt(challenge.Token),
+                    resource = challenge,
+                };
+            }
 
             return new
             {
-                location = orderCtx.Location,
-                keyAuthz = challengeCtx.KeyAuthz,
+                location = challengeCtx.Location,
                 resource = challenge,
             };
         }

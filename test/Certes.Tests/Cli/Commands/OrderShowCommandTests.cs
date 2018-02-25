@@ -18,8 +18,6 @@ namespace Certes.Cli.Commands
         [Fact]
         public async Task CanProcessCommand()
         {
-            var serverUri = new Uri("http://acme.com/d");
-            var acctLoc = new Uri("http://acme.com/a/11");
             var orderLoc = new Uri("http://acme.com/o/1");
             var order = new Order
             {
