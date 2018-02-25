@@ -4,6 +4,7 @@ using Certes.Acme;
 using Certes.Jws;
 using Certes.Pkcs;
 using Xunit;
+using ChallengeTypes = Certes.Acme.Resource.ChallengeTypes;
 
 namespace Certes
 {

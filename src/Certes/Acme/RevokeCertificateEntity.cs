@@ -4,7 +4,7 @@
     /// Represents the ACME revoke certificate entity.
     /// </summary>
     /// <seealso cref="Certes.Acme.EntityBase" />
-    public class RevokeCertificate : EntityBase
+    public class RevokeCertificateEntity : EntityBase
     {
         /// <summary>
         /// Gets or sets the encoded certificate.

@@ -4,7 +4,7 @@ using System;
 namespace Certes.Acme
 {
     /// <summary>
-    /// Represents a ACME <see cref="Certificate"/>.
+    /// Represents a ACME <see cref="CertificateEntity"/>.
     /// </summary>
     public class AcmeCertificate : KeyedAcmeResult<string>
     {

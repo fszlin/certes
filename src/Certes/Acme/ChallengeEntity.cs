@@ -10,12 +10,12 @@ namespace Certes.Acme
     /// Represents the ACME Challenge entity.
     /// </summary>
     /// <seealso cref="Certes.Acme.EntityBase" />
-    public class Challenge : EntityBase
+    public class ChallengeEntity : EntityBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Challenge"/> class.
+        /// Initializes a new instance of the <see cref="ChallengeEntity"/> class.
         /// </summary>
-        public Challenge()
+        public ChallengeEntity()
         {
             this.Resource = ResourceTypes.Challenge;
         }
@@ -25,7 +25,6 @@ namespace Certes.Acme
         /// <value>
         /// The challenge type.
         /// </value>
-        /// <seealso cref="ChallengeTypes"/>
         public string Type { get; set; }
 
         /// <summary>
@@ -79,7 +78,7 @@ namespace Certes.Acme
     }
 
     /// <summary>
-    /// Helper methods for <see cref="Challenge"/>.
+    /// Helper methods for <see cref="ChallengeEntity"/>.
     /// </summary>
     public static class ChallengeExtensions
     {
@@ -89,7 +88,7 @@ namespace Certes.Acme
         /// <param name="challenge">The challenge.</param>
         /// <param name="key">The key.</param>
         /// <returns>The key authorization string.</returns>
-        public static string ComputeKeyAuthorization(this Challenge challenge, IAccountKey key)
+        public static string ComputeKeyAuthorization(this ChallengeEntity challenge, IAccountKey key)
             => $"{challenge.Token}.{key.Thumbprint()}";
 
         /// <summary>
@@ -98,7 +97,7 @@ namespace Certes.Acme
         /// <param name="challenge">The challenge.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value for the text DNS record.</returns>
-        public static string ComputeDnsValue(this Challenge challenge, IAccountKey key)
+        public static string ComputeDnsValue(this ChallengeEntity challenge, IAccountKey key)
         {
             var keyAuthString = challenge.ComputeKeyAuthorization(key);
             var keyAuthBytes = Encoding.UTF8.GetBytes(keyAuthString);

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
-using Authz = Certes.Acme.Resource.Authorization;
 
 namespace Certes.Acme
 {
@@ -11,7 +10,7 @@ namespace Certes.Acme
     /// Represents the context for ACME authorization operations.
     /// </summary>
     /// <seealso cref="Certes.Acme.IAuthorizationContext" />
-    internal class AuthorizationContext : EntityContext<Authz>, IAuthorizationContext
+    internal class AuthorizationContext : EntityContext<Authorization>, IAuthorizationContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationContext"/> class.
@@ -46,10 +45,10 @@ namespace Certes.Acme
         /// <returns>
         /// The authorization deactivated.
         /// </returns>
-        public async Task<Authz> Deactivate()
+        public async Task<Authorization> Deactivate()
         {
-            var payload = await Context.Sign(new Authz { Status = AuthorizationStatus.Deactivated }, Location);
-            var resp = await Context.HttpClient.Post<Authz>(Location, payload, true);
+            var payload = await Context.Sign(new Authorization { Status = AuthorizationStatus.Deactivated }, Location);
+            var resp = await Context.HttpClient.Post<Authorization>(Location, payload, true);
             return resp.Resource;
         }
     }

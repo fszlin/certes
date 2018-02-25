@@ -8,7 +8,7 @@ namespace Certes.Acme
         [Fact]
         public void CanGetSetProperties()
         {
-            var model = new Registration();
+            var model = new RegistrationEntity();
             Assert.Equal(ResourceTypes.Registration, model.Resource);
             model.VerifyGetterSetter(a => a.Agreement, new Uri("http://certes.is.working"));
             model.VerifyGetterSetter(a => a.Authorizations, new Uri("http://certes.is.working"));
