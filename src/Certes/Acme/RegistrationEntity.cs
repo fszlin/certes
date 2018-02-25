@@ -7,12 +7,12 @@ namespace Certes.Acme
     /// Represents the ACME Registration entity.
     /// </summary>
     /// <seealso cref="Certes.Acme.EntityBase" />
-    public class Registration : EntityBase
+    public class RegistrationEntity : EntityBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Registration"/> class.
+        /// Initializes a new instance of the <see cref="RegistrationEntity"/> class.
         /// </summary>
-        public Registration()
+        public RegistrationEntity()
         {
             this.Resource = ResourceTypes.Registration;
         }

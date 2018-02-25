@@ -36,7 +36,7 @@ namespace Certes
             {
                 if (req.Method == HttpMethod.Post && req.RequestUri == acmeDir.NewReg)
                 {
-                    var payload = await ParsePayload<Registration>(req);
+                    var payload = await ParsePayload<RegistrationEntity>(req);
                     Assert.Equal(ResourceTypes.NewRegistration, payload.Resource);
                     Assert.Equal(1, payload.Contact?.Count);
                     Assert.Equal(email, payload.Contact[0]);
@@ -83,7 +83,7 @@ namespace Certes
             {
                 if (req.Method == HttpMethod.Post && req.RequestUri == regLocation)
                 {
-                    var payload = await ParsePayload<Registration>(req);
+                    var payload = await ParsePayload<RegistrationEntity>(req);
                     Assert.Equal(ResourceTypes.Registration, payload.Resource);
                     Assert.True(payload.Delete);
 
@@ -103,7 +103,7 @@ namespace Certes
                     var account = new AcmeAccount
                     {
                         Location = regLocation,
-                        Data = new Registration
+                        Data = new RegistrationEntity
                         {
                             Resource = ResourceTypes.Registration,
                             Contact = new[] { $"another-{email}" },
@@ -137,7 +137,7 @@ namespace Certes
             {
                 if (req.Method == HttpMethod.Post && req.RequestUri == regLocation)
                 {
-                    var payload = await ParsePayload<Registration>(req);
+                    var payload = await ParsePayload<RegistrationEntity>(req);
                     Assert.Equal(ResourceTypes.Registration, payload.Resource);
                     Assert.Equal(1, payload.Contact?.Count);
                     Assert.Equal($"another-{email}", payload.Contact[0]);
@@ -168,7 +168,7 @@ namespace Certes
                     var account = new AcmeAccount
                     {
                         Location = regLocation,
-                        Data = new Registration
+                        Data = new RegistrationEntity
                         {
                             Resource = ResourceTypes.Registration,
                             Contact = new[] { $"another-{email}" },

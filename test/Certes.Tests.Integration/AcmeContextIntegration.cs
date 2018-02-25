@@ -75,8 +75,7 @@ namespace Certes
             }, certKey);
             var cert = await orderCtx.Download();
 
-            var certInfo = new CertificateInfo(cert, certKey);
-            var x509 = new X509Certificate2(certInfo.Chain.Certificate.ToDer());
+            var x509 = new X509Certificate2(cert.Certificate.ToDer());
             Assert.Contains(hosts[0], x509.Subject);
 
             // deactivate authz so the subsequence can trigger challenge validation

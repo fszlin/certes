@@ -64,17 +64,12 @@ namespace Certes
         /// <returns>
         /// The certificate generated.
         /// </returns>
-        public static async Task<CertificateInfo> Generate(this IOrderContext context, CsrInfo csr, IKey key = null)
+        public static async Task<CertificateChain> Generate(this IOrderContext context, CsrInfo csr, IKey key)
         {
             var order = await context.Resource();
             if (order.Status != OrderStatus.Pending)
             {
                 throw new Exception($"Can not finalize order with status {order.Status}.");
-            }
-
-            if (key == null)
-            {
-                key = KeyFactory.NewKey(KeyAlgorithm.RS256);
             }
 
             order = await context.Finalize(csr, key);
@@ -84,9 +79,7 @@ namespace Certes
                 throw new Exception("Failto finalize order.");
             }
 
-            var certChain = await context.Download();
-
-            return new CertificateInfo(certChain, key);
+            return await context.Download();
         }
 
         /// <summary>

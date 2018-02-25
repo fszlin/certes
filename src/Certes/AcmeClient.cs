@@ -1,13 +1,12 @@
-﻿using Certes.Acme;
-using Certes.Jws;
-using Certes.Pkcs;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-
-using Authz = Certes.Acme.Authorization;
+using Certes.Acme;
+using Certes.Acme.Resource;
+using Certes.Jws;
+using Certes.Pkcs;
 
 namespace Certes
 {
@@ -74,7 +73,7 @@ namespace Certes
                 this.key = new AccountKey();
             }
 
-            var registration = new Registration
+            var registration = new RegistrationEntity
             {
                 Contact = contact,
                 Resource = ResourceTypes.NewRegistration
@@ -166,7 +165,7 @@ namespace Certes
 
             await this.handler.Post(
                 account.Location,
-                new Registration
+                new RegistrationEntity
                 {
                     Delete = true
                 }, key);
@@ -178,30 +177,30 @@ namespace Certes
         /// <param name="identifier">The identifier to be authorized.</param>
         /// <returns>The authorization created.</returns>
         /// <exception cref="InvalidOperationException">If the account key is missing.</exception>
-        public async Task<AcmeResult<Authz>> NewAuthorization(AuthorizationIdentifier identifier)
+        public async Task<AcmeResult<AuthorizationEntity>> NewAuthorization(AuthorizationIdentifier identifier)
         {
             if (this.key == null)
             {
                 throw new InvalidOperationException();
             }
 
-            var auth = new Authz
+            var auth = new AuthorizationEntity
             {
                 Identifier = identifier,
                 Resource = ResourceTypes.NewAuthorization
             };
 
-            var uri = await this.handler.GetResourceUri(ResourceTypes.NewAuthorization);
-            var result = await this.handler.Post(uri, auth, key);
+            var uri = await handler.GetResourceUri(ResourceTypes.NewAuthorization);
+            var result = await handler.Post(uri, auth, key);
             ThrowIfError(result);
 
             if (result.HttpStatus == HttpStatusCode.SeeOther) // An authentication with the same identifier exists.
             {
-                result = await this.handler.Get<Authz>(result.Location);
+                result = await handler.Get<AuthorizationEntity>(result.Location);
                 ThrowIfError(result);
             }
 
-            return new AcmeResult<Authz>
+            return new AcmeResult<AuthorizationEntity>
             {
                 Data = result.Data,
                 Json = result.Json,
@@ -217,12 +216,12 @@ namespace Certes
         /// </summary>
         /// <param name="location">The authorization location URI.</param>
         /// <returns>The authorization retrieved.</returns>
-        public async Task<AcmeResult<Authz>> GetAuthorization(Uri location)
+        public async Task<AcmeResult<AuthorizationEntity>> GetAuthorization(Uri location)
         {
-            var result = await this.handler.Get<Authz>(location);
+            var result = await this.handler.Get<AuthorizationEntity>(location);
             ThrowIfError(result);
 
-            return new AcmeResult<Authz>
+            return new AcmeResult<AuthorizationEntity>
             {
                 Data = result.Data,
                 Json = result.Json,
@@ -238,7 +237,7 @@ namespace Certes
         /// </summary>
         /// <param name="challenge">The challenge.</param>
         /// <returns>The key authorization string.</returns>
-        public string ComputeKeyAuthorization(Challenge challenge)
+        public string ComputeKeyAuthorization(ChallengeEntity challenge)
         {
             return challenge.ComputeKeyAuthorization(this.key);
         }
@@ -249,7 +248,7 @@ namespace Certes
         /// <param name="challenge">The challenge.</param>
         /// <returns>The value for the text DNS record.</returns>
         /// <exception cref="System.InvalidOperationException">If the provided challenge is not a DNS challenge.</exception>
-        public string ComputeDnsValue(Challenge challenge)
+        public string ComputeDnsValue(ChallengeEntity challenge)
         {
             if (challenge?.Type != ChallengeTypes.Dns01)
             {
@@ -265,14 +264,14 @@ namespace Certes
         /// <param name="authChallenge">The authentication challenge.</param>
         /// <returns>The challenge updated.</returns>
         /// <exception cref="InvalidOperationException">If the account key is missing.</exception>
-        public async Task<AcmeResult<Challenge>> CompleteChallenge(Challenge authChallenge)
+        public async Task<AcmeResult<ChallengeEntity>> CompleteChallenge(ChallengeEntity authChallenge)
         {
             if (this.key == null)
             {
                 throw new InvalidOperationException();
             }
 
-            var challenge = new Challenge
+            var challenge = new ChallengeEntity
             {
                 KeyAuthorization = ComputeKeyAuthorization(authChallenge),
                 Type = authChallenge.Type
@@ -281,7 +280,7 @@ namespace Certes
             var result = await this.handler.Post(authChallenge.Uri, challenge, key);
             ThrowIfError(result);
 
-            return new AcmeResult<Challenge>
+            return new AcmeResult<ChallengeEntity>
             {
                 Data = result.Data,
                 Json = result.Json,
@@ -299,7 +298,7 @@ namespace Certes
         /// <returns>The certificate issued.</returns>
         public async Task<AcmeCertificate> NewCertificate(byte[] csrBytes)
         {
-            var payload = new Certificate
+            var payload = new CertificateEntity
             {
                 Csr = JwsConvert.ToBase64String(csrBytes),
                 Resource = ResourceTypes.NewCertificate
@@ -369,7 +368,7 @@ namespace Certes
         /// <returns>The certificate revoked.</returns>
         public async Task<AcmeCertificate> RevokeCertificate(AcmeCertificate certificate)
         {
-            var payload = new RevokeCertificate
+            var payload = new RevokeCertificateEntity
             {
                 Certificate = JwsConvert.ToBase64String(certificate.Raw),
                 Resource = ResourceTypes.RevokeCertificate
@@ -382,15 +381,6 @@ namespace Certes
             certificate.Revoked = true;
             return certificate;
         }
-
-        /// <summary>
-        /// Gets the authorization from <paramref name="location"/>.
-        /// </summary>
-        /// <param name="location">The authorization location URI.</param>
-        /// <returns>The authorization retrieved.</returns>
-        [Obsolete("Use GetAuthorization(Uri) instead.")]
-        public Task<AcmeResult<Authz>> RefreshAuthorization(Uri location)
-            => GetAuthorization(location);
 
         private void ThrowIfError<T>(AcmeResponse<T> response)
         {

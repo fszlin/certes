@@ -7,12 +7,12 @@ namespace Certes.Acme
     /// Represents the ACME Authorization entity.
     /// </summary>
     /// <seealso cref="Certes.Acme.EntityBase" />
-    public class Authorization : EntityBase
+    public class AuthorizationEntity : EntityBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Authorization"/> class.
+        /// Initializes a new instance of the <see cref="AuthorizationEntity"/> class.
         /// </summary>
-        public Authorization()
+        public AuthorizationEntity()
         {
             this.Resource = ResourceTypes.Authorization;
         }
@@ -48,7 +48,7 @@ namespace Certes.Acme
         /// <value>
         /// The challenges.
         /// </value>
-        public IList<Challenge> Challenges { get; set; }
+        public IList<ChallengeEntity> Challenges { get; set; }
 
         /// <summary>
         /// Gets or sets the combinations.

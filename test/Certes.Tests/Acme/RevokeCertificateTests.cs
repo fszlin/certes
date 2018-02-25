@@ -8,7 +8,7 @@ namespace Certes.Acme
         [Fact]
         public void CanGetSetProperties()
         {
-            var authz = new RevokeCertificate();
+            var authz = new RevokeCertificateEntity();
             authz.VerifyGetterSetter(a => a.Certificate, "pem");
         }
     }
