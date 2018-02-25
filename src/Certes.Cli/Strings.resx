@@ -163,7 +163,7 @@
     <value>Create new certificate order.</value>
   </data>
   <data name="HelpCommandOrderShow" xml:space="preserve">
-    <value>Get the details of a certificate server.</value>
+    <value>Get the details of a certificate order.</value>
   </data>
   <data name="HelpCommandOrderValidate" xml:space="preserve">
     <value>Validate the authorization challenge.</value>
@@ -190,7 +190,7 @@
     <value>Path to the ACME account key.</value>
   </data>
   <data name="HelpOrderId" xml:space="preserve">
-    <value>The URI of the certificate server.</value>
+    <value>The URI of the certificate order.</value>
   </data>
   <data name="HelpOut" xml:space="preserve">
     <value>Path to save the generated key.</value>

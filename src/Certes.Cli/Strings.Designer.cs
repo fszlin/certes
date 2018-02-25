@@ -197,7 +197,7 @@ namespace Certes.Cli {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Get the details of a certificate server..
+        ///   Looks up a localized string similar to Get the details of a certificate order..
         /// </summary>
         internal static string HelpCommandOrderShow {
             get {
@@ -278,7 +278,7 @@ namespace Certes.Cli {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The URI of the certificate server..
+        ///   Looks up a localized string similar to The URI of the certificate order..
         /// </summary>
         internal static string HelpOrderId {
             get {

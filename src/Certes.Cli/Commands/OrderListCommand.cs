@@ -6,7 +6,7 @@ using NLog;
 
 namespace Certes.Cli.Commands
 {
-    internal class OrderListCommand : CommandBase, ICliCommand
+    internal class OrderListCommand : CommandBase//, ICliCommand
     {
         private const string CommandText = "list";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderListCommand));
