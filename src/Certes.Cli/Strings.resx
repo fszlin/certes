@@ -120,6 +120,9 @@
   <data name="ErrorChallengeNotAvailable" xml:space="preserve">
     <value>Challenge with type '{0}' is not supported.</value>
   </data>
+  <data name="ErrorIdentifierNotAvailable" xml:space="preserve">
+    <value>Identifier '{0}' not found in the certificate order.</value>
+  </data>
   <data name="ErrorInvalidChallengeType" xml:space="preserve">
     <value>Challenge type '{0}' is not supported.</value>
   </data>

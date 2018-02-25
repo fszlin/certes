@@ -71,6 +71,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Identifier &apos;{0}&apos; not found in the certificate order..
+        /// </summary>
+        internal static string ErrorIdentifierNotAvailable {
+            get {
+                return ResourceManager.GetString("ErrorIdentifierNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Challenge type &apos;{0}&apos; is not supported..
         /// </summary>
         internal static string ErrorInvalidChallengeType {

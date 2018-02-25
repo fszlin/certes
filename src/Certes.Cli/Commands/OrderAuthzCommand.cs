@@ -57,7 +57,8 @@ namespace Certes.Cli.Commands
 
             var acme = ContextFactory.Create(serverUri, key);
             var orderCtx = acme.Order(orderUri);
-            var authzCtx = await orderCtx.Authorization(domain);
+            var authzCtx = await orderCtx.Authorization(domain)
+                ?? throw new Exception(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
             var challengeCtx = await authzCtx.Challenge(type)
                 ?? throw new Exception(string.Format(Strings.ErrorChallengeNotAvailable, type));
 
