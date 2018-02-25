@@ -15,7 +15,7 @@ using static Certes.Helper;
 
 namespace Certes.Cli.Commands
 {
-    public class OrderNewCommandTests
+    public class OrderFinalizeCommandTests
     {
         [Fact]
         public async Task CanProcessCommand()
@@ -36,19 +36,41 @@ namespace Certes.Cli.Commands
             var orderMock = new Mock<IOrderContext>(MockBehavior.Strict);
             orderMock.SetupGet(m => m.Location).Returns(orderLoc);
             orderMock.Setup(m => m.Resource()).ReturnsAsync(order);
+            orderMock.Setup(m => m.Finalize(It.IsAny<byte[]>())).ReturnsAsync(order);
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
-            ctxMock.Setup(m => m.NewOrder(It.IsAny<IList<string>>(), null, null))
-                .ReturnsAsync(orderMock.Object);
+            ctxMock.Setup(m => m.Order(orderLoc)).Returns(orderMock.Object);
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
 
-            var cmd = new OrderNewCommand(
+            var cmd = new OrderFinalizeCommand(
                 settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
 
-            var syntax = DefineCommand($"new a.com b.com");
-            var ret = await cmd.Execute(syntax);
+            var syntax = DefineCommand($"finalize {orderLoc}");
+            dynamic ret = await cmd.Execute(syntax);
+            var privateKey = KeyFactory.FromDer(ret.privateKey);
+            Assert.NotNull(privateKey);
+            Assert.Equal(
+                JsonConvert.SerializeObject(new
+                {
+                    location = orderLoc,
+                    resource = order,
+                }),
+                JsonConvert.SerializeObject(new
+                {
+                    ret.location,
+                    ret.resource,
+                }));
+
+            orderMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Once);
+
+            var outPath = "./private-key.pem";
+            orderMock.ResetCalls();
+            fileMock.Setup(m => m.WriteAllText(outPath, It.IsAny<string>())).Returns(Task.CompletedTask);
+
+            syntax = DefineCommand($"finalize {orderLoc} --dn CN=*.a.com --out {outPath}");
+            ret = await cmd.Execute(syntax);
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
@@ -57,27 +79,29 @@ namespace Certes.Cli.Commands
                 }),
                 JsonConvert.SerializeObject(ret));
 
-            ctxMock.Verify(m => m.NewOrder(new[] { "a.com", "b.com" }, null, null), Times.Once);
+            fileMock.Verify(m => m.WriteAllText(outPath, It.IsAny<string>()), Times.Once);
+            orderMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Once);
         }
 
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"new www.abc1.com www.abc2.com --server {LetsEncryptStagingV2}";
+            var args = $"finalize http://a.com/o/1 --dn CN=www.m.com --out ./p.pem --server {LetsEncryptStagingV2}";
             var syntax = DefineCommand(args);
 
-            Assert.Equal("new", syntax.ActiveCommand.Value);
+            Assert.Equal("finalize", syntax.ActiveCommand.Value);
             ValidateOption(syntax, "server", LetsEncryptStagingV2);
-            var domains = syntax.GetActiveArguments().Single(a => a.Name == "domains");
-            Assert.Equal(new[] { "www.abc1.com", "www.abc2.com" }, domains.Value);
+            ValidateOption(syntax, "dn", "CN=www.m.com");
+            ValidateOption(syntax, "out", "./p.pem");
+            ValidateParameter(syntax, "order-id", new Uri("http://a.com/o/1"));
 
             syntax = DefineCommand("noop");
-            Assert.NotEqual("list", syntax.ActiveCommand.Value);
+            Assert.NotEqual("finalize", syntax.ActiveCommand.Value);
         }
 
         private static ArgumentSyntax DefineCommand(string args)
         {
-            var cmd = new OrderNewCommand(
+            var cmd = new OrderFinalizeCommand(
                 new UserSettings(new FileUtilImpl()), MakeFactory(null), new FileUtilImpl());
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
