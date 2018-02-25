@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.CommandLine;
+using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
@@ -13,26 +15,19 @@ using static Certes.Helper;
 
 namespace Certes.Cli.Commands
 {
-    public class OrderListCommandTests
+    public class OrderNewCommandTests
     {
         [Fact]
         public async Task CanProcessCommand()
         {
             var serverUri = new Uri("http://acme.com/d");
             var acctLoc = new Uri("http://acme.com/a/11");
-            var order1Loc = new Uri("http://acme.com/o/1");
-            var order2Loc = new Uri("http://acme.com/o/2");
-            var order1 = new Order
+            var orderLoc = new Uri("http://acme.com/o/1");
+            var order = new Order
             {
                 Identifiers = new[] {
                     new Identifier { Value = "*.a.com" },
                     new Identifier { Value = "*.b.com" },
-                }
-            };
-            var order2 = new Order
-            {
-                Identifiers = new[] {
-                    new Identifier { Value = "*.c.com" },
                 }
             };
 
@@ -40,55 +35,43 @@ namespace Certes.Cli.Commands
             settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(LetsEncryptV2);
             settingsMock.Setup(m => m.GetAccountKey(LetsEncryptV2)).ReturnsAsync(GetKeyV2());
 
-            var orderMock1 = new Mock<IOrderContext>(MockBehavior.Strict);
-            orderMock1.SetupGet(m => m.Location).Returns(order1Loc);
-            orderMock1.Setup(m => m.Resource()).ReturnsAsync(order1);
-            var orderMock2 = new Mock<IOrderContext>(MockBehavior.Strict);
-            orderMock2.SetupGet(m => m.Location).Returns(order2Loc);
-            orderMock2.Setup(m => m.Resource()).ReturnsAsync(order2);
-
-            var orderListMock = new Mock<IOrderListContext>(MockBehavior.Strict);
-            orderListMock.Setup(m => m.Orders()).ReturnsAsync(new[] { orderMock1.Object, orderMock2.Object });
-
-            var acctCtxMock = new Mock<IAccountContext>(MockBehavior.Strict);
-            acctCtxMock.Setup(m => m.Orders()).ReturnsAsync(orderListMock.Object);
+            var orderMock = new Mock<IOrderContext>(MockBehavior.Strict);
+            orderMock.SetupGet(m => m.Location).Returns(orderLoc);
+            orderMock.Setup(m => m.Resource()).ReturnsAsync(order);
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
-            ctxMock.Setup(m => m.Account()).ReturnsAsync(acctCtxMock.Object);
+            ctxMock.Setup(m => m.NewOrder(It.IsAny<IList<string>>(), null, null))
+                .ReturnsAsync(orderMock.Object);
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
 
-            var cmd = new OrderListCommand(
+            var cmd = new OrderNewCommand(
                 settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
 
-            var syntax = DefineCommand($"list");
+            var syntax = DefineCommand($"new a.com b.com");
             var ret = await cmd.Execute(syntax);
             Assert.Equal(
-                JsonConvert.SerializeObject(new[] 
-                { 
-                    new
-                    {
-                        location = order1Loc,
-                        resource = order1,
-                    },
-                    new
-                    {
-                        location = order2Loc,
-                        resource = order2,
-                    }
+                JsonConvert.SerializeObject(new
+                {
+                    location = orderLoc,
+                    resource = order,
                 }),
                 JsonConvert.SerializeObject(ret));
+
+            ctxMock.Verify(m => m.NewOrder(new[] { "a.com", "b.com" }, null, null), Times.Once);
         }
 
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"list --server {LetsEncryptStagingV2}";
+            var args = $"new www.abc1.com www.abc2.com --server {LetsEncryptStagingV2}";
             var syntax = DefineCommand(args);
 
-            Assert.Equal("list", syntax.ActiveCommand.Value);
+            Assert.Equal("new", syntax.ActiveCommand.Value);
             ValidateOption(syntax, "server", LetsEncryptStagingV2);
+            var domains = syntax.GetActiveArguments().Single(a => a.Name == "domains");
+            Assert.Equal(new[] { "www.abc1.com", "www.abc2.com" }, domains.Value);
 
             syntax = DefineCommand("noop");
             Assert.NotEqual("list", syntax.ActiveCommand.Value);
@@ -96,7 +79,7 @@ namespace Certes.Cli.Commands
 
         private static ArgumentSyntax DefineCommand(string args)
         {
-            var cmd = new OrderListCommand(
+            var cmd = new OrderNewCommand(
                 new UserSettings(new FileUtilImpl()), MakeFactory(null), new FileUtilImpl());
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
