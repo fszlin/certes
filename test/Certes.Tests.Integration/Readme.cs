@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
 using Xunit;
@@ -37,6 +38,7 @@ namespace Certes
 
             acme = new AcmeContext(acmeDir, accountKey, httpClient);
             order = acme.Order(orderUri);
+            var privateKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
             var cert = await order.Generate(new CsrInfo
             {
                 CountryName = "CA",
@@ -45,9 +47,11 @@ namespace Certes
                 Organization = "Certes",
                 OrganizationUnit = "Dev",
                 CommonName = "www.certes-ci.dymetis.com",
-            });
+            }, privateKey);
 
-            cert.ToPfx("my-cert.pfx", "abcd1234", issuers: IntegrationHelper.TestCertificates);
+            var pfxBuilder = cert.ToPfx(privateKey);
+            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
+            var pfx = pfxBuilder.Build("my-cert", "abcd1234");
         }
     }
 }

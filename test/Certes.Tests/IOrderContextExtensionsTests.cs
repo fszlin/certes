@@ -33,17 +33,6 @@ namespace Certes
                     Status = OrderStatus.Valid,
                 });
             
-            var certInfoWithRandomKey = await orderCtxMock.Object.Generate(new CsrInfo
-            {
-                CountryName = "C",
-                CommonName = "www.certes.com",
-            });
-
-            Assert.Equal(
-                pem.Where(c => !char.IsWhiteSpace(c)),
-                certInfoWithRandomKey.Chain.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
-            Assert.NotNull(certInfoWithRandomKey.PrivateKey);
-
             var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
             var certInfo = await orderCtxMock.Object.Generate(new CsrInfo
             {
@@ -53,18 +42,16 @@ namespace Certes
 
             Assert.Equal(
                 pem.Where(c => !char.IsWhiteSpace(c)),
-                certInfo.Chain.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
-            Assert.Equal(key, certInfo.PrivateKey);
+                certInfo.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
 
             var certInfoNoCn = await orderCtxMock.Object.Generate(new CsrInfo
             {
                 CountryName = "C",
-            });
+            }, key);
 
             Assert.Equal(
                 pem.Where(c => !char.IsWhiteSpace(c)),
-                certInfoNoCn.Chain.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
-            Assert.NotNull(certInfoNoCn.PrivateKey);
+                certInfoNoCn.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
         }
     }
 
