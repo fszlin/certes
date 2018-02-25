@@ -85,7 +85,7 @@ namespace Certes.Cli.Processors
 
             var order = await orderCtx.Resource();
 
-            byte[] pfx = null;
+            PfxBuilder pfx;
             var pfxPwd = Guid.NewGuid().ToString("N");
             var pfxName = order.Identifiers[0].Value;
 
@@ -123,23 +123,24 @@ namespace Certes.Cli.Processors
                     CommonName = pfxName
                 }, certKey);
 
-                pfx = cert.ToPfx(pfxName, pfxPwd, issuers: issuers);
+                pfx = cert.ToPfx(certKey);
             }
             else
             {
                 var certChain = await orderCtx.Download();
-                var pfxBuilder = certChain.ToPfx(certKey);
-                if (issuers != null)
-                {
-                    pfxBuilder.AddIssuers(issuers);
-                }
-
-                pfx = pfxBuilder.Build(pfxName, pfxPwd);
+                pfx = certChain.ToPfx(certKey);
             }
+
+            if (issuers != null)
+            {
+                pfx.AddIssuers(issuers);
+            }
+
+            var pfxBytes = pfx.Build(pfxName, pfxPwd);
 
             var certData = new CertificateInner
             {
-                PfxBlob = pfx,
+                PfxBlob = pfxBytes,
                 Password = pfxPwd,
             };
 
