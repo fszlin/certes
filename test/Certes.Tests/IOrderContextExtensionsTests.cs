@@ -41,7 +41,7 @@ namespace Certes
 
             Assert.Equal(
                 pem.Where(c => !char.IsWhiteSpace(c)),
-                certInfoWithRandomKey.ToPem().Where(c => !char.IsWhiteSpace(c)));
+                certInfoWithRandomKey.Chain.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
             Assert.NotNull(certInfoWithRandomKey.PrivateKey);
 
             var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
@@ -53,7 +53,7 @@ namespace Certes
 
             Assert.Equal(
                 pem.Where(c => !char.IsWhiteSpace(c)),
-                certInfo.ToPem().Where(c => !char.IsWhiteSpace(c)));
+                certInfo.Chain.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
             Assert.Equal(key, certInfo.PrivateKey);
 
             var certInfoNoCn = await orderCtxMock.Object.Generate(new CsrInfo
@@ -63,7 +63,7 @@ namespace Certes
 
             Assert.Equal(
                 pem.Where(c => !char.IsWhiteSpace(c)),
-                certInfoNoCn.ToPem().Where(c => !char.IsWhiteSpace(c)));
+                certInfoNoCn.Chain.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
             Assert.NotNull(certInfoNoCn.PrivateKey);
         }
     }

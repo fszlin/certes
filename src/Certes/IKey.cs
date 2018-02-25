@@ -9,7 +9,7 @@ namespace Certes
     /// <summary>
     /// Represents key parameters used for signing.
     /// </summary>
-    public interface IKey
+    public interface IKey : IEncodable
     {
         /// <summary>
         /// Gets the algorithm.
@@ -26,18 +26,6 @@ namespace Certes
         /// The json web key.
         /// </value>
         JsonWebKey JsonWebKey { get; }
-
-        /// <summary>
-        /// Exports the key pair to DER.
-        /// </summary>
-        /// <returns>The DER encoded key pair data.</returns>
-        byte[] ToDer();
-
-        /// <summary>
-        /// Exports the key pair to PEM.
-        /// </summary>
-        /// <returns>The key pair data.</returns>
-        string ToPem();
     }
 
     /// <summary>

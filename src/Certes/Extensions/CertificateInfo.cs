@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Text;
 using Certes.Acme;
-using Org.BouncyCastle.X509;
 
 namespace Certes
 {
@@ -64,23 +62,5 @@ namespace Certes
             
             return pfxBuilder.Build(friendlyName, password);
         }
-
-        /// <summary>
-        /// Exports the certificate to DER.
-        /// </summary>
-        /// <returns>The DER encoded certificate.</returns>
-        public byte[] ToDer()
-        {
-            var certParser = new X509CertificateParser();
-            var cert = certParser.ReadCertificate(
-                Encoding.UTF8.GetBytes(Chain.Certificate));
-            return cert.GetEncoded();
-        }
-
-        /// <summary>
-        /// Exports the certificate to PEM.
-        /// </summary>
-        /// <returns>The certificate.</returns>
-        public string ToPem() => Chain.Certificate;
     }
 }

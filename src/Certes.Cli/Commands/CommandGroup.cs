@@ -20,6 +20,12 @@
             Help = Strings.HelpCommandOrder,
         };
 
+        public static readonly CommandGroup Certificate = new CommandGroup
+        {
+            Command = "cert",
+            Help = Strings.HelpCommandCertificate,
+        };
+
         public string Command { get; private set; }
         public string Help { get; private set; }
 
