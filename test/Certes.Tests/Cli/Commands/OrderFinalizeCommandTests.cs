@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.CommandLine;
-using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
