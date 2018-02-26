@@ -3,7 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
-- Add support for JSON web signature using Elliptic Curve key
+- [ACME v2](APIv2.md) support
+- Add support for JSON web signature using ECDSA key
+- 
 ### Changed
 - Fix `full-chain-off` option for CLI
 
