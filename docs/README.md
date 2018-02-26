@@ -61,13 +61,15 @@ var pfxBuilder = cert.ToPfx(privateKey);
 var pfx = pfxBuilder.Build("my-cert", "abcd1234");
 ```
 
-Check the [APIs](/docs/APIv2.md) for more details.
+Check the [APIs](APIv2.md) for more details.
 
-*For ACME v1, please see [the doc here](/docs/README.v1.md).*
+*For ACME v1, please see [the doc here](README.v1.md).*
 
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/fszlin/certes/tags). 
+
+Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 
 ## CI Status
 [![NuGet](https://img.shields.io/nuget/v/certes.svg)](https://www.nuget.org/packages/certes/)
