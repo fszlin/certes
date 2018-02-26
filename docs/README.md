@@ -72,7 +72,6 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 
 ## CI Status
-[![NuGet](https://img.shields.io/nuget/v/certes.svg)](https://www.nuget.org/packages/certes/)
 [![NuGet](https://img.shields.io/nuget/vpre/certes.svg)](https://www.nuget.org/packages/certes/absoluteLatest/)
 [![NuGet](https://img.shields.io/nuget/dt/certes.svg)](https://www.nuget.org/packages/certes/)
 [![AppVeyor](https://img.shields.io/appveyor/ci/fszlin/certes/master.svg)](https://ci.appveyor.com/project/fszlin/certes)
