@@ -12,9 +12,6 @@ Certes is a client implementation for the Automated Certificate Management
 Environment (ACME) protocol, build on .NET Core. It is aimed to provide a easy
 to use API for managing certificates using scripts during build process.
 
-**ACME v2** with wildcard SSL is [around the corner](https://community.letsencrypt.org/t/staging-endpoint-for-acme-v2/49605) now,
-check out our [v2 API](README.v1.md)!
-
 ## Get Certified in 5 Minutes
 
 Install [.NET Core](https://www.microsoft.com/net/core)
