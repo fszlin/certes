@@ -38,7 +38,7 @@ namespace Certes.Cli
 
             var cli = new CliCore(new[]
             {
-                new ServerSetCommand(settingsMock.Object, CliTestHelper.MakeFactory(null))
+                new ServerSetCommand(settingsMock.Object, CliTestHelper.MakeFactory(ctxMock))
             });
 
             Assert.False(await cli.Run(new[] { "-h" }));
@@ -54,7 +54,7 @@ namespace Certes.Cli
 
             var cli = new CliCore(new[]
             {
-                new ServerSetCommand(settingsMock.Object, CliTestHelper.MakeFactory(null))
+                new ServerSetCommand(settingsMock.Object, CliTestHelper.MakeFactory(ctxMock))
             });
 
             Assert.False(await cli.Run(new[] { "server", "-h" }));
@@ -71,7 +71,7 @@ namespace Certes.Cli
 
             var cli = new CliCore(new[]
             {
-                new ServerSetCommand(settingsMock.Object, CliTestHelper.MakeFactory(null))
+                new ServerSetCommand(settingsMock.Object, CliTestHelper.MakeFactory(ctxMock))
             });
 
             Assert.False(await cli.Run(new string[0]));

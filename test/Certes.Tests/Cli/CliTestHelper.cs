@@ -1,6 +1,8 @@
 ﻿using System;
 using System.CommandLine;
 using System.Linq;
+using Microsoft.Azure.Management.Dns.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Moq;
 using Xunit;
 
@@ -26,6 +28,13 @@ namespace Certes.Cli
                 .FirstOrDefault();
             Assert.NotNull(arg);
             Assert.Equal(value, arg.Value);
+        }
+
+        public static IDnsClientFactory MakeFactory(Mock<IDnsManagementClient> clientMock)
+        {
+            var mock = new Mock<IDnsClientFactory>(MockBehavior.Strict);
+            mock.Setup(m => m.Create(It.IsAny<AzureCredentials>())).Returns(clientMock.Object);
+            return mock.Object;
         }
 
         public static IAcmeContextFactory MakeFactory(Mock<IAcmeContext> ctxMock)
