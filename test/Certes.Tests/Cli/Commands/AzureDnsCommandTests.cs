@@ -110,6 +110,17 @@ namespace Certes.Cli.Commands
             Assert.Equal(expectedRecordSetId, ret.data.Id);
             recordSetsOpMock.Verify(m => m.CreateOrUpdateWithHttpMessagesAsync(resourceGroup, "certes.com", "_acme-challenge.www", RecordType.TXT, It.IsAny<RecordSetInner>(), default, default, default, default), Times.Once);
 
+            // wildcard
+            recordSetsOpMock.ResetCalls();
+            authz.Wildcard = true;
+            syntax = DefineCommand(
+                $"dns {orderLoc} *.{domain}" +
+                $" --talent-id talentId --client-id clientId --client-secret abcd1234" +
+                $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
+            ret = await cmd.Execute(syntax);
+            Assert.Equal(expectedRecordSetId, ret.data.Id);
+            recordSetsOpMock.Verify(m => m.CreateOrUpdateWithHttpMessagesAsync(resourceGroup, "certes.com", "_acme-challenge.www", RecordType.TXT, It.IsAny<RecordSetInner>(), default, default, default, default), Times.Once);
+            authz.Wildcard = null;
 
             // authz not exists
             orderMock.Setup(m => m.Authorizations()).ReturnsAsync(new IAuthorizationContext[0]);
