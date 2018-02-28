@@ -494,7 +494,7 @@ namespace Certes.Cli {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Auzre app service slot..
+        ///   Looks up a localized string similar to The Azure app service deployment slot..
         /// </summary>
         internal static string HelpSlot {
             get {

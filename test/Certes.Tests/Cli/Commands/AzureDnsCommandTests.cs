@@ -184,6 +184,7 @@ namespace Certes.Cli.Commands
         {
             var cmd = new AzureDnsCommand(
                 new UserSettings(new FileUtilImpl()), MakeFactory(new Mock<IAcmeContext>()), new FileUtilImpl(), null);
+            Assert.Equal(CommandGroup.Azure.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
                 syntax.HandleErrors = false;

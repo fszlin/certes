@@ -12,11 +12,11 @@ namespace Certes.Cli.Commands
         private const string CommandText = "app";
         private const string OrderIdParam = "order-id";
         private const string AppNameParam = "app";
-        private const string SlotOption = "app-slot";
+        private const string SlotOption = "slot";
         private const string PrivateKeyParam = "private-key";
         private const string DomainParam = "domain";
 
-        public CommandGroup Group => throw new NotImplementedException();
+        public CommandGroup Group => CommandGroup.Azure;
 
         private readonly IAppServiceClientFactory clientFactory;
 

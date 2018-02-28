@@ -80,6 +80,7 @@ namespace Certes.Cli.Commands
         {
             var cmd = new AccountSetCommand(
                 new UserSettings(new FileUtilImpl()), MakeFactory(new Mock<IAcmeContext>()), new FileUtilImpl());
+            Assert.Equal(CommandGroup.Account.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
                 syntax.HandleErrors = false;

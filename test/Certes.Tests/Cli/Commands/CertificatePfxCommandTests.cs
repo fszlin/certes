@@ -100,6 +100,7 @@ namespace Certes.Cli.Commands
         {
             var cmd = new CertificatePfxCommand(
                 new UserSettings(new FileUtilImpl()), MakeFactory(new Mock<IAcmeContext>()), new FileUtilImpl());
+            Assert.Equal(CommandGroup.Certificate.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
                 syntax.HandleErrors = false;

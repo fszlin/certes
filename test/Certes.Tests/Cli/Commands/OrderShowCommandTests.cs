@@ -75,6 +75,7 @@ namespace Certes.Cli.Commands
         {
             var cmd = new OrderShowCommand(
                 new UserSettings(new FileUtilImpl()), MakeFactory(new Mock<IAcmeContext>()), new FileUtilImpl());
+            Assert.Equal(CommandGroup.Order.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
                 syntax.HandleErrors = false;

@@ -98,7 +98,7 @@ namespace Certes.Cli.Commands
                     => new AzureOperationResponse<HostNameBindingInner> { Body = d });
 
             args = $"app {orderLoc} {domain} {appName} {keyPath}"
-                + $" --app-slot {appSlot}"
+                + $" --slot {appSlot}"
                 + $" --talent-id talentId --client-id clientId --client-secret abcd1234"
                 + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
             syntax = DefineCommand(args);
@@ -120,7 +120,7 @@ namespace Certes.Cli.Commands
         public void CanDefineCommand()
         {
             var args = $"app http://acme.com/o/1 www.abc.com my-app ./cert-key.pem"
-                + " --app-slot staging"
+                + " --slot staging"
                 + " --talent-id talentId --client-id clientId --client-secret abcd1234"
                 + " --subscription-id subscriptionId --resource-group resGroup";
             var syntax = DefineCommand(args);
@@ -135,7 +135,7 @@ namespace Certes.Cli.Commands
             ValidateOption(syntax, "client-secret", "abcd1234");
             ValidateOption(syntax, "subscription-id", "subscriptionId");
             ValidateOption(syntax, "resource-group", "resGroup");
-            ValidateOption(syntax, "app-slot", "staging");
+            ValidateOption(syntax, "slot", "staging");
 
             syntax = DefineCommand("noop");
             Assert.NotEqual("app", syntax.ActiveCommand.Value);
@@ -145,6 +145,7 @@ namespace Certes.Cli.Commands
         {
             var cmd = new AzureAppCommand(
                 new UserSettings(new FileUtilImpl()), MakeFactory(new Mock<IAcmeContext>()), new FileUtilImpl(), null);
+            Assert.Equal(CommandGroup.Azure.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
                 syntax.HandleErrors = false;

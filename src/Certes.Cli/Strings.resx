@@ -262,6 +262,6 @@
     <value>The Auzre app service name.</value>
   </data>
   <data name="HelpSlot" xml:space="preserve">
-    <value>The Auzre app service slot.</value>
+    <value>The Azure app service deployment slot.</value>
   </data>
 </root>
