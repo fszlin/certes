@@ -252,4 +252,16 @@
   <data name="HelpAzureResourceGroup" xml:space="preserve">
     <value>The resource group.</value>
   </data>
+  <data name="HelpCommandAzureApp" xml:space="preserve">
+    <value>Deploy certificates to Azure app services.</value>
+  </data>
+  <data name="ErrorOrderIncompleted" xml:space="preserve">
+    <value>Can not down certificate for order '{0}'.</value>
+  </data>
+  <data name="HelpAppName" xml:space="preserve">
+    <value>The Auzre app service name.</value>
+  </data>
+  <data name="HelpSlot" xml:space="preserve">
+    <value>The Auzre app service slot.</value>
+  </data>
 </root>

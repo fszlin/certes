@@ -125,11 +125,29 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can not down certificate for order &apos;{0}&apos;..
+        /// </summary>
+        internal static string ErrorOrderIncompleted {
+            get {
+                return ResourceManager.GetString("ErrorOrderIncompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Parameter &apos;{0}&apos; is required..
         /// </summary>
         internal static string ErrorParameterMissing {
             get {
                 return ResourceManager.GetString("ErrorParameterMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Auzre app service name..
+        /// </summary>
+        internal static string HelpAppName {
+            get {
+                return ResourceManager.GetString("HelpAppName", resourceCulture);
             }
         }
         
@@ -247,6 +265,15 @@ namespace Certes.Cli {
         internal static string HelpCommandAzure {
             get {
                 return ResourceManager.GetString("HelpCommandAzure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deploy certificates to Azure app services..
+        /// </summary>
+        internal static string HelpCommandAzureApp {
+            get {
+                return ResourceManager.GetString("HelpCommandAzureApp", resourceCulture);
             }
         }
         
@@ -463,6 +490,15 @@ namespace Certes.Cli {
         internal static string HelpServer {
             get {
                 return ResourceManager.GetString("HelpServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Auzre app service slot..
+        /// </summary>
+        internal static string HelpSlot {
+            get {
+                return ResourceManager.GetString("HelpSlot", resourceCulture);
             }
         }
     }

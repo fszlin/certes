@@ -5,23 +5,16 @@ using Certes.Cli.Settings;
 using Microsoft.Azure.Management.Dns.Fluent;
 using Microsoft.Azure.Management.Dns.Fluent.Models;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Newtonsoft.Json;
 using NLog;
 
 namespace Certes.Cli.Commands
 {
-    internal class AzureDnsCommand : CommandBase, ICliCommand
+    internal class AzureDnsCommand : AzureCommand, ICliCommand
     {
         private const string CommandText = "dns";
         private const string OrderIdParam = "order-id";
         private const string DomainParam = "domain";
-
-        private const string AzureTalentIdOption = "talent-id";
-        private const string AzureClientIdOption = "client-id";
-        private const string AzureSecretOption = "client-secret";
-        private const string AzureSubscriptionIdOption = "subscription-id";
-        private const string AzureResourceGroupOption = "resource-group";
 
         private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountUpdateCommand));
 
@@ -43,14 +36,7 @@ namespace Certes.Cli.Commands
         {
             var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandAzureDns);
 
-            syntax
-                .DefineServerOption()
-                .DefineKeyOption()
-                .DefineOption(AzureTalentIdOption, help: Strings.HelpAzureTalentId)
-                .DefineOption(AzureClientIdOption, help: Strings.HelpAzureClientId)
-                .DefineOption(AzureSecretOption, help: Strings.HelpAzureSecret)
-                .DefineOption(AzureSubscriptionIdOption, help: Strings.HelpAzureSubscriptionId)
-                .DefineOption(AzureResourceGroupOption, help: Strings.HelpAzureResourceGroup)
+            DefineAzureOptions(syntax)
                 .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId)
                 .DefineParameter(DomainParam, help: Strings.HelpDomain);
 
@@ -121,26 +107,6 @@ namespace Certes.Cli.Commands
             }
 
             throw new Exception(string.Format(Strings.ErrorDnsZoneNotFound, identifier));
-        }
-
-        protected Task<AzureCredentials> ReadAzureCredentials(ArgumentSyntax syntax)
-        {
-            var talentId = syntax.GetOption<string>(AzureTalentIdOption, true);
-            var clientId = syntax.GetOption<string>(AzureClientIdOption, true);
-            var secret = syntax.GetOption<string>(AzureSecretOption, true);
-            var subscriptionId = syntax.GetOption<string>(AzureSubscriptionIdOption, true);
-
-            var loginInfo = new ServicePrincipalLoginInformation
-            {
-                ClientId = clientId,
-                ClientSecret = secret,
-            };
-
-            var credentials = new AzureCredentials(
-                loginInfo, talentId, AzureEnvironment.AzureGlobalCloud)
-                .WithDefaultSubscription(subscriptionId);
-
-            return Task.FromResult(credentials);
         }
     }
 }
