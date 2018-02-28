@@ -12,7 +12,7 @@ namespace Certes.Cli.Commands
         private const string CommandText = "app";
         private const string OrderIdParam = "order-id";
         private const string AppNameParam = "app";
-        private const string SlotOption = "app";
+        private const string SlotOption = "app-slot";
         private const string PrivateKeyParam = "private-key";
         private const string DomainParam = "domain";
 
@@ -36,10 +36,10 @@ namespace Certes.Cli.Commands
 
             DefineAzureOptions(syntax)
                 .DefineOption(SlotOption, help: Strings.HelpSlot)
-                .DefineParameter(AppNameParam, help: Strings.HelpAppName)
                 .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId)
                 .DefineParameter(DomainParam, help: Strings.HelpDomain)
-                .DefineUriParameter(PrivateKeyParam, help: Strings.HelpPrivateKey);
+                .DefineParameter(AppNameParam, help: Strings.HelpAppName)
+                .DefineParameter(PrivateKeyParam, help: Strings.HelpPrivateKey);
 
             return cmd;
         }

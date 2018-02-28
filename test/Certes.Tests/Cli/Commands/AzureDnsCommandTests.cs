@@ -170,11 +170,11 @@ namespace Certes.Cli.Commands
             ValidateOption(syntax, "server", LetsEncryptStagingV2);
             ValidateParameter(syntax, "order-id", new Uri("http://acme.com/o/1"));
             ValidateParameter(syntax, "domain", "www.abc.com");
-            ValidateParameter(syntax, "talent-id", "talentId");
-            ValidateParameter(syntax, "client-id", "clientId");
-            ValidateParameter(syntax, "client-secret", "abcd1234");
-            ValidateParameter(syntax, "subscription-id", "subscriptionId");
-            ValidateParameter(syntax, "resource-group", "resGroup");
+            ValidateOption(syntax, "talent-id", "talentId");
+            ValidateOption(syntax, "client-id", "clientId");
+            ValidateOption(syntax, "client-secret", "abcd1234");
+            ValidateOption(syntax, "subscription-id", "subscriptionId");
+            ValidateOption(syntax, "resource-group", "resGroup");
 
             syntax = DefineCommand("noop");
             Assert.NotEqual("dns", syntax.ActiveCommand.Value);

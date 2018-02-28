@@ -15,7 +15,7 @@ namespace Certes.Cli.Commands
         protected const string AzureSubscriptionIdOption = "subscription-id";
         protected const string AzureResourceGroupOption = "resource-group";
 
-        public AzureCommand(
+        protected AzureCommand(
             IUserSettings userSettings,
             IAcmeContextFactory contextFactory,
             IFileUtil fileUtil)
