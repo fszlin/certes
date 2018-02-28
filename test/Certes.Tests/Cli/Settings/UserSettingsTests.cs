@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using Certes.Acme;
-using Certes.Cli.Options;
 using Certes.Cli.Settings;
 using Certes.Json;
 using Moq;
@@ -94,95 +93,6 @@ namespace Certes.Cli
             azSettings = await settings.GetAzureSettings();
             Assert.NotNull(azSettings);
             Assert.Equal(default, azSettings.SubscriptionId);
-        }
-
-        [Fact]
-        public async Task CanLoadKeyFromPath()
-        {
-            var fullPath = Path.GetFullPath($"./{nameof(CanLoadKeyFromPath)}");
-            SetHomePath(fullPath);
-
-            File.WriteAllText("./Data/key-es256.pem", Helper.GetTestKey(KeyAlgorithm.ES256));
-
-            var options = new AccountOptions
-            {
-                Action = AccountAction.Info,
-                Path = "./Data/key-es256.pem",
-            };
-
-            var userSettings = new UserSettings(new FileUtilImpl());
-            var key = await userSettings.GetAccountKey(options, false);
-
-            Assert.Equal(Helper.GetKeyV2(KeyAlgorithm.ES256).Thumbprint(), key.Thumbprint());
-        }
-
-        [Fact]
-        public async Task CanLoadKeyFromUnixEvn()
-        {
-            var fullPath = Path.GetFullPath($"./{nameof(CanLoadKeyFromUnixEvn)}");
-            SetHomePath(fullPath, false);
-
-            var options = new AccountOptions
-            {
-                Action = AccountAction.Info,
-            };
-
-            var userSettings = new UserSettings(new FileUtilImpl());
-            await userSettings.SetAcmeSettings(new AcmeSettings
-            {
-                ServerUri = WellKnownServers.LetsEncryptV2,
-                AccountKey = Helper.GetTestKey(KeyAlgorithm.ES256),
-            }, options);
-
-            var key = await userSettings.GetAccountKey(options, false);
-
-            Assert.Equal(Path.Combine(fullPath, ".certes", "certes.json"), userSettings.SettingsFile.Value);
-            Assert.Equal(Helper.GetKeyV2(KeyAlgorithm.ES256).Thumbprint(), key.Thumbprint());
-        }
-
-        [Fact]
-        public async Task CanLoadKeyFromWinEvn()
-        {
-            var fullPath = Path.GetFullPath($"./{nameof(CanLoadKeyFromWinEvn)}");
-            SetHomePath(fullPath);
-
-            var options = new AccountOptions
-            {
-                Action = AccountAction.Info,
-            };
-
-            var userSettings = new UserSettings(new FileUtilImpl());
-            await userSettings.SetAcmeSettings(new AcmeSettings
-            {
-                ServerUri = WellKnownServers.LetsEncryptV2,
-                AccountKey = Helper.GetTestKey(KeyAlgorithm.ES256),
-            }, options);
-
-            var key = await userSettings.GetAccountKey(options, false);
-
-            Assert.Equal(Path.Combine(fullPath, ".certes", "certes.json"), userSettings.SettingsFile.Value);
-            Assert.Equal(Helper.GetKeyV2(KeyAlgorithm.ES256).Thumbprint(), key.Thumbprint());
-        }
-
-        [Fact]
-        public async Task NullWhenKeyNotExist()
-        {
-            var fullPath = Path.GetFullPath($"./{nameof(NullWhenKeyNotExist)}");
-            SetHomePath(fullPath);
-
-            var userSettings = new UserSettings(new FileUtilImpl());
-            if (Directory.Exists(userSettings.SettingsFile.Value))
-            {
-                Directory.Delete(userSettings.SettingsFile.Value, true);
-            }
-
-            var options = new AccountOptions
-            {
-                Action = AccountAction.Info,
-            };
-
-            var key = await userSettings.GetAccountKey(options, false);
-            Assert.Null(key);
         }
     }
 }

@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
-using Certes.Cli.Options;
 using Certes.Json;
 using Newtonsoft.Json;
 
@@ -88,107 +87,6 @@ namespace Certes.Cli.Settings
         {
             var settings = await LoadUserSettings();
             return settings.Azure ?? new AzureSettings();
-        }
-
-        public async Task SetAcmeSettings(AcmeSettings acme, OptionsBase options)
-        {
-            if (string.IsNullOrWhiteSpace(options.Path))
-            {
-                var settings = await LoadUserSettings();
-                var currentAcme = settings.Servers?
-                    .FirstOrDefault(s => s.ServerUri == acme.ServerUri);
-
-                if (currentAcme == null)
-                {
-                    if (settings.Servers == null)
-                    {
-                        settings.Servers = new List<AcmeSettings>();
-                    }
-
-                    settings.Servers.Add(currentAcme = acme);
-                }
-                else
-                {
-                    currentAcme.AccountKey = acme.AccountKey;
-                }
-
-                var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-                await fileUtil.WriteAllText(SettingsFile.Value, json);
-            }
-            else if (!string.IsNullOrWhiteSpace(acme.AccountKey))
-            {
-                await fileUtil.WriteAllText(options.Path, acme.AccountKey);
-            }
-        }
-
-        public async Task<AzureSettings> GetAzureSettings(AzureOptions options)
-        {
-            var settings = await LoadUserSettings();
-
-            var azure = settings.Azure ?? new AzureSettings();
-
-            azure.Environment = options.CloudEnvironment == AzureCloudEnvironment.Default ?
-                AzureCloudEnvironment.Global : options.CloudEnvironment;
-
-            if (options.Talent != null)
-            {
-                azure.Talent = options.Talent;
-            }
-
-            if (!string.IsNullOrWhiteSpace(options.UserName))
-            {
-                azure.ClientId = options.UserName;
-            }
-
-            if (!string.IsNullOrWhiteSpace(options.Password))
-            {
-                azure.Secret = options.Password;
-            }
-
-            if (options.Subscription != null)
-            {
-                azure.SubscriptionId = options.Subscription;
-            }
-
-            return azure;
-        }
-
-        public async Task<AcmeSettings> GetAcmeSettings(OptionsBase options)
-        {
-            var settings = await LoadUserSettings();
-
-            var serverUri = options.Server;
-            var acme = settings.Servers?
-                .FirstOrDefault(s => s.ServerUri == serverUri);
-
-            if (acme == null)
-            {
-                acme = new AcmeSettings { ServerUri = serverUri };
-            }
-
-            if (!string.IsNullOrWhiteSpace(options.Path))
-            {
-                acme.AccountKey = await fileUtil.ReadAllText(options.Path);
-            }
-
-            return acme;
-        }
-
-        public async Task<IKey> GetAccountKey(OptionsBase options, bool accountKeyRequired = false)
-        {
-            var settings = await GetAcmeSettings(options);
-
-            if (string.IsNullOrWhiteSpace(settings.AccountKey))
-            {
-                if (accountKeyRequired)
-                {
-                    throw new Exception("No account key is available.");
-                }
-
-                return null;
-            }
-
-            return KeyFactory.FromPem(settings.AccountKey);
         }
 
         private async Task<Model> LoadUserSettings()
