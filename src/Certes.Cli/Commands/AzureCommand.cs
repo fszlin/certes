@@ -23,12 +23,17 @@ namespace Certes.Cli.Commands
         {
         }
 
-        protected Task<AzureCredentials> ReadAzureCredentials(ArgumentSyntax syntax)
+        protected async Task<AzureCredentials> ReadAzureCredentials(ArgumentSyntax syntax)
         {
-            var talentId = syntax.GetOption<string>(AzureTalentIdOption, true);
-            var clientId = syntax.GetOption<string>(AzureClientIdOption, true);
-            var secret = syntax.GetOption<string>(AzureSecretOption, true);
-            var subscriptionId = syntax.GetOption<string>(AzureSubscriptionIdOption, true);
+            var azSettings = await UserSettings.GetAzureSettings();
+            var talentId = syntax.GetOption<string>(AzureTalentIdOption)
+                ?? azSettings.TalentId;
+            var clientId = syntax.GetOption<string>(AzureClientIdOption)
+                ?? azSettings.ClientId;
+            var secret = syntax.GetOption<string>(AzureSecretOption)
+                ?? azSettings.ClientSecret;
+            var subscriptionId = syntax.GetOption<string>(AzureSubscriptionIdOption)
+                ?? azSettings.SubscriptionId;
 
             var loginInfo = new ServicePrincipalLoginInformation
             {
@@ -40,7 +45,7 @@ namespace Certes.Cli.Commands
                 loginInfo, talentId, AzureEnvironment.AzureGlobalCloud)
                 .WithDefaultSubscription(subscriptionId);
 
-            return Task.FromResult(credentials);
+            return credentials;
         }
 
         protected static ArgumentSyntax DefineAzureOptions(ArgumentSyntax syntax)

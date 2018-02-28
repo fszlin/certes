@@ -55,6 +55,13 @@ namespace Certes.Cli.Commands
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
             settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(LetsEncryptV2);
             settingsMock.Setup(m => m.GetAccountKey(LetsEncryptV2)).ReturnsAsync(GetKeyV2());
+            settingsMock.Setup(m => m.GetAzureSettings()).ReturnsAsync(new AzureSettings
+            {
+                ClientId = "clientId",
+                ClientSecret = "secret",
+                SubscriptionId = Guid.NewGuid().ToString("N"),
+                TalentId = Guid.NewGuid().ToString("N"),
+            });
 
             var challengeMock = new Mock<IChallengeContext>(MockBehavior.Strict);
             challengeMock.SetupGet(m => m.Location).Returns(challengeLoc);
@@ -76,10 +83,12 @@ namespace Certes.Cli.Commands
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
 
-            var dnsMock = new Mock<IDnsManagementClient>();
-            var zonesOpMock = new Mock<IZonesOperations>();
-            var recordSetsOpMock = new Mock<IRecordSetsOperations>();
+            var dnsMock = new Mock<IDnsManagementClient>(MockBehavior.Strict);
+            var zonesOpMock = new Mock<IZonesOperations>(MockBehavior.Strict);
+            var recordSetsOpMock = new Mock<IRecordSetsOperations>(MockBehavior.Strict);
 
+            dnsMock.Setup(m => m.Dispose());
+            dnsMock.SetupSet(m => m.SubscriptionId);
             dnsMock.SetupGet(m => m.Zones).Returns(zonesOpMock.Object);
             dnsMock.SetupGet(m => m.RecordSets).Returns(recordSetsOpMock.Object);
             zonesOpMock.Setup(m => m.ListWithHttpMessagesAsync(default, default, default))
@@ -107,6 +116,15 @@ namespace Certes.Cli.Commands
                 $" --talent-id talentId --client-id clientId --client-secret abcd1234" +
                 $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
             dynamic ret = await cmd.Execute(syntax);
+            Assert.Equal(expectedRecordSetId, ret.data.Id);
+            recordSetsOpMock.Verify(m => m.CreateOrUpdateWithHttpMessagesAsync(resourceGroup, "certes.com", "_acme-challenge.www", RecordType.TXT, It.IsAny<RecordSetInner>(), default, default, default, default), Times.Once);
+
+            // azure credentials from settings
+            recordSetsOpMock.ResetCalls();
+            syntax = DefineCommand(
+                $"dns {orderLoc} {domain}" +
+                $" --resource-group {resourceGroup}");
+            ret = await cmd.Execute(syntax);
             Assert.Equal(expectedRecordSetId, ret.data.Id);
             recordSetsOpMock.Verify(m => m.CreateOrUpdateWithHttpMessagesAsync(resourceGroup, "certes.com", "_acme-challenge.www", RecordType.TXT, It.IsAny<RecordSetInner>(), default, default, default, default), Times.Once);
 

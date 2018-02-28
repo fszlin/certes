@@ -44,6 +44,13 @@ namespace Certes.Cli.Commands
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
             settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(LetsEncryptV2);
             settingsMock.Setup(m => m.GetAccountKey(LetsEncryptV2)).ReturnsAsync(GetKeyV2());
+            settingsMock.Setup(m => m.GetAzureSettings()).ReturnsAsync(new AzureSettings
+            {
+                ClientId = "clientId",
+                ClientSecret = "secret",
+                SubscriptionId = Guid.NewGuid().ToString("N"),
+                TalentId = Guid.NewGuid().ToString("N"),
+            });
 
             var orderMock = new Mock<IOrderContext>(MockBehavior.Strict);
             orderMock.Setup(m => m.Location).Returns(orderLoc);

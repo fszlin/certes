@@ -78,7 +78,7 @@ namespace Certes.Cli
             var fullPath = Path.GetFullPath($"./{nameof(CanGetAzureSettings)}");
             SetHomePath(fullPath, false);
 
-            var model = new UserSettings.Model { Azure = new AzureSettings { SubscriptionId = Guid.NewGuid() } };
+            var model = new UserSettings.Model { Azure = new AzureSettings { SubscriptionId = Guid.NewGuid().ToString("N") } };
             var json = JsonConvert.SerializeObject(model, JsonUtil.CreateSettings());
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync(json);
