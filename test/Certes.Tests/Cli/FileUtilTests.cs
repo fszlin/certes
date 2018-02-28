@@ -10,7 +10,7 @@ namespace Certes.Cli
         [Fact]
         public async Task CanReadWriteText()
         {
-            var file = new FileUtilImpl();
+            var file = new FileUtil();
             await file.WriteAllText("./Data/my-text.txt", "certes");
             Assert.Equal("certes", await file.ReadAllText("./Data/my-text.txt"));
             File.Delete("./Data/my-text.txt");
@@ -22,14 +22,14 @@ namespace Certes.Cli
         [Fact]
         public async Task NullIfNotExists()
         {
-            var file = new FileUtilImpl();
+            var file = new FileUtil();
             Assert.Null(await file.ReadAllText("./Data/not-exists.txt"));
         }
 
         [Fact]
         public async Task CanWriteBytes()
         {
-            var file = new FileUtilImpl();
+            var file = new FileUtil();
             await file.WriteAllBytes("./Data/my-text.txt", Encoding.UTF8.GetBytes("certes"));
             Assert.Equal("certes", await file.ReadAllText("./Data/my-text.txt"));
             File.Delete("./Data/my-text.txt");

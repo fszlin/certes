@@ -4,14 +4,40 @@ using System.Threading.Tasks;
 
 namespace Certes.Cli
 {
-    public static class FileUtil
+    internal class FileUtil : IFileUtil
     {
-        private static readonly IFileUtil file = new FileUtilImpl();
+        public async Task<string> ReadAllText(string path)
+        {
+            if (!File.Exists(path))
+            {
+                return null;
+            }
 
-        internal static Task<string> ReadAllText(string path)
-            => file.ReadAllText(path);
+            using (var stream = File.OpenRead(path))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    return await reader.ReadToEndAsync();
+                }
+            }
+        }
 
-        internal static Task WriteAllTexts(string path, string texts)
-            => file.WriteAllText(path, texts);
+        public Task WriteAllText(string path, string text)
+            => WriteAllBytes(path, Encoding.UTF8.GetBytes(text));
+
+        public async Task WriteAllBytes(string path, byte[] data)
+        {
+            var fullPath = Path.GetFullPath(path);
+            var dir = Path.GetDirectoryName(fullPath);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            using (var stream = File.Create(fullPath))
+            {
+                await stream.WriteAsync(data, 0, data.Length);
+            }
+        }
     }
 }
