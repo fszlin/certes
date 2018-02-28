@@ -1,7 +1,6 @@
 ﻿using System;
 using System.CommandLine;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
 using Certes.Cli.Options;
