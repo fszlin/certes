@@ -70,8 +70,8 @@ build_script:
   - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
   - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
   # dotnet tool
-  - ./dotnet-pre/dotnet.exe publish src\Certes\Certes.csproj -c Release -f netcoreapp2.0 -property:TargetFrameworks=netcoreapp2.0
-  - ./dotnet-pre/dotnet.exe pack src\Certes.Cli\Certes.Cli.csproj -c Release -property:TargetFrameworks=netcoreapp2.0
+  - "./dotnet-pre/dotnet.exe" publish src\Certes\Certes.csproj -c Release -f netcoreapp2.0 -property:TargetFrameworks=netcoreapp2.0
+  - "./dotnet-pre/dotnet.exe" pack src\Certes.Cli\Certes.Cli.csproj -c Release -property:TargetFrameworks=netcoreapp2.0
 
 #test: off
 before_test:
