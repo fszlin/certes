@@ -19,6 +19,7 @@
     <PackageId>Certes.Cli</PackageId>
     <PackageIconUrl>https://raw.githubusercontent.com/fszlin/certes/master/misc/logo.png</PackageIconUrl>
     <PackAsTool Condition="'$(CertesVersion)' != ''">true</PackAsTool>
+    <ToolCommandName>certes</ToolCommandName>
   </PropertyGroup>
 
   <ItemGroup>
