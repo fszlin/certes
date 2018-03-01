@@ -17,6 +17,7 @@
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
     <PackageId>Certes.Cli</PackageId>
     <PackageIconUrl>https://raw.githubusercontent.com/fszlin/certes/master/misc/logo.png</PackageIconUrl>
+    <PackAsTool>true</PackAsTool>
   </PropertyGroup>
 
   <ItemGroup>
