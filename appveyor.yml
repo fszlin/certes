@@ -71,7 +71,8 @@ build_script:
   - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
   - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
   # dotnet tool
-  - ps: ./dotnet-pre/dotnet.exe pack src\Certes.Cli\Certes.Cli.csproj -c $($env:CONFIGURATION) -property:TargetFrameworks=netcoreapp2.0
+  - ps: Copy-Item ./misc/NuGet-tool.config ./src./Certes.Cli/NuGet.config
+  - ps: ./dotnet-pre/dotnet.exe pack src\Certes.Cli\Certes.Cli.csproj -c $($env:CONFIGURATION) -property:CertesVersion=$($env:CERTES_PACKAGE_VERSION)
 
 #test: off
 before_test:
