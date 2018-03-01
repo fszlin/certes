@@ -34,9 +34,6 @@ branches:
 
 init:
   - git config --global core.autocrlf input
-  - ps: $env:CERTES_PACKAGE_SUFFIX = '-' + $env:APPVEYOR_REPO_BRANCH + '-' + $env:APPVEYOR_BUILD_NUMBER
-  - ps: $env:CERTES_PACKAGE_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_VER } else { $env:CERTES_VER + $env:CERTES_PACKAGE_SUFFIX }
-  - ps: $env:CERTES_CLI_PACKAGE_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_CLI_VER } else { $env:CERTES_CLI_VER + $env:CERTES_PACKAGE_SUFFIX }
 
 install:
   - ps: wget https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
@@ -53,6 +50,7 @@ build_script:
   - msbuild -t:src\Certes_Cli:Publish -p:TargetFramework=netcoreapp1.0 -p:DebugType=Full -v:m
   # dotnet tool
   - ps: Copy-Item ./misc/NuGet-tool.config ./src/Certes.Cli/NuGet.config
+  - ps: $env:CERTES_PACKAGE_VERSION = (Get-ChildItem ./src/Certes/bin/$($env:CONFIGURATION)/*.nupkg  | Select-Object -ExpandProperty Name).Replace('Certes.', '').Replace('.nupkg', '')
   - ps: ./dotnet-pre/dotnet.exe pack src\Certes.Cli\Certes.Cli.csproj -c $($env:CONFIGURATION) -property:CertesVersion=$($env:CERTES_PACKAGE_VERSION)
   # move packages
   - ps: Get-ChildItem -Path "./src/**/*.nupkg" -Recurse | Move-Item -Destination "./build"
