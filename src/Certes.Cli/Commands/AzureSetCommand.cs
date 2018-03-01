@@ -1,8 +1,10 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
+using Microsoft.Azure.Management.ResourceManager.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using NLog;
 using static Certes.Cli.Commands.AzureCommand;
 
@@ -14,15 +16,15 @@ namespace Certes.Cli.Commands
         private const string ParamServer = "server";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(AzureSetCommand));
 
-        private readonly IAcmeContextFactory contextFactory;
+        private readonly IResourceClientFactory clientFactory;
         private readonly IUserSettings userSettings;
 
         public CommandGroup Group => CommandGroup.Azure;
 
-        public AzureSetCommand(IUserSettings userSettings, IAcmeContextFactory contextFactory)
+        public AzureSetCommand(IUserSettings userSettings, IResourceClientFactory clientFactory)
         {
             this.userSettings = userSettings;
-            this.contextFactory = contextFactory;
+            this.clientFactory = clientFactory;
         }
 
         public async Task<object> Execute(ArgumentSyntax syntax)
@@ -31,6 +33,18 @@ namespace Certes.Cli.Commands
             var clientId = syntax.GetOption<string>(AzureClientIdOption);
             var secret = syntax.GetOption<string>(AzureSecretOption);
             var subscriptionId = syntax.GetOption<string>(AzureSubscriptionIdOption);
+
+            var loginInfo = new ServicePrincipalLoginInformation
+            {
+                ClientId = clientId,
+                ClientSecret = secret,
+            };
+
+            var credentials = new AzureCredentials(
+                loginInfo, talentId, AzureEnvironment.AzureGlobalCloud)
+                .WithDefaultSubscription(subscriptionId);
+
+            var resourceGroups = await LoadResourceGroups(credentials);
 
             var azSettings = new AzureSettings
             {
@@ -44,6 +58,7 @@ namespace Certes.Cli.Commands
 
             return new
             {
+                resourceGroups
             };
         }
 
@@ -57,6 +72,15 @@ namespace Certes.Cli.Commands
                 .DefineOption(AzureSubscriptionIdOption, help: Strings.HelpAzureSubscriptionId);
 
             return cmd;
+        }
+
+        private async Task<IList<(string Location, string Name)>> LoadResourceGroups(AzureCredentials credentials)
+        {
+            using (var client = clientFactory.Create(credentials))
+            {
+                var resourceGroups = await client.ResourceGroups.ListAsync();
+                return resourceGroups.Select(g => (g.Location, g.Name)).ToArray();
+            }
         }
     }
 }
