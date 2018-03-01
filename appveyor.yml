@@ -18,8 +18,6 @@ nuget:
 environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 0
-  CERTES_VER: 2.0.0
-  CERTES_CLI_VER: 1.0.0
 
 cache:
   - dotnet-pre
@@ -39,24 +37,6 @@ init:
   - ps: $env:CERTES_PACKAGE_SUFFIX = '-' + $env:APPVEYOR_REPO_BRANCH + '-' + $env:APPVEYOR_BUILD_NUMBER
   - ps: $env:CERTES_PACKAGE_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_VER } else { $env:CERTES_VER + $env:CERTES_PACKAGE_SUFFIX }
   - ps: $env:CERTES_CLI_PACKAGE_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_CLI_VER } else { $env:CERTES_CLI_VER + $env:CERTES_PACKAGE_SUFFIX }
-
-dotnet_csproj:
-  patch: true
-  file: 'src\Certes\*.csproj'
-  version: '$(CERTES_PACKAGE_VERSION)' # 2.0.0 or 2.0.0-master-1234
-  package_version: '$(CERTES_PACKAGE_VERSION)' # 2.0.0 or 2.0.0-master-1234
-  assembly_version: '$(CERTES_VER)' # 2.0.0
-  file_version: '$(CERTES_VER).$(APPVEYOR_BUILD_NUMBER)' # 2.0.0.1234
-  informational_version: '$(CERTES_VER)$(CERTES_PACKAGE_SUFFIX)' # 2.0.0-master-1234
-
-dotnet_csproj:
-  patch: true
-  file: 'src\Certes.Cli\*.csproj'
-  version: '$(CERTES_CLI_PACKAGE_VERSION)' # 1.0.0 or 1.0.0-master-1234
-  package_version: '$(CERTES_CLI_PACKAGE_VERSION)' # 1.0.0 or 1.0.0-master-1234
-  assembly_version: '$(CERTES_CLI_VER)' # 1.0.0
-  file_version: '$(CERTES_CLI_VER).$(APPVEYOR_BUILD_NUMBER)' # 1.0.0.1234
-  informational_version: '$(CERTES_CLI_VER)$(CERTES_PACKAGE_SUFFIX)' # 1.0.0-master-1234
 
 install:
   - ps: wget https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1

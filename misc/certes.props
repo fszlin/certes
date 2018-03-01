@@ -1,10 +1,12 @@
 <Project>
   <PropertyGroup>
-    <!--<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>-->
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <LangVersion>Latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(APPVEYOR)' != ''">
+    <CertesFileVersionSuffix>.$(APPVEYOR_BUILD_NUMBER)</CertesFileVersionSuffix>
+    <CertesInformationalVersionSuffix>-$(APPVEYOR_REPO_BRANCH)-$(APPVEYOR_BUILD_NUMBER)</CertesInformationalVersionSuffix>
+    <CertesPackageVersionSuffix Condition="'$(APPVEYOR_REPO_BRANCH)' != 'release'">$(CertesInformationalVersionSuffix)</CertesPackageVersionSuffix>
   </PropertyGroup>
 </Project>
