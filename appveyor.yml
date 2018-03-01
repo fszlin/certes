@@ -35,13 +35,6 @@ branches:
     - beta
     - rc
 
-assembly_info:
-  patch: true
-  file: '**\AssemblyInfo.*'
-  assembly_version: '$(CERTES_ASSEMBLY_VERSION)'
-  assembly_file_version: '$(CERTES_ASSEMBLY_FILE_VERSION)'
-  assembly_informational_version: '$(CERTES_ASSEMBLY_INFO_VERSION)'
-
 init:
   - git config --global core.autocrlf input
   - ps: $verParts = $($env:appveyor_build_version) -Split '\.'
@@ -52,6 +45,15 @@ init:
   - ps: if ($env:APPVEYOR_REPO_BRANCH -eq "rc") { $buildVer = Get-Date -Format yyyyMMdd }
   - ps: $env:CERTES_ASSEMBLY_INFO_VERSION = if ($env:APPVEYOR_REPO_BRANCH -eq "release") { $env:CERTES_ASSEMBLY_VERSION } else { $env:CERTES_ASSEMBLY_VERSION + '-' + $env:APPVEYOR_REPO_BRANCH + '-' + $buildVer }
   - ps: $env:CERTES_PACKAGE_VERSION = $env:CERTES_ASSEMBLY_INFO_VERSION
+
+dotnet_csproj:
+  patch: true
+  file: 'src\**\*.csproj'
+  version: '$(CERTES_PACKAGE_VERSION)'
+  package_version: '$(CERTES_PACKAGE_VERSION)'
+  assembly_version: '$(CERTES_ASSEMBLY_VERSION)'
+  file_version: '$(CERTES_ASSEMBLY_FILE_VERSION)'
+  informational_version: '$(CERTES_ASSEMBLY_INFO_VERSION)'
 
 install:
   - ps: wget https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1

@@ -1,14 +1,10 @@
 <Project>
   <PropertyGroup>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <!--<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>-->
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <LangVersion>Latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <Net47Target>True</Net47Target>
   </PropertyGroup>
 </Project>
