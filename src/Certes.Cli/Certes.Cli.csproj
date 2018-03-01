@@ -16,10 +16,11 @@
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
-    <PackageId>Certes.Cli</PackageId>
+    <PackageId>dotnet-certes</PackageId>
     <PackageIconUrl>https://raw.githubusercontent.com/fszlin/certes/master/misc/logo.png</PackageIconUrl>
     <PackAsTool Condition="'$(CertesVersion)' != ''">true</PackAsTool>
     <ToolCommandName>certes</ToolCommandName>
+    <AssemblyName>dotnet-certes</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
