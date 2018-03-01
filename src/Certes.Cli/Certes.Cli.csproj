@@ -7,8 +7,8 @@
     <TargetFrameworks Condition="'$(CertesVersion)' != ''">netcoreapp2.0</TargetFrameworks>
     <Version>1.0.0</Version>
     <AssemblyVersion>1.0.0</AssemblyVersion>
-    <AssemblyFileVersion>1.0.0</AssemblyFileVersion>
-    <AssemblyInformationalVersion>1.0.0</AssemblyInformationalVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <InformationalVersion>1.0.0</InformationalVersion>
     <Authors>Certes Contributors</Authors>
     <Company />
     <Product>CLI for Certes</Product>
