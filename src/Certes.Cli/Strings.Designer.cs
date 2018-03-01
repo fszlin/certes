@@ -71,6 +71,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &quot;DNS zone for &apos;{0}&apos; not found.&quot;.
+        /// </summary>
+        internal static string ErrorDnsZoneNotFound {
+            get {
+                return ResourceManager.GetString("ErrorDnsZoneNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Can not export certificate for order with &apos;{0}&apos; status..
         /// </summary>
         internal static string ErrorExportInvalidOrder {
@@ -116,11 +125,74 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can not down certificate for order &apos;{0}&apos;..
+        /// </summary>
+        internal static string ErrorOrderIncompleted {
+            get {
+                return ResourceManager.GetString("ErrorOrderIncompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Parameter &apos;{0}&apos; is required..
         /// </summary>
         internal static string ErrorParameterMissing {
             get {
                 return ResourceManager.GetString("ErrorParameterMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Auzre app service name..
+        /// </summary>
+        internal static string HelpAppName {
+            get {
+                return ResourceManager.GetString("HelpAppName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The client ID of the Azure service principal..
+        /// </summary>
+        internal static string HelpAzureClientId {
+            get {
+                return ResourceManager.GetString("HelpAzureClientId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource group..
+        /// </summary>
+        internal static string HelpAzureResourceGroup {
+            get {
+                return ResourceManager.GetString("HelpAzureResourceGroup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The client secret of the Azure service principal..
+        /// </summary>
+        internal static string HelpAzureSecret {
+            get {
+                return ResourceManager.GetString("HelpAzureSecret", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Azure subscription ID..
+        /// </summary>
+        internal static string HelpAzureSubscriptionId {
+            get {
+                return ResourceManager.GetString("HelpAzureSubscriptionId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Azure talent ID..
+        /// </summary>
+        internal static string HelpAzureTalentId {
+            get {
+                return ResourceManager.GetString("HelpAzureTalentId", resourceCulture);
             }
         }
         
@@ -184,6 +256,33 @@ namespace Certes.Cli {
         internal static string HelpCommandAccountUpdate {
             get {
                 return ResourceManager.GetString("HelpCommandAccountUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deploy certificates to Microsoft Azure..
+        /// </summary>
+        internal static string HelpCommandAzure {
+            get {
+                return ResourceManager.GetString("HelpCommandAzure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deploy certificates to Azure app services..
+        /// </summary>
+        internal static string HelpCommandAzureApp {
+            get {
+                return ResourceManager.GetString("HelpCommandAzureApp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configure Azure DNS to respone to ACME DNS challenge..
+        /// </summary>
+        internal static string HelpCommandAzureDns {
+            get {
+                return ResourceManager.GetString("HelpCommandAzureDns", resourceCulture);
             }
         }
         
@@ -391,6 +490,15 @@ namespace Certes.Cli {
         internal static string HelpServer {
             get {
                 return ResourceManager.GetString("HelpServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Azure app service deployment slot..
+        /// </summary>
+        internal static string HelpSlot {
+            get {
+                return ResourceManager.GetString("HelpSlot", resourceCulture);
             }
         }
     }

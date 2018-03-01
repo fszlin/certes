@@ -11,10 +11,6 @@ using static Certes.Acme.WellKnownServers;
 using static Certes.Cli.CliTestHelper;
 using static Certes.Helper;
 
-using Authorization = Certes.Acme.Resource.Authorization;
-using Challenge = Certes.Acme.Resource.Challenge;
-using ChallengeTypes = Certes.Acme.Resource.ChallengeTypes;
-
 namespace Certes.Cli.Commands
 {
     public class OrderValidateCommandTests
@@ -113,7 +109,8 @@ namespace Certes.Cli.Commands
         private static ArgumentSyntax DefineCommand(string args)
         {
             var cmd = new OrderValidateCommand(
-                new UserSettings(new FileUtilImpl()), MakeFactory(null), new FileUtilImpl());
+                new UserSettings(new FileUtil()), MakeFactory(new Mock<IAcmeContext>()), new FileUtil());
+            Assert.Equal(CommandGroup.Order.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
                 syntax.HandleErrors = false;

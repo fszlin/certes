@@ -228,4 +228,40 @@
   <data name="HelpPrivateKey" xml:space="preserve">
     <value>The private key for the certificate.</value>
   </data>
+  <data name="HelpCommandAzure" xml:space="preserve">
+    <value>Deploy certificates to Microsoft Azure.</value>
+  </data>
+  <data name="HelpAzureClientId" xml:space="preserve">
+    <value>The client ID of the Azure service principal.</value>
+  </data>
+  <data name="HelpAzureSecret" xml:space="preserve">
+    <value>The client secret of the Azure service principal.</value>
+  </data>
+  <data name="HelpAzureSubscriptionId" xml:space="preserve">
+    <value>The Azure subscription ID.</value>
+  </data>
+  <data name="HelpCommandAzureDns" xml:space="preserve">
+    <value>Configure Azure DNS to respone to ACME DNS challenge.</value>
+  </data>
+  <data name="HelpAzureTalentId" xml:space="preserve">
+    <value>The Azure talent ID.</value>
+  </data>
+  <data name="ErrorDnsZoneNotFound" xml:space="preserve">
+    <value>"DNS zone for '{0}' not found."</value>
+  </data>
+  <data name="HelpAzureResourceGroup" xml:space="preserve">
+    <value>The resource group.</value>
+  </data>
+  <data name="HelpCommandAzureApp" xml:space="preserve">
+    <value>Deploy certificates to Azure app services.</value>
+  </data>
+  <data name="ErrorOrderIncompleted" xml:space="preserve">
+    <value>Can not down certificate for order '{0}'.</value>
+  </data>
+  <data name="HelpAppName" xml:space="preserve">
+    <value>The Auzre app service name.</value>
+  </data>
+  <data name="HelpSlot" xml:space="preserve">
+    <value>The Azure app service deployment slot.</value>
+  </data>
 </root>

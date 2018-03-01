@@ -26,6 +26,12 @@
             Help = Strings.HelpCommandCertificate,
         };
 
+        public static readonly CommandGroup Azure = new CommandGroup
+        {
+            Command = "az",
+            Help = Strings.HelpCommandAzure,
+        };
+
         public string Command { get; private set; }
         public string Help { get; private set; }
 
