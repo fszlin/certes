@@ -8,12 +8,12 @@ namespace Certes.Cli.Commands
 {
     internal abstract class AzureCommand : CommandBase
     {
-
-        protected const string AzureTalentIdOption = "talent-id";
-        protected const string AzureClientIdOption = "client-id";
-        protected const string AzureSecretOption = "client-secret";
-        protected const string AzureSubscriptionIdOption = "subscription-id";
         protected const string AzureResourceGroupOption = "resource-group";
+
+        public static string AzureTalentIdOption => "talent-id";
+        public static string AzureClientIdOption => "client-id";
+        public static string AzureSecretOption => "client-secret";
+        public static string AzureSubscriptionIdOption => "subscription-id";
 
         protected AzureCommand(
             IUserSettings userSettings,

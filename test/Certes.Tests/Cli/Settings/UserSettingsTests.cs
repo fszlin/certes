@@ -94,5 +94,31 @@ namespace Certes.Cli
             Assert.NotNull(azSettings);
             Assert.Equal(default, azSettings.SubscriptionId);
         }
+
+        [Fact]
+        public async Task CanSetAzureSettings()
+        {
+            var fullPath = Path.GetFullPath($"./{nameof(CanSetAzureSettings)}");
+            var configPath = Path.Combine(fullPath, ".certes", "certes.json");
+            SetHomePath(fullPath);
+
+            var azSettings = new AzureSettings
+            {
+                ClientId = Guid.NewGuid().ToString(),
+                ClientSecret = Guid.NewGuid().ToString(),
+                SubscriptionId = Guid.NewGuid().ToString(),
+                TalentId = Guid.NewGuid().ToString(),
+            };
+
+            var json = JsonConvert.SerializeObject(new UserSettings.Model { Azure = azSettings }, JsonUtil.CreateSettings());
+            var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
+            fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync((string)null);
+            fileMock.Setup(m => m.WriteAllText(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
+
+            var settings = new UserSettings(fileMock.Object);
+            await settings.SetAzureSettings(azSettings);
+
+            fileMock.Verify(m => m.WriteAllText(configPath, json), Times.Once);
+        }
     }
 }

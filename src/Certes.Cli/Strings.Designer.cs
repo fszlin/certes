@@ -287,6 +287,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configure default credentials for Microsoft Azure..
+        /// </summary>
+        internal static string HelpCommandAzureSet {
+            get {
+                return ResourceManager.GetString("HelpCommandAzureSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Export certificates..
         /// </summary>
         internal static string HelpCommandCertificate {

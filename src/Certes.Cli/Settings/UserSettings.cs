@@ -89,6 +89,15 @@ namespace Certes.Cli.Settings
             return settings.Azure ?? new AzureSettings();
         }
 
+        public async Task SetAzureSettings(AzureSettings azSettings)
+        {
+            var settings = await LoadUserSettings();
+
+            settings.Azure = azSettings;
+            var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
+            await fileUtil.WriteAllText(SettingsFile.Value, json);
+        }
+
         private async Task<Model> LoadUserSettings()
         {
             var json = await fileUtil.ReadAllText(SettingsFile.Value);
