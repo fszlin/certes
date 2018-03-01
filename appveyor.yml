@@ -79,8 +79,8 @@ test_script:
 
 after_test:
   - npm install codecov -g -q
-  - codecov -f "./build/Certes.Tests.coverage.xml" -F unit 1>nul
-  - codecov -f "./build/Certes.Tests.Integration.coverage.xml" -F integration 1>nul
+  - codecov -f "./build/Certes.Tests.coverage.xml" -F unit > $null
+  - codecov -f "./build/Certes.Tests.Integration.coverage.xml" -F integration > $null
 
 configuration: Release
 
