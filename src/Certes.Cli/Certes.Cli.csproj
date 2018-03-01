@@ -9,7 +9,7 @@
     <Company />
     <Product>CLI for Certes</Product>
     <Description>CLI for Certes</Description>
-    <PackageType>DotnetCliTool</PackageType>
+    <PackageType>DotnetTool</PackageType>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate</PackageTags>
