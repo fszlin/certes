@@ -10,5 +10,6 @@ namespace Certes.Cli.Settings
         Task<IKey> GetAccountKey(Uri serverUri);
         Task SetAccountKey(Uri server, IKey key);
         Task<AzureSettings> GetAzureSettings();
+        Task SetAzureSettings(AzureSettings azSettings);
     }
 }
