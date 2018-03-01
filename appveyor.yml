@@ -115,27 +115,6 @@ deploy:
     on:
       branch: release
 
-  - provider: GitHub
-    release: v$(CERTES_PACKAGE_VERSION)
-    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
-    auth_token:
-      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
-    artifact: nupkg,cli
-    draft: true
-    prerelease: true
-    on:
-      branch:
-        - master
-
-  - provider: NuGet
-    api_key:
-      secure: enjdo7AiXKaGhj8NC2k3wjQ9mGlU1jxABzG6tuphpM7dNaazlrSlvwR2H1kC4kr+
-    skip_symbols: true
-    symbol_server:
-    artifact: nupkg
-    on:
-      branch: release
-
   - provider: NuGet
     server: https://www.myget.org/F/certes/api/v2/package
     api_key:
