@@ -67,12 +67,13 @@ build_script:
   - msbuild -p:DebugType=Full -v:m
   - msbuild -t:src\Certes:pack -p:DebugType=Full -v:m
   - msbuild -t:src\Certes_Cli:Publish -p:TargetFramework=netcoreapp1.0 -p:DebugType=Full -v:m
-  - ps: Get-ChildItem -Path "./src/**/*.nupkg" -Recurse | Move-Item -Destination "./build"
-  - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
-  - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
   # dotnet tool
   - ps: Copy-Item ./misc/NuGet-tool.config ./src/Certes.Cli/NuGet.config
   - ps: ./dotnet-pre/dotnet.exe pack src\Certes.Cli\Certes.Cli.csproj -c $($env:CONFIGURATION) -property:CertesVersion=$($env:CERTES_PACKAGE_VERSION)
+  # move packages
+  - ps: Get-ChildItem -Path "./src/**/*.nupkg" -Recurse | Move-Item -Destination "./build"
+  - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
+  - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
 
 #test: off
 before_test:
