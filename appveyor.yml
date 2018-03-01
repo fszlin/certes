@@ -24,7 +24,7 @@ environment:
 
 cache:
   - dotnet-pre
-  - '%USERPROFILE%\.nuget\packages
+  - '%USERPROFILE%\.nuget\packages'
 
 branches:
   # whitelist
