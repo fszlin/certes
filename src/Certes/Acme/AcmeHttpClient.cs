@@ -135,7 +135,7 @@ namespace Certes.Acme
 
             if (response.IsSuccessStatusCode)
             {
-                if (IsJsonMedia(response.Content?.Headers.ContentType.MediaType))
+                if (IsJsonMedia(response.Content?.Headers.ContentType?.MediaType))
                 {
                     var json = await response.Content.ReadAsStringAsync();
                     resource = JsonConvert.DeserializeObject<T>(json);
