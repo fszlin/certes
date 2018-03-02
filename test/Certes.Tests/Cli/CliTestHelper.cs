@@ -15,7 +15,7 @@ namespace Certes.Cli
         public static void ValidateParameter<T>(ArgumentSyntax syntax, string name, T value)
         {
             var arg = syntax.GetActiveArguments()
-                .Where(p => p.Name == name)
+                .Where(p => p.Names.Any(n => n == name))
                 .OfType<Argument<T>>()
                 .FirstOrDefault();
             Assert.NotNull(arg);
@@ -25,7 +25,7 @@ namespace Certes.Cli
         public static void ValidateOption<T>(ArgumentSyntax syntax, string name, T value)
         {
             var arg = syntax.GetActiveOptions()
-                .Where(p => p.Name == name)
+                .Where(p => p.Names.Any(n => n == name))
                 .OfType<Argument<T>>()
                 .FirstOrDefault();
             Assert.NotNull(arg);

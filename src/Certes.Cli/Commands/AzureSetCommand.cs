@@ -13,8 +13,6 @@ namespace Certes.Cli.Commands
     internal class AzureSetCommand : ICliCommand
     {
         private const string CommandText = "set";
-        private const string ParamServer = "server";
-        private static readonly ILogger logger = LogManager.GetLogger(nameof(AzureSetCommand));
 
         private readonly IResourceClientFactory clientFactory;
         private readonly IUserSettings userSettings;

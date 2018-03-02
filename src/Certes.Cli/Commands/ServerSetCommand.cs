@@ -7,7 +7,7 @@ using NLog;
 
 namespace Certes.Cli.Commands
 {
-    // e.x: server set --server https://acme-staging-v02.api.letsencrypt.org/directory
+    // e.x: server set https://acme-staging-v02.api.letsencrypt.org/directory
     internal class ServerSetCommand : ICliCommand
     {
         private const string CommandText = "set";
