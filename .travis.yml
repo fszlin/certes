@@ -1,19 +1,6 @@
 language: csharp
 mono: none
 dotnet: 2.0.0
-sudo: required
-dist: trusty
-os:
-  - linux
-addons:
-  apt:
-    packages:
-      - gettext
-      - libcurl4-openssl-dev
-      - libicu-dev
-      - libssl-dev
-      - libunwind8
-      - zlib1g
 env:
   matrix:
     - CLI_VERSION=Latest
@@ -29,3 +16,4 @@ branches:
 script:
   - dotnet restore
   - dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp2.0
+  - dotnet test ./test/Certes.Tests.Integration/Certes.Tests.Integration.csproj --framework netcoreapp2.0

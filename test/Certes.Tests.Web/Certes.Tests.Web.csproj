@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
     <Compile Include="..\Certes.Tests\Keys.cs" Link="Keys.cs" />
   </ItemGroup>
 

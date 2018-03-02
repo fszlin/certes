@@ -1,11 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../../certes.props" />
+  <Import Project="../../misc/certes.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;netcoreapp1.0;net452</TargetFrameworks>
-    <TargetFrameworks Condition="'$(Configuration)' != 'Debug' OR '$(Net47Target)' == 'True'">
-      $(TargetFrameworks);net47
-    </TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp1.0;net452;net47</TargetFrameworks>
     <RootNamespace>Certes</RootNamespace>
     <NoWarn>1701;1702;1705;0618</NoWarn>
     <IncludeCli Condition="'$(TargetFramework)' == 'netcoreapp1.0' OR '$(TargetFramework)' == 'netcoreapp2.0'">True</IncludeCli>
@@ -19,10 +16,6 @@
     <Compile Remove="Cli\**" />
     <EmbeddedResource Remove="Cli\**" />
     <None Remove="Cli\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\..\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
   </ItemGroup>
 
   <ItemGroup>

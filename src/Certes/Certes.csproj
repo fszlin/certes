@@ -1,20 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../../certes.props" />
+  <Import Project="../../misc/certes.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>
-      netstandard2.0;netstandard1.3;net45
-    </TargetFrameworks>
-    <TargetFrameworks Condition="'$(Configuration)' != 'Debug' OR '$(Net47Target)' == 'True'">
-      $(TargetFrameworks);net47
-    </TargetFrameworks>
-    <Version>1.0.0</Version>
+    <TargetFrameworks>netstandard2.0;netstandard1.3;net45;net47</TargetFrameworks>
+    <AssemblyVersion>2.0.0</AssemblyVersion>
+    <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
+    <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
+    <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
     <Authors>Certes Contributors</Authors>
     <Company />
     <Product>Certes ACME Client</Product>
     <Title>$(Product)</Title>
     <Description>A client implementation for the Automated Certificate Management Environment (ACME) protocol.</Description>
-    <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate</PackageTags>
+    <PackageTags>Certes;let's encrypt;ACME;HTTPS;SSL;Certificate;dotnet tool</PackageTags>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
@@ -29,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
+    <Compile Include="..\..\misc\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
   </ItemGroup>
 
   <ItemGroup>
