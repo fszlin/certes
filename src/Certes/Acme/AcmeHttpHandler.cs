@@ -164,7 +164,7 @@ namespace Certes.Acme
 
         private async Task<AcmeRespone<T>> ReadResponse<T>(HttpResponseMessage response, string resourceType = null)
         {
-            var data = new AcmeResponse<T>();
+            var data = new AcmeRespone<T>();
 
             ParseHeaders(data, response);
             if (IsJsonMedia(response.Content?.Headers.ContentType?.MediaType))
