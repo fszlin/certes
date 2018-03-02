@@ -164,8 +164,10 @@ namespace Certes.Acme
 
         private async Task<AcmeRespone<T>> ReadResponse<T>(HttpResponseMessage response, string resourceType = null)
         {
-            var data = new AcmeRespone<T>();
-            if (IsJsonMedia(response.Content?.Headers.ContentType.MediaType))
+            var data = new AcmeResponse<T>();
+
+            ParseHeaders(data, response);
+            if (IsJsonMedia(response.Content?.Headers.ContentType?.MediaType))
             {
                 var json = await response.Content.ReadAsStringAsync();
                 data.Json = json;
@@ -182,14 +184,16 @@ namespace Certes.Acme
                 {
                     data.Error = JsonConvert.DeserializeObject<AcmeError>(json, jsonSettings);
                 }
+
+                // take the replay-nonce from JOSN response
+                // it appears the nonces returned with certificate are invalid
+                nonce = data.ReplayNonce;
             }
             else if (response.Content?.Headers.ContentLength > 0)
             {
                 data.Raw = await response.Content.ReadAsByteArrayAsync();
             }
 
-            ParseHeaders(data, response);
-            this.nonce = data.ReplayNonce;
             return data;
         }
 
@@ -231,7 +235,7 @@ namespace Certes.Acme
                     .ToArray();
             }
 
-            data.ContentType = response.Content?.Headers.ContentType.MediaType;
+            data.ContentType = response.Content?.Headers.ContentType?.MediaType;
         }
 
         private static bool IsJsonMedia(string mediaType)
