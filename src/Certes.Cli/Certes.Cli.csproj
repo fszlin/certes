@@ -11,12 +11,12 @@
     <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
     <Authors>Certes Contributors</Authors>
     <Company />
-    <Product>CLI for Certes</Product>
-    <Description>CLI for Certes</Description>
+    <Product>Certes ACME Client CLI</Product>
+    <Description>Dotnet tool for Automated Certificate Management Environment (ACME) protocol, powered by Certes.</Description>
     <PackageType>DotnetTool</PackageType>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate</PackageTags>
+    <PackageTags>Certes;let's encrypt;ACME;HTTPS;SSL;Certificate;dotnet tool</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
     <PackageId>dotnet-certes</PackageId>
