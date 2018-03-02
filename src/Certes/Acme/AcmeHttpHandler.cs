@@ -167,7 +167,7 @@ namespace Certes.Acme
             var data = new AcmeResponse<T>();
 
             ParseHeaders(data, response);
-            if (IsJsonMedia(response.Content?.Headers.ContentType.MediaType))
+            if (IsJsonMedia(response.Content?.Headers.ContentType?.MediaType))
             {
                 var json = await response.Content.ReadAsStringAsync();
                 data.Json = json;
@@ -235,7 +235,7 @@ namespace Certes.Acme
                     .ToArray();
             }
 
-            data.ContentType = response.Content?.Headers.ContentType.MediaType;
+            data.ContentType = response.Content?.Headers.ContentType?.MediaType;
         }
 
         private static bool IsJsonMedia(string mediaType)
