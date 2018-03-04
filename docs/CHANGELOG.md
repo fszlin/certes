@@ -1,7 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [1.1.4]
+### Changed
+- Fix error when processing server response without `Content-Type` header
+- Fix `full-chain-off` option for CLI
+
+## [1.1.3] - 2017-11-23
+### Changed
 - Fix MissingFieldException when running with BouncyCastle v1.8.1.3 ([#22][i22])
 
 ## [1.1.2] - 2017-09-27
@@ -29,6 +35,8 @@ All notable changes to this project will be documented in this file.
 [1.1.0]: https://github.com/fszlin/certes/compare/v1.0.7...v1.1.0
 [1.1.1]: https://github.com/fszlin/certes/compare/v1.1.0...v1.1.1
 [1.1.2]: https://github.com/fszlin/certes/compare/v1.1.1...v1.1.2
+[1.1.3]: https://github.com/fszlin/certes/compare/v1.1.2...v1.1.3
+[1.1.4]: https://github.com/fszlin/certes/compare/v1.1.3...v1.1.4
 
 [i5]: https://github.com/fszlin/certes/issues/5
 [i22]: https://github.com/fszlin/certes/issues/22
