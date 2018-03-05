@@ -24,7 +24,7 @@ namespace Certes.Cli
                 new ServerSetCommand(settingsMock.Object, CliTestHelper.MakeFactory(ctxMock))
             });
 
-            var succeed = await cli.Run(new[] { "server", "set", "--server", $"{serverUri}" });
+            var succeed = await cli.Run(new[] { "server", "set", $"{serverUri}" });
             Assert.True(succeed);
         }
 
@@ -75,6 +75,7 @@ namespace Certes.Cli
             });
 
             Assert.False(await cli.Run(new string[0]));
+            Assert.False(await cli.Run(new[] { "server", "ok" }));
         }
     }
 }
