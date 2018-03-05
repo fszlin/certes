@@ -12,7 +12,6 @@ using static Certes.Helper;
 
 namespace Certes.Cli
 {
-    [Collection(nameof(ContextFactory))]
     public class UserSettingsTests
     {
         [Fact]

@@ -23,13 +23,5 @@ namespace Certes
 
         public static IAcmeHttpClient CreateHttp(Uri dirUri, HttpClient http)
             => new AcmeHttpClient(dirUri, http);
-
-#if NETCOREAPP2_0 || NETCOREAPP1_0
-        public static Func<Uri, IKey, IAcmeContext> ContextFactory
-        {
-            get => Cli.ContextFactory.Create;
-            set => Cli.ContextFactory.Create = value;
-        }
-#endif
     }
 }

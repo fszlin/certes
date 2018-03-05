@@ -42,15 +42,7 @@ namespace Certes
         public static IAcmeHttpClient GetAcmeHttpClient(Uri uri) => Helper.CreateHttp(uri, http.Value);
 
         public static IAcmeHttpHandler GetAcmeHttpHandler(Uri uri) => new AcmeHttpHandler(uri, http.Value);
-
-#if NETCOREAPP2_0 || NETCOREAPP1_0
-        public static void SkipCertificateCheck()
-        {
-            Helper.ContextFactory =
-                (uri, key) => new AcmeContext(uri, key, Helper.CreateHttp(uri, http.Value));
-        }
-#endif
-
+        
         public static async Task<Uri> GetAcmeUriV1()
         {
             if (stagingServerV1 != null)
