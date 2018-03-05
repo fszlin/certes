@@ -7,11 +7,11 @@ using NLog;
 
 namespace Certes.Cli.Commands
 {
-    // e.x: server set --server https://acme-staging-v02.api.letsencrypt.org/directory
+    // e.x: server set https://acme-staging-v02.api.letsencrypt.org/directory
     internal class ServerSetCommand : ICliCommand
     {
         private const string CommandText = "set";
-        private const string ParamServer = "server";
+        private const string ParamServer = "server-uri";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(ServerSetCommand));
 
         private readonly IAcmeContextFactory contextFactory;
@@ -27,7 +27,7 @@ namespace Certes.Cli.Commands
 
         public async Task<object> Execute(ArgumentSyntax syntax)
         {
-            var serverUriParam = syntax.GetActiveOptions()
+            var serverUriParam = syntax.GetActiveArguments()
                 .Where(p => p.Name == ParamServer)
                 .OfType<Argument<Uri>>()
                 .First();
@@ -51,7 +51,7 @@ namespace Certes.Cli.Commands
         public ArgumentCommand<string> Define(ArgumentSyntax syntax)
         {
             var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandServerSet);
-            syntax.DefineServerOption();
+            syntax.DefineUriParameter(ParamServer, help: Strings.HelpServer);
 
             return cmd;
         }

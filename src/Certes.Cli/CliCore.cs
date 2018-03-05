@@ -146,6 +146,6 @@ namespace Certes.Cli
         }
 
         private static bool IsHelpRequested(string[] args)
-            => args.Intersect(new[] { "-?", "-h", "-help" }).Any();
+            => args.Intersect(new[] { "-?", "-h", "--help" }).Any();
     }
 }

@@ -9,7 +9,6 @@ namespace Certes.Cli.Commands
 {
     internal class ServerShowCommand : ICliCommand
     {
-        private const string ParamServer = "server";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(ServerShowCommand));
 
         private readonly IAcmeContextFactory contextFactory;

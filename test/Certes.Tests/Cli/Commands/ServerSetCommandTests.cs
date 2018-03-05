@@ -25,7 +25,7 @@ namespace Certes.Cli.Commands
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
 
             var cmd = new ServerSetCommand(settingsMock.Object, MakeFactory(ctxMock));
-            var syntax = DefineCommand($"set --server {serverUri}");
+            var syntax = DefineCommand($"set {serverUri}");
 
             var ret = await cmd.Execute(syntax);
             Assert.Equal(
@@ -43,11 +43,11 @@ namespace Certes.Cli.Commands
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"set --server {LetsEncryptStagingV2}";
+            var args = $"set {LetsEncryptStagingV2}";
             var syntax = DefineCommand(args);
 
             Assert.Equal("set", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "server", LetsEncryptStagingV2);
+            ValidateParameter(syntax, "server-uri", LetsEncryptStagingV2);
 
             syntax = DefineCommand("noop");
             Assert.NotEqual("set", syntax.ActiveCommand.Value);
