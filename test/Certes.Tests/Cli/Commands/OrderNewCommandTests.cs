@@ -61,6 +61,49 @@ namespace Certes.Cli.Commands
         }
 
         [Fact]
+        public async Task CanProcessCommandWithDerKey()
+        {
+            var orderLoc = new Uri("http://acme.com/o/1");
+            var order = new Order
+            {
+                Identifiers = new[] {
+                    new Identifier { Value = "*.a.com" },
+                    new Identifier { Value = "*.b.com" },
+                }
+            };
+
+            var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
+            settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(LetsEncryptV2);
+
+            var orderMock = new Mock<IOrderContext>(MockBehavior.Strict);
+            orderMock.SetupGet(m => m.Location).Returns(orderLoc);
+            orderMock.Setup(m => m.Resource()).ReturnsAsync(order);
+
+            var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
+            ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
+            ctxMock.Setup(m => m.NewOrder(It.IsAny<IList<string>>(), null, null))
+                .ReturnsAsync(orderMock.Object);
+
+            var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
+
+            var cmd = new OrderNewCommand(
+                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
+
+            var acctKey = Convert.ToBase64String(GetKeyV2().ToDer());
+            var syntax = DefineCommand($"new a.com b.com --key {acctKey}");
+            var ret = await cmd.Execute(syntax);
+            Assert.Equal(
+                JsonConvert.SerializeObject(new
+                {
+                    location = orderLoc,
+                    resource = order,
+                }),
+                JsonConvert.SerializeObject(ret));
+
+            ctxMock.Verify(m => m.NewOrder(new[] { "a.com", "b.com" }, null, null), Times.Once);
+        }
+
+        [Fact]
         public void CanDefineCommand()
         {
             var args = $"new www.abc1.com www.abc2.com --server {LetsEncryptStagingV2}";
