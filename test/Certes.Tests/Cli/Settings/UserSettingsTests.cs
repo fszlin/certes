@@ -170,6 +170,76 @@ namespace Certes.Cli
             fileMock.Verify(m => m.ReadAllText(configPath), Times.Once);
         }
 
+        [Fact]
+        public async Task CanSetAccountKey()
+        {
+            var uri = new Uri("http://acme.d/d");
+            var key = KeyFactory.NewKey(KeyAlgorithm.ES256);
+
+            var fullPath = Path.GetFullPath($"./{nameof(CanSetAccountKey)}");
+            var configPath = Path.Combine(fullPath, ".certes", "certes.json");
+            var envMock = GetEnvMock(fullPath);
+
+            var json = JsonConvert.SerializeObject(
+                new UserSettings.Model
+                {
+                    Servers = new[]
+                    {
+                        new AcmeSettings { Key = key.ToDer(), ServerUri = uri }
+                    }
+                },
+                JsonUtil.CreateSettings());
+
+            var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
+            fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync((string)null);
+            fileMock.Setup(m => m.WriteAllText(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
+
+            var settings = new UserSettings(fileMock.Object, envMock.Object);
+            await settings.SetAccountKey(uri, key);
+
+            fileMock.Verify(m => m.WriteAllText(configPath, json), Times.Once);
+        }
+
+        [Fact]
+        public async Task CanReplaceAccountKey()
+        {
+            var uri = new Uri("http://acme.d/d");
+            var oldKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
+            var key = KeyFactory.NewKey(KeyAlgorithm.ES256);
+
+            var fullPath = Path.GetFullPath($"./{nameof(CanSetAccountKey)}");
+            var configPath = Path.Combine(fullPath, ".certes", "certes.json");
+            var envMock = GetEnvMock(fullPath);
+
+            var json = JsonConvert.SerializeObject(
+                new UserSettings.Model
+                {
+                    Servers = new[]
+                    {
+                        new AcmeSettings { Key = oldKey.ToDer(), ServerUri = uri }
+                    }
+                },
+                JsonUtil.CreateSettings());
+
+            var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
+            fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync(json);
+            fileMock.Setup(m => m.WriteAllText(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
+
+            var settings = new UserSettings(fileMock.Object, envMock.Object);
+            await settings.SetAccountKey(uri, key);
+
+            json = JsonConvert.SerializeObject(
+                new UserSettings.Model
+                {
+                    Servers = new[]
+                    {
+                        new AcmeSettings { Key = key.ToDer(), ServerUri = uri }
+                    }
+                },
+                JsonUtil.CreateSettings());
+            fileMock.Verify(m => m.WriteAllText(configPath, json), Times.Once);
+        }
+
         private static Mock<IEnvironmentVariables> GetEnvMock(string path, bool forWin = true)
         {
             var mock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
