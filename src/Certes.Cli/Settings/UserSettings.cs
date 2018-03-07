@@ -84,7 +84,11 @@ namespace Certes.Cli.Settings
         public async Task<AzureSettings> GetAzureSettings()
         {
             var settings = await LoadUserSettings();
-            return settings.Azure ?? new AzureSettings();
+            var azSettings = settings.Azure ?? new AzureSettings();
+
+            PopulateSettings(azSettings);
+
+            return azSettings;
         }
 
         public async Task SetAzureSettings(AzureSettings azSettings)
@@ -114,6 +118,32 @@ namespace Certes.Cli.Settings
 
             return Path.Combine(homePath, ".certes", "certes.json");
         }
-    }
 
+        private void PopulateSettings(AzureSettings settings)
+        {
+            var envSubscriptionId = environment.GetVar("CERTES_AZURE_SUBSCRIPTION_ID");
+            if (!string.IsNullOrWhiteSpace(envSubscriptionId))
+            {
+                settings.SubscriptionId = envSubscriptionId;
+            }
+
+            var envTalentId = environment.GetVar("CERTES_AZURE_TALENT_ID");
+            if (!string.IsNullOrWhiteSpace(envTalentId))
+            {
+                settings.TalentId = envTalentId;
+            }
+
+            var envClientId = environment.GetVar("CERTES_AZURE_CLIENT_ID");
+            if (!string.IsNullOrWhiteSpace(envClientId))
+            {
+                settings.ClientId = envClientId;
+            }
+
+            var envClientSecret = environment.GetVar("CERTES_AZURE_CLIENT_SECRET");
+            if (!string.IsNullOrWhiteSpace(envClientSecret))
+            {
+                settings.ClientSecret = envClientSecret;
+            }
+        }
+    }
 }

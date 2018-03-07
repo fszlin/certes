@@ -93,6 +93,36 @@ namespace Certes.Cli
         }
 
         [Fact]
+        public async Task CanGetAzureSettingsFromEnv()
+        {
+            var fullPath = Path.GetFullPath($"./{nameof(CanGetAzureSettingsFromEnv)}");
+            var envMock = GetEnvMock(fullPath, false);
+
+            var envSettings = new AzureSettings
+            {
+                SubscriptionId = Guid.NewGuid().ToString("N"),
+                TalentId = Guid.NewGuid().ToString("N"),
+                ClientId = Guid.NewGuid().ToString("N"),
+                ClientSecret = Guid.NewGuid().ToString("N"),
+            };
+
+            envMock.Setup(m => m.GetVar("CERTES_AZURE_SUBSCRIPTION_ID")).Returns(envSettings.SubscriptionId);
+            envMock.Setup(m => m.GetVar("CERTES_AZURE_TALENT_ID")).Returns(envSettings.TalentId);
+            envMock.Setup(m => m.GetVar("CERTES_AZURE_CLIENT_ID")).Returns(envSettings.ClientId);
+            envMock.Setup(m => m.GetVar("CERTES_AZURE_CLIENT_SECRET")).Returns(envSettings.ClientSecret);
+        
+            var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
+            fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync((string)null);
+
+            var settings = new UserSettings(fileMock.Object, envMock.Object);
+            var azSettings = await settings.GetAzureSettings();
+            Assert.Equal(envSettings.SubscriptionId, azSettings.SubscriptionId);
+            Assert.Equal(envSettings.TalentId, azSettings.TalentId);
+            Assert.Equal(envSettings.ClientId, azSettings.ClientId);
+            Assert.Equal(envSettings.ClientSecret, azSettings.ClientSecret);
+        }
+
+        [Fact]
         public async Task CanSetAzureSettings()
         {
             var fullPath = Path.GetFullPath($"./{nameof(CanSetAzureSettings)}");
@@ -262,6 +292,8 @@ namespace Certes.Cli
         private static Mock<IEnvironmentVariables> GetEnvMock(string path, bool forWin = true)
         {
             var mock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
+            mock.Setup(m => m.GetVar(It.IsAny<string>())).Returns((string)null);
+
             path = Path.GetFullPath(path);
             if (forWin)
             {
@@ -276,8 +308,6 @@ namespace Certes.Cli
                 mock.Setup(m => m.GetVar("HOMEDRIVE")).Returns("");
                 mock.Setup(m => m.GetVar("HOMEPATH")).Returns("");
             }
-
-            mock.Setup(m => m.GetVar("CERTES_ACME_ACCOUNT_KEY")).Returns((string)null);
             return mock;
         }
     }
