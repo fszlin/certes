@@ -17,12 +17,6 @@ namespace Certes.Acme.Resource
         Pending,
 
         /// <summary>
-        /// The processing status.
-        /// </summary>
-        [EnumMember(Value = "processing")]
-        Processing,
-
-        /// <summary>
         /// The valid status.
         /// </summary>
         [EnumMember(Value = "valid")]
@@ -35,15 +29,15 @@ namespace Certes.Acme.Resource
         Invalid,
 
         /// <summary>
-        /// The revoked status.
-        /// </summary>
-        [EnumMember(Value = "revoked")]
-        Revoked,
-
-        /// <summary>
         /// The deactivated status.
         /// </summary>
         [EnumMember(Value = "deactivated")]
         Deactivated,
+
+        /// <summary>
+        /// The revoked status.
+        /// </summary>
+        [EnumMember(Value = "revoked")]
+        Revoked,
     }
 }

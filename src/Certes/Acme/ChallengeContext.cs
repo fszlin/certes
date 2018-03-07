@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Certes.Acme.Resource;
 
 namespace Certes.Acme
 {
@@ -7,7 +8,7 @@ namespace Certes.Acme
     /// Represents the context for ACME challenge operations.
     /// </summary>
     /// <seealso cref="Certes.Acme.IChallengeContext" />
-    internal class ChallengeContext : EntityContext<Resource.Challenge>, IChallengeContext
+    internal class ChallengeContext : EntityContext<Challenge>, IChallengeContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ChallengeContext"/> class.
@@ -57,13 +58,10 @@ namespace Certes.Acme
         /// <returns>
         /// The challenge.
         /// </returns>
-        public async Task<Resource.Challenge> Validate()
+        public async Task<Challenge> Validate()
         {
-            var payload = await Context.Sign(
-                new Resource.Challenge {
-                    KeyAuthorization = KeyAuthz
-                }, Location);
-            var resp = await Context.HttpClient.Post<Resource.Challenge>(Location, payload, true);
+            var payload = await Context.Sign(new { }, Location);
+            var resp = await Context.HttpClient.Post<Challenge>(Location, payload, true);
             return resp.Resource;
         }
     }
