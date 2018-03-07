@@ -8,8 +8,6 @@ using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
-using static Certes.Helper;
-
 namespace Certes.Cli
 {
     public class UserSettingsTests
@@ -20,13 +18,13 @@ namespace Certes.Cli
             var uri = new Uri("http://acme.d/d");
             var fullPath = Path.GetFullPath($"./{nameof(CanSetServer)}");
             var configPath = Path.Combine(fullPath, ".certes", "certes.json");
-            SetHomePath(fullPath);
+            var envMock = GetEnvMock(fullPath);
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync((string)null);
             fileMock.Setup(m => m.WriteAllText(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
 
-            var settings = new UserSettings(fileMock.Object);
+            var settings = new UserSettings(fileMock.Object, envMock.Object);
             await settings.SetDefaultServer(uri);
             fileMock.Verify(m => m.ReadAllText(configPath), Times.Once);
 
@@ -52,12 +50,12 @@ namespace Certes.Cli
             var uri = new Uri("http://acme.d/d");
             var fullPath = Path.GetFullPath($"./{nameof(CanGetServer)}");
             var configPath = Path.Combine(fullPath, ".certes", "certes.json");
-            SetHomePath(fullPath);
+            var envMock = GetEnvMock(fullPath);
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync((string)null);
 
-            var settings = new UserSettings(fileMock.Object);
+            var settings = new UserSettings(fileMock.Object, envMock.Object);
             Assert.Equal(WellKnownServers.LetsEncryptV2, await settings.GetDefaultServer());
             fileMock.Verify(m => m.ReadAllText(configPath), Times.Once);
 
@@ -75,14 +73,14 @@ namespace Certes.Cli
         public async Task CanGetAzureSettings()
         {
             var fullPath = Path.GetFullPath($"./{nameof(CanGetAzureSettings)}");
-            SetHomePath(fullPath, false);
+            var envMock = GetEnvMock(fullPath, false);
 
             var model = new UserSettings.Model { Azure = new AzureSettings { SubscriptionId = Guid.NewGuid().ToString("N") } };
             var json = JsonConvert.SerializeObject(model, JsonUtil.CreateSettings());
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync(json);
 
-            var settings = new UserSettings(fileMock.Object);
+            var settings = new UserSettings(fileMock.Object, envMock.Object);
             var azSettings = await settings.GetAzureSettings();
             Assert.Equal(model.Azure.SubscriptionId, azSettings.SubscriptionId);
 
@@ -99,7 +97,7 @@ namespace Certes.Cli
         {
             var fullPath = Path.GetFullPath($"./{nameof(CanSetAzureSettings)}");
             var configPath = Path.Combine(fullPath, ".certes", "certes.json");
-            SetHomePath(fullPath);
+            var envMock = GetEnvMock(fullPath);
 
             var azSettings = new AzureSettings
             {
@@ -114,10 +112,31 @@ namespace Certes.Cli
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync((string)null);
             fileMock.Setup(m => m.WriteAllText(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
 
-            var settings = new UserSettings(fileMock.Object);
+            var settings = new UserSettings(fileMock.Object, envMock.Object);
             await settings.SetAzureSettings(azSettings);
 
             fileMock.Verify(m => m.WriteAllText(configPath, json), Times.Once);
+        }
+
+        private static Mock<IEnvironmentVariables> GetEnvMock(string path, bool forWin = true)
+        {
+            var mock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
+            path = Path.GetFullPath(path);
+            if (forWin)
+            {
+                var drive = Path.GetPathRoot(path);
+                mock.Setup(m => m.GetVar("HOME")).Returns("");
+                mock.Setup(m => m.GetVar("HOMEDRIVE")).Returns(drive);
+                mock.Setup(m => m.GetVar("HOMEPATH")).Returns(path.Substring(drive.Length));
+            }
+            else
+            {
+                mock.Setup(m => m.GetVar("HOME")).Returns(path);
+                mock.Setup(m => m.GetVar("HOMEDRIVE")).Returns("");
+                mock.Setup(m => m.GetVar("HOMEPATH")).Returns("");
+            }
+
+            return mock;
         }
     }
 }

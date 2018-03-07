@@ -151,7 +151,7 @@ namespace Certes.Cli.Commands
         private static ArgumentSyntax DefineCommand(string args)
         {
             var cmd = new AzureAppCommand(
-                new UserSettings(new FileUtil()), MakeFactory(new Mock<IAcmeContext>()), new FileUtil(), null);
+                NoopSettings(), MakeFactory(new Mock<IAcmeContext>()), new FileUtil(), null);
             Assert.Equal(CommandGroup.Azure.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {

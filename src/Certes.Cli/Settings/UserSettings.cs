@@ -18,24 +18,16 @@ namespace Certes.Cli.Settings
             public AzureSettings Azure { get; set; }
         }
 
-        private readonly static Func<string> SettingsPathFactory = () =>
-        {
-            var homePath = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
-            if (!Directory.Exists(homePath))
-            {
-                homePath = Environment.GetEnvironmentVariable("HOME");
-            }
-
-            return Path.Combine(homePath, ".certes", "certes.json");
-        };
-
         private readonly IFileUtil fileUtil;
+        private readonly IEnvironmentVariables environment;
 
-        public Lazy<string> SettingsFile { get; set; } = new Lazy<string>(SettingsPathFactory);
+        private readonly Lazy<string> settingsFile;
 
-        public UserSettings(IFileUtil fileUtil)
+        public UserSettings(IFileUtil fileUtil, IEnvironmentVariables environment)
         {
             this.fileUtil = fileUtil;
+            this.environment = environment;
+            settingsFile = new Lazy<string>(ReadHomePath);
         }
 
         public async Task SetDefaultServer(Uri serverUri)
@@ -44,7 +36,7 @@ namespace Certes.Cli.Settings
 
             settings.DefaultServer = serverUri;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllText(SettingsFile.Value, json);
+            await fileUtil.WriteAllText(settingsFile.Value, json);
         }
 
         public async Task<Uri> GetDefaultServer()
@@ -72,7 +64,7 @@ namespace Certes.Cli.Settings
             serverSetting.Key = key.ToDer();
             settings.Servers = servers;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllText(SettingsFile.Value, json);
+            await fileUtil.WriteAllText(settingsFile.Value, json);
         }
 
         public async Task<IKey> GetAccountKey(Uri serverUri)
@@ -95,15 +87,26 @@ namespace Certes.Cli.Settings
 
             settings.Azure = azSettings;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllText(SettingsFile.Value, json);
+            await fileUtil.WriteAllText(settingsFile.Value, json);
         }
 
         private async Task<Model> LoadUserSettings()
         {
-            var json = await fileUtil.ReadAllText(SettingsFile.Value);
+            var json = await fileUtil.ReadAllText(settingsFile.Value);
             return json == null ?
                 new Model() :
                 JsonConvert.DeserializeObject<Model>(json, JsonUtil.CreateSettings());
+        }
+
+        private string ReadHomePath()
+        {
+            var homePath = environment.GetVar("HOMEDRIVE") + environment.GetVar("HOMEPATH");
+            if (string.IsNullOrWhiteSpace(homePath))
+            {
+                homePath = environment.GetVar("HOME");
+            }
+
+            return Path.Combine(homePath, ".certes", "certes.json");
         }
     }
 
