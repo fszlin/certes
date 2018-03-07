@@ -171,6 +171,25 @@ namespace Certes.Cli
         }
 
         [Fact]
+        public async Task CanGetAccountKeyNull()
+        {
+            var uri = new Uri("http://acme.d/d");
+
+            var fullPath = Path.GetFullPath($"./{nameof(CanGetAccountKeyFromSettings)}");
+            var configPath = Path.Combine(fullPath, ".certes", "certes.json");
+
+            var envMock = GetEnvMock(fullPath);
+            envMock.Setup(m => m.GetVar("CERTES_ACME_ACCOUNT_KEY")).Returns((string)null);
+
+            var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
+            fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync((string)null);
+
+            var settings = new UserSettings(fileMock.Object, envMock.Object);
+            var ret = await settings.GetAccountKey(uri);
+            Assert.Null(ret);
+        }
+
+        [Fact]
         public async Task CanSetAccountKey()
         {
             var uri = new Uri("http://acme.d/d");
