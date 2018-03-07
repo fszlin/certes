@@ -68,19 +68,16 @@ namespace Certes.Cli.Settings
 
         public async Task<IKey> GetAccountKey(Uri serverUri)
         {
+            // env settings overwrites user settings
+            var envKey = environment.GetVar("CERTES_ACME_ACCOUNT_KEY");
+            if (envKey != null)
+            {
+                return KeyFactory.FromDer(Convert.FromBase64String(envKey));
+            }
+
             var settings = await LoadUserSettings();
             var serverSetting = settings.Servers?.FirstOrDefault(s => s.ServerUri == serverUri);
             var der = serverSetting?.Key;
-
-            if (der == null)
-            {
-                var envKey = environment.GetVar("CERTES_ACME_ACCOUNT_KEY");
-                if (envKey != null)
-                {
-                    der = Convert.FromBase64String(envKey);
-                }
-            }
-
             return der == null ? null : KeyFactory.FromDer(der);
         }
 

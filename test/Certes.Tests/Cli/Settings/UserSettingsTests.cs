@@ -167,7 +167,7 @@ namespace Certes.Cli
             var ret = await settings.GetAccountKey(uri);
             Assert.Equal(key, ret?.ToDer());
 
-            fileMock.Verify(m => m.ReadAllText(configPath), Times.Once);
+            fileMock.Verify(m => m.ReadAllText(configPath), Times.Never);
         }
 
         [Fact]
@@ -277,6 +277,7 @@ namespace Certes.Cli
                 mock.Setup(m => m.GetVar("HOMEPATH")).Returns("");
             }
 
+            mock.Setup(m => m.GetVar("CERTES_ACME_ACCOUNT_KEY")).Returns((string)null);
             return mock;
         }
     }
