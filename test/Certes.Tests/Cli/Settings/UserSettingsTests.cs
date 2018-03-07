@@ -118,6 +118,58 @@ namespace Certes.Cli
             fileMock.Verify(m => m.WriteAllText(configPath, json), Times.Once);
         }
 
+        [Fact]
+        public async Task CanGetAccountKeyFromSettings()
+        {
+            var uri = new Uri("http://acme.d/d");
+            var key = KeyFactory.NewKey(KeyAlgorithm.ES256).ToDer();
+
+            var fullPath = Path.GetFullPath($"./{nameof(CanGetAccountKeyFromSettings)}");
+            var configPath = Path.Combine(fullPath, ".certes", "certes.json");
+            var envMock = GetEnvMock(fullPath);
+
+            var json = JsonConvert.SerializeObject(
+                new UserSettings.Model
+                {
+                    Servers = new[]
+                    {
+                        new AcmeSettings { Key = key, ServerUri = uri }
+                    }
+                },
+                JsonUtil.CreateSettings());
+
+            var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
+            fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync(json);
+
+            var settings = new UserSettings(fileMock.Object, envMock.Object);
+            var ret = await settings.GetAccountKey(uri);
+            Assert.Equal(key, ret?.ToDer());
+
+            fileMock.Verify(m => m.ReadAllText(configPath), Times.Once);
+        }
+
+        [Fact]
+        public async Task CanGetAccountKeyFromEnv()
+        {
+            var uri = new Uri("http://acme.d/d");
+            var key = KeyFactory.NewKey(KeyAlgorithm.ES256).ToDer();
+
+            var fullPath = Path.GetFullPath($"./{nameof(CanGetAccountKeyFromSettings)}");
+            var configPath = Path.Combine(fullPath, ".certes", "certes.json");
+
+            var envMock = GetEnvMock(fullPath);
+            envMock.Setup(m => m.GetVar("CERTES_ACME_ACCOUNT_KEY")).Returns(Convert.ToBase64String(key));
+
+            var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
+            fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync((string)null);
+
+            var settings = new UserSettings(fileMock.Object, envMock.Object);
+            var ret = await settings.GetAccountKey(uri);
+            Assert.Equal(key, ret?.ToDer());
+
+            fileMock.Verify(m => m.ReadAllText(configPath), Times.Once);
+        }
+
         private static Mock<IEnvironmentVariables> GetEnvMock(string path, bool forWin = true)
         {
             var mock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
