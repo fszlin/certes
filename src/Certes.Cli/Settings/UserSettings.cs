@@ -20,14 +20,13 @@ namespace Certes.Cli.Settings
 
         private readonly IFileUtil fileUtil;
         private readonly IEnvironmentVariables environment;
-
-        private readonly Lazy<string> settingsFile;
+        private readonly Lazy<string> settingsFilepath;
 
         public UserSettings(IFileUtil fileUtil, IEnvironmentVariables environment)
         {
             this.fileUtil = fileUtil;
             this.environment = environment;
-            settingsFile = new Lazy<string>(ReadHomePath);
+            settingsFilepath = new Lazy<string>(ReadSettingsFilepath);
         }
 
         public async Task SetDefaultServer(Uri serverUri)
@@ -36,7 +35,7 @@ namespace Certes.Cli.Settings
 
             settings.DefaultServer = serverUri;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllText(settingsFile.Value, json);
+            await fileUtil.WriteAllText(settingsFilepath.Value, json);
         }
 
         public async Task<Uri> GetDefaultServer()
@@ -64,7 +63,7 @@ namespace Certes.Cli.Settings
             serverSetting.Key = key.ToDer();
             settings.Servers = servers;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllText(settingsFile.Value, json);
+            await fileUtil.WriteAllText(settingsFilepath.Value, json);
         }
 
         public async Task<IKey> GetAccountKey(Uri serverUri)
@@ -87,18 +86,18 @@ namespace Certes.Cli.Settings
 
             settings.Azure = azSettings;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllText(settingsFile.Value, json);
+            await fileUtil.WriteAllText(settingsFilepath.Value, json);
         }
 
         private async Task<Model> LoadUserSettings()
         {
-            var json = await fileUtil.ReadAllText(settingsFile.Value);
+            var json = await fileUtil.ReadAllText(settingsFilepath.Value);
             return json == null ?
                 new Model() :
                 JsonConvert.DeserializeObject<Model>(json, JsonUtil.CreateSettings());
         }
 
-        private string ReadHomePath()
+        private string ReadSettingsFilepath()
         {
             var homePath = environment.GetVar("HOMEDRIVE") + environment.GetVar("HOMEPATH");
             if (string.IsNullOrWhiteSpace(homePath))
