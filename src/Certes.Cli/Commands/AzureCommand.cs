@@ -1,4 +1,5 @@
-﻿using System.CommandLine;
+﻿using System;
+using System.CommandLine;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
@@ -35,6 +36,11 @@ namespace Certes.Cli.Commands
             var subscriptionId = syntax.GetOption<string>(AzureSubscriptionIdOption)
                 ?? azSettings.SubscriptionId;
 
+            ValidateOption(talentId, AzureTalentIdOption);
+            ValidateOption(clientId, AzureClientIdOption);
+            ValidateOption(secret, AzureSecretOption);
+            ValidateOption(subscriptionId, AzureSubscriptionIdOption);
+
             var loginInfo = new ServicePrincipalLoginInformation
             {
                 ClientId = clientId,
@@ -58,6 +64,14 @@ namespace Certes.Cli.Commands
                 .DefineOption(AzureSecretOption, help: Strings.HelpAzureSecret)
                 .DefineOption(AzureSubscriptionIdOption, help: Strings.HelpAzureSubscriptionId)
                 .DefineOption(AzureResourceGroupOption, help: Strings.HelpAzureResourceGroup);
+        }
+
+        private void ValidateOption(string value, string optionName)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new Exception(string.Format(Strings.ErrorOptionMissing, optionName));
+            }
         }
     }
 }

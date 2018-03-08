@@ -247,7 +247,7 @@
     <value>The Azure talent ID.</value>
   </data>
   <data name="ErrorDnsZoneNotFound" xml:space="preserve">
-    <value>"DNS zone for '{0}' not found."</value>
+    <value>DNS zone for '{0}' not found.</value>
   </data>
   <data name="HelpAzureResourceGroup" xml:space="preserve">
     <value>The resource group.</value>
