@@ -84,10 +84,12 @@ namespace Certes.Cli.Commands
                 .ReturnsAsync((string r, string a, string n, HostNameBindingInner d, Dictionary<string, List<string>> h, CancellationToken t)
                     => new AzureOperationResponse<HostNameBindingInner> { Body = d });
 
-            var cmd = new AzureAppCommand(
-                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, MakeFactory(appSvcMock));
+            var envMock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
 
-            var args = $"app {orderLoc} {domain} {appName} {keyPath}"
+            var cmd = new AzureAppCommand(
+                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, envMock.Object, MakeFactory(appSvcMock));
+
+            var args = $"app {orderLoc} {domain} {appName} --private-key {keyPath}"
                 + $" --talent-id talentId --client-id clientId --client-secret abcd1234"
                 + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
             var syntax = DefineCommand(args);
@@ -104,7 +106,7 @@ namespace Certes.Cli.Commands
                 .ReturnsAsync((string r, string a, string n, HostNameBindingInner d, string s, Dictionary<string, List<string>> h, CancellationToken t)
                     => new AzureOperationResponse<HostNameBindingInner> { Body = d });
 
-            args = $"app {orderLoc} {domain} {appName} {keyPath}"
+            args = $"app {orderLoc} {domain} {appName} --private-key {keyPath}"
                 + $" --slot {appSlot}"
                 + $" --talent-id talentId --client-id clientId --client-secret abcd1234"
                 + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
@@ -116,7 +118,7 @@ namespace Certes.Cli.Commands
 
             // order incompleted
             orderMock.Setup(m => m.Resource()).ReturnsAsync(new Order());
-            args = $"app {orderLoc} {domain} {appName} {keyPath}"
+            args = $"app {orderLoc} {domain} {appName} --private-key {keyPath}"
                 + $" --talent-id talentId --client-id clientId --client-secret abcd1234"
                 + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
             syntax = DefineCommand(args);
@@ -126,7 +128,7 @@ namespace Certes.Cli.Commands
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"app http://acme.com/o/1 www.abc.com my-app ./cert-key.pem"
+            var args = $"app http://acme.com/o/1 www.abc.com my-app --private-key ./cert-key.pem"
                 + " --slot staging"
                 + " --talent-id talentId --client-id clientId --client-secret abcd1234"
                 + " --subscription-id subscriptionId --resource-group resGroup";
@@ -151,7 +153,7 @@ namespace Certes.Cli.Commands
         private static ArgumentSyntax DefineCommand(string args)
         {
             var cmd = new AzureAppCommand(
-                NoopSettings(), MakeFactory(new Mock<IAcmeContext>()), new FileUtil(), null);
+                NoopSettings(), MakeFactory(new Mock<IAcmeContext>()), new FileUtil(), null, null);
             Assert.Equal(CommandGroup.Azure.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
