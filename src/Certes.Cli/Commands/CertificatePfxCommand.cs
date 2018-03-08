@@ -46,7 +46,7 @@ namespace Certes.Cli.Commands
             var pwd = syntax.GetParameter<string>(PasswordParam, true);
             var (location, cert) = await DownloadCertificate(syntax);
 
-            var privKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment);
+            var privKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment, true);
             var pfx = cert.ToPfx(privKey).Build($"{location} by certes", pwd);
             
             var outPath = syntax.GetOption<string>(OutOption);

@@ -58,7 +58,7 @@ namespace Certes.Cli.Commands
             var appName = syntax.GetParameter<string>(AppNameParam, true);
             var appSlot = syntax.GetOption<string>(SlotOption, false);
 
-            var privKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment);
+            var privKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment, true);
 
             var acme = ContextFactory.Create(serverUri, key);
             var orderCtx = acme.Order(orderUri);
