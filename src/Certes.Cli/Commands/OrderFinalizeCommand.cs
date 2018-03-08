@@ -50,9 +50,8 @@ namespace Certes.Cli.Commands
             var distinguishedName = syntax.GetOption<string>(DnOption);
             var outPath = syntax.GetOption<string>(OutOption);
 
-            var privKey = await syntax.ReadKey(
-                PrivateKeyOption, "CERTES_CERT_KEY", File, environment) ??
-                KeyFactory.NewKey(KeyAlgorithm.ES256);
+            var providedKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment);
+            var privKey = providedKey ?? KeyFactory.NewKey(KeyAlgorithm.ES256);
 
             logger.Debug("Finalizing order from '{0}'.", serverUri);
 
@@ -67,7 +66,8 @@ namespace Certes.Cli.Commands
 
             var order = await orderCtx.Finalize(csr.Generate());
 
-            if (string.IsNullOrWhiteSpace(outPath))
+            // output private key only if it is generated and not being saved
+            if (string.IsNullOrWhiteSpace(outPath) && providedKey == null)
             {
                 return new
                 {
@@ -78,7 +78,11 @@ namespace Certes.Cli.Commands
             }
             else
             {
-                await File.WriteAllText(outPath, privKey.ToPem());
+                if (providedKey == null)
+                {
+                    await File.WriteAllText(outPath, privKey.ToPem());
+                }
+
                 return new
                 {
                     location = orderCtx.Location,

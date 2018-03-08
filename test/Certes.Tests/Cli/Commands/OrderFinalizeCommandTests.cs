@@ -82,6 +82,21 @@ namespace Certes.Cli.Commands
 
             fileMock.Verify(m => m.WriteAllText(outPath, It.IsAny<string>()), Times.Once);
             orderMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Once);
+
+            var keyPath = "./private-key.pem";
+            orderMock.ResetCalls();
+            fileMock.Setup(m => m.ReadAllText(keyPath)).ReturnsAsync(GetKeyV2().ToPem());
+            syntax = DefineCommand($"finalize {orderLoc} --dn CN=*.a.com --private-key {keyPath}");
+            ret = await cmd.Execute(syntax);
+            Assert.Equal(
+                JsonConvert.SerializeObject(new
+                {
+                    location = orderLoc,
+                    resource = order,
+                }),
+                JsonConvert.SerializeObject(ret));
+
+            orderMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Once);
         }
 
         [Fact]
