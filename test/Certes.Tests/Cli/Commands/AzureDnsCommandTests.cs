@@ -177,6 +177,56 @@ namespace Certes.Cli.Commands
         }
 
         [Fact]
+        public async Task ExecuteWithoutAzureInfo()
+        {
+            var domain = "www.certes.com";
+            var orderLoc = new Uri("http://acme.com/o/1");
+            var resourceGroup = "resGroup";
+
+            var challengeLoc = new Uri("http://acme.com/o/1/c/2");
+            var authzLoc = new Uri("http://acme.com/o/1/a/1");
+            var authz = new Authorization
+            {
+                Identifier = new Identifier
+                {
+                    Type = IdentifierType.Dns,
+                    Value = domain
+                },
+                Challenges = new[]
+                {
+                    new Challenge
+                    {
+                        Token = "dns-token",
+                        Type = ChallengeTypes.Dns01,
+                    },
+                    new Challenge
+                    {
+                        Token = "http-token",
+                        Type = ChallengeTypes.Http01,
+                    },
+                }
+            };
+
+            var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
+            settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(LetsEncryptV2);
+            settingsMock.Setup(m => m.GetAccountKey(LetsEncryptV2)).ReturnsAsync(GetKeyV2());
+            settingsMock.Setup(m => m.GetAzureSettings()).ReturnsAsync(new AzureSettings());
+            
+            var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
+
+            var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
+            var dnsMock = new Mock<IDnsManagementClient>(MockBehavior.Strict);
+
+            var cmd = new AzureDnsCommand(
+                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, MakeFactory(dnsMock));
+
+            var syntax = DefineCommand(
+                $"dns {orderLoc} {domain}" +
+                $" --resource-group {resourceGroup}");
+            await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
+        }
+
+        [Fact]
         public void CanDefineCommand()
         {
             var args = $"dns http://acme.com/o/1 www.abc.com --server {LetsEncryptStagingV2}"
