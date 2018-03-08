@@ -1,7 +1,6 @@
 ﻿using System;
 using System.CommandLine;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;

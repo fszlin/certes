@@ -42,8 +42,11 @@ namespace Certes.Cli.Commands
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
 
+            var envMock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
+            envMock.Setup(m => m.GetVar(It.IsAny<string>())).Returns((string)null);
+
             var cmd = new OrderFinalizeCommand(
-                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
+                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, envMock.Object);
 
             var syntax = DefineCommand($"finalize {orderLoc}");
             dynamic ret = await cmd.Execute(syntax);
@@ -100,7 +103,7 @@ namespace Certes.Cli.Commands
         private static ArgumentSyntax DefineCommand(string args)
         {
             var cmd = new OrderFinalizeCommand(
-                NoopSettings(), MakeFactory(new Mock<IAcmeContext>()), new FileUtil());
+                NoopSettings(), MakeFactory(new Mock<IAcmeContext>()), new FileUtil(), null);
             Assert.Equal(CommandGroup.Order.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
