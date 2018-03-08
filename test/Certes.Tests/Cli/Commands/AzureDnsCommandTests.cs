@@ -248,6 +248,107 @@ namespace Certes.Cli.Commands
             Assert.NotEqual("dns", syntax.ActiveCommand.Value);
         }
 
+        [Fact]
+        public async Task _test()
+        {
+            var domain = "www.certes.com";
+            var orderLoc = new Uri("http://acme.com/o/1");
+            var resourceGroup = "resGroup";
+
+            var challengeLoc = new Uri("http://acme.com/o/1/c/2");
+            var authzLoc = new Uri("http://acme.com/o/1/a/1");
+            var authz = new Authorization
+            {
+                Identifier = new Identifier
+                {
+                    Type = IdentifierType.Dns,
+                    Value = domain
+                },
+                Challenges = new[]
+                {
+                    new Challenge
+                    {
+                        Token = "dns-token",
+                        Type = ChallengeTypes.Dns01,
+                    },
+                    new Challenge
+                    {
+                        Token = "http-token",
+                        Type = ChallengeTypes.Http01,
+                    },
+                }
+            };
+
+            var expectedRecordSetId = Guid.NewGuid().ToString();
+            var expectedRecordSet = new { data = new RecordSetInner(id: expectedRecordSetId) };
+
+            var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
+            settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(LetsEncryptV2);
+            settingsMock.Setup(m => m.GetAccountKey(LetsEncryptV2)).ReturnsAsync(GetKeyV2());
+            settingsMock.Setup(m => m.GetAzureSettings()).ReturnsAsync(new AzureSettings
+            {
+                ClientId = "clientId",
+                ClientSecret = "secret",
+                SubscriptionId = Guid.NewGuid().ToString("N"),
+                TalentId = Guid.NewGuid().ToString("N"),
+            });
+
+            var challengeMock = new Mock<IChallengeContext>(MockBehavior.Strict);
+            challengeMock.SetupGet(m => m.Location).Returns(challengeLoc);
+            challengeMock.SetupGet(m => m.Type).Returns(ChallengeTypes.Dns01);
+            challengeMock.SetupGet(m => m.Token).Returns(authz.Challenges[0].Token);
+
+            var authzMock = new Mock<IAuthorizationContext>(MockBehavior.Strict);
+            authzMock.Setup(m => m.Resource()).ReturnsAsync(authz);
+            authzMock.Setup(m => m.Challenges())
+                .ReturnsAsync(new[] { challengeMock.Object });
+
+            var orderMock = new Mock<IOrderContext>(MockBehavior.Strict);
+            orderMock.Setup(m => m.Authorizations()).ReturnsAsync(new[] { authzMock.Object });
+
+            var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
+            ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
+            ctxMock.Setup(m => m.Order(orderLoc)).Returns(orderMock.Object);
+            ctxMock.SetupGet(m => m.AccountKey).Returns(GetKeyV2());
+
+            var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
+
+            var dnsMock = new Mock<IDnsManagementClient>(MockBehavior.Strict);
+            var zonesOpMock = new Mock<IZonesOperations>(MockBehavior.Strict);
+            var recordSetsOpMock = new Mock<IRecordSetsOperations>(MockBehavior.Strict);
+
+            dnsMock.Setup(m => m.Dispose());
+            dnsMock.SetupSet(m => m.SubscriptionId);
+            dnsMock.SetupGet(m => m.Zones).Returns(zonesOpMock.Object);
+            dnsMock.SetupGet(m => m.RecordSets).Returns(recordSetsOpMock.Object);
+            zonesOpMock.Setup(m => m.ListWithHttpMessagesAsync(default, default, default))
+                .ReturnsAsync(new AzureOperationResponse<IPage<ZoneInner>>
+                {
+                    Body = JsonConvert.DeserializeObject<Page<ZoneInner>>(
+                        JsonConvert.SerializeObject(new
+                        {
+                            value = new[] { new ZoneInner(id: "/s/abcd1234/resourceGroups/res/a", name: "certes.com") }
+                        })
+                    )
+                });
+
+            recordSetsOpMock.Setup(m => m.CreateOrUpdateWithHttpMessagesAsync(resourceGroup, "certes.com", "_acme-challenge.www", RecordType.TXT, It.IsAny<RecordSetInner>(), default, default, default, default))
+                .ReturnsAsync(new AzureOperationResponse<RecordSetInner>
+                {
+                    Body = expectedRecordSet.data
+                });
+
+            var factoryMock = new Mock<IDnsClientFactory>(MockBehavior.Loose);
+            var cmd = new AzureDnsCommand(
+                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, factoryMock.Object);
+
+            var syntax = DefineCommand(
+                $"dns {orderLoc} {domain}" +
+                $" --talent-id talentId --client-id clientId --client-secret abcd1234" +
+                $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
+            await Assert.ThrowsAsync<NullReferenceException>(() => cmd.Execute(syntax));
+        }
+
         private static ArgumentSyntax DefineCommand(string args)
         {
             var cmd = new AzureDnsCommand(
