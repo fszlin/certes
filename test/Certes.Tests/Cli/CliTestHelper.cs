@@ -1,6 +1,8 @@
 ﻿using System;
 using System.CommandLine;
 using System.Linq;
+using System.Net.Http;
+using Certes.Cli.Commands;
 using Certes.Cli.Settings;
 using Microsoft.Azure.Management.AppService.Fluent;
 using Microsoft.Azure.Management.Dns.Fluent;
@@ -43,13 +45,6 @@ namespace Certes.Cli
         public static IAppServiceClientFactory MakeFactory(Mock<IWebSiteManagementClient> clientMock)
         {
             var mock = new Mock<IAppServiceClientFactory>(MockBehavior.Strict);
-            mock.Setup(m => m.Create(It.IsAny<AzureCredentials>())).Returns(clientMock.Object);
-            return mock.Object;
-        }
-
-        public static IDnsClientFactory MakeFactory(Mock<IDnsManagementClient> clientMock)
-        {
-            var mock = new Mock<IDnsClientFactory>(MockBehavior.Strict);
             mock.Setup(m => m.Create(It.IsAny<AzureCredentials>())).Returns(clientMock.Object);
             return mock.Object;
         }

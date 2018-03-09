@@ -109,7 +109,7 @@ namespace Certes.Cli.Commands
                 });
 
             var cmd = new AzureDnsCommand(
-                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, MakeFactory(dnsMock));
+                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, _ => dnsMock.Object);
 
             var syntax = DefineCommand(
                 $"dns {orderLoc} {domain}" +
@@ -218,7 +218,7 @@ namespace Certes.Cli.Commands
             var dnsMock = new Mock<IDnsManagementClient>(MockBehavior.Strict);
 
             var cmd = new AzureDnsCommand(
-                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, MakeFactory(dnsMock));
+                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, _ => dnsMock.Object);
 
             var syntax = DefineCommand(
                 $"dns {orderLoc} {domain}" +

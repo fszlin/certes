@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CommandLine;
 using System.Threading.Tasks;
+using Certes.Cli.Azure;
 using Certes.Cli.Settings;
 using Microsoft.Azure.Management.Dns.Fluent;
 using Microsoft.Azure.Management.Dns.Fluent.Models;
@@ -18,7 +19,7 @@ namespace Certes.Cli.Commands
 
         private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountUpdateCommand));
 
-        private readonly IDnsClientFactory clientFactory;
+        private readonly AzureDnsClientFactory clientFactory;
 
         public CommandGroup Group { get; } = CommandGroup.Azure;
 
@@ -26,7 +27,7 @@ namespace Certes.Cli.Commands
             IUserSettings userSettings,
             IAcmeContextFactory contextFactory,
             IFileUtil fileUtil,
-            IDnsClientFactory clientFactory)
+            AzureDnsClientFactory clientFactory)
             : base(userSettings, contextFactory, fileUtil)
         {
             this.clientFactory = clientFactory;
@@ -60,7 +61,7 @@ namespace Certes.Cli.Commands
 
             var authz = await authzCtx.Resource();
             var dnsValue = acme.AccountKey.DnsTxt(challengeCtx.Token);
-            using (var client = clientFactory.Create(azureCredentials))
+            using (var client = clientFactory.Invoke(azureCredentials))
             {
                 client.SubscriptionId = azureCredentials.DefaultSubscriptionId;
                 var idValue = authz.Identifier.Value;
