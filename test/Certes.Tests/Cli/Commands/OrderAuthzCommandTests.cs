@@ -133,7 +133,7 @@ namespace Certes.Cli.Commands
         private static ArgumentSyntax DefineCommand(string args)
         {
             var cmd = new OrderAuthzCommand(
-                new UserSettings(new FileUtil()), MakeFactory(new Mock<IAcmeContext>()), new FileUtil());
+                NoopSettings(), MakeFactory(new Mock<IAcmeContext>()), new FileUtil());
             Assert.Equal(CommandGroup.Order.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {

@@ -60,7 +60,7 @@ namespace Certes.Cli.Commands
             var authzCtx = await orderCtx.Authorization(domain)
                 ?? throw new Exception(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
             var challengeCtx = await authzCtx.Challenge(type)
-                ?? throw new Exception(string.Format(Strings.ErrorChallengeNotAvailable, type));
+                ?? throw new Exception(string.Format(Strings.ErrorChallengeNotAvailable, typeStr));
 
             var challenge = await challengeCtx.Resource();
 

@@ -63,7 +63,7 @@ namespace Certes.Cli.Commands
 
         private static ArgumentSyntax DefineCommand(string args)
         {
-            var cmd = new ServerShowCommand(new UserSettings(new FileUtil()), MakeFactory(new Mock<IAcmeContext>()));
+            var cmd = new ServerShowCommand(NoopSettings(), MakeFactory(new Mock<IAcmeContext>()));
             Assert.Equal(CommandGroup.Server.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {

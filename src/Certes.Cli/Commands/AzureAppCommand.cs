@@ -13,21 +13,24 @@ namespace Certes.Cli.Commands
         private const string OrderIdParam = "order-id";
         private const string AppNameParam = "app";
         private const string SlotOption = "slot";
-        private const string PrivateKeyParam = "private-key";
+        private const string PrivateKeyOption = "private-key";
         private const string DomainParam = "domain";
 
         public CommandGroup Group => CommandGroup.Azure;
 
+        private readonly IEnvironmentVariables environment;
         private readonly IAppServiceClientFactory clientFactory;
 
         public AzureAppCommand(
             IUserSettings userSettings,
             IAcmeContextFactory contextFactory,
             IFileUtil fileUtil,
+            IEnvironmentVariables environment,
             IAppServiceClientFactory clientFactory)
             : base(userSettings, contextFactory, fileUtil)
         {
             this.clientFactory = clientFactory;
+            this.environment = environment;
         }
 
         public ArgumentCommand<string> Define(ArgumentSyntax syntax)
@@ -36,10 +39,10 @@ namespace Certes.Cli.Commands
 
             DefineAzureOptions(syntax)
                 .DefineOption(SlotOption, help: Strings.HelpSlot)
+                .DefineOption(PrivateKeyOption, help: Strings.HelpPrivateKey)
                 .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId)
                 .DefineParameter(DomainParam, help: Strings.HelpDomain)
-                .DefineParameter(AppNameParam, help: Strings.HelpAppName)
-                .DefineParameter(PrivateKeyParam, help: Strings.HelpPrivateKey);
+                .DefineParameter(AppNameParam, help: Strings.HelpAppName);
 
             return cmd;
         }
@@ -55,8 +58,8 @@ namespace Certes.Cli.Commands
             var appName = syntax.GetParameter<string>(AppNameParam, true);
             var appSlot = syntax.GetOption<string>(SlotOption, false);
 
-            var keyPath = syntax.GetParameter<string>(PrivateKeyParam, true);
-            
+            var privKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment, true);
+
             var acme = ContextFactory.Create(serverUri, key);
             var orderCtx = acme.Order(orderUri);
 
@@ -69,7 +72,6 @@ namespace Certes.Cli.Commands
             var cert = await orderCtx.Download();
 
             var pfxName = $"{order.Certificate} by certes";
-            var privKey = KeyFactory.FromPem(await File.ReadAllText(keyPath));
             var pfxPassword = Guid.NewGuid().ToString("N");
             var pfx = cert.ToPfx(privKey);
             var pfxBytes = pfx.Build(pfxName, pfxPassword);

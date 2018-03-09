@@ -17,9 +17,7 @@ namespace Certes
             new DirectoryMeta(new Uri("http://acme.d/tos"), null, null, false));
 
         public static IKey GetKeyV2(KeyAlgorithm algo = KeyAlgorithm.ES256)
-        {
-            return KeyFactory.FromPem(algo.GetTestKey());
-        }
+            => KeyFactory.FromPem(algo.GetTestKey());
 
         public static IAcmeHttpClient CreateHttp(Uri dirUri, HttpClient http)
             => new AcmeHttpClient(dirUri, http);
