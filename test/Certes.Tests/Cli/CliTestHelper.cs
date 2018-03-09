@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CommandLine;
 using System.Linq;
+using Certes.Cli.Settings;
 using Microsoft.Azure.Management.AppService.Fluent;
 using Microsoft.Azure.Management.Dns.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
@@ -62,6 +63,12 @@ namespace Certes.Cli
 
             var mock = new Mock<IAcmeContextFactory>(MockBehavior.Strict);
             mock.Setup(m => m.Create(It.IsAny<Uri>(), It.IsAny<IKey>())).Returns(ctxMock.Object);
+            return mock.Object;
+        }
+
+        public static IUserSettings NoopSettings()
+        {
+            var mock = new Mock<IUserSettings>();
             return mock.Object;
         }
     }

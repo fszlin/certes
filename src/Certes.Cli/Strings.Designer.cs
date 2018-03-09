@@ -71,7 +71,7 @@ namespace Certes.Cli {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;DNS zone for &apos;{0}&apos; not found.&quot;.
+        ///   Looks up a localized string similar to DNS zone for &apos;{0}&apos; not found..
         /// </summary>
         internal static string ErrorDnsZoneNotFound {
             get {

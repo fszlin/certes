@@ -87,7 +87,7 @@ namespace Certes.Cli.Commands
         private static ArgumentSyntax DefineCommand(string args)
         {
             var cmd = new AzureSetCommand(
-                new UserSettings(new FileUtil()), null);
+                NoopSettings(), null);
             Assert.Equal(CommandGroup.Azure.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {

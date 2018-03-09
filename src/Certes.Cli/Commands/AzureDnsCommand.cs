@@ -65,8 +65,10 @@ namespace Certes.Cli.Commands
                 client.SubscriptionId = azureCredentials.DefaultSubscriptionId;
                 var idValue = authz.Identifier.Value;
                 var zone = await FindDnsZone(client, idValue);
-
-                var name = "_acme-challenge." + idValue.Substring(0, idValue.Length - zone.Name.Length - 1);
+                
+                var name = zone.Name.Length == idValue.Length ?
+                    "_acme-challenge" :
+                    "_acme-challenge." + idValue.Substring(0, idValue.Length - zone.Name.Length - 1);
                 logger.Debug("Adding TXT record '{0}' for '{1}' in '{2}' zone.", dnsValue, name, zone.Name);
 
                 var recordSet = await client.RecordSets.CreateOrUpdateAsync(
@@ -93,7 +95,8 @@ namespace Certes.Cli.Commands
             {
                 foreach (var zone in zones)
                 {
-                    if (identifier.EndsWith($".{zone.Name}"))
+                    if (identifier.EndsWith($".{zone.Name}", StringComparison.OrdinalIgnoreCase) ||
+                        identifier.Equals(zone.Name, StringComparison.OrdinalIgnoreCase))
                     {
                         logger.Debug(() => 
                             string.Format("DNS zone:\n{0}", JsonConvert.SerializeObject(zone, Formatting.Indented)));

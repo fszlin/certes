@@ -1,6 +1,8 @@
 ﻿using System;
 using System.CommandLine;
 using System.Linq;
+using System.Threading.Tasks;
+using Certes.Cli.Settings;
 
 namespace Certes.Cli
 {
@@ -86,6 +88,35 @@ namespace Certes.Cli
             }
 
             return values.FirstOrDefault();
+        }
+
+        public static async Task<IKey> ReadKey(
+            this ArgumentSyntax syntax,
+            string optionName,
+            string environmentVariableName,
+            IFileUtil file,
+            IEnvironmentVariables environment,
+            bool isRequired = false)
+        {
+            var keyPath = syntax.GetOption<string>(optionName);
+            if (!string.IsNullOrWhiteSpace(keyPath))
+            {
+                return KeyFactory.FromPem(await file.ReadAllText(keyPath));
+            }
+            else
+            {
+                var keyData = environment.GetVar(environmentVariableName);
+                if (!string.IsNullOrWhiteSpace(keyData))
+                {
+                    return KeyFactory.FromDer(Convert.FromBase64String(keyData));
+                }
+                else if (isRequired)
+                {
+                    throw new Exception(string.Format(Strings.ErrorOptionMissing, optionName));
+                }
+            }
+
+            return null;
         }
     }
 }
