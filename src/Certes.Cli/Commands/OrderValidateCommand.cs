@@ -61,6 +61,8 @@ namespace Certes.Cli.Commands
                 ?? throw new Exception(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
             var challengeCtx = await authzCtx.Challenge(type)
                 ?? throw new Exception(string.Format(Strings.ErrorChallengeNotAvailable, typeStr));
+
+            logger.Debug("Validating challenge '{0}'.", challengeCtx.Location);
             var challenge = await challengeCtx.Validate();
 
             return new
