@@ -1,7 +1,6 @@
 ﻿using System;
 using System.CommandLine;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
@@ -55,10 +54,12 @@ namespace Certes.Cli.Commands
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
             fileMock.Setup(m => m.ReadAllText(privateKeyPath)).ReturnsAsync(KeyAlgorithm.RS256.GetTestKey());
 
-            var cmd = new CertificatePfxCommand(
-                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
+            var envMock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
 
-            var syntax = DefineCommand($"pfx {orderLoc} {privateKeyPath} abcd1234");
+            var cmd = new CertificatePfxCommand(
+                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, envMock.Object);
+
+            var syntax = DefineCommand($"pfx {orderLoc} --private-key {privateKeyPath} abcd1234");
             dynamic ret = await cmd.Execute(syntax);
             Assert.Equal(certLoc, ret.location);
             Assert.NotNull(ret.pfx);
@@ -68,7 +69,7 @@ namespace Certes.Cli.Commands
             var outPath = "./cert.pfx";
             fileMock.Setup(m => m.WriteAllBytes(outPath, It.IsAny<byte[]>()))
                 .Returns(Task.CompletedTask);
-            syntax = DefineCommand($"pfx {orderLoc} {privateKeyPath} abcd1234 --out {outPath}");
+            syntax = DefineCommand($"pfx {orderLoc} --private-key {privateKeyPath} abcd1234 --out {outPath}");
             ret = await cmd.Execute(syntax);
             Assert.Equal(
                 JsonConvert.SerializeObject(new
@@ -83,7 +84,7 @@ namespace Certes.Cli.Commands
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"pfx http://acme.com/o/1 ./my-key.pem abcd1234 --server {LetsEncryptStagingV2}";
+            var args = $"pfx http://acme.com/o/1 --private-key ./my-key.pem abcd1234 --server {LetsEncryptStagingV2}";
             var syntax = DefineCommand(args);
 
             Assert.Equal("pfx", syntax.ActiveCommand.Value);
@@ -99,7 +100,7 @@ namespace Certes.Cli.Commands
         private static ArgumentSyntax DefineCommand(string args)
         {
             var cmd = new CertificatePfxCommand(
-                new UserSettings(new FileUtil()), MakeFactory(new Mock<IAcmeContext>()), new FileUtil());
+                NoopSettings(), MakeFactory(new Mock<IAcmeContext>()), new FileUtil(), null);
             Assert.Equal(CommandGroup.Certificate.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {

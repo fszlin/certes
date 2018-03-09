@@ -85,28 +85,5 @@ namespace Certes
                     return Keys.RS256Key;
             }
         }
-
-        public static void SetHomePath(string path, bool forWin = true)
-        {
-            path = Path.GetFullPath(path);
-            if (forWin)
-            {
-                var drive = Path.GetPathRoot(path);
-                Environment.SetEnvironmentVariable("HOME", "");
-                Environment.SetEnvironmentVariable("HOMEDRIVE", drive);
-                Environment.SetEnvironmentVariable("HOMEPATH", path.Substring(drive.Length));
-            }
-            else
-            {
-                Environment.SetEnvironmentVariable("HOMEDRIVE", "");
-                Environment.SetEnvironmentVariable("HOMEPATH", "");
-                Environment.SetEnvironmentVariable("HOME", path);
-            }
-
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-        }
     }
 }

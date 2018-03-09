@@ -1,14 +1,15 @@
 ﻿using System;
 using System.CommandLine;
 using System.Linq;
-using Certes.Acme;
+using System.Threading.Tasks;
+using Certes.Cli.Settings;
 
 namespace Certes.Cli
 {
     internal static class ArgumentSyntaxExtensions
     {
-        public const string ServerOptionName = "server";
-        public const string KeyOptionName = "key";
+        public const string ServerOptionName = "s|server";
+        public const string KeyOptionName = "k|key";
         
         public static ArgumentSyntax DefineServerOption(this ArgumentSyntax syntax)
         {
@@ -59,9 +60,10 @@ namespace Certes.Cli
 
         public static T GetOption<T>(this ArgumentSyntax syntax, string name, bool isRequired = false)
         {
+            var firstName = name.Split('|').First();
             var values = syntax.GetActiveOptions()
                 .OfType<Argument<T>>()
-                .Where(a => name.Equals(a.Name, StringComparison.Ordinal))
+                .Where(a => firstName.Equals(a.Name, StringComparison.Ordinal))
                 .Select(a => a.Value);
 
             if (isRequired && values.All(v => Equals(v, default(T))))
@@ -74,9 +76,10 @@ namespace Certes.Cli
 
         public static T GetParameter<T>(this ArgumentSyntax syntax, string name, bool isRequired = false)
         {
+            var firstName = name.Split('|').First();
             var values = syntax.GetActiveArguments()
                 .OfType<Argument<T>>()
-                .Where(a => name.Equals(a.Name, StringComparison.Ordinal))
+                .Where(a => firstName.Equals(a.Name, StringComparison.Ordinal))
                 .Select(a => a.Value);
 
             if (isRequired && values.All(v => Equals(v, default(T))))
@@ -85,6 +88,35 @@ namespace Certes.Cli
             }
 
             return values.FirstOrDefault();
+        }
+
+        public static async Task<IKey> ReadKey(
+            this ArgumentSyntax syntax,
+            string optionName,
+            string environmentVariableName,
+            IFileUtil file,
+            IEnvironmentVariables environment,
+            bool isRequired = false)
+        {
+            var keyPath = syntax.GetOption<string>(optionName);
+            if (!string.IsNullOrWhiteSpace(keyPath))
+            {
+                return KeyFactory.FromPem(await file.ReadAllText(keyPath));
+            }
+            else
+            {
+                var keyData = environment.GetVar(environmentVariableName);
+                if (!string.IsNullOrWhiteSpace(keyData))
+                {
+                    return KeyFactory.FromDer(Convert.FromBase64String(keyData));
+                }
+                else if (isRequired)
+                {
+                    throw new Exception(string.Format(Strings.ErrorOptionMissing, optionName));
+                }
+            }
+
+            return null;
         }
     }
 }

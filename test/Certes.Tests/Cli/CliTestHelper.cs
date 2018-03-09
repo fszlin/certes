@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CommandLine;
 using System.Linq;
+using Certes.Cli.Settings;
 using Microsoft.Azure.Management.AppService.Fluent;
 using Microsoft.Azure.Management.Dns.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
@@ -15,7 +16,7 @@ namespace Certes.Cli
         public static void ValidateParameter<T>(ArgumentSyntax syntax, string name, T value)
         {
             var arg = syntax.GetActiveArguments()
-                .Where(p => p.Name == name)
+                .Where(p => p.Names.Any(n => n == name))
                 .OfType<Argument<T>>()
                 .FirstOrDefault();
             Assert.NotNull(arg);
@@ -25,7 +26,7 @@ namespace Certes.Cli
         public static void ValidateOption<T>(ArgumentSyntax syntax, string name, T value)
         {
             var arg = syntax.GetActiveOptions()
-                .Where(p => p.Name == name)
+                .Where(p => p.Names.Any(n => n == name))
                 .OfType<Argument<T>>()
                 .FirstOrDefault();
             Assert.NotNull(arg);
@@ -62,6 +63,12 @@ namespace Certes.Cli
 
             var mock = new Mock<IAcmeContextFactory>(MockBehavior.Strict);
             mock.Setup(m => m.Create(It.IsAny<Uri>(), It.IsAny<IKey>())).Returns(ctxMock.Object);
+            return mock.Object;
+        }
+
+        public static IUserSettings NoopSettings()
+        {
+            var mock = new Mock<IUserSettings>();
             return mock.Object;
         }
     }

@@ -18,24 +18,15 @@ namespace Certes.Cli.Settings
             public AzureSettings Azure { get; set; }
         }
 
-        private readonly static Func<string> SettingsPathFactory = () =>
-        {
-            var homePath = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
-            if (!Directory.Exists(homePath))
-            {
-                homePath = Environment.GetEnvironmentVariable("HOME");
-            }
-
-            return Path.Combine(homePath, ".certes", "certes.json");
-        };
-
         private readonly IFileUtil fileUtil;
+        private readonly IEnvironmentVariables environment;
+        private readonly Lazy<string> settingsFilepath;
 
-        public Lazy<string> SettingsFile { get; set; } = new Lazy<string>(SettingsPathFactory);
-
-        public UserSettings(IFileUtil fileUtil)
+        public UserSettings(IFileUtil fileUtil, IEnvironmentVariables environment)
         {
             this.fileUtil = fileUtil;
+            this.environment = environment;
+            settingsFilepath = new Lazy<string>(ReadSettingsFilepath);
         }
 
         public async Task SetDefaultServer(Uri serverUri)
@@ -44,7 +35,7 @@ namespace Certes.Cli.Settings
 
             settings.DefaultServer = serverUri;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllText(SettingsFile.Value, json);
+            await fileUtil.WriteAllText(settingsFilepath.Value, json);
         }
 
         public async Task<Uri> GetDefaultServer()
@@ -72,11 +63,18 @@ namespace Certes.Cli.Settings
             serverSetting.Key = key.ToDer();
             settings.Servers = servers;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllText(SettingsFile.Value, json);
+            await fileUtil.WriteAllText(settingsFilepath.Value, json);
         }
 
         public async Task<IKey> GetAccountKey(Uri serverUri)
         {
+            // env settings overwrites user settings
+            var envKey = environment.GetVar("CERTES_ACME_ACCOUNT_KEY");
+            if (envKey != null)
+            {
+                return KeyFactory.FromDer(Convert.FromBase64String(envKey));
+            }
+
             var settings = await LoadUserSettings();
             var serverSetting = settings.Servers?.FirstOrDefault(s => s.ServerUri == serverUri);
             var der = serverSetting?.Key;
@@ -86,7 +84,11 @@ namespace Certes.Cli.Settings
         public async Task<AzureSettings> GetAzureSettings()
         {
             var settings = await LoadUserSettings();
-            return settings.Azure ?? new AzureSettings();
+            var azSettings = settings.Azure ?? new AzureSettings();
+
+            PopulateSettings(azSettings);
+
+            return azSettings;
         }
 
         public async Task SetAzureSettings(AzureSettings azSettings)
@@ -95,16 +97,53 @@ namespace Certes.Cli.Settings
 
             settings.Azure = azSettings;
             var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllText(SettingsFile.Value, json);
+            await fileUtil.WriteAllText(settingsFilepath.Value, json);
         }
 
         private async Task<Model> LoadUserSettings()
         {
-            var json = await fileUtil.ReadAllText(SettingsFile.Value);
+            var json = await fileUtil.ReadAllText(settingsFilepath.Value);
             return json == null ?
                 new Model() :
                 JsonConvert.DeserializeObject<Model>(json, JsonUtil.CreateSettings());
         }
-    }
 
+        private string ReadSettingsFilepath()
+        {
+            var homePath = environment.GetVar("HOMEDRIVE") + environment.GetVar("HOMEPATH");
+            if (string.IsNullOrWhiteSpace(homePath))
+            {
+                homePath = environment.GetVar("HOME");
+            }
+
+            return Path.Combine(homePath, ".certes", "certes.json");
+        }
+
+        private void PopulateSettings(AzureSettings settings)
+        {
+            var envSubscriptionId = environment.GetVar("CERTES_AZURE_SUBSCRIPTION_ID");
+            if (!string.IsNullOrWhiteSpace(envSubscriptionId))
+            {
+                settings.SubscriptionId = envSubscriptionId;
+            }
+
+            var envTalentId = environment.GetVar("CERTES_AZURE_TALENT_ID");
+            if (!string.IsNullOrWhiteSpace(envTalentId))
+            {
+                settings.TalentId = envTalentId;
+            }
+
+            var envClientId = environment.GetVar("CERTES_AZURE_CLIENT_ID");
+            if (!string.IsNullOrWhiteSpace(envClientId))
+            {
+                settings.ClientId = envClientId;
+            }
+
+            var envClientSecret = environment.GetVar("CERTES_AZURE_CLIENT_SECRET");
+            if (!string.IsNullOrWhiteSpace(envClientSecret))
+            {
+                settings.ClientSecret = envClientSecret;
+            }
+        }
+    }
 }
