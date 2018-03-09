@@ -109,7 +109,7 @@ namespace Certes.Cli.Commands
                 });
 
             var cmd = new AzureDnsCommand(
-                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, _ => dnsMock.Object);
+                settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object, _ => dnsMock.Object);
 
             var syntax = DefineCommand(
                 $"dns {orderLoc} {domain}" +
@@ -218,7 +218,7 @@ namespace Certes.Cli.Commands
             var dnsMock = new Mock<IDnsManagementClient>(MockBehavior.Strict);
 
             var cmd = new AzureDnsCommand(
-                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, _ => dnsMock.Object);
+                settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object, _ => dnsMock.Object);
 
             var syntax = DefineCommand(
                 $"dns {orderLoc} {domain}" +
@@ -251,7 +251,7 @@ namespace Certes.Cli.Commands
         private static ArgumentSyntax DefineCommand(string args)
         {
             var cmd = new AzureDnsCommand(
-                NoopSettings(), MakeFactory(new Mock<IAcmeContext>()), new FileUtil(), null);
+                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil(), null);
             Assert.Equal(CommandGroup.Azure.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {

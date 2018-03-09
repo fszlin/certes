@@ -15,7 +15,7 @@ namespace Certes.Cli.Commands
 
         public OrderNewCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil)
             : base(userSettings, contextFactory, fileUtil)
         {
@@ -47,7 +47,7 @@ namespace Certes.Cli.Commands
 
             logger.Debug("Creating order from '{0}'.", serverUri);
 
-            var acme = ContextFactory.Create(serverUri, key);
+            var acme = ContextFactory.Invoke(serverUri, key);
             var orderCtx = await acme.NewOrder(domains.ToArray());
 
             return new

@@ -29,6 +29,7 @@ namespace Certes.Cli
                 .RegisterAssemblyTypes(typeof(CliCore).GetTypeInfo().Assembly)
                 .AsImplementedInterfaces();
             builder.RegisterType<CliCore>();
+            builder.RegisterType<AcmeContext>().As<IAcmeContext>();
             builder.RegisterType<DnsManagementClient>().As<IDnsManagementClient>();
             builder.RegisterType<ResourceManagementClient>().As<IResourceManagementClient>();
             builder.RegisterType<WebSiteManagementClient>().As<IWebSiteManagementClient>();

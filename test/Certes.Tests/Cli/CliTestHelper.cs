@@ -35,32 +35,6 @@ namespace Certes.Cli
             Assert.Equal(value, arg.Value);
         }
 
-        public static IResourceClientFactory MakeFactory(Mock<IResourceManagementClient> clientMock)
-        {
-            var mock = new Mock<IResourceClientFactory>(MockBehavior.Strict);
-            mock.Setup(m => m.Create(It.IsAny<AzureCredentials>())).Returns(clientMock.Object);
-            return mock.Object;
-        }
-
-        public static IAppServiceClientFactory MakeFactory(Mock<IWebSiteManagementClient> clientMock)
-        {
-            var mock = new Mock<IAppServiceClientFactory>(MockBehavior.Strict);
-            mock.Setup(m => m.Create(It.IsAny<AzureCredentials>())).Returns(clientMock.Object);
-            return mock.Object;
-        }
-
-        public static IAcmeContextFactory MakeFactory(Mock<IAcmeContext> ctxMock)
-        {
-            if (ctxMock == null)
-            {
-                ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
-            }
-
-            var mock = new Mock<IAcmeContextFactory>(MockBehavior.Strict);
-            mock.Setup(m => m.Create(It.IsAny<Uri>(), It.IsAny<IKey>())).Returns(ctxMock.Object);
-            return mock.Object;
-        }
-
         public static IUserSettings NoopSettings()
         {
             var mock = new Mock<IUserSettings>();

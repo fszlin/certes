@@ -17,7 +17,7 @@ namespace Certes.Cli.Commands
         
         public AccountNewCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil)
             : base(userSettings, contextFactory, fileUtil)
         {
@@ -44,7 +44,7 @@ namespace Certes.Cli.Commands
             var key = acct.Key ?? KeyFactory.NewKey(KeyAlgorithm.ES256);
             var email = syntax.GetParameter<string>(EmailParam, true);
 
-            var acme = ContextFactory.Create(acct.Server, key);
+            var acme = ContextFactory.Invoke(acct.Server, key);
             var acctCtx = await acme.NewAccount(email, true);
 
             var outPath = syntax.GetOption<string>(OutOption);
