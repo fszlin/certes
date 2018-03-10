@@ -19,14 +19,14 @@ namespace Certes.Cli.Commands
         public CommandGroup Group => CommandGroup.Azure;
 
         private readonly IEnvironmentVariables environment;
-        private readonly IAppServiceClientFactory clientFactory;
+        private readonly AzureClientFactory<IWebSiteManagementClient> clientFactory;
 
         public AzureAppCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil,
             IEnvironmentVariables environment,
-            IAppServiceClientFactory clientFactory)
+            AzureClientFactory<IWebSiteManagementClient> clientFactory)
             : base(userSettings, contextFactory, fileUtil)
         {
             this.clientFactory = clientFactory;
@@ -60,7 +60,7 @@ namespace Certes.Cli.Commands
 
             var privKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment, true);
 
-            var acme = ContextFactory.Create(serverUri, key);
+            var acme = ContextFactory.Invoke(serverUri, key);
             var orderCtx = acme.Order(orderUri);
 
             var order = await orderCtx.Resource();
@@ -82,7 +82,7 @@ namespace Certes.Cli.Commands
                 Password = pfxPassword,
             };
 
-            using (var client = clientFactory.Create(azureCredentials))
+            using (var client = clientFactory.Invoke(azureCredentials))
             {
                 client.SubscriptionId = azureCredentials.DefaultSubscriptionId;
 

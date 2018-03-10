@@ -20,7 +20,7 @@ namespace Certes.Cli.Commands
 
         public OrderFinalizeCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil,
             IEnvironmentVariables environment)
             : base(userSettings, contextFactory, fileUtil)
@@ -55,7 +55,7 @@ namespace Certes.Cli.Commands
 
             logger.Debug("Finalizing order from '{0}'.", serverUri);
 
-            var acme = ContextFactory.Create(serverUri, key);
+            var acme = ContextFactory.Invoke(serverUri, key);
             var orderCtx = acme.Order(orderUri);
 
             var csr = await orderCtx.CreateCsr(privKey);

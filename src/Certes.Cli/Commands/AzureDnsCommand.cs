@@ -18,15 +18,15 @@ namespace Certes.Cli.Commands
 
         private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountUpdateCommand));
 
-        private readonly IDnsClientFactory clientFactory;
+        private readonly AzureClientFactory<IDnsManagementClient> clientFactory;
 
         public CommandGroup Group { get; } = CommandGroup.Azure;
 
         public AzureDnsCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil,
-            IDnsClientFactory clientFactory)
+            AzureClientFactory<IDnsManagementClient> clientFactory)
             : base(userSettings, contextFactory, fileUtil)
         {
             this.clientFactory = clientFactory;
@@ -51,7 +51,7 @@ namespace Certes.Cli.Commands
             var azureCredentials = await ReadAzureCredentials(syntax);
             var resourceGroup = syntax.GetOption<string>(AzureResourceGroupOption, true);
 
-            var acme = ContextFactory.Create(serverUri, key);
+            var acme = ContextFactory.Invoke(serverUri, key);
             var orderCtx = acme.Order(orderUri);
             var authzCtx = await orderCtx.Authorization(domain)
                 ?? throw new Exception(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
@@ -60,7 +60,7 @@ namespace Certes.Cli.Commands
 
             var authz = await authzCtx.Resource();
             var dnsValue = acme.AccountKey.DnsTxt(challengeCtx.Token);
-            using (var client = clientFactory.Create(azureCredentials))
+            using (var client = clientFactory.Invoke(azureCredentials))
             {
                 client.SubscriptionId = azureCredentials.DefaultSubscriptionId;
                 var idValue = authz.Identifier.Value;

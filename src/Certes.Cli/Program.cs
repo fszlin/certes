@@ -2,6 +2,9 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
+using Microsoft.Azure.Management.AppService.Fluent;
+using Microsoft.Azure.Management.Dns.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
@@ -26,6 +29,10 @@ namespace Certes.Cli
                 .RegisterAssemblyTypes(typeof(CliCore).GetTypeInfo().Assembly)
                 .AsImplementedInterfaces();
             builder.RegisterType<CliCore>();
+            builder.RegisterType<AcmeContext>().As<IAcmeContext>();
+            builder.RegisterType<DnsManagementClient>().As<IDnsManagementClient>();
+            builder.RegisterType<ResourceManagementClient>().As<IResourceManagementClient>();
+            builder.RegisterType<WebSiteManagementClient>().As<IWebSiteManagementClient>();
 
             return builder.Build();
         }

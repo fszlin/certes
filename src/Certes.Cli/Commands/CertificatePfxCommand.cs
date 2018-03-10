@@ -17,7 +17,7 @@ namespace Certes.Cli.Commands
 
         public CertificatePfxCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil,
             IEnvironmentVariables environment)
             : base(userSettings, contextFactory, fileUtil)

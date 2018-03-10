@@ -2,9 +2,5 @@
 
 namespace Certes.Cli
 {
-    internal class AcmeContextFactory : IAcmeContextFactory
-    {
-        public IAcmeContext Create(Uri directoryUri, IKey accountKey)
-            => new AcmeContext(directoryUri, accountKey);
-    }
+    internal delegate IAcmeContext AcmeContextFactory(Uri directoryUri, IKey accountKey);
 }

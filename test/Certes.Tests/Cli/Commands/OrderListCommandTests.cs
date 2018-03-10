@@ -58,7 +58,7 @@ namespace Certes.Cli.Commands
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
 
             var cmd = new OrderListCommand(
-                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
+                settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object);
 
             var syntax = DefineCommand($"list");
             var ret = await cmd.Execute(syntax);
@@ -95,7 +95,7 @@ namespace Certes.Cli.Commands
         private static ArgumentSyntax DefineCommand(string args)
         {
             var cmd = new OrderListCommand(
-                NoopSettings(), MakeFactory(new Mock<IAcmeContext>()), new FileUtil());
+                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil());
             Assert.Equal(CommandGroup.Order.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {

@@ -21,7 +21,7 @@ namespace Certes.Cli.Commands
 
         public OrderAuthzCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil)
             : base(userSettings, contextFactory, fileUtil)
         {
@@ -55,7 +55,7 @@ namespace Certes.Cli.Commands
 
             logger.Debug("Loading authz from '{0}'.", serverUri);
 
-            var acme = ContextFactory.Create(serverUri, key);
+            var acme = ContextFactory.Invoke(serverUri, key);
             var orderCtx = acme.Order(orderUri);
             var authzCtx = await orderCtx.Authorization(domain)
                 ?? throw new Exception(string.Format(Strings.ErrorIdentifierNotAvailable, domain));

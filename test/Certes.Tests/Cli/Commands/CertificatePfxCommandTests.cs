@@ -57,7 +57,7 @@ namespace Certes.Cli.Commands
             var envMock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
 
             var cmd = new CertificatePfxCommand(
-                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, envMock.Object);
+                settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object, envMock.Object);
 
             var syntax = DefineCommand($"pfx {orderLoc} --private-key {privateKeyPath} abcd1234");
             dynamic ret = await cmd.Execute(syntax);
@@ -100,7 +100,7 @@ namespace Certes.Cli.Commands
         private static ArgumentSyntax DefineCommand(string args)
         {
             var cmd = new CertificatePfxCommand(
-                NoopSettings(), MakeFactory(new Mock<IAcmeContext>()), new FileUtil(), null);
+                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil(), null);
             Assert.Equal(CommandGroup.Certificate.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {
