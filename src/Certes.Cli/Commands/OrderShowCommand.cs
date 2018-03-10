@@ -16,7 +16,7 @@ namespace Certes.Cli.Commands
 
         public OrderShowCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil)
             : base(userSettings, contextFactory, fileUtil)
         {
@@ -41,7 +41,7 @@ namespace Certes.Cli.Commands
 
             logger.Debug("Loading order from '{0}'.", serverUri);
 
-            var acme = ContextFactory.Create(serverUri, key);
+            var acme = ContextFactory.Invoke(serverUri, key);
             var orderCtx = acme.Order(orderUri);
 
             return new

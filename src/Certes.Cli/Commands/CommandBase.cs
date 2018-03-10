@@ -11,11 +11,11 @@ namespace Certes.Cli.Commands
         private static readonly ILogger logger = LogManager.GetLogger(nameof(CommandBase));
         protected IFileUtil File { get; private set; }
         protected IUserSettings UserSettings { get; private set; }
-        protected IAcmeContextFactory ContextFactory { get; private set; }
+        protected AcmeContextFactory ContextFactory { get; private set; }
 
         protected CommandBase(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil)
         {
             UserSettings = userSettings;

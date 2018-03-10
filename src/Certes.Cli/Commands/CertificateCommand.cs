@@ -17,7 +17,7 @@ namespace Certes.Cli.Commands
 
         public CertificateCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil)
             : base(userSettings, contextFactory, fileUtil)
         {
@@ -30,7 +30,7 @@ namespace Certes.Cli.Commands
 
             logger.Debug("Downloading certificate from '{0}'.", serverUri);
 
-            var acme = ContextFactory.Create(serverUri, key);
+            var acme = ContextFactory.Invoke(serverUri, key);
             var orderCtx = acme.Order(orderUri);
             var order = await orderCtx.Resource();
             if (order.Status != OrderStatus.Valid)

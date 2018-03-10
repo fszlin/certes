@@ -53,7 +53,7 @@ namespace Certes.Cli.Commands
                 });
                 
             var cmd = new AzureSetCommand(
-                settingsMock.Object, MakeFactory(resMock));
+                settingsMock.Object, _ => resMock.Object);
 
             var syntax = DefineCommand(
                 $"set" +

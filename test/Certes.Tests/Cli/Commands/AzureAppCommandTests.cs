@@ -87,7 +87,7 @@ namespace Certes.Cli.Commands
             var envMock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
 
             var cmd = new AzureAppCommand(
-                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object, envMock.Object, MakeFactory(appSvcMock));
+                settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object, envMock.Object, _ => appSvcMock.Object);
 
             var args = $"app {orderLoc} {domain} {appName} --private-key {keyPath}"
                 + $" --talent-id talentId --client-id clientId --client-secret abcd1234"
@@ -153,7 +153,7 @@ namespace Certes.Cli.Commands
         private static ArgumentSyntax DefineCommand(string args)
         {
             var cmd = new AzureAppCommand(
-                NoopSettings(), MakeFactory(new Mock<IAcmeContext>()), new FileUtil(), null, null);
+                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil(), null, null);
             Assert.Equal(CommandGroup.Azure.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {

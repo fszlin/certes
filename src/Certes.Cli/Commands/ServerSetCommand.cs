@@ -14,12 +14,12 @@ namespace Certes.Cli.Commands
         private const string ParamServer = "server-uri";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(ServerSetCommand));
 
-        private readonly IAcmeContextFactory contextFactory;
+        private readonly AcmeContextFactory contextFactory;
         private readonly IUserSettings userSettings;
 
         public CommandGroup Group { get; } = CommandGroup.Server;
 
-        public ServerSetCommand(IUserSettings userSettings, IAcmeContextFactory contextFactory)
+        public ServerSetCommand(IUserSettings userSettings, AcmeContextFactory contextFactory)
         {
             this.userSettings = userSettings;
             this.contextFactory = contextFactory;
@@ -37,7 +37,7 @@ namespace Certes.Cli.Commands
                 syntax.ReportError(string.Format(Strings.ErrorOptionMissing, ParamServer));
             }
 
-            var ctx = contextFactory.Create(serverUriParam.Value, null);
+            var ctx = contextFactory.Invoke(serverUriParam.Value, null);
             logger.Debug("Loading directory from '{0}'", serverUriParam.Value);
             var directory = await ctx.GetDirectory();
             await userSettings.SetDefaultServer(serverUriParam.Value);
