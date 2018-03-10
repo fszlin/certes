@@ -26,11 +26,10 @@ cache:
 branches:
   # whitelist
   only:
-    - release
     - master
-    - cli
+    - preview
     - beta
-    - rc
+    - release
 
 init:
   - git config --global core.autocrlf input
@@ -107,4 +106,3 @@ deploy:
     on:
       branch:
         - master
-        - cli

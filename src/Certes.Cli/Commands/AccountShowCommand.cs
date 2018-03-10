@@ -14,7 +14,7 @@ namespace Certes.Cli.Commands
 
         public AccountShowCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil)
             : base(userSettings, contextFactory, fileUtil)
         {
@@ -37,7 +37,7 @@ namespace Certes.Cli.Commands
 
             logger.Debug("Loading account from '{0}'.", serverUri);
 
-            var acme = ContextFactory.Create(serverUri, key);
+            var acme = ContextFactory.Invoke(serverUri, key);
             var acctCtx = await acme.Account();
 
             return new

@@ -14,12 +14,12 @@ namespace Certes.Cli.Commands
     {
         private const string CommandText = "set";
 
-        private readonly IResourceClientFactory clientFactory;
+        private readonly AzureClientFactory<IResourceManagementClient> clientFactory;
         private readonly IUserSettings userSettings;
 
         public CommandGroup Group => CommandGroup.Azure;
 
-        public AzureSetCommand(IUserSettings userSettings, IResourceClientFactory clientFactory)
+        public AzureSetCommand(IUserSettings userSettings, AzureClientFactory<IResourceManagementClient> clientFactory)
         {
             this.userSettings = userSettings;
             this.clientFactory = clientFactory;
@@ -74,7 +74,7 @@ namespace Certes.Cli.Commands
 
         private async Task<IList<(string Location, string Name)>> LoadResourceGroups(AzureCredentials credentials)
         {
-            using (var client = clientFactory.Create(credentials))
+            using (var client = clientFactory.Invoke(credentials))
             {
                 var resourceGroups = await client.ResourceGroups.ListAsync();
                 return resourceGroups.Select(g => (g.Location, g.Name)).ToArray();
