@@ -16,23 +16,23 @@ branches:
 script:
   - dotnet restore
   # Certes.Tests
-  - dotnet build --configuration Release --framework netcoreapp1.0 test/Certes.Tests/Certes.Tests.csproj
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then dotnet build --configuration Release --framework netcoreapp1.0 test/Certes.Tests/Certes.Tests.csproj; fi'
   - dotnet build --configuration Release --framework netcoreapp2.0 test/Certes.Tests/Certes.Tests.csproj
   - cd test/Certes.Tests/
   - dotnet minicover instrument --workdir ../../ --assemblies test/Certes.Tests/**/bin/**/*.dll --sources src/**/*.cs
   - dotnet minicover reset
-  - dotnet xunit -framework netcoreapp1.0 -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then dotnet xunit -framework netcoreapp1.0 -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4; fi'
   - dotnet xunit -framework netcoreapp2.0 -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4
   - dotnet minicover opencoverreport --workdir ../../ --output unit-coverage.xml
   - cd ../../
   - bash <(curl -s https://codecov.io/bash) -f unit-coverage.xml -F unit
   # Certes.Tests.Integration
-  - dotnet build --configuration Release --framework netcoreapp1.0 test/Certes.Tests.Integration/Certes.Tests.Integration.csproj
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then dotnet build --configuration Release --framework netcoreapp1.0 test/Certes.Tests.Integration/Certes.Tests.Integration.csproj; fi'
   - dotnet build --configuration Release --framework netcoreapp2.0 test/Certes.Tests.Integration/Certes.Tests.Integration.csproj
   - cd test/Certes.Tests.Integration/
   - dotnet minicover instrument --workdir ../../ --assemblies test/Certes.Tests.Integration/**/bin/**/*.dll --sources src/**/*.cs
   - dotnet minicover reset
-  - dotnet xunit -framework netcoreapp1.0 -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then dotnet xunit -framework netcoreapp1.0 -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4; fi'
   - dotnet xunit -framework netcoreapp2.0 -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4
   - dotnet minicover opencoverreport --workdir ../../ --output integration-coverage.xml
   - cd ../../
