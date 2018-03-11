@@ -25,7 +25,7 @@ script:
   - dotnet xunit -framework netcoreapp2.0 -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4
   - dotnet minicover opencoverreport --workdir ../../ --output unit-coverage.xml
   - cd ../../
-  - bash <(curl -s https://codecov.io/bash) -f unit-coverage.xml -F unit
+  #- bash <(curl -s https://codecov.io/bash) -f unit-coverage.xml -F unit
   # Certes.Tests.Integration
   - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then dotnet build -property:DebugType=Full --configuration Release --framework netcoreapp1.0 test/Certes.Tests.Integration/Certes.Tests.Integration.csproj; fi'
   - dotnet build -property:DebugType=Full --configuration Release --framework netcoreapp2.0 test/Certes.Tests.Integration/Certes.Tests.Integration.csproj
@@ -36,4 +36,4 @@ script:
   - dotnet xunit -framework netcoreapp2.0 -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4
   - dotnet minicover opencoverreport --workdir ../../ --output integration-coverage.xml
   - cd ../../
-  - bash <(curl -s https://codecov.io/bash) -f integration-coverage.xml -F integration
+  #- bash <(curl -s https://codecov.io/bash) -f integration-coverage.xml -F integration
