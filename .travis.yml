@@ -9,11 +9,20 @@ env:
     - DOTNET_CLI_TELEMETRY_OPTOUT: 0
 branches:
   only:
-    - release
     - master
-    - dev
-    - vnext
+    - beta
+    - preview
+    - release
 script:
   - dotnet restore
-  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp2.0
-  - dotnet test ./test/Certes.Tests.Integration/Certes.Tests.Integration.csproj --framework netcoreapp2.0
+  - dotnet build --configuration Release --framework netcoreapp1.0 test/Certes.Tests/Certes.Tests.csproj
+  - dotnet build --configuration Release --framework netcoreapp2.0 test/Certes.Tests/Certes.Tests.csproj
+  - dotnet build --configuration Release --framework netcoreapp1.0 test/Certes.Tests.Integration/Certes.Tests.Integration.csproj
+  - dotnet build --configuration Release --framework netcoreapp2.0 test/Certes.Tests.Integration/Certes.Tests.Integration.csproj
+  - cd test/Certes.Tests/
+  - dotnet minicover instrument --workdir ../../ --assemblies test/Certes.Tests/**/bin/**/*.dll --sources src/**/*.cs
+  - dotnet xunit -nobuild -framework netcoreapp1.0 -fxversion 2.0.5
+  - dotnet xunit -nobuild -framework netcoreapp2.0 -fxversion 2.0.5
+  - dotnet minicover opencoverreport --workdir ../../ --output unit-coverage.xml
+  - cd ../../
+  - bash <(curl -s https://codecov.io/bash) -f unit-coverage.xml -F unit
