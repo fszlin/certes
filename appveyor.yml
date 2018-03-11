@@ -61,7 +61,7 @@ before_test:
 
 test_script:
   - ps: $testOptions = "-fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4";
-  #- ps: if ($env:APPVEYOR_PULL_REQUEST_NUMBER) { $testOptions = $testOptions + " -framework net47" }
+  - ps: if ($env:APPVEYOR_PULL_REQUEST_NUMBER) { $testOptions = $testOptions + " -framework netcoreapp2.0" }
   - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
   - ps: cd test/Certes.Tests
   - ps: >-
