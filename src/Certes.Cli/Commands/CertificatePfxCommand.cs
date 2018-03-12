@@ -1,4 +1,6 @@
-﻿using System.CommandLine;
+﻿using System;
+using System.CommandLine;
+using System.Globalization;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using NLog;
@@ -46,8 +48,9 @@ namespace Certes.Cli.Commands
             var pwd = syntax.GetParameter<string>(PasswordParam, true);
             var (location, cert) = await DownloadCertificate(syntax);
 
+            var pfxName = string.Format(CultureInfo.InvariantCulture, "[certes] {0:yyyyMMddhhmmss}", DateTime.UtcNow);
             var privKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment, true);
-            var pfx = cert.ToPfx(privKey).Build($"{location} by certes", pwd);
+            var pfx = cert.ToPfx(privKey).Build(pfxName, pwd);
             
             var outPath = syntax.GetOption<string>(OutOption);
             if (string.IsNullOrWhiteSpace(outPath))

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CommandLine;
+using System.Globalization;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using Microsoft.Azure.Management.AppService.Fluent;
@@ -71,7 +72,7 @@ namespace Certes.Cli.Commands
 
             var cert = await orderCtx.Download();
 
-            var pfxName = $"{order.Certificate} by certes";
+            var pfxName = string.Format(CultureInfo.InvariantCulture, "[certes] {0:yyyyMMddhhmmss}", DateTime.UtcNow);
             var pfxPassword = Guid.NewGuid().ToString("N");
             var pfx = cert.ToPfx(privKey);
             var pfxBytes = pfx.Build(pfxName, pfxPassword);
