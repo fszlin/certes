@@ -11,6 +11,7 @@ using Microsoft.Azure.Management.AppService.Fluent;
 using Microsoft.Azure.Management.AppService.Fluent.Models;
 using Microsoft.Rest.Azure;
 using Moq;
+using Newtonsoft.Json;
 using Xunit;
 using static Certes.Acme.WellKnownServers;
 using static Certes.Cli.CliTestHelper;
@@ -27,6 +28,7 @@ namespace Certes.Cli.Commands
             var orderLoc = new Uri("http://acme.com/o/1");
             var resourceGroup = "resGroup";
             var appName = "my-app";
+            var appSlot = "staging";
             var keyPath = "./cert-key.pem";
 
             var certChainContent = string.Join(
@@ -75,6 +77,16 @@ namespace Certes.Cli.Commands
             appSvcMock.SetupGet(m => m.Certificates).Returns(certOpMock.Object);
             appSvcMock.Setup(m => m.Dispose());
 
+            certOpMock.Setup(m => m.ListByResourceGroupWithHttpMessagesAsync(resourceGroup, default, default))
+                .ReturnsAsync(new AzureOperationResponse<IPage<CertificateInner>>
+                {
+                    Body = JsonConvert.DeserializeObject<Page<CertificateInner>>(
+                        JsonConvert.SerializeObject(new
+                        {
+                            value = new CertificateInner[0]
+                        })
+                    )
+                });
             certOpMock.Setup(m => m.CreateOrUpdateWithHttpMessagesAsync(resourceGroup, It.IsAny<string>(), It.IsAny<CertificateInner>(), default, default))
                 .ReturnsAsync((string r, string n, CertificateInner c, Dictionary<string, List<string>> h, CancellationToken t)
                     => new AzureOperationResponse<CertificateInner> { Body = c });
@@ -83,6 +95,22 @@ namespace Certes.Cli.Commands
                 resourceGroup, appName, domain, It.IsAny<HostNameBindingInner>(), default, default))
                 .ReturnsAsync((string r, string a, string n, HostNameBindingInner d, Dictionary<string, List<string>> h, CancellationToken t)
                     => new AzureOperationResponse<HostNameBindingInner> { Body = d });
+            webAppOpMock.Setup(m => m.GetWithHttpMessagesAsync(resourceGroup, appName, default, default))
+                .ReturnsAsync(new AzureOperationResponse<SiteInner>
+                {
+                    Body = new SiteInner
+                    {
+                        Location = "Canada"
+                    }
+                });
+            webAppOpMock.Setup(m => m.GetSlotWithHttpMessagesAsync(resourceGroup, appName, appSlot, default, default))
+                .ReturnsAsync(new AzureOperationResponse<SiteInner>
+                {
+                    Body = new SiteInner
+                    {
+                        Location = "Canada"
+                    }
+                });
 
             var envMock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
 
@@ -100,7 +128,6 @@ namespace Certes.Cli.Commands
                 resourceGroup, appName, domain, It.IsAny<HostNameBindingInner>(), default, default), Times.Once);
 
             // with deployment slot
-            var appSlot = "staging";
             webAppOpMock.Setup(m => m.CreateOrUpdateHostNameBindingSlotWithHttpMessagesAsync(
                 resourceGroup, appName, domain, It.IsAny<HostNameBindingInner>(), appSlot, default, default))
                 .ReturnsAsync((string r, string a, string n, HostNameBindingInner d, string s, Dictionary<string, List<string>> h, CancellationToken t)
