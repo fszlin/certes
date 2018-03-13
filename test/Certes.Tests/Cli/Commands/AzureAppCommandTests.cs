@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.CommandLine;
 using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -142,6 +143,29 @@ namespace Certes.Cli.Commands
             Assert.NotNull(ret.data);
             webAppOpMock.Verify(m => m.CreateOrUpdateHostNameBindingSlotWithHttpMessagesAsync(
                 resourceGroup, appName, domain, It.IsAny<HostNameBindingInner>(), appSlot, default, default), Times.Once);
+
+            var cert = new X509Certificate2(certChain.Certificate.ToDer());
+            certOpMock.Setup(m => m.ListByResourceGroupWithHttpMessagesAsync(resourceGroup, default, default))
+                .ReturnsAsync(new AzureOperationResponse<IPage<CertificateInner>>
+                {
+                    Body = JsonConvert.DeserializeObject<Page<CertificateInner>>(
+                        JsonConvert.SerializeObject(new
+                        {
+                            value = new CertificateInner[]
+                            {
+                                new CertificateInner("certes", thumbprint: cert.Thumbprint)
+                            }
+                        })
+                    )
+                });
+
+            args = $"app {orderLoc} {domain} {appName} --private-key {keyPath}"
+                + $" --talent-id talentId --client-id clientId --client-secret abcd1234"
+                + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
+            syntax = DefineCommand(args);
+            ret = await cmd.Execute(syntax);
+            Assert.NotNull(ret.data);
+            Assert.Equal(cert.Thumbprint, ret.data.Thumbprint);
 
             // order incompleted
             orderMock.Setup(m => m.Resource()).ReturnsAsync(new Order());
