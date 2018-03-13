@@ -4,9 +4,6 @@ Certes is an [ACME](https://en.wikipedia.org/wiki/Automated_Certificate_Manageme
 client runs on .NET 4.5+ and .NET Standard 1.3+, supports ACME v2 and wildcard certificates.
 It is aimed to provide an easy to use API for managing certificates during deployment processes.
 
-**Util Let's Encrypt releases [v2 endpoint](https://community.letsencrypt.org/t/acmev2-and-wildcard-launch-delay/53654),
-please continue to use [v1 API](https://github.com/fszlin/certes/blob/master/docs/README.v1.md) for production.**
-
 ## Usage
 
 Install [Certes](https://www.nuget.org/packages/Certes/) nuget package into your project:
