@@ -36,12 +36,7 @@ var dnsTxt = acme.AccountKey.DnsTxt(dnsChallenge.Token);
 Add a DNS TXT record to `_acme-challenge.your.domain.name` 
 with `dnsTxt` value.
 
-Ask the ACME server to validate our domain ownership
-```C#
-await dnsChallenge.Validate();
-```
-
-Place a certificate order and validate ownership using HTTP challenge
+For non-wildcard certificate, HTTP challenge is also available
 ```C#
 var order = await acme.NewOrder(new[] { "your.domain.name" });
 ```
@@ -58,7 +53,7 @@ and upload it to `http://your.domain.name/.well-known/acme-challenge/<token>`
 
 Ask the ACME server to validate our domain ownership
 ```C#
-await httpChallenge.Validate();
+await challenge.Validate();
 ```
 
 Download the certificate once validation is done
@@ -87,7 +82,7 @@ Check the [APIs](APIv2.md) for more details.
 
 ## CLI
 
-The CLI is availabe as a dotnet global tool.
+The CLI is available as a dotnet global tool.
 .NET Core Runtime 2.1+ *(currently in [preview](https://www.microsoft.com/net/download/dotnet-core/runtime-2.1.0-preview1))*
  is required to use dotnet tools.
 
@@ -96,7 +91,7 @@ To install Certes CLI *(you may need to restart the console session if this is t
 dotnet install tool --global dotnet-certes --version 1.0.1-master-812
 ```
 
-User the `--help` option get started
+Use the `--help` option to get started
 ```Batchfile
 certes --help
 ```
