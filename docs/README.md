@@ -7,11 +7,11 @@ It is aimed to provide an easy to use API for managing certificates during deplo
 ## Usage
 
 Install [Certes](https://www.nuget.org/packages/Certes/) nuget package into your project:
-```
+```PowerShell
 Install-Package Certes
 ```
 or using .NET CLI:
-```
+```Batchfile
 dotnet add package Certes
 ```
 
@@ -85,6 +85,24 @@ Check the [APIs](APIv2.md) for more details.
 
 *For ACME v1, please see [the doc here](README.v1.md).*
 
+## CLI
+
+The CLI is availabe as a dotnet global tool.
+.NET Core Runtime 2.1+ *(currently in [preview](https://www.microsoft.com/net/download/dotnet-core/runtime-2.1.0-preview1))*
+ is required to use dotnet tools.
+
+To install Certes CLI *(you may need to restart the console session if this is the first dotnet tool installed)*
+```Batchfile
+dotnet install tool --global dotnet-certes --version 1.0.1-master-812
+```
+
+User the `--help` option get started
+```Batchfile
+certes --help
+```
+
+or check this [AppVeyor script][AppVeyorCliSample] for renewing certificate on Auzre webapps.
+
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags](https://github.com/fszlin/certes/tags) on this repository. 
@@ -92,11 +110,16 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 
 ## CI Status
-[![NuGet](https://img.shields.io/nuget/vpre/certes.svg)](https://www.nuget.org/packages/certes/absoluteLatest/)
+[![NuGet](https://img.shields.io/nuget/vpre/certes.svg?label=Certes)](https://www.nuget.org/packages/certes/absoluteLatest/)
 [![NuGet](https://img.shields.io/nuget/dt/certes.svg)](https://www.nuget.org/packages/certes/)
+[![NuGet](https://img.shields.io/nuget/vpre/dotnet-certes.svg?label=CLI)](https://www.nuget.org/packages/dotnet-certes/absoluteLatest/)
+[![NuGet](https://img.shields.io/nuget/dt/dotnet-certes.svg)](https://www.nuget.org/packages/dotnet-certes/)
+
+
 [![AppVeyor](https://img.shields.io/appveyor/ci/fszlin/certes/master.svg)](https://ci.appveyor.com/project/fszlin/certes)
 [![AppVeyor](https://img.shields.io/appveyor/tests/fszlin/certes/master.svg)](https://ci.appveyor.com/project/fszlin/certes/build/tests)
 [![codecov](https://codecov.io/gh/fszlin/certes/branch/master/graph/badge.svg)](https://codecov.io/gh/fszlin/certes)
 [![BCH compliance](https://bettercodehub.com/edge/badge/fszlin/certes?branch=master)](https://bettercodehub.com/results/fszlin/certes)
 
 [tw]: https://twitter.com/share?url=https%3A%2F%2Fgithub.com%2Ffszlin%2Fcertes&via=certes_acme&related=fszlin&hashtags=certes%2Cssl%2Clets-encrypt%2Cacme%2Chttps&text=get%20free%20SSL%20via%20certes
+[AppVeyorCliSample]: https://github.com/fszlin/lo0.in/blob/79fc1561ca4aa29de7741ad5590e53be8db34690/.appveyor.yml#L43-L56
