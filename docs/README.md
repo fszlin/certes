@@ -96,7 +96,7 @@ Use the `--help` option to get started
 certes --help
 ```
 
-or check this [AppVeyor script][AppVeyorCliSample] for renewing certificate on Auzre webapps.
+or check this [AppVeyor script][AppVeyorCliSample] for renewing certificate on Azure webapps.
 
 ## Versioning
 
