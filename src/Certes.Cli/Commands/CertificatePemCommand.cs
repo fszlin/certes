@@ -66,7 +66,7 @@ namespace Certes.Cli.Commands
 
                 return new
                 {
-                    location = location,
+                    location,
                 };
 
             }
