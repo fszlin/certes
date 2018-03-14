@@ -21,7 +21,27 @@ var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2);
 var account = acme.NewAccount("admin@example.com", true);
 ```
 
-Place an order for certificate
+Place a wildcard certificate order
+*(DNS validation is required for wildcard certificates)*
+```C#
+var order = await acme.NewOrder(new[] { "*.your.domain.name" });
+```
+
+Generate the value for DNS TXT record
+```C#
+var authz = (await order.Authorizations()).First();
+var dnsChallenge = await authz.Dns();
+var dnsTxt = acme.AccountKey.DnsTxt(dnsChallenge.Token);
+```
+Add a DNS TXT record to `_acme-challenge.your.domain.name` 
+with `dnsTxt` value.
+
+Ask the ACME server to validate our domain ownership
+```C#
+await dnsChallenge.Validate();
+```
+
+Place a certificate order and validate ownership using HTTP challenge
 ```C#
 var order = await acme.NewOrder(new[] { "your.domain.name" });
 ```
@@ -33,8 +53,8 @@ var httpChallenge = await authz.Http();
 var keyAuthz = httpChallenge.KeyAuthz;
 ```
 
-Prepare for http challenge by saving the **key authorization string** 
-in a text file, and upload it to `http://your.domain.name/.well-known/acme-challenge/<token>`
+Save the **key authorization string** in a text file,
+and upload it to `http://your.domain.name/.well-known/acme-challenge/<token>`
 
 Ask the ACME server to validate our domain ownership
 ```C#
@@ -67,7 +87,7 @@ Check the [APIs](APIv2.md) for more details.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/fszlin/certes/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags](https://github.com/fszlin/certes/tags) on this repository. 
 
 Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 
