@@ -72,6 +72,8 @@ namespace Certes.Acme
         {
             var payloadJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
             var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
+            // boulder will reject the request if sending charset=utf-8
+            content.Headers.ContentType.CharSet = null;
             using (var response = await Http.PostAsync(uri, content))
             {
                 return await ProcessResponse<T>(response);
