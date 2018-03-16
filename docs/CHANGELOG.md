@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 - [ACME v2](APIv2.md) support
 - Add support for JSON web signature using ECDSA key
 
-## [1.1.4]
+## [1.1.4] - 2018-03-04
 ### Changed
 - Fix error when processing server response without `Content-Type` header
 - Fix `full-chain-off` option for CLI
@@ -46,7 +46,7 @@ All notable changes to this project will be documented in this file.
 [1.1.2]: https://github.com/fszlin/certes/compare/v1.1.1...v1.1.2
 [1.1.3]: https://github.com/fszlin/certes/compare/v1.1.2...v1.1.3
 [1.1.4]: https://github.com/fszlin/certes/compare/v1.1.3...v1.1.4
-[2.0.0]: https://github.com/fszlin/certes/compare/v1.1.3...v2.0.0
+[2.0.0]: https://github.com/fszlin/certes/compare/v1.1.4...v2.0.0
 
 [i5]: https://github.com/fszlin/certes/issues/5
 [i22]: https://github.com/fszlin/certes/issues/22
