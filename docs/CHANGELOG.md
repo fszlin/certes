@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+### Added
+- Add `Processing` status for challenges.
+
 ### Changed
 - Fix `Content-Type` header for POST requests (#76)
 
