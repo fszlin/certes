@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- Add `Processing` status for challenges.
+
+### Changed
+- Fix `Content-Type` header for POST requests ([#76][i76])
+
 ## [2.0.0] - 2018-03-13
 ### Added
 - [ACME v2](APIv2.md) support
@@ -46,3 +54,4 @@ All notable changes to this project will be documented in this file.
 
 [i5]: https://github.com/fszlin/certes/issues/5
 [i22]: https://github.com/fszlin/certes/issues/22
+[i76]: https://github.com/fszlin/certes/issues/76

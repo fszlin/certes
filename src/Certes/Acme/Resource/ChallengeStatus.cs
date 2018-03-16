@@ -16,6 +16,12 @@ namespace Certes.Acme.Resource
         Pending,
 
         /// <summary>
+        /// The processing status.
+        /// </summary>
+        [JsonProperty("processing")]
+        Processing,
+
+        /// <summary>
         /// The valid status.
         /// </summary>
         [JsonProperty("valid")]
