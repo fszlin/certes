@@ -1,6 +1,7 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using System;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Certes.Acme.Resource
 {
@@ -19,6 +20,7 @@ namespace Certes.Acme.Resource
         /// <summary>
         /// The processing status.
         /// </summary>
+        [Obsolete("Use ChallengeStatus.Processing instead.")]
         [EnumMember(Value = "processing")]
         Processing,
 
