@@ -15,7 +15,7 @@ namespace Certes.Cli.Commands
 
         public CertificatePemCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil)
             : base(userSettings, contextFactory, fileUtil)
         {
@@ -66,7 +66,7 @@ namespace Certes.Cli.Commands
 
                 return new
                 {
-                    location = location,
+                    location,
                 };
 
             }

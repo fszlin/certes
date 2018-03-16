@@ -21,7 +21,7 @@ namespace Certes.Cli.Commands
 
         public OrderValidateCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil)
             : base(userSettings, contextFactory, fileUtil)
         {
@@ -55,12 +55,14 @@ namespace Certes.Cli.Commands
 
             logger.Debug("Validating authz on '{0}'.", serverUri);
 
-            var acme = ContextFactory.Create(serverUri, key);
+            var acme = ContextFactory.Invoke(serverUri, key);
             var orderCtx = acme.Order(orderUri);
             var authzCtx = await orderCtx.Authorization(domain)
                 ?? throw new Exception(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
             var challengeCtx = await authzCtx.Challenge(type)
-                ?? throw new Exception(string.Format(Strings.ErrorChallengeNotAvailable, type));
+                ?? throw new Exception(string.Format(Strings.ErrorChallengeNotAvailable, typeStr));
+
+            logger.Debug("Validating challenge '{0}'.", challengeCtx.Location);
             var challenge = await challengeCtx.Validate();
 
             return new

@@ -16,7 +16,7 @@ namespace Certes.Cli.Commands
 
         public AccountSetCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil)
             : base(userSettings, contextFactory, fileUtil)
         {
@@ -43,7 +43,7 @@ namespace Certes.Cli.Commands
 
             logger.Debug("Setting account for '{0}'.", serverUri);
 
-            var acme = ContextFactory.Create(serverUri, key);
+            var acme = ContextFactory.Invoke(serverUri, key);
             var acctCtx = await acme.Account();
 
             await UserSettings.SetAccountKey(serverUri, key);

@@ -45,7 +45,7 @@ namespace Certes.Cli.Commands
                 .ReturnsAsync(KeyAlgorithm.ES256.GetTestKey());
 
             var cmd = new AccountShowCommand(
-                settingsMock.Object, MakeFactory(ctxMock), fileMock.Object);
+                settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object);
 
             var syntax = DefineCommand($"show");
             var ret = await cmd.Execute(syntax);
@@ -91,7 +91,7 @@ namespace Certes.Cli.Commands
         private static ArgumentSyntax DefineCommand(string args)
         {
             var cmd = new AccountShowCommand(
-                new UserSettings(new FileUtil()), MakeFactory(new Mock<IAcmeContext>()), new FileUtil());
+                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil());
             Assert.Equal(CommandGroup.Account.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {

@@ -24,8 +24,8 @@ namespace Certes.Cli.Commands
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
 
-            var cmd = new ServerSetCommand(settingsMock.Object, MakeFactory(ctxMock));
-            var syntax = DefineCommand($"set --server {serverUri}");
+            var cmd = new ServerSetCommand(settingsMock.Object, (u, k) => ctxMock.Object);
+            var syntax = DefineCommand($"set {serverUri}");
 
             var ret = await cmd.Execute(syntax);
             Assert.Equal(
@@ -43,11 +43,11 @@ namespace Certes.Cli.Commands
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"set --server {LetsEncryptStagingV2}";
+            var args = $"set {LetsEncryptStagingV2}";
             var syntax = DefineCommand(args);
 
             Assert.Equal("set", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "server", LetsEncryptStagingV2);
+            ValidateParameter(syntax, "server-uri", LetsEncryptStagingV2);
 
             syntax = DefineCommand("noop");
             Assert.NotEqual("set", syntax.ActiveCommand.Value);
@@ -55,7 +55,7 @@ namespace Certes.Cli.Commands
 
         private static ArgumentSyntax DefineCommand(string args)
         {
-            var cmd = new ServerSetCommand(new UserSettings(new FileUtil()), MakeFactory(new Mock<IAcmeContext>()));
+            var cmd = new ServerSetCommand(NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object);
             Assert.Equal(CommandGroup.Server.Command, cmd.Group.Command);
             return ArgumentSyntax.Parse(args.Split(' '), syntax =>
             {

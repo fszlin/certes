@@ -5,7 +5,7 @@
     <OutputType>Exe</OutputType>
     <TargetFrameworks>netcoreapp1.0;netcoreapp2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(CertesVersion)' != ''">netcoreapp2.0</TargetFrameworks>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <AssemblyVersion>1.0.1</AssemblyVersion>
     <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
     <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
     <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
@@ -16,7 +16,7 @@
     <PackageType>DotnetTool</PackageType>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageTags>Certes;let's encrypt;ACME;HTTPS;SSL;Certificate;dotnet tool</PackageTags>
+    <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate;dotnettool</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
     <PackageId>dotnet-certes</PackageId>
@@ -34,8 +34,8 @@
     <PackageReference Include="Autofac" Version="4.6.2" />
     <PackageReference Include="NLog" Version="4.5.0-*" PrivateAssets="all" />
     <PackageReference Include="System.CommandLine" Version="0.1.0-*" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.6.0" />
-    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.6.0" />
+    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.7.0" />
+    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.7.0" />
     <PackageReference Include="Certes" Version="$(CertesVersion)" Condition="'$(CertesVersion)' != ''" />
   </ItemGroup>
 

@@ -7,19 +7,19 @@ using NLog;
 
 namespace Certes.Cli.Commands
 {
-    // e.x: server set --server https://acme-staging-v02.api.letsencrypt.org/directory
+    // e.x: server set https://acme-staging-v02.api.letsencrypt.org/directory
     internal class ServerSetCommand : ICliCommand
     {
         private const string CommandText = "set";
-        private const string ParamServer = "server";
+        private const string ParamServer = "server-uri";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(ServerSetCommand));
 
-        private readonly IAcmeContextFactory contextFactory;
+        private readonly AcmeContextFactory contextFactory;
         private readonly IUserSettings userSettings;
 
         public CommandGroup Group { get; } = CommandGroup.Server;
 
-        public ServerSetCommand(IUserSettings userSettings, IAcmeContextFactory contextFactory)
+        public ServerSetCommand(IUserSettings userSettings, AcmeContextFactory contextFactory)
         {
             this.userSettings = userSettings;
             this.contextFactory = contextFactory;
@@ -27,7 +27,7 @@ namespace Certes.Cli.Commands
 
         public async Task<object> Execute(ArgumentSyntax syntax)
         {
-            var serverUriParam = syntax.GetActiveOptions()
+            var serverUriParam = syntax.GetActiveArguments()
                 .Where(p => p.Name == ParamServer)
                 .OfType<Argument<Uri>>()
                 .First();
@@ -37,7 +37,7 @@ namespace Certes.Cli.Commands
                 syntax.ReportError(string.Format(Strings.ErrorOptionMissing, ParamServer));
             }
 
-            var ctx = contextFactory.Create(serverUriParam.Value, null);
+            var ctx = contextFactory.Invoke(serverUriParam.Value, null);
             logger.Debug("Loading directory from '{0}'", serverUriParam.Value);
             var directory = await ctx.GetDirectory();
             await userSettings.SetDefaultServer(serverUriParam.Value);
@@ -51,7 +51,7 @@ namespace Certes.Cli.Commands
         public ArgumentCommand<string> Define(ArgumentSyntax syntax)
         {
             var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandServerSet);
-            syntax.DefineServerOption();
+            syntax.DefineUriParameter(ParamServer, help: Strings.HelpServer);
 
             return cmd;
         }

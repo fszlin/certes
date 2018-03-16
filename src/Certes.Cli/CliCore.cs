@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Certes.Cli.Commands;
 using Certes.Json;
@@ -99,6 +100,7 @@ namespace Certes.Cli
                 }
             }
 
+            PrintVersion();
             consoleLogger.Info(helpText);
             return null;
         }
@@ -116,6 +118,7 @@ namespace Certes.Cli
                     s.HandleErrors = false;
                     s.HandleHelp = false;
                     s.ErrorOnUnexpectedArguments = false;
+                    s.ApplicationName = "certes";
                     foreach (var cmdGroup in commandGroups)
                     {
                         var cmd = s.DefineCommand(cmdGroup.Key.Command, help: cmdGroup.Key.Help);
@@ -137,6 +140,7 @@ namespace Certes.Cli
             {
                 if (isHelpRequested)
                 {
+                    PrintVersion();
                     consoleLogger.Info(helpText);
                     return null;
                 }
@@ -146,6 +150,12 @@ namespace Certes.Cli
         }
 
         private static bool IsHelpRequested(string[] args)
-            => args.Intersect(new[] { "-?", "-h", "-help" }).Any();
+            => args.Intersect(new[] { "-?", "-h", "--help" }).Any();
+
+        private void PrintVersion()
+        {
+            var ver = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+            consoleLogger.Info("certes CLI v{0}", ver);
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.CommandLine;
+﻿using System;
+using System.CommandLine;
+using System.Globalization;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using NLog;
@@ -9,16 +11,20 @@ namespace Certes.Cli.Commands
     {
         private const string CommandText = "pfx";
         private const string PasswordParam = "password";
-        private const string PrivateKeyParam = "private-key";
+        private const string PrivateKeyOption = "private-key";
         private const string OutOption = "out";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(CertificatePfxCommand));
 
+        private readonly IEnvironmentVariables environment;
+
         public CertificatePfxCommand(
             IUserSettings userSettings,
-            IAcmeContextFactory contextFactory,
-            IFileUtil fileUtil)
+            AcmeContextFactory contextFactory,
+            IFileUtil fileUtil,
+            IEnvironmentVariables environment)
             : base(userSettings, contextFactory, fileUtil)
         {
+            this.environment = environment;
         }
 
         public ArgumentCommand<string> Define(ArgumentSyntax syntax)
@@ -29,8 +35,8 @@ namespace Certes.Cli.Commands
                 .DefineServerOption()
                 .DefineKeyOption()
                 .DefineOption(OutOption, help: Strings.HelpCertificateOut)
+                .DefineOption(PrivateKeyOption, help: Strings.HelpPrivateKey)
                 .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId)
-                .DefineParameter(PrivateKeyParam, help: Strings.HelpPrivateKey)
                 .DefineParameter(PasswordParam, help: Strings.HelpPfxPassword);
 
             return cmd;
@@ -38,13 +44,13 @@ namespace Certes.Cli.Commands
 
         public async Task<object> Execute(ArgumentSyntax syntax)
         {
-            var keyPath = syntax.GetParameter<string>(PrivateKeyParam, true);
+            var keyPath = syntax.GetParameter<string>(PrivateKeyOption, true);
             var pwd = syntax.GetParameter<string>(PasswordParam, true);
             var (location, cert) = await DownloadCertificate(syntax);
 
-            var privKey = KeyFactory.FromPem(await File.ReadAllText(keyPath));
-
-            var pfx = cert.ToPfx(privKey).Build($"{location} by certes", pwd);
+            var pfxName = string.Format(CultureInfo.InvariantCulture, "[certes] {0:yyyyMMddhhmmss}", DateTime.UtcNow);
+            var privKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment, true);
+            var pfx = cert.ToPfx(privKey).Build(pfxName, pwd);
             
             var outPath = syntax.GetOption<string>(OutOption);
             if (string.IsNullOrWhiteSpace(outPath))
