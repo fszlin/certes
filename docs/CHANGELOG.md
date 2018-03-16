@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Changed
+- Remove `charset` from `content-type` header for POST requests
+
 ## [2.0.0] - 2018-03-13
 ### Added
 - [ACME v2](APIv2.md) support
