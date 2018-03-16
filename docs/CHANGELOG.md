@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Changed
-- Remove `charset` from `content-type` header for POST requests
+- Fix `Content-Type` header for POST requests (#76)
 
 ## [2.0.0] - 2018-03-13
 ### Added
