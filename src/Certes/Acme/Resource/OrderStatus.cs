@@ -20,6 +20,12 @@ namespace Certes.Acme.Resource
         Pending,
 
         /// <summary>
+        /// The ready status.
+        /// </summary>
+        [EnumMember(Value = "ready")]
+        Ready,
+
+        /// <summary>
         /// The processing status.
         /// </summary>
         [EnumMember(Value = "processing")]
