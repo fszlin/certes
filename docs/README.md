@@ -83,7 +83,7 @@ Check the [APIs](APIv2.md) for more details.
 ## CLI
 
 The CLI is available as a dotnet global tool.
-.NET Core Runtime 2.1+ *(currently in [preview](https://www.microsoft.com/net/download/dotnet-core/runtime-2.1.0-preview1))*
+.NET Core Runtime 2.1+ *(currently in [preview](https://www.microsoft.com/net/download/dotnet-core/runtime-2.1.0-preview2))*
  is required to use dotnet tools.
 
 To install Certes CLI *(you may need to restart the console session if this is the first dotnet tool installed)*
