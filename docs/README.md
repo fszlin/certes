@@ -15,11 +15,34 @@ or using .NET CLI:
 dotnet add package Certes
 ```
 
+# Start first
+
+- [Staging Environment](https://letsencrypt.org/docs/staging-environment/)
+- [Rate Limits](https://letsencrypt.org/docs/rate-limits/)
+
+## Account
+
 Creating new ACME account:
 ```C#
 var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2);
 var account = acme.NewAccount("admin@example.com", true);
+// Storage key
+var pemKey = acme.AccountKey.ToPem();
 ```
+Use an existing ACME account:
+```C#
+// Stored key
+var pemKey = KeyFactory.FromPem(ac.AccountKey);
+var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2, pemKey);
+var account = acme.Account();
+```
+Account Method:
+- Deactivate();
+- Update();
+- Orders();
+- Resource();
+
+## Order
 
 Place a wildcard certificate order
 *(DNS validation is required for wildcard certificates)*
@@ -40,6 +63,7 @@ For non-wildcard certificate, HTTP challenge is also available
 ```C#
 var order = await acme.NewOrder(new[] { "your.domain.name" });
 ```
+## Authorization
 
 Get the **token** and **key authorization string**
 ```C#
@@ -51,10 +75,14 @@ var keyAuthz = httpChallenge.KeyAuthz;
 Save the **key authorization string** in a text file,
 and upload it to `http://your.domain.name/.well-known/acme-challenge/<token>`
 
+## Validate
+
 Ask the ACME server to validate our domain ownership
 ```C#
 await challenge.Validate();
 ```
+
+## Certificate
 
 Download the certificate once validation is done
 ```C#
