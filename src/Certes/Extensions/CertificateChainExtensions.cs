@@ -1,5 +1,8 @@
-﻿using Certes.Acme;
+﻿using System.IO;
+using Certes.Acme;
 using Certes.Pkcs;
+using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.X509;
 
 namespace Certes
 {
@@ -26,6 +29,43 @@ namespace Certes
             }
 
             return pfx;
+        }
+
+        /// <summary>
+        /// Encodes the full certificate chain in PEM.
+        /// </summary>
+        /// <param name="certificateChain">The certificate chain.</param>
+        /// <param name="certKey">The certificate key.</param>
+        /// <returns>The encoded certificate chain.</returns>
+        public static string ToPem(this CertificateChain certificateChain, IKey certKey = null)
+        {
+            var certStore = new CertificateStore();
+            foreach (var issuer in certificateChain.Issuers)
+            {
+                certStore.Add(issuer.ToDer());
+            }
+
+            var issuers = certStore.GetIssuers(certificateChain.Certificate.ToDer());
+
+            using (var writer = new StringWriter())
+            {
+                if (certKey != null)
+                {
+                    writer.WriteLine(certKey.ToPem().TrimEnd());
+                }
+
+                writer.WriteLine(certificateChain.Certificate.ToPem().TrimEnd());
+
+                var certParser = new X509CertificateParser();
+                var pemWriter = new PemWriter(writer);
+                foreach (var issuer in issuers)
+                {
+                    var cert = certParser.ReadCertificate(issuer);
+                    pemWriter.WriteObject(cert);
+                }
+
+                return writer.ToString();
+            }
         }
     }
 }

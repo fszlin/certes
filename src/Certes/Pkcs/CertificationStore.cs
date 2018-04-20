@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Org.BouncyCastle.Asn1.X509;
-using Org.BouncyCastle.Pkix;
-using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.X509;
-using Org.BouncyCastle.X509.Store;
 
 namespace Certes.Pkcs
 {
@@ -17,7 +14,7 @@ namespace Certes.Pkcs
     {
         private readonly Dictionary<X509Name, X509Certificate> certificates = new Dictionary<X509Name, X509Certificate>();
 
-        private readonly Lazy<X509Certificate[]> embeddedRootCertificates = new Lazy<X509Certificate[]>(() =>
+        private readonly Lazy<Dictionary<X509Name, X509Certificate>> embeddedCertificates = new Lazy<Dictionary<X509Name, X509Certificate>>(() =>
         {
             var certParser = new X509CertificateParser();
             var assembly = typeof(PfxBuilder).GetTypeInfo().Assembly;
@@ -31,7 +28,7 @@ namespace Certes.Pkcs
                         return certParser.ReadCertificate(stream);
                     }
                 })
-                .ToArray();
+                .ToDictionary(c => c.SubjectDN, c => c);
         }, true);
 
         /// <summary>
@@ -60,41 +57,22 @@ namespace Certes.Pkcs
             var certParser = new X509CertificateParser();
             var certificate = certParser.ReadCertificate(der);
 
-            var allCertificates =
-                embeddedRootCertificates.Value.Union(this.certificates.Values)
-                .Select(cert => new
+            var chain = new List<X509Certificate>();
+            while (!certificate.SubjectDN.Equivalent(certificate.IssuerDN))
+            {
+                if (certificates.TryGetValue(certificate.IssuerDN, out var issuer) ||
+                    embeddedCertificates.Value.TryGetValue(certificate.IssuerDN, out issuer))
                 {
-                    IsRoot = cert.IssuerDN.Equivalent(cert.SubjectDN),
-                    Cert = cert
-                });
-
-            var rootCerts = new HashSet(
-                allCertificates
-                    .Where(c => c.IsRoot)
-                    .Select(c => new TrustAnchor(c.Cert, null)));
-            var intermediateCerts = allCertificates.Where(c => !c.IsRoot).Select(c => c.Cert).ToList();
-            intermediateCerts.Add(certificate);
-
-            var target = new X509CertStoreSelector
-            {
-                Certificate = certificate
-            };
-
-            var builderParams = new PkixBuilderParameters(rootCerts, target)
-            {
-                IsRevocationEnabled = false
-            };
-
-            builderParams.AddStore(
-                X509StoreFactory.Create(
-                    "Certificate/Collection",
-                    new X509CollectionStoreParameters(intermediateCerts)));
-
-            var builder = new PkixCertPathBuilder();
-            var result = builder.Build(builderParams);
-
-            var fullChain = result.CertPath.Certificates.Cast<X509Certificate>();
-            return fullChain.Select(cert => cert.GetEncoded()).ToArray();
+                    chain.Add(issuer);
+                    certificate = issuer;
+                }
+                else
+                {
+                    throw new Exception($"Can not find issuer '{certificate.IssuerDN}' for certificate '{certificate.SubjectDN}'");
+                }
+            }
+            
+            return chain.Select(cert => cert.GetEncoded()).ToArray();
         }
     }
 }
