@@ -17,7 +17,7 @@ namespace Certes.Acme
 
             var chain = new CertificateChain(pem);
             var result = chain.ToPem();
-            Assert.Equal(pem.Trim(), result.Trim());
+            Assert.Equal(pem.Replace("\r", "").Trim(), result.Replace("\r", "").Trim());
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace Certes.Acme
 
             var chain = new CertificateChain(pem);
             var result = chain.ToPem(key);
-            Assert.Equal(expectedPem.Trim(), result.Trim());
+            Assert.Equal(expectedPem.Replace("\r", "").Trim(), result.Replace("\r", "").Trim());
         }
     }
 }
