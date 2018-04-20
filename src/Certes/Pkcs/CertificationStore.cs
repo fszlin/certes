@@ -60,7 +60,7 @@ namespace Certes.Pkcs
             var certParser = new X509CertificateParser();
             var certificate = certParser.ReadCertificate(der);
 
-            var certificates =
+            var allCertificates =
                 embeddedRootCertificates.Value.Union(this.certificates.Values)
                 .Select(cert => new
                 {
@@ -69,13 +69,13 @@ namespace Certes.Pkcs
                 });
 
             var rootCerts = new HashSet(
-                certificates
+                allCertificates
                     .Where(c => c.IsRoot)
                     .Select(c => new TrustAnchor(c.Cert, null)));
-            var intermediateCerts = certificates.Where(c => !c.IsRoot).Select(c => c.Cert).ToList();
+            var intermediateCerts = allCertificates.Where(c => !c.IsRoot).Select(c => c.Cert).ToList();
             intermediateCerts.Add(certificate);
 
-            var target = new X509CertStoreSelector()
+            var target = new X509CertStoreSelector
             {
                 Certificate = certificate
             };
