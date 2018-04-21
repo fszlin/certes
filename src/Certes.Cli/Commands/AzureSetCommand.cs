@@ -27,7 +27,7 @@ namespace Certes.Cli.Commands
 
         public async Task<object> Execute(ArgumentSyntax syntax)
         {
-            var talentId = syntax.GetOption<string>(AzureTalentIdOption);
+            var tenantId = syntax.GetOption<string>(AzureTenantIdOption);
             var clientId = syntax.GetOption<string>(AzureClientIdOption);
             var secret = syntax.GetOption<string>(AzureSecretOption);
             var subscriptionId = syntax.GetOption<string>(AzureSubscriptionIdOption);
@@ -39,7 +39,7 @@ namespace Certes.Cli.Commands
             };
 
             var credentials = new AzureCredentials(
-                loginInfo, talentId, AzureEnvironment.AzureGlobalCloud)
+                loginInfo, tenantId, AzureEnvironment.AzureGlobalCloud)
                 .WithDefaultSubscription(subscriptionId);
 
             var resourceGroups = await LoadResourceGroups(credentials);
@@ -47,7 +47,7 @@ namespace Certes.Cli.Commands
             var azSettings = new AzureSettings
             {
                 ClientId = clientId,
-                TalentId = talentId,
+                TenantId = tenantId,
                 ClientSecret = secret,
                 SubscriptionId = subscriptionId,
             };
@@ -64,7 +64,7 @@ namespace Certes.Cli.Commands
         {
             var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandAzureSet);
             syntax
-                .DefineOption(AzureTalentIdOption, help: Strings.HelpAzureTalentId)
+                .DefineOption(AzureTenantIdOption, help: Strings.HelpAzureTenantId)
                 .DefineOption(AzureClientIdOption, help: Strings.HelpAzureClientId)
                 .DefineOption(AzureSecretOption, help: Strings.HelpAzureSecret)
                 .DefineOption(AzureSubscriptionIdOption, help: Strings.HelpAzureSubscriptionId);

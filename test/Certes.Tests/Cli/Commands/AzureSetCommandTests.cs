@@ -28,7 +28,7 @@ namespace Certes.Cli.Commands
                 ClientId = "clientId",
                 ClientSecret = "secret",
                 SubscriptionId = Guid.NewGuid().ToString("N"),
-                TalentId = Guid.NewGuid().ToString("N"),
+                TenantId = Guid.NewGuid().ToString("N"),
             };
 
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
@@ -57,7 +57,7 @@ namespace Certes.Cli.Commands
 
             var syntax = DefineCommand(
                 $"set" +
-                $" --talent-id {azSettings.TalentId} --client-id {azSettings.ClientId}" +
+                $" --tenant-id {azSettings.TenantId} --client-id {azSettings.ClientId}" +
                 $" --client-secret {azSettings.ClientSecret}" +
                 $" --subscription-id {azSettings.SubscriptionId}");
             dynamic ret = await cmd.Execute(syntax);
@@ -70,12 +70,12 @@ namespace Certes.Cli.Commands
         public void CanDefineCommand()
         {
             var args = $"set"
-                + " --talent-id talentId --client-id clientId --client-secret abcd1234"
+                + " --tenant-id tenantId --client-id clientId --client-secret abcd1234"
                 + " --subscription-id subscriptionId";
             var syntax = DefineCommand(args);
 
             Assert.Equal("set", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "talent-id", "talentId");
+            ValidateOption(syntax, "tenant-id", "tenantId");
             ValidateOption(syntax, "client-id", "clientId");
             ValidateOption(syntax, "client-secret", "abcd1234");
             ValidateOption(syntax, "subscription-id", "subscriptionId");

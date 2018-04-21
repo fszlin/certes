@@ -60,7 +60,7 @@ namespace Certes.Cli.Commands
                 ClientId = "clientId",
                 ClientSecret = "secret",
                 SubscriptionId = Guid.NewGuid().ToString("N"),
-                TalentId = Guid.NewGuid().ToString("N"),
+                TenantId = Guid.NewGuid().ToString("N"),
             });
 
             var challengeMock = new Mock<IChallengeContext>(MockBehavior.Strict);
@@ -113,7 +113,7 @@ namespace Certes.Cli.Commands
 
             var syntax = DefineCommand(
                 $"dns {orderLoc} {domain}" +
-                $" --talent-id talentId --client-id clientId --client-secret abcd1234" +
+                $" --tenant-id tenantId --client-id clientId --client-secret abcd1234" +
                 $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
             dynamic ret = await cmd.Execute(syntax);
             Assert.Equal(expectedRecordSetId, ret.data.Id);
@@ -133,7 +133,7 @@ namespace Certes.Cli.Commands
             authz.Wildcard = true;
             syntax = DefineCommand(
                 $"dns {orderLoc} *.{domain}" +
-                $" --talent-id talentId --client-id clientId --client-secret abcd1234" +
+                $" --tenant-id tenantId --client-id clientId --client-secret abcd1234" +
                 $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
             ret = await cmd.Execute(syntax);
             Assert.Equal(expectedRecordSetId, ret.data.Id);
@@ -144,7 +144,7 @@ namespace Certes.Cli.Commands
             orderMock.Setup(m => m.Authorizations()).ReturnsAsync(new IAuthorizationContext[0]);
             syntax = DefineCommand(
                 $"dns {orderLoc} {domain}" +
-                $" --talent-id talentId --client-id clientId --client-secret abcd1234" +
+                $" --tenant-id tenantId --client-id clientId --client-secret abcd1234" +
                 $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
             await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
             orderMock.Setup(m => m.Authorizations()).ReturnsAsync(new[] { authzMock.Object });
@@ -153,7 +153,7 @@ namespace Certes.Cli.Commands
             challengeMock.SetupGet(m => m.Type).Returns(ChallengeTypes.Http01);
             syntax = DefineCommand(
                 $"dns {orderLoc} {domain}" +
-                $" --talent-id talentId --client-id clientId --client-secret abcd1234" +
+                $" --tenant-id tenantId --client-id clientId --client-secret abcd1234" +
                 $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
             await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
             challengeMock.SetupGet(m => m.Type).Returns(ChallengeTypes.Dns01);
@@ -171,7 +171,7 @@ namespace Certes.Cli.Commands
                 });
             syntax = DefineCommand(
                 $"dns {orderLoc} {domain}" +
-                $" --talent-id talentId --client-id clientId --client-secret abcd1234" +
+                $" --tenant-id tenantId --client-id clientId --client-secret abcd1234" +
                 $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
             await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
         }
@@ -230,7 +230,7 @@ namespace Certes.Cli.Commands
         public void CanDefineCommand()
         {
             var args = $"dns http://acme.com/o/1 www.abc.com --server {LetsEncryptStagingV2}"
-                + " --talent-id talentId --client-id clientId --client-secret abcd1234"
+                + " --tenant-id tenantId --client-id clientId --client-secret abcd1234"
                 + " --subscription-id subscriptionId --resource-group resGroup";
             var syntax = DefineCommand(args);
 
@@ -238,7 +238,7 @@ namespace Certes.Cli.Commands
             ValidateOption(syntax, "server", LetsEncryptStagingV2);
             ValidateParameter(syntax, "order-id", new Uri("http://acme.com/o/1"));
             ValidateParameter(syntax, "domain", "www.abc.com");
-            ValidateOption(syntax, "talent-id", "talentId");
+            ValidateOption(syntax, "tenant-id", "tenantId");
             ValidateOption(syntax, "client-id", "clientId");
             ValidateOption(syntax, "client-secret", "abcd1234");
             ValidateOption(syntax, "subscription-id", "subscriptionId");

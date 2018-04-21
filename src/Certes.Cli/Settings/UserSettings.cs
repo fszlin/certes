@@ -127,10 +127,10 @@ namespace Certes.Cli.Settings
                 settings.SubscriptionId = envSubscriptionId;
             }
 
-            var envTalentId = environment.GetVar("CERTES_AZURE_TALENT_ID");
-            if (!string.IsNullOrWhiteSpace(envTalentId))
+            var envTenantId = environment.GetVar("CERTES_AZURE_TALENT_ID");
+            if (!string.IsNullOrWhiteSpace(envTenantId))
             {
-                settings.TalentId = envTalentId;
+                settings.TenantId = envTenantId;
             }
 
             var envClientId = environment.GetVar("CERTES_AZURE_CLIENT_ID");
