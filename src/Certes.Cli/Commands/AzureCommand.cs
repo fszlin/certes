@@ -11,7 +11,7 @@ namespace Certes.Cli.Commands
     {
         protected const string AzureResourceGroupOption = "resource-group";
 
-        public static string AzureTalentIdOption => "talent-id";
+        public static string AzureTenantIdOption => "tenant-id";
         public static string AzureClientIdOption => "client-id";
         public static string AzureSecretOption => "client-secret";
         public static string AzureSubscriptionIdOption => "subscription-id";
@@ -27,8 +27,8 @@ namespace Certes.Cli.Commands
         protected async Task<AzureCredentials> ReadAzureCredentials(ArgumentSyntax syntax)
         {
             var azSettings = await UserSettings.GetAzureSettings();
-            var talentId = syntax.GetOption<string>(AzureTalentIdOption)
-                ?? azSettings.TalentId;
+            var tenantId = syntax.GetOption<string>(AzureTenantIdOption)
+                ?? azSettings.TenantId;
             var clientId = syntax.GetOption<string>(AzureClientIdOption)
                 ?? azSettings.ClientId;
             var secret = syntax.GetOption<string>(AzureSecretOption)
@@ -36,7 +36,7 @@ namespace Certes.Cli.Commands
             var subscriptionId = syntax.GetOption<string>(AzureSubscriptionIdOption)
                 ?? azSettings.SubscriptionId;
 
-            ValidateOption(talentId, AzureTalentIdOption);
+            ValidateOption(tenantId, AzureTenantIdOption);
             ValidateOption(clientId, AzureClientIdOption);
             ValidateOption(secret, AzureSecretOption);
             ValidateOption(subscriptionId, AzureSubscriptionIdOption);
@@ -48,7 +48,7 @@ namespace Certes.Cli.Commands
             };
 
             var credentials = new AzureCredentials(
-                loginInfo, talentId, AzureEnvironment.AzureGlobalCloud)
+                loginInfo, tenantId, AzureEnvironment.AzureGlobalCloud)
                 .WithDefaultSubscription(subscriptionId);
 
             return credentials;
@@ -59,7 +59,7 @@ namespace Certes.Cli.Commands
             return syntax
                 .DefineServerOption()
                 .DefineKeyOption()
-                .DefineOption(AzureTalentIdOption, help: Strings.HelpAzureTalentId)
+                .DefineOption(AzureTenantIdOption, help: Strings.HelpAzureTenantId)
                 .DefineOption(AzureClientIdOption, help: Strings.HelpAzureClientId)
                 .DefineOption(AzureSecretOption, help: Strings.HelpAzureSecret)
                 .DefineOption(AzureSubscriptionIdOption, help: Strings.HelpAzureSubscriptionId)

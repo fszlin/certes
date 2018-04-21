@@ -243,8 +243,8 @@
   <data name="HelpCommandAzureDns" xml:space="preserve">
     <value>Configure Azure DNS to respone to ACME DNS challenge.</value>
   </data>
-  <data name="HelpAzureTalentId" xml:space="preserve">
-    <value>The Azure talent ID.</value>
+  <data name="HelpAzureTenantId" xml:space="preserve">
+    <value>The Azure tenant ID.</value>
   </data>
   <data name="ErrorDnsZoneNotFound" xml:space="preserve">
     <value>DNS zone for '{0}' not found.</value>

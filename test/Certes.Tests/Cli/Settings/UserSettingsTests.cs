@@ -101,13 +101,13 @@ namespace Certes.Cli
             var envSettings = new AzureSettings
             {
                 SubscriptionId = Guid.NewGuid().ToString("N"),
-                TalentId = Guid.NewGuid().ToString("N"),
+                TenantId = Guid.NewGuid().ToString("N"),
                 ClientId = Guid.NewGuid().ToString("N"),
                 ClientSecret = Guid.NewGuid().ToString("N"),
             };
 
             envMock.Setup(m => m.GetVar("CERTES_AZURE_SUBSCRIPTION_ID")).Returns(envSettings.SubscriptionId);
-            envMock.Setup(m => m.GetVar("CERTES_AZURE_TALENT_ID")).Returns(envSettings.TalentId);
+            envMock.Setup(m => m.GetVar("CERTES_AZURE_TALENT_ID")).Returns(envSettings.TenantId);
             envMock.Setup(m => m.GetVar("CERTES_AZURE_CLIENT_ID")).Returns(envSettings.ClientId);
             envMock.Setup(m => m.GetVar("CERTES_AZURE_CLIENT_SECRET")).Returns(envSettings.ClientSecret);
         
@@ -117,7 +117,7 @@ namespace Certes.Cli
             var settings = new UserSettings(fileMock.Object, envMock.Object);
             var azSettings = await settings.GetAzureSettings();
             Assert.Equal(envSettings.SubscriptionId, azSettings.SubscriptionId);
-            Assert.Equal(envSettings.TalentId, azSettings.TalentId);
+            Assert.Equal(envSettings.TenantId, azSettings.TenantId);
             Assert.Equal(envSettings.ClientId, azSettings.ClientId);
             Assert.Equal(envSettings.ClientSecret, azSettings.ClientSecret);
         }
@@ -134,7 +134,7 @@ namespace Certes.Cli
                 ClientId = Guid.NewGuid().ToString(),
                 ClientSecret = Guid.NewGuid().ToString(),
                 SubscriptionId = Guid.NewGuid().ToString(),
-                TalentId = Guid.NewGuid().ToString(),
+                TenantId = Guid.NewGuid().ToString(),
             };
 
             var json = JsonConvert.SerializeObject(new UserSettings.Model { Azure = azSettings }, JsonUtil.CreateSettings());

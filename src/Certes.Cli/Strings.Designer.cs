@@ -188,11 +188,11 @@ namespace Certes.Cli {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Azure talent ID..
+        ///   Looks up a localized string similar to The Azure tenant ID..
         /// </summary>
-        internal static string HelpAzureTalentId {
+        internal static string HelpAzureTenantId {
             get {
-                return ResourceManager.GetString("HelpAzureTalentId", resourceCulture);
+                return ResourceManager.GetString("HelpAzureTenantId", resourceCulture);
             }
         }
         
