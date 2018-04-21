@@ -23,6 +23,7 @@ namespace Certes.Pkcs
             pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
             var pfx = pfxBuilder.Build("my-cert", "abcd1234");
         }
+
         [Theory]
         [InlineData(KeyAlgorithm.RS256)]
         [InlineData(KeyAlgorithm.ES256)]
