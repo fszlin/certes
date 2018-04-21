@@ -2,7 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Added
+- Export full chain certification in PEM ([#87][i87])
 
+## [2.0.1] - 2018-03-17
 ### Added
 - Add `Processing` status for challenges.
 
@@ -51,7 +54,9 @@ All notable changes to this project will be documented in this file.
 [1.1.3]: https://github.com/fszlin/certes/compare/v1.1.2...v1.1.3
 [1.1.4]: https://github.com/fszlin/certes/compare/v1.1.3...v1.1.4
 [2.0.0]: https://github.com/fszlin/certes/compare/v1.1.4...v2.0.0
+[2.0.1]: https://github.com/fszlin/certes/compare/v2.0.0...v2.0.1
 
 [i5]: https://github.com/fszlin/certes/issues/5
 [i22]: https://github.com/fszlin/certes/issues/22
 [i76]: https://github.com/fszlin/certes/issues/76
+[i87]: https://github.com/fszlin/certes/issues/87

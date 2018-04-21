@@ -34,9 +34,9 @@ namespace Certes.Cli.Commands
 
             var certChainContent = string.Join(
                 Environment.NewLine,
-                File.ReadAllText("./Data/leaf-cert.pem"),
-                File.ReadAllText("./Data/test-ca2.pem"),
-                File.ReadAllText("./Data/lets-encrypt-x3-cross-signed.pem"));
+                File.ReadAllText("./Data/leaf-cert.pem").Trim(),
+                File.ReadAllText("./Data/test-ca2.pem").Trim(),
+                File.ReadAllText("./Data/lets-encrypt-x3-cross-signed.pem").Trim());
             var certChain = new CertificateChain(certChainContent);
 
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
@@ -88,8 +88,8 @@ namespace Certes.Cli.Commands
 
             fileMock.Verify(m => m.WriteAllText(outPath, It.IsAny<string>()), Times.Once);
             Assert.Equal(
-                certChainContent.Replace("\r", "").Replace("\n", ""),
-                saved.Replace("\r", "").Replace("\n", ""));
+                certChainContent.Replace("\r", ""),
+                saved.Replace("\r", "").TrimEnd());
 
             order.Status = OrderStatus.Invalid;
             syntax = DefineCommand($"pem {orderLoc}");

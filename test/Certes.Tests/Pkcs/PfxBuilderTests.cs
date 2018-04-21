@@ -23,6 +23,7 @@ namespace Certes.Pkcs
             pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
             var pfx = pfxBuilder.Build("my-cert", "abcd1234");
         }
+
         [Theory]
         [InlineData(KeyAlgorithm.RS256)]
         [InlineData(KeyAlgorithm.ES256)]
@@ -36,22 +37,6 @@ namespace Certes.Pkcs
                 Encoding.UTF8.GetBytes(leafCert), KeyFactory.NewKey(alog));
             pfxBuilder.FullChain = false;
             var pfx = pfxBuilder.Build("my-cert", "abcd1234");
-        }
-
-        [Theory]
-        [InlineData(KeyAlgorithm.RS256)]
-        [InlineData(KeyAlgorithm.ES256)]
-        [InlineData(KeyAlgorithm.ES384)]
-        [InlineData(KeyAlgorithm.ES512)]
-        public void FailChainForExpiredCert(KeyAlgorithm alog)
-        {
-            var leafCert = File.ReadAllBytes("./Data/leaf-cert-expire.cer");
-
-            var pfxBuilder = new PfxBuilder(leafCert, KeyFactory.NewKey(alog));
-
-            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-ca2.pem"));
-            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
-            Assert.Throws<PkixCertPathBuilderException>(() => pfxBuilder.Build("my-cert", "abcd1234"));
         }
     }
 }

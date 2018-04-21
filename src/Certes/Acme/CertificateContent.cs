@@ -9,7 +9,7 @@ namespace Certes.Acme
 
         public CertificateContent(string pem)
         {
-            this.pem = pem;
+            this.pem = pem.Trim();
         }
 
         public byte[] ToDer()

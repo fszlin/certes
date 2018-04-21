@@ -1,4 +1,4 @@
-version: 2.0.0.{build}
+version: 2.0.2.{build}
 build:
   verbosity: minimal
   project: Certes.sln
@@ -21,7 +21,6 @@ environment:
 
 cache:
   - dotnet-pre
-  - '%USERPROFILE%\.nuget\packages'
 
 branches:
   # whitelist
@@ -36,7 +35,7 @@ init:
 
 install:
   - ps: wget https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
-  - ps: .\dotnet-install.ps1 -InstallDir ./dotnet-pre -Version 2.1.300-preview1-008174 -NoPath
+  - ps: .\dotnet-install.ps1 -InstallDir ./dotnet-pre -Version 2.1.300-preview2-008530 -NoPath
 
 before_build:
   - ps: New-Item build -Type directory -Force | Out-Null

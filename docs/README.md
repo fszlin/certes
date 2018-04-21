@@ -15,11 +15,34 @@ or using .NET CLI:
 dotnet add package Certes
 ```
 
+# Start first
+
+- [Staging Environment](https://letsencrypt.org/docs/staging-environment/)
+- [Rate Limits](https://letsencrypt.org/docs/rate-limits/)
+
+## Account
+
 Creating new ACME account:
 ```C#
 var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2);
 var account = acme.NewAccount("admin@example.com", true);
+// Storage key
+var pemKey = acme.AccountKey.ToPem();
 ```
+Use an existing ACME account:
+```C#
+// Stored key
+var pemKey = KeyFactory.FromPem(ac.AccountKey);
+var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2, pemKey);
+var account = acme.Account();
+```
+Account Method:
+- Deactivate();
+- Update();
+- Orders();
+- Resource();
+
+## Order
 
 Place a wildcard certificate order
 *(DNS validation is required for wildcard certificates)*
@@ -40,6 +63,7 @@ For non-wildcard certificate, HTTP challenge is also available
 ```C#
 var order = await acme.NewOrder(new[] { "your.domain.name" });
 ```
+## Authorization
 
 Get the **token** and **key authorization string**
 ```C#
@@ -51,10 +75,14 @@ var keyAuthz = httpChallenge.KeyAuthz;
 Save the **key authorization string** in a text file,
 and upload it to `http://your.domain.name/.well-known/acme-challenge/<token>`
 
+## Validate
+
 Ask the ACME server to validate our domain ownership
 ```C#
 await challenge.Validate();
 ```
+
+## Certificate
 
 Download the certificate once validation is done
 ```C#
@@ -70,6 +98,11 @@ var cert = await order.Generate(new CsrInfo
 }, privateKey);
 ```
 
+Export full chain certification
+```C#
+var certPem = cert.ToPem();
+```
+
 Export PFX
 ```C#
 var pfxBuilder = cert.ToPfx(privateKey);
@@ -83,7 +116,7 @@ Check the [APIs](APIv2.md) for more details.
 ## CLI
 
 The CLI is available as a dotnet global tool.
-.NET Core Runtime 2.1+ *(currently in [preview](https://www.microsoft.com/net/download/dotnet-core/runtime-2.1.0-preview1))*
+.NET Core Runtime 2.1+ *(currently in [preview](https://www.microsoft.com/net/download/dotnet-core/runtime-2.1.0-preview2))*
  is required to use dotnet tools.
 
 To install Certes CLI *(you may need to restart the console session if this is the first dotnet tool installed)*
