@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Added
 - Export full chain certification in PEM ([#87][i87])
+- [CLI] Change argument ~~talent-id~~ to `tenant-id` ([#86][i86])
 
 ## [2.0.1] - 2018-03-17
 ### Added
@@ -59,4 +60,5 @@ All notable changes to this project will be documented in this file.
 [i5]: https://github.com/fszlin/certes/issues/5
 [i22]: https://github.com/fszlin/certes/issues/22
 [i76]: https://github.com/fszlin/certes/issues/76
+[i86]: https://github.com/fszlin/certes/issues/86
 [i87]: https://github.com/fszlin/certes/issues/87
