@@ -98,6 +98,11 @@ var cert = await order.Generate(new CsrInfo
 }, privateKey);
 ```
 
+Export full chain certification
+```C#
+var certPem = cert.ToPem();
+```
+
 Export PFX
 ```C#
 var pfxBuilder = cert.ToPfx(privateKey);
