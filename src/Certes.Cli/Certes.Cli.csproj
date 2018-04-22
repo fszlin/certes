@@ -36,11 +36,10 @@
     <PackageReference Include="System.CommandLine" Version="0.1.0-*" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.9.1" />
     <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.9.1" />
-    <PackageReference Include="Certes" Version="$(CertesVersion)" Condition="'$(CertesVersion)' != ''" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Certes\Certes.csproj" Condition="'$(CertesVersion)' == ''" />
+    <ProjectReference Include="..\Certes\Certes.csproj" />
   </ItemGroup>
 
   <ItemGroup>
