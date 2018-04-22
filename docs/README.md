@@ -16,7 +16,7 @@ dotnet add package Certes
 ```
 
 [Let's Encrypt](https://letsencrypt.org/how-it-works/)
-is primary CA we supported.
+is the primary CA we supported.
 It's recommend testing against
 [staging environment](https://letsencrypt.org/docs/staging-environment/)
 before using production environment, to avoid hitting the 
@@ -121,7 +121,7 @@ The CLI is available as a dotnet global tool.
 
 To install Certes CLI *(you may need to restart the console session if this is the first dotnet tool installed)*
 ```Batchfile
-dotnet install tool --global dotnet-certes --version 1.0.1-preview-829
+dotnet install tool --global dotnet-certes
 ```
 
 Use the `--help` option to get started
@@ -129,7 +129,7 @@ Use the `--help` option to get started
 certes --help
 ```
 
-or check this [AppVeyor script][AppVeyorCliSample] for renewing certificate on Azure apps.
+or check this [AppVeyor script][AppVeyorCliSample] for renewing certificates on Azure apps.
 
 ## Versioning
 
@@ -149,4 +149,4 @@ Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 [![codecov](https://codecov.io/gh/fszlin/certes/branch/master/graph/badge.svg)](https://codecov.io/gh/fszlin/certes)
 [![BCH compliance](https://bettercodehub.com/edge/badge/fszlin/certes?branch=master)](https://bettercodehub.com/results/fszlin/certes)
 
-[AppVeyorCliSample]: https://github.com/fszlin/lo0.in/blob/79fc1561ca4aa29de7741ad5590e53be8db34690/.appveyor.yml#L43-L56
+[AppVeyorCliSample]: https://github.com/fszlin/lo0.in/blob/master/.appveyor.yml#L43
