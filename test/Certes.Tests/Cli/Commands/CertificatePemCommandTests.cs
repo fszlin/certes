@@ -36,7 +36,7 @@ namespace Certes.Cli.Commands
                 Environment.NewLine,
                 File.ReadAllText("./Data/leaf-cert.pem").Trim(),
                 File.ReadAllText("./Data/test-ca2.pem").Trim(),
-                File.ReadAllText("./Data/lets-encrypt-x3-cross-signed.pem").Trim());
+                File.ReadAllText("./Data/test-root.pem").Trim());
             var certChain = new CertificateChain(certChainContent);
 
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
