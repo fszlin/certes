@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../misc/certes.props" />
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard1.3;net45;net47</TargetFrameworks>
-    <AssemblyVersion>2.0.2</AssemblyVersion>
+    <AssemblyVersion>2.1.0</AssemblyVersion>
     <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
     <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
     <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
