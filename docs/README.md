@@ -121,7 +121,7 @@ The CLI is available as a dotnet global tool.
 
 To install Certes CLI *(you may need to restart the console session if this is the first dotnet tool installed)*
 ```Batchfile
-dotnet install tool --global dotnet-certes --version 1.0.1-preview-829
+dotnet install tool --global dotnet-certes --version 1.0.1-*
 ```
 
 Use the `--help` option to get started
