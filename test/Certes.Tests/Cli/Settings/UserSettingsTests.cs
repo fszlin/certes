@@ -107,7 +107,7 @@ namespace Certes.Cli
             };
 
             envMock.Setup(m => m.GetVar("CERTES_AZURE_SUBSCRIPTION_ID")).Returns(envSettings.SubscriptionId);
-            envMock.Setup(m => m.GetVar("CERTES_AZURE_TALENT_ID")).Returns(envSettings.TenantId);
+            envMock.Setup(m => m.GetVar("CERTES_AZURE_TENANT_ID")).Returns(envSettings.TenantId);
             envMock.Setup(m => m.GetVar("CERTES_AZURE_CLIENT_ID")).Returns(envSettings.ClientId);
             envMock.Setup(m => m.GetVar("CERTES_AZURE_CLIENT_SECRET")).Returns(envSettings.ClientSecret);
         
