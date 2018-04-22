@@ -4,7 +4,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>netcoreapp1.0;netcoreapp2.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(CertesVersion)' != ''">netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CertesVersion)' != ''">netcoreapp2.1</TargetFrameworks>
     <AssemblyVersion>1.0.1</AssemblyVersion>
     <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
     <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
