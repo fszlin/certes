@@ -6,8 +6,10 @@ namespace Certes
     /// <summary>
     /// The exception that is thrown when an error occurs while processing ACME operations.
     /// </summary>
-    /// <seealso cref="System.Exception" />
+    /// <seealso cref="Exception" />
+#if !NETSTANDARD1_3
     [Serializable]
+#endif
     public class AcmeException : Exception
     {
         /// <summary>
@@ -42,15 +44,16 @@ namespace Certes
         {
         }
 
+#if !NETSTANDARD1_3
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeException"/> class.
         /// </summary>
         /// <param name="info">
-        /// The <see cref="T:System.Runtime.Serialization.SerializationInfo"></see> that
+        /// The <see cref="SerializationInfo"/> that
         /// holds the serialized object data about the exception being thrown.
         /// </param>
         /// <param name="context">
-        /// The <see cref="T:System.Runtime.Serialization.StreamingContext"></see> 
+        /// The <see cref="StreamingContext"/> 
         /// that contains contextual information about the source or destination.
         /// </param>
         protected AcmeException(SerializationInfo info, StreamingContext context)
@@ -59,20 +62,19 @@ namespace Certes
         }
 
         /// <summary>
-        /// Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"></see> 
+        /// Sets the <see cref="SerializationInfo"/> 
         /// with information about the exception.
         /// </summary>
         /// <param name="info">
-        /// The <see cref="T:System.Runtime.Serialization.SerializationInfo"></see> that
+        /// The <see cref="SerializationInfo"/> that
         /// holds the serialized object data about the exception being thrown.
         /// </param>
         /// <param name="context">
-        /// The <see cref="T:System.Runtime.Serialization.StreamingContext"></see> that 
+        /// The <see cref="StreamingContext"/> that 
         /// contains contextual information about the source or destination.
         /// </param>
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-        }
+            => base.GetObjectData(info, context);
+#endif
     }
 }
