@@ -45,6 +45,17 @@ namespace Certes
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="AcmeException" /> class.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        /// <param name="error">The error occurred while processing ACME operations.</param>
+        public AcmeRequestException(string message, AcmeError error)
+            : base(message)
+        {
+            Error = error;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AcmeRequestException"/> class.
         /// </summary>
         /// <param name="message">

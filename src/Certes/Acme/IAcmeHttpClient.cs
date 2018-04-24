@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Certes.Properties;
 
 namespace Certes.Acme
 {
@@ -58,7 +59,9 @@ namespace Certes.Acme
             var resp = await client.Post<T>(uri, payload);
             if (ensureSuccessStatusCode && resp.Error != null)
             {
-                throw new Exception(resp.Error.Detail);
+                throw new AcmeRequestException(
+                    string.Format(Strings.ErrorFetchResource, uri),
+                    resp.Error);
             }
 
             return resp;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Certes.Properties;
 
 namespace Certes.Acme
 {
@@ -47,7 +48,9 @@ namespace Certes.Acme
             var resp = await Context.HttpClient.Get<T>(Location);
             if (resp.Error != null)
             {
-                throw new Exception(resp.Error.Detail);
+                throw new AcmeRequestException(
+                    string.Format(Strings.ErrorFetchResource, Location),
+                    resp.Error);
             }
 
             return resp.Resource;
