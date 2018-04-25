@@ -80,11 +80,47 @@ namespace Certes.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fail to finalize order..
+        /// </summary>
+        internal static string ErrorFinalizeFailed {
+            get {
+                return ResourceManager.GetString("ErrorFinalizeFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Illegal base64url string..
         /// </summary>
         internal static string ErrorInvalidBase64String {
             get {
                 return ResourceManager.GetString("ErrorInvalidBase64String", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can not finalize order with status &apos;{0}&apos;..
+        /// </summary>
+        internal static string ErrorInvalidOrderStatusForFinalize {
+            get {
+                return ResourceManager.GetString("ErrorInvalidOrderStatusForFinalize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Certificate data missing, please fetch the certificate from &apos;{0}&apos;..
+        /// </summary>
+        internal static string ErrorMissingCertificateData {
+            get {
+                return ResourceManager.GetString("ErrorMissingCertificateData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsupported resource type &apos;{0}&apos;..
+        /// </summary>
+        internal static string ErrorUnsupportedResourceType {
+            get {
+                return ResourceManager.GetString("ErrorUnsupportedResourceType", resourceCulture);
             }
         }
     }

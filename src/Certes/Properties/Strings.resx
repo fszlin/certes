@@ -123,7 +123,19 @@
   <data name="ErrorFetchResource" xml:space="preserve">
     <value>Fail to load resource from '{0}'.</value>
   </data>
+  <data name="ErrorFinalizeFailed" xml:space="preserve">
+    <value>Fail to finalize order.</value>
+  </data>
   <data name="ErrorInvalidBase64String" xml:space="preserve">
     <value>Illegal base64url string.</value>
+  </data>
+  <data name="ErrorInvalidOrderStatusForFinalize" xml:space="preserve">
+    <value>Can not finalize order with status '{0}'.</value>
+  </data>
+  <data name="ErrorMissingCertificateData" xml:space="preserve">
+    <value>Certificate data missing, please fetch the certificate from '{0}'.</value>
+  </data>
+  <data name="ErrorUnsupportedResourceType" xml:space="preserve">
+    <value>Unsupported resource type '{0}'.</value>
   </data>
 </root>

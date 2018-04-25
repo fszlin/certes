@@ -1,12 +1,13 @@
-﻿using Certes.Json;
-using Certes.Jws;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Certes.Json;
+using Certes.Jws;
+using Certes.Properties;
+using Newtonsoft.Json;
 
 namespace Certes.Acme
 {
@@ -93,7 +94,7 @@ namespace Certes.Acme
 
             if (resourceUri == null)
             {
-                throw new Exception($"Unsupported resource type '{resourceType}'.");
+                throw new AcmeException(string.Format(Strings.ErrorUnsupportedResourceType, resourceType));
             }
 
             return resourceUri;
