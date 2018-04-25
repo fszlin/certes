@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
 using Certes.Json;
+using Certes.Properties;
 using Newtonsoft.Json;
 
 namespace Certes.Acme
@@ -172,7 +173,7 @@ namespace Certes.Acme
             nonce = response.Headers.GetValues("Replay-Nonce").FirstOrDefault();
             if (nonce == null)
             {
-                throw new Exception("Can not get new nonce.");
+                throw new AcmeException(Strings.ErrorFetchNonce);
             }
         }
 

@@ -62,7 +62,16 @@ namespace Certes.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not load resource from &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Fail to fetch new nonce..
+        /// </summary>
+        internal static string ErrorFetchNonce {
+            get {
+                return ResourceManager.GetString("ErrorFetchNonce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fail to load resource from &apos;{0}&apos;..
         /// </summary>
         internal static string ErrorFetchResource {
             get {

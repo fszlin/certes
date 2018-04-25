@@ -117,7 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ErrorFetchNonce" xml:space="preserve">
+    <value>Fail to fetch new nonce.</value>
+  </data>
   <data name="ErrorFetchResource" xml:space="preserve">
-    <value>Could not load resource from '{0}'.</value>
+    <value>Fail to load resource from '{0}'.</value>
   </data>
 </root>
