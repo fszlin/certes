@@ -35,8 +35,7 @@ namespace Certes.Acme
         [Fact]
         public void CanSerialize()
         {
-            var error = new AcmeError { Detail = "error" };
-            var ex = new AcmeRequestException("certes", error);
+            var ex = new AcmeRequestException("certes");
             
             var serializer = new BinaryFormatter();
 
@@ -47,7 +46,27 @@ namespace Certes.Acme
                 buffer.Seek(0, SeekOrigin.Begin);
                 var deserialized = (AcmeRequestException)serializer.Deserialize(buffer);
 
+                Assert.Equal("certes", deserialized.Message);
+            }
+        }
+
+        [Fact]
+        public void CanSerializeWithError()
+        {
+            var error = new AcmeError { Detail = "error" };
+            var ex = new AcmeRequestException("certes", error);
+
+            var serializer = new BinaryFormatter();
+
+            using (var buffer = new MemoryStream())
+            {
+                serializer.Serialize(buffer, ex);
+
+                buffer.Seek(0, SeekOrigin.Begin);
+                var deserialized = (AcmeRequestException)serializer.Deserialize(buffer);
+
                 Assert.NotNull(deserialized.Error.Detail);
+                Assert.Equal("error", deserialized.Error.Detail);
             }
         }
 #endif
