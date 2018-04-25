@@ -109,7 +109,11 @@ namespace Certes
         {
             base.GetObjectData(info, context);
 
-            if (Error != null)
+            if (Error == null)
+            {
+                info.AddValue("acme.error", "");
+            }
+            else
             {
                 info.AddValue("acme.error", JsonConvert.SerializeObject(Error, jsonSerializerSettings));
             }
