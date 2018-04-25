@@ -78,5 +78,14 @@ namespace Certes.Properties {
                 return ResourceManager.GetString("ErrorFetchResource", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Illegal base64url string..
+        /// </summary>
+        internal static string ErrorInvalidBase64String {
+            get {
+                return ResourceManager.GetString("ErrorInvalidBase64String", resourceCulture);
+            }
+        }
     }
 }

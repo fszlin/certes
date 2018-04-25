@@ -123,4 +123,7 @@
   <data name="ErrorFetchResource" xml:space="preserve">
     <value>Fail to load resource from '{0}'.</value>
   </data>
+  <data name="ErrorInvalidBase64String" xml:space="preserve">
+    <value>Illegal base64url string.</value>
+  </data>
 </root>
