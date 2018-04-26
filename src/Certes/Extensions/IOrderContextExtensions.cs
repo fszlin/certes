@@ -76,7 +76,7 @@ namespace Certes
 
             if (order.Status != OrderStatus.Valid)
             {
-                throw new Exception("Failto finalize order.");
+                throw new Exception("Fail to finalize order.");
             }
 
             return await context.Download();

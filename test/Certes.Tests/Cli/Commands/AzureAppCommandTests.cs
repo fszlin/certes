@@ -52,7 +52,7 @@ namespace Certes.Cli.Commands
                 ClientId = "clientId",
                 ClientSecret = "secret",
                 SubscriptionId = Guid.NewGuid().ToString("N"),
-                TalentId = Guid.NewGuid().ToString("N"),
+                TenantId = Guid.NewGuid().ToString("N"),
             });
 
             var orderMock = new Mock<IOrderContext>(MockBehavior.Strict);
@@ -119,7 +119,7 @@ namespace Certes.Cli.Commands
                 settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object, envMock.Object, _ => appSvcMock.Object);
 
             var args = $"app {orderLoc} {domain} {appName} --private-key {keyPath}"
-                + $" --talent-id talentId --client-id clientId --client-secret abcd1234"
+                + $" --tenant-id tenantId --client-id clientId --client-secret abcd1234"
                 + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
             var syntax = DefineCommand(args);
             dynamic ret = await cmd.Execute(syntax);
@@ -136,7 +136,7 @@ namespace Certes.Cli.Commands
 
             args = $"app {orderLoc} {domain} {appName} --private-key {keyPath}"
                 + $" --slot {appSlot}"
-                + $" --talent-id talentId --client-id clientId --client-secret abcd1234"
+                + $" --tenant-id tenantId --client-id clientId --client-secret abcd1234"
                 + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
             syntax = DefineCommand(args);
             ret = await cmd.Execute(syntax);
@@ -161,7 +161,7 @@ namespace Certes.Cli.Commands
                 });
 
             args = $"app {orderLoc} {domain} {appName} --private-key {keyPath}"
-                + $" --talent-id talentId --client-id clientId --client-secret abcd1234"
+                + $" --tenant-id tenantId --client-id clientId --client-secret abcd1234"
                 + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
             syntax = DefineCommand(args);
             ret = await cmd.Execute(syntax);
@@ -171,7 +171,7 @@ namespace Certes.Cli.Commands
             // order incompleted
             orderMock.Setup(m => m.Resource()).ReturnsAsync(new Order());
             args = $"app {orderLoc} {domain} {appName} --private-key {keyPath}"
-                + $" --talent-id talentId --client-id clientId --client-secret abcd1234"
+                + $" --tenant-id tenantId --client-id clientId --client-secret abcd1234"
                 + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
             syntax = DefineCommand(args);
             await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
@@ -182,7 +182,7 @@ namespace Certes.Cli.Commands
         {
             var args = $"app http://acme.com/o/1 www.abc.com my-app --private-key ./cert-key.pem"
                 + " --slot staging"
-                + " --talent-id talentId --client-id clientId --client-secret abcd1234"
+                + " --tenant-id tenantId --client-id clientId --client-secret abcd1234"
                 + " --subscription-id subscriptionId --resource-group resGroup";
             var syntax = DefineCommand(args);
 
@@ -191,7 +191,7 @@ namespace Certes.Cli.Commands
             ValidateParameter(syntax, "app", "my-app");
             ValidateParameter(syntax, "domain", "www.abc.com");
             ValidateParameter(syntax, "private-key", "./cert-key.pem");
-            ValidateOption(syntax, "talent-id", "talentId");
+            ValidateOption(syntax, "tenant-id", "tenantId");
             ValidateOption(syntax, "client-id", "clientId");
             ValidateOption(syntax, "client-secret", "abcd1234");
             ValidateOption(syntax, "subscription-id", "subscriptionId");

@@ -1,4 +1,4 @@
-# Certes [![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)][tw]
+# Certes
 
 Certes is an [ACME](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment)
 client runs on .NET 4.5+ and .NET Standard 1.3+, supports ACME v2 and wildcard certificates.
@@ -15,10 +15,12 @@ or using .NET CLI:
 dotnet add package Certes
 ```
 
-# Start first
-
-- [Staging Environment](https://letsencrypt.org/docs/staging-environment/)
-- [Rate Limits](https://letsencrypt.org/docs/rate-limits/)
+[Let's Encrypt](https://letsencrypt.org/how-it-works/)
+is the primary CA we supported.
+It's recommend testing against
+[staging environment](https://letsencrypt.org/docs/staging-environment/)
+before using production environment, to avoid hitting the 
+[rate limits](https://letsencrypt.org/docs/rate-limits/).
 
 ## Account
 
@@ -26,21 +28,19 @@ Creating new ACME account:
 ```C#
 var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2);
 var account = acme.NewAccount("admin@example.com", true);
-// Storage key
+
+// Save the account key for later use
 var pemKey = acme.AccountKey.ToPem();
 ```
 Use an existing ACME account:
 ```C#
-// Stored key
-var pemKey = KeyFactory.FromPem(ac.AccountKey);
-var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2, pemKey);
+// Load the saved account key
+var accountKey = KeyFactory.FromPem(pemKey);
+var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2, accountKey);
 var account = acme.Account();
 ```
-Account Method:
-- Deactivate();
-- Update();
-- Orders();
-- Resource();
+
+See [API doc](APIv2.md#acounts) for additional operations.
 
 ## Order
 
@@ -121,7 +121,7 @@ The CLI is available as a dotnet global tool.
 
 To install Certes CLI *(you may need to restart the console session if this is the first dotnet tool installed)*
 ```Batchfile
-dotnet install tool --global dotnet-certes --version 1.0.1-master-812
+dotnet install tool --global dotnet-certes
 ```
 
 Use the `--help` option to get started
@@ -129,7 +129,7 @@ Use the `--help` option to get started
 certes --help
 ```
 
-or check this [AppVeyor script][AppVeyorCliSample] for renewing certificate on Azure webapps.
+or check this [AppVeyor script][AppVeyorCliSample] for renewing certificates on Azure apps.
 
 ## Versioning
 
@@ -149,5 +149,4 @@ Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 [![codecov](https://codecov.io/gh/fszlin/certes/branch/master/graph/badge.svg)](https://codecov.io/gh/fszlin/certes)
 [![BCH compliance](https://bettercodehub.com/edge/badge/fszlin/certes?branch=master)](https://bettercodehub.com/results/fszlin/certes)
 
-[tw]: https://twitter.com/share?url=https%3A%2F%2Fgithub.com%2Ffszlin%2Fcertes&via=certes_acme&related=fszlin&hashtags=certes%2Cssl%2Clets-encrypt%2Cacme%2Chttps&text=get%20free%20SSL%20via%20certes
-[AppVeyorCliSample]: https://github.com/fszlin/lo0.in/blob/79fc1561ca4aa29de7741ad5590e53be8db34690/.appveyor.yml#L43-L56
+[AppVeyorCliSample]: https://github.com/fszlin/lo0.in/blob/master/.appveyor.yml#L43
