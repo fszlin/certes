@@ -50,7 +50,7 @@ namespace Certes.Acme
                 File.ReadAllText("./Data/test-root.pem").Trim());
 
             var chain = new CertificateChain(pem);
-            Assert.Throws<Exception>(() => chain.ToPem());
+            Assert.Throws<AcmeException>(() => chain.ToPem());
         }
     }
 }

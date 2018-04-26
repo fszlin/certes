@@ -1,5 +1,6 @@
-﻿using Certes.Pkcs;
-using System;
+﻿using System;
+using Certes.Pkcs;
+using Certes.Properties;
 
 namespace Certes.Acme
 {
@@ -40,7 +41,8 @@ namespace Certes.Acme
         {
             if ((cert ?? throw new ArgumentNullException(nameof(cert))).Raw == null)
             {
-                throw new Exception($"Certificate data missing, please fetch the certificate from ${cert.Location}");
+                throw new AcmeException(
+                    string.Format(Strings.ErrorMissingCertificateData, cert.Location));
             }
 
             var pfxBuilder = new PfxBuilder(cert.Raw, cert.Key);

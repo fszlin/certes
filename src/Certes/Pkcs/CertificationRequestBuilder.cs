@@ -177,15 +177,7 @@ namespace Certes.Pkcs
 
             LoadKeyPair();
             var signatureFactory = new Asn1SignatureFactory(pkcsObjectId, keyPair.Private);
-            var csr = new Pkcs10CertificationRequest(signatureFactory, x509, keyPair.Public, new DerSet(attribute), keyPair.Private);
-
-            var valid = csr.Verify();
-            if (!valid)
-            {
-                throw new Exception();
-            }
-
-            return csr;
+            return new Pkcs10CertificationRequest(signatureFactory, x509, keyPair.Public, new DerSet(attribute), keyPair.Private);
         }
 
         private void LoadKeyPair()

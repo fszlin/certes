@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Pkcs;
+using Certes.Properties;
 
 namespace Certes
 {
@@ -69,14 +70,14 @@ namespace Certes
             var order = await context.Resource();
             if (order.Status != OrderStatus.Pending)
             {
-                throw new Exception($"Can not finalize order with status {order.Status}.");
+                throw new AcmeException(string.Format(Strings.ErrorInvalidOrderStatusForFinalize, order.Status));
             }
 
             order = await context.Finalize(csr, key);
 
             if (order.Status != OrderStatus.Valid)
             {
-                throw new Exception("Fail to finalize order.");
+                throw new AcmeException(Strings.ErrorFinalizeFailed);
             }
 
             return await context.Download();

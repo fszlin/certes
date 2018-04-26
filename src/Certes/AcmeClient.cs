@@ -7,6 +7,7 @@ using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Jws;
 using Certes.Pkcs;
+using Certes.Properties;
 
 namespace Certes
 {
@@ -386,7 +387,9 @@ namespace Certes
         {
             if (response.Error != null)
             {
-                throw new Exception($"{response.Error.Type}: {response.Error.Detail} ({response.Error.Status})");
+                throw new AcmeRequestException(
+                    string.Format(Strings.ErrorFetchResource, response.Location), 
+                    response.Error);
             }
         }
 

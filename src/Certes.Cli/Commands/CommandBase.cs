@@ -42,7 +42,7 @@ namespace Certes.Cli.Commands
             
             if (required && key == null)
             {
-                throw new Exception(
+                throw new CertesCliException(
                     string.Format(Strings.ErrorNoAccountKey, serverUri));
             }
 

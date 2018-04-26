@@ -6,12 +6,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
 using Certes.Json;
+using Certes.Properties;
 using Newtonsoft.Json;
 
 namespace Certes.Acme
 {
     /// <summary>
-    /// 
+    /// HTTP client handling ACME operations.
     /// </summary>
     /// <seealso cref="Certes.Acme.IAcmeHttpClient" />
     internal class AcmeHttpClient : IAcmeHttpClient
@@ -169,11 +170,12 @@ namespace Certes.Acme
                 Method = HttpMethod.Head,
             });
 
-            nonce = response.Headers.GetValues("Replay-Nonce").FirstOrDefault();
-            if (nonce == null)
+            if (!response.Headers.TryGetValues("Replay-Nonce", out var values))
             {
-                throw new Exception("Can not get new nonce.");
+                throw new AcmeException(Strings.ErrorFetchNonce);
             }
+
+            nonce = values.FirstOrDefault();
         }
 
         private static bool IsJsonMedia(string mediaType)

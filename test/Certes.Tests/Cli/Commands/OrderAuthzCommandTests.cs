@@ -105,13 +105,13 @@ namespace Certes.Cli.Commands
             await Assert.ThrowsAsync<ArgumentSyntaxException>(() => cmd.Execute(syntax));
 
             syntax = DefineCommand($"authz {orderLoc} www.some.com http");
-            await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
+            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
 
             authzMock.Setup(m => m.Challenges())
                 .ReturnsAsync(new[] { challengeMock2.Object });
 
             syntax = DefineCommand($"authz {orderLoc} {domain} http");
-            await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
+            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
         }
 
         [Fact]

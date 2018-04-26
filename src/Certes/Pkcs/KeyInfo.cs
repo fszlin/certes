@@ -1,6 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Certes.Crypto;
+using Certes.Properties;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.OpenSsl;
@@ -32,11 +32,10 @@ namespace Certes.Pkcs
             using (var streamReader = new StreamReader(stream))
             {
                 var reader = new PemReader(streamReader);
-                var keyPair = reader.ReadObject() as AsymmetricCipherKeyPair;
 
-                if (keyPair == null)
+                if (!(reader.ReadObject() is AsymmetricCipherKeyPair keyPair))
                 {
-                    throw new Exception("Invaid key data.");
+                    throw new AcmeException(Strings.ErrorInvalidKeyData);
                 }
 
                 return keyPair.Export();

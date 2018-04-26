@@ -37,7 +37,7 @@ namespace Certes.Acme
             using (var http = new HttpClient(CreateHttpMock().Object))
             using (var handler = new AcmeHttpHandler(server, http))
             {
-                await Assert.ThrowsAsync<Exception>(async () => await handler.GetResourceUri("invalid-type"));
+                await Assert.ThrowsAsync<AcmeException>(async () => await handler.GetResourceUri("invalid-type"));
             }
         }
 

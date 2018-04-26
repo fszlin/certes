@@ -1,4 +1,5 @@
 ﻿using System;
+using Certes.Properties;
 
 namespace Certes.Jws
 {
@@ -16,7 +17,7 @@ namespace Certes.Jws
         /// <returns>The encoded data.</returns>
         public static string ToBase64String(byte[] data)
         {
-            string s = Convert.ToBase64String(data); // Regular base64 encoder
+            var s = Convert.ToBase64String(data); // Regular base64 encoder
             s = s.Split('=')[0]; // Remove any trailing '='s
             s = s.Replace('+', '-'); // 62nd char of encoding
             s = s.Replace('/', '_'); // 63rd char of encoding
@@ -31,7 +32,7 @@ namespace Certes.Jws
         /// <exception cref="System.Exception">If <paramref name="data"/> is illegal base64 URL string.</exception>
         public static byte[] FromBase64String(string data)
         {
-            string s = data;
+            var s = data;
             s = s.Replace('-', '+'); // 62nd char of encoding
             s = s.Replace('_', '/'); // 63rd char of encoding
             switch (s.Length % 4) // Pad with trailing '='s
@@ -40,7 +41,7 @@ namespace Certes.Jws
                 case 2: s += "=="; break; // Two pad chars
                 case 3: s += "="; break; // One pad char
                 default:
-                    throw new Exception("Illegal base64url string!");
+                    throw new AcmeException(Strings.ErrorInvalidBase64String);
             }
             return Convert.FromBase64String(s); // Standard base64 decoder
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Certes.Properties;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.X509;
 
@@ -68,7 +69,8 @@ namespace Certes.Pkcs
                 }
                 else
                 {
-                    throw new Exception($"Can not find issuer '{certificate.IssuerDN}' for certificate '{certificate.SubjectDN}'");
+                    throw new AcmeException(
+                        string.Format(Strings.ErrorIssuerNotFound, certificate.IssuerDN, certificate.SubjectDN));
                 }
             }
             

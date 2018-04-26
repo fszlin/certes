@@ -37,7 +37,7 @@ namespace Certes.Cli
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
 
             envMock.Setup(m => m.GetVar(It.IsAny<string>())).Returns((string)null);
-            await Assert.ThrowsAsync<Exception>(
+            await Assert.ThrowsAsync<CertesCliException>(
                 () => s.ReadKey("key", "KEY", fileMock.Object, envMock.Object, true));
 
             envMock.Setup(m => m.GetVar("KEY")).Returns(Convert.ToBase64String(Helper.GetKeyV2().ToDer()));

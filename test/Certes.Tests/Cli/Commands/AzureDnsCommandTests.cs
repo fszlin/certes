@@ -146,7 +146,7 @@ namespace Certes.Cli.Commands
                 $"dns {orderLoc} {domain}" +
                 $" --tenant-id tenantId --client-id clientId --client-secret abcd1234" +
                 $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
-            await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
+            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
             orderMock.Setup(m => m.Authorizations()).ReturnsAsync(new[] { authzMock.Object });
 
             // challenge not exists
@@ -155,7 +155,7 @@ namespace Certes.Cli.Commands
                 $"dns {orderLoc} {domain}" +
                 $" --tenant-id tenantId --client-id clientId --client-secret abcd1234" +
                 $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
-            await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
+            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
             challengeMock.SetupGet(m => m.Type).Returns(ChallengeTypes.Dns01);
 
             // zone not exists
@@ -173,7 +173,7 @@ namespace Certes.Cli.Commands
                 $"dns {orderLoc} {domain}" +
                 $" --tenant-id tenantId --client-id clientId --client-secret abcd1234" +
                 $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
-            await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
+            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
         }
 
         [Fact]
@@ -223,7 +223,7 @@ namespace Certes.Cli.Commands
             var syntax = DefineCommand(
                 $"dns {orderLoc} {domain}" +
                 $" --resource-group {resourceGroup}");
-            await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
+            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
         }
 
         [Fact]
