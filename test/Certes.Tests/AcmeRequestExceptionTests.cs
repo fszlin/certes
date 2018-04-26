@@ -1,11 +1,12 @@
 ﻿using System.IO;
 using Xunit;
+using Certes.Acme;
 
 #if !NETCOREAPP1_0
 using System.Runtime.Serialization.Formatters.Binary;
 #endif
 
-namespace Certes.Acme
+namespace Certes
 {
     public class AcmeRequestExceptionTests
     {
