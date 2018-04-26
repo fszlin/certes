@@ -112,7 +112,7 @@ namespace Certes.Cli
                 }
                 else if (isRequired)
                 {
-                    throw new Exception(string.Format(Strings.ErrorOptionMissing, optionName));
+                    throw new CertesCliException(string.Format(Strings.ErrorOptionMissing, optionName));
                 }
             }
 

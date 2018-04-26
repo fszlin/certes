@@ -58,9 +58,9 @@ namespace Certes.Cli.Commands
             var acme = ContextFactory.Invoke(serverUri, key);
             var orderCtx = acme.Order(orderUri);
             var authzCtx = await orderCtx.Authorization(domain)
-                ?? throw new Exception(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
+                ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
             var challengeCtx = await authzCtx.Challenge(type)
-                ?? throw new Exception(string.Format(Strings.ErrorChallengeNotAvailable, typeStr));
+                ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, typeStr));
 
             logger.Debug("Validating challenge '{0}'.", challengeCtx.Location);
             var challenge = await challengeCtx.Validate();

@@ -27,7 +27,7 @@ namespace Certes.Acme
             loc = new Uri("http://acme.d/acct/2");
             httpMock.Setup(m => m.Get<Account>(loc)).ReturnsAsync(new AcmeHttpResponse<Account>(loc, default, default, new AcmeError { Detail = "err" }));
             ctx = new EntityContext<Account>(ctxMock.Object, loc);
-            await Assert.ThrowsAsync<Exception>(() => ctx.Resource());
+            await Assert.ThrowsAsync<AcmeRequestException>(() => ctx.Resource());
         }
     }
 }

@@ -174,7 +174,7 @@ namespace Certes.Cli.Commands
                 + $" --tenant-id tenantId --client-id clientId --client-secret abcd1234"
                 + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
             syntax = DefineCommand(args);
-            await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
+            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
         }
 
         [Fact]

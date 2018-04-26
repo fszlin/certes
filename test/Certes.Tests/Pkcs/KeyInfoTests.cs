@@ -23,7 +23,7 @@ namespace Certes.Pkcs
         [Fact]
         public void LoadKeyWithInvalidObject()
         {
-            Assert.Throws<Exception>(() => KeyInfo.From(new MemoryStream()));
+            Assert.Throws<AcmeException>(() => KeyInfo.From(new MemoryStream()));
 
         }
     }
