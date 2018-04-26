@@ -98,15 +98,6 @@ namespace Certes.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid CSR..
-        /// </summary>
-        internal static string ErrorInvalidCsr {
-            get {
-                return ResourceManager.GetString("ErrorInvalidCsr", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Invaid key data..
         /// </summary>
         internal static string ErrorInvalidKeyData {
