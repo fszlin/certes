@@ -72,7 +72,7 @@ namespace Certes.Cli.Commands
 
             settingsMock.Setup(m => m.GetAccountKey(serverUri)).ReturnsAsync((IKey)null);
             syntax = DefineCommand($"show");
-            await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
+            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
         }
 
         [Fact]

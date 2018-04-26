@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Certes.Crypto;
+using Certes.Properties;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
@@ -182,7 +183,7 @@ namespace Certes.Pkcs
             var valid = csr.Verify();
             if (!valid)
             {
-                throw new Exception();
+                throw new AcmeException(Strings.ErrorInvalidCsr);
             }
 
             return csr;

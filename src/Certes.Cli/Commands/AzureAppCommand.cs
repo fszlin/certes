@@ -69,7 +69,7 @@ namespace Certes.Cli.Commands
             var order = await orderCtx.Resource();
             if (order.Certificate == null)
             {
-                throw new Exception(string.Format(Strings.ErrorOrderIncompleted, orderCtx.Location));
+                throw new CertesCliException(string.Format(Strings.ErrorOrderIncompleted, orderCtx.Location));
             }
 
             var cert = await orderCtx.Download();

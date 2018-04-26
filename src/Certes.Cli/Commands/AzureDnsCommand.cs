@@ -54,9 +54,9 @@ namespace Certes.Cli.Commands
             var acme = ContextFactory.Invoke(serverUri, key);
             var orderCtx = acme.Order(orderUri);
             var authzCtx = await orderCtx.Authorization(domain)
-                ?? throw new Exception(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
+                ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
             var challengeCtx = await authzCtx.Dns()
-                ?? throw new Exception(string.Format(Strings.ErrorChallengeNotAvailable, "dns"));
+                ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, "dns"));
 
             var authz = await authzCtx.Resource();
             var dnsValue = acme.AccountKey.DnsTxt(challengeCtx.Token);
@@ -109,7 +109,7 @@ namespace Certes.Cli.Commands
                     await client.Zones.ListNextAsync(zones.NextPageLink);
             }
 
-            throw new Exception(string.Format(Strings.ErrorDnsZoneNotFound, identifier));
+            throw new CertesCliException(string.Format(Strings.ErrorDnsZoneNotFound, identifier));
         }
     }
 }

@@ -98,11 +98,38 @@ namespace Certes.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid CSR..
+        /// </summary>
+        internal static string ErrorInvalidCsr {
+            get {
+                return ResourceManager.GetString("ErrorInvalidCsr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invaid key data..
+        /// </summary>
+        internal static string ErrorInvalidKeyData {
+            get {
+                return ResourceManager.GetString("ErrorInvalidKeyData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Can not finalize order with status &apos;{0}&apos;..
         /// </summary>
         internal static string ErrorInvalidOrderStatusForFinalize {
             get {
                 return ResourceManager.GetString("ErrorInvalidOrderStatusForFinalize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can not find issuer &apos;{0}&apos; for certificate &apos;{1}&apos;..
+        /// </summary>
+        internal static string ErrorIssuerNotFound {
+            get {
+                return ResourceManager.GetString("ErrorIssuerNotFound", resourceCulture);
             }
         }
         

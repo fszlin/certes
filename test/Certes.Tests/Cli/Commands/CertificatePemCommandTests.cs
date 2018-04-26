@@ -93,7 +93,7 @@ namespace Certes.Cli.Commands
 
             order.Status = OrderStatus.Invalid;
             syntax = DefineCommand($"pem {orderLoc}");
-            await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
+            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
         }
 
         [Fact]

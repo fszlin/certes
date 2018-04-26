@@ -84,10 +84,10 @@ namespace Certes.Cli.Commands
 
             // challenge not found
             syntax = DefineCommand($"validate {orderLoc} {domain} http");
-            await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
+            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
 
             syntax = DefineCommand($"validate {orderLoc} www.some.com http");
-            await Assert.ThrowsAsync<Exception>(() => cmd.Execute(syntax));
+            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
         }
 
         [Fact]

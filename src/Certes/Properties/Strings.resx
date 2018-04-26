@@ -129,8 +129,17 @@
   <data name="ErrorInvalidBase64String" xml:space="preserve">
     <value>Illegal base64url string.</value>
   </data>
+  <data name="ErrorInvalidCsr" xml:space="preserve">
+    <value>Invalid CSR.</value>
+  </data>
+  <data name="ErrorInvalidKeyData" xml:space="preserve">
+    <value>Invaid key data.</value>
+  </data>
   <data name="ErrorInvalidOrderStatusForFinalize" xml:space="preserve">
     <value>Can not finalize order with status '{0}'.</value>
+  </data>
+  <data name="ErrorIssuerNotFound" xml:space="preserve">
+    <value>Can not find issuer '{0}' for certificate '{1}'.</value>
   </data>
   <data name="ErrorMissingCertificateData" xml:space="preserve">
     <value>Certificate data missing, please fetch the certificate from '{0}'.</value>

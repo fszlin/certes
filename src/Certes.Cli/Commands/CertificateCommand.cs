@@ -35,7 +35,7 @@ namespace Certes.Cli.Commands
             var order = await orderCtx.Resource();
             if (order.Status != OrderStatus.Valid)
             {
-                throw new Exception(
+                throw new CertesCliException(
                     string.Format(Strings.ErrorExportInvalidOrder, order.Status));
             }
 

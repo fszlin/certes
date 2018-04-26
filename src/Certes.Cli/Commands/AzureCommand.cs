@@ -70,7 +70,7 @@ namespace Certes.Cli.Commands
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new Exception(string.Format(Strings.ErrorOptionMissing, optionName));
+                throw new CertesCliException(string.Format(Strings.ErrorOptionMissing, optionName));
             }
         }
     }
