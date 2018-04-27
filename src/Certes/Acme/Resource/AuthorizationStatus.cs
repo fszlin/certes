@@ -47,5 +47,11 @@ namespace Certes.Acme.Resource
         /// </summary>
         [EnumMember(Value = "deactivated")]
         Deactivated,
+
+        /// <summary>
+        /// The expired status.
+        /// </summary>
+        [EnumMember(Value = "expired")]
+        Expired,
     }
 }
