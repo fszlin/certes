@@ -15,7 +15,7 @@ namespace Certes.Acme
     /// HTTP client handling ACME operations.
     /// </summary>
     /// <seealso cref="Certes.Acme.IAcmeHttpClient" />
-    internal class AcmeHttpClient : IAcmeHttpClient
+    public class AcmeHttpClient : IAcmeHttpClient
     {
         private const string MimeJoseJson = "application/jose+json";
 

@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Added
 - Export full chain certification in PEM ([#87][i87])
+- Support custom `HttpClient` ([#95][i95])
 
 ### Changed
 - Encapsulating ACME errors in exceptions ([#65][i65])
@@ -66,3 +67,4 @@ All notable changes to this project will be documented in this file.
 [i76]: https://github.com/fszlin/certes/issues/76
 [i86]: https://github.com/fszlin/certes/issues/86
 [i87]: https://github.com/fszlin/certes/issues/87
+[i95]: https://github.com/fszlin/certes/issues/95
