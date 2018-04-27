@@ -68,7 +68,8 @@ namespace Certes
         public static async Task<CertificateChain> Generate(this IOrderContext context, CsrInfo csr, IKey key)
         {
             var order = await context.Resource();
-            if (order.Status != OrderStatus.Pending)
+            if (order.Status != OrderStatus.Ready && // draft-11
+                order.Status != OrderStatus.Pending) // pre draft-11
             {
                 throw new AcmeException(string.Format(Strings.ErrorInvalidOrderStatusForFinalize, order.Status));
             }
