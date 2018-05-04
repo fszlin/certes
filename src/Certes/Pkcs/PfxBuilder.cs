@@ -115,7 +115,7 @@ namespace Certes.Pkcs
             var intermediateCerts = certificates.Where(c => !c.IsRoot).Select(c => c.Cert).ToList();
             intermediateCerts.Add(certificate);
 
-            var target = new X509CertStoreSelector()
+            var target = new X509CertStoreSelector
             {
                 Certificate = certificate
             };
