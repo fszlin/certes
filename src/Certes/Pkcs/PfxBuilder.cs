@@ -1,10 +1,14 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Certes.Crypto;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
+using Org.BouncyCastle.Pkix;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.X509;
+using Org.BouncyCastle.X509.Store;
 
 namespace Certes.Pkcs
 {
@@ -77,10 +81,7 @@ namespace Certes.Pkcs
 
             if (FullChain)
             {
-                var certParser = new X509CertificateParser();
-                var certChain = certificateStore
-                    .GetIssuers(certificate.GetEncoded())
-                    .Select(der => certParser.ReadCertificate(der));
+                var certChain = FindIssuers();
                 var certChainEntries = certChain.Select(c => new X509CertificateEntry(c)).ToList();
                 certChainEntries.Add(entry);
 
@@ -96,6 +97,44 @@ namespace Certes.Pkcs
                 store.Save(buffer, password.ToCharArray(), new SecureRandom());
                 return buffer.ToArray();
             }
+        }
+
+        private IList<X509Certificate> FindIssuers()
+        {
+            var certParser = new X509CertificateParser();
+            var certificates = certificateStore
+                .GetIssuers(certificate.GetEncoded())
+                .Select(der => certParser.ReadCertificate(der))
+                .Select(cert => new
+                {
+                    IsRoot = cert.IssuerDN.Equivalent(cert.SubjectDN),
+                    Cert = cert
+                });
+
+            var rootCerts = new HashSet(certificates.Where(c => c.IsRoot).Select(c => new TrustAnchor(c.Cert, null)));
+            var intermediateCerts = certificates.Where(c => !c.IsRoot).Select(c => c.Cert).ToList();
+            intermediateCerts.Add(certificate);
+
+            var target = new X509CertStoreSelector()
+            {
+                Certificate = certificate
+            };
+
+            var builderParams = new PkixBuilderParameters(rootCerts, target)
+            {
+                IsRevocationEnabled = false
+            };
+
+            builderParams.AddStore(
+                X509StoreFactory.Create(
+                    "Certificate/Collection",
+                    new X509CollectionStoreParameters(intermediateCerts)));
+
+            var builder = new PkixCertPathBuilder();
+            var result = builder.Build(builderParams);
+
+            var fullChain = result.CertPath.Certificates.Cast<X509Certificate>().ToArray();
+            return fullChain;
         }
 
         private AsymmetricCipherKeyPair LoadKeyPair()

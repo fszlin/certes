@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
+using Certes.Pkcs;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -35,6 +37,18 @@ namespace Certes
                     CommonName = hosts[0],
                 }, certKey);
                 var pem = await orderCtx.Download();
+
+                var builder = new PfxBuilder(pem.Certificate.ToDer(), certKey);
+                foreach (var issuer in pem.Issuers)
+                {
+                    builder.AddIssuer(issuer.ToDer());
+                }
+
+                builder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
+
+                var pfx = builder.Build("ci", "abcd1234");
+                File.WriteAllBytes("f:/temp/certes/ff3.pfx", pfx);
+                Assert.NotNull(pfx);
             }
         }
     }
