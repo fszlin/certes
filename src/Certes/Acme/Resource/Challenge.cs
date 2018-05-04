@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 
 namespace Certes.Acme.Resource
 {
@@ -46,13 +45,14 @@ namespace Certes.Acme.Resource
         public DateTimeOffset? Validated { get; set; }
 
         /// <summary>
-        /// Gets or sets the errors.
+        /// Gets or sets the error.
+        /// Only if the status is invalid
         /// </summary>
         /// <value>
         /// The errors.
         /// </value>
-        [JsonProperty("errors")]
-        public IList<object> Errors { get; set; }
+        [JsonProperty("error")]
+        public AcmeError Error { get; set; }
 
         /// <summary>
         /// Gets or sets the token.
