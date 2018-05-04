@@ -47,7 +47,6 @@ namespace Certes
                 builder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
 
                 var pfx = builder.Build("ci", "abcd1234");
-                File.WriteAllBytes("f:/temp/certes/ff3.pfx", pfx);
                 Assert.NotNull(pfx);
             }
         }
