@@ -2,10 +2,18 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [2.2.0] - 2018-05-05
+### Added
+- Add `Challenge.Error` for challenge valdidation error ([#99][i99])
+
+### Changed
+- Fix certificate chain for PFX ([#100][i100])
+
+## [2.1.0] - 2018-04-27
 ### Added
 - Export full chain certification in PEM ([#87][i87])
 - Support custom `HttpClient` ([#95][i95])
-- Add `Challenge.Error` for challenge valdidation error ([#99][i99])
 
 ### Changed
 - Encapsulating ACME errors in exceptions ([#65][i65])
@@ -53,7 +61,6 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Fix error when parsing directory resource with *meta* property. ([#5][i5])
 
-[Unreleased]: https://github.com/fszlin/certes/compare/v2.0.0...HEAD
 [1.1.0]: https://github.com/fszlin/certes/compare/v1.0.7...v1.1.0
 [1.1.1]: https://github.com/fszlin/certes/compare/v1.1.0...v1.1.1
 [1.1.2]: https://github.com/fszlin/certes/compare/v1.1.1...v1.1.2
@@ -61,6 +68,9 @@ All notable changes to this project will be documented in this file.
 [1.1.4]: https://github.com/fszlin/certes/compare/v1.1.3...v1.1.4
 [2.0.0]: https://github.com/fszlin/certes/compare/v1.1.4...v2.0.0
 [2.0.1]: https://github.com/fszlin/certes/compare/v2.0.0...v2.0.1
+[2.1.0]: https://github.com/fszlin/certes/compare/v2.0.1...v2.1.0
+[2.2.0]: https://github.com/fszlin/certes/compare/v2.1.0...v2.2.0
+[Unreleased]: https://github.com/fszlin/certes/compare/v2.2.0...HEAD
 
 [i5]: https://github.com/fszlin/certes/issues/5
 [i22]: https://github.com/fszlin/certes/issues/22
@@ -70,3 +80,4 @@ All notable changes to this project will be documented in this file.
 [i87]: https://github.com/fszlin/certes/issues/87
 [i95]: https://github.com/fszlin/certes/issues/95
 [i99]: https://github.com/fszlin/certes/issues/99
+[i100]: https://github.com/fszlin/certes/issues/100
