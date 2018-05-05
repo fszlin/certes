@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Export full chain certification in PEM ([#87][i87])
 - Support custom `HttpClient` ([#95][i95])
+- Add `Challenge.Error` for challenge valdidation error ([#99][i99])
 
 ### Changed
 - Encapsulating ACME errors in exceptions ([#65][i65])
@@ -68,3 +69,4 @@ All notable changes to this project will be documented in this file.
 [i86]: https://github.com/fszlin/certes/issues/86
 [i87]: https://github.com/fszlin/certes/issues/87
 [i95]: https://github.com/fszlin/certes/issues/95
+[i99]: https://github.com/fszlin/certes/issues/99
