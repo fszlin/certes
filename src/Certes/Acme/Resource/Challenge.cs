@@ -81,6 +81,7 @@ namespace Certes.Acme.Resource
         /// The key authorization.
         /// </value>
         [JsonProperty("keyAuthorization")]
+        [Obsolete("Removed from ACME server.")]
         public string KeyAuthorization { get; set; }
     }
 }
