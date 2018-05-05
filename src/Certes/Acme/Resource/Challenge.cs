@@ -46,12 +46,23 @@ namespace Certes.Acme.Resource
         public DateTimeOffset? Validated { get; set; }
 
         /// <summary>
+        /// Gets or sets the error.
+        /// Only if the status is invalid
+        /// </summary>
+        /// <value>
+        /// The errors.
+        /// </value>
+        [JsonProperty("error")]
+        public AcmeError Error { get; set; }
+
+        /// <summary>
         /// Gets or sets the errors.
         /// </summary>
         /// <value>
         /// The errors.
         /// </value>
         [JsonProperty("errors")]
+        [Obsolete("Use Challenge.Error instead.")]
         public IList<object> Errors { get; set; }
 
         /// <summary>
