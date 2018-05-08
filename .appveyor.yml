@@ -1,4 +1,4 @@
-version: 2.2.0.{build}
+version: 2.2.1.{build}
 build:
   verbosity: minimal
   project: Certes.sln
@@ -35,7 +35,7 @@ init:
 
 install:
   - ps: wget https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
-  - ps: .\dotnet-install.ps1 -InstallDir ./dotnet-pre -Version 2.1.300-preview2-008530 -NoPath
+  - ps: .\dotnet-install.ps1 -InstallDir ./dotnet-pre -Version 2.1.300-rc1-008673 -NoPath
 
 before_build:
   - ps: New-Item build -Type directory -Force | Out-Null
