@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Added
+- Strong name signing ([#106][i106])
 
 ## [2.2.0] - 2018-05-05
 ### Added
@@ -81,3 +83,4 @@ All notable changes to this project will be documented in this file.
 [i95]: https://github.com/fszlin/certes/issues/95
 [i99]: https://github.com/fszlin/certes/issues/99
 [i100]: https://github.com/fszlin/certes/issues/100
+[i106]: https://github.com/fszlin/certes/issues/106
