@@ -4,7 +4,7 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <LangVersion>Latest</LangVersion>
     <SignAssembly>true</SignAssembly>
-    <PublicSign Condition="'$(TargetFramework)' != 'net45' AND '$(TargetFramework)' != 'net47'">True</PublicSign>
+    <PublicSign Condition="'$(TargetFramework)' != 'net45' AND '$(TargetFramework)' != 'net452' AND '$(TargetFramework)' != 'net47'">True</PublicSign>
     <AssemblyOriginatorKeyFile>../../misc/certes.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(APPVEYOR)' != ''">
