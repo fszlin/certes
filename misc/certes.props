@@ -3,6 +3,8 @@
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <LangVersion>Latest</LangVersion>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>../../misc/certes.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(APPVEYOR)' != ''">
     <CertesFileVersionSuffix>.$(APPVEYOR_BUILD_NUMBER)</CertesFileVersionSuffix>
