@@ -1,4 +1,4 @@
-version: 2.2.1.{build}
+version: 2.2.2.{build}
 build:
   verbosity: minimal
   project: Certes.sln
