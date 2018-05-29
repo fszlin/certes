@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Net.Http;
 using System.Reflection;
+using System.Threading.Tasks;
 using Certes.Crypto;
+using Newtonsoft.Json.Linq;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
@@ -14,6 +18,7 @@ namespace Certes
     public static partial class Helper
     {
         private static readonly KeyAlgorithmProvider signatureAlgorithmProvider = new KeyAlgorithmProvider();
+        private static (string Certificate, string Key) validCertificate;
 
         public static IList<string> Logs
         {
@@ -83,6 +88,37 @@ namespace Certes
                     return Keys.ES512Key;
                 default:
                     return Keys.RS256Key;
+            }
+        }
+
+        public static async Task<(string Certificate, string Key)> GetValidCert()
+        {
+            if (validCertificate != default)
+            {
+                return validCertificate;
+            }
+
+            using (var http = new HttpClient())
+            {
+                http.DefaultRequestHeaders.Add("User-Agent", "github.com-fszlin-certes");
+                var json = await http.GetStringAsync("https://api.github.com/repos/fszlin/lo0.in/releases/latest");
+                var metadata = JObject.Parse(json);
+
+                var certUrl = metadata["assets"]
+                    .AsJEnumerable()
+                    .Where(a => a["name"].Value<string>() == "cert.pem")
+                    .Select(a => a["browser_download_url"].Value<string>())
+                    .First();
+                var keyUrl = metadata["assets"]
+                    .AsJEnumerable()
+                    .Where(a => a["name"].Value<string>() == "key.pem")
+                    .Select(a => a["browser_download_url"].Value<string>())
+                    .First();
+
+                var cert = await http.GetStringAsync(certUrl);
+                var key = await http.GetStringAsync(keyUrl);
+
+                return validCertificate = (cert, key);
             }
         }
     }

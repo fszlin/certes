@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
-using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,12 +30,8 @@ namespace Certes.Cli.Commands
             var appName = "my-app";
             var appSlot = "staging";
             var keyPath = "./cert-key.pem";
-
-            var certChainContent = string.Join(
-                Environment.NewLine,
-                File.ReadAllText("./Data/leaf-cert.pem"),
-                File.ReadAllText("./Data/test-ca2.pem"),
-                File.ReadAllText("./Data/test-root.pem"));
+            
+            var (certChainContent, _) = await GetValidCert();
             var certChain = new CertificateChain(certChainContent);
 
             var order = new Order
