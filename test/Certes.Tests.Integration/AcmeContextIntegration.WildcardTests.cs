@@ -22,7 +22,7 @@ namespace Certes
             public async Task CanGenerateWildcard()
             {
                 var dirUri = await GetAcmeUriV2();
-                var hosts = new[] { $"wildcard-{DomainSuffix}.es256.certes-ci.dymetis.com" };
+                var hosts = new[] { $"*.wildcard-{DomainSuffix}.es256.certes-ci.dymetis.com" };
                 var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
 
                 var orderCtx = await AuthzDns(ctx, hosts);
