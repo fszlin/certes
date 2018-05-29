@@ -100,7 +100,7 @@ namespace Certes
 
             using (var http = new HttpClient())
             {
-                http.DefaultRequestHeaders.Add("User-Agent", "github.com-fszlin-certes");
+                http.DefaultRequestHeaders.UserAgent.ParseAdd("certes/2.0");
                 var json = await http.GetStringAsync("https://api.github.com/repos/fszlin/lo0.in/releases/latest");
                 var metadata = JObject.Parse(json);
 
