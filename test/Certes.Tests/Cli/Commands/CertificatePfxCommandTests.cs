@@ -1,6 +1,5 @@
 ﻿using System;
 using System.CommandLine;
-using System.IO;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
@@ -32,11 +31,7 @@ namespace Certes.Cli.Commands
                 Status = OrderStatus.Valid,
             };
 
-            var certChainContent = string.Join(
-                Environment.NewLine,
-                File.ReadAllText("./Data/leaf-cert.pem"),
-                File.ReadAllText("./Data/test-ca2.pem"),
-                File.ReadAllText("./Data/test-root.pem"));
+            var (certChainContent, _) = await GetValidCert();
             var certChain = new CertificateChain(certChainContent);
 
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
