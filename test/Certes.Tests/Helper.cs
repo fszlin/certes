@@ -18,7 +18,7 @@ namespace Certes
     public static partial class Helper
     {
         private static readonly KeyAlgorithmProvider signatureAlgorithmProvider = new KeyAlgorithmProvider();
-        private static (string Certificate, string Key) validCertificate;
+        private static (string Certificate, string Key)? validCertificate;
 
         public static IList<string> Logs
         {
@@ -93,9 +93,9 @@ namespace Certes
 
         public static async Task<(string Certificate, string Key)> GetValidCert()
         {
-            if (validCertificate != default)
+            if (validCertificate != null)
             {
-                return validCertificate;
+                return validCertificate.Value;
             }
 
             using (var http = new HttpClient())
@@ -118,7 +118,8 @@ namespace Certes
                 var cert = await http.GetStringAsync(certUrl);
                 var key = await http.GetStringAsync(keyUrl);
 
-                return validCertificate = (cert, key);
+                validCertificate = (cert, key);
+                return validCertificate.Value;
             }
         }
     }
