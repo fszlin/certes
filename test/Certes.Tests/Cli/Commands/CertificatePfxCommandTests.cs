@@ -13,6 +13,7 @@ using static Certes.Helper;
 
 namespace Certes.Cli.Commands
 {
+    [Collection(nameof(Helper.GetValidCert))]
     public class CertificatePfxCommandTests
     {
         [Fact]
