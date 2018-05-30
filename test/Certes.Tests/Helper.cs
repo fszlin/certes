@@ -98,29 +98,40 @@ namespace Certes
                 return validCertificate.Value;
             }
 
-            using (var http = new HttpClient())
+            for (int i = 0; i < 10; ++i)
             {
-                http.DefaultRequestHeaders.UserAgent.ParseAdd("request");
-                var json = await http.GetStringAsync("https://api.github.com/repos/fszlin/lo0.in/releases/latest");
-                var metadata = JObject.Parse(json);
+                try
+                {
+                    using (var http = new HttpClient())
+                    {
+                        http.DefaultRequestHeaders.UserAgent.ParseAdd("request");
+                        var json = await http.GetStringAsync("https://api.github.com/repos/fszlin/lo0.in/releases/latest");
+                        var metadata = JObject.Parse(json);
 
-                var certUrl = metadata["assets"]
-                    .AsJEnumerable()
-                    .Where(a => a["name"].Value<string>() == "cert.pem")
-                    .Select(a => a["browser_download_url"].Value<string>())
-                    .First();
-                var keyUrl = metadata["assets"]
-                    .AsJEnumerable()
-                    .Where(a => a["name"].Value<string>() == "key.pem")
-                    .Select(a => a["browser_download_url"].Value<string>())
-                    .First();
+                        var certUrl = metadata["assets"]
+                            .AsJEnumerable()
+                            .Where(a => a["name"].Value<string>() == "cert.pem")
+                            .Select(a => a["browser_download_url"].Value<string>())
+                            .First();
+                        var keyUrl = metadata["assets"]
+                            .AsJEnumerable()
+                            .Where(a => a["name"].Value<string>() == "key.pem")
+                            .Select(a => a["browser_download_url"].Value<string>())
+                            .First();
 
-                var cert = await http.GetStringAsync(certUrl);
-                var key = await http.GetStringAsync(keyUrl);
+                        var cert = await http.GetStringAsync(certUrl);
+                        var key = await http.GetStringAsync(keyUrl);
 
-                validCertificate = (cert, key);
-                return validCertificate.Value;
+                        validCertificate = (cert, key);
+                        return validCertificate.Value;
+                    }
+                }
+                catch
+                {
+                }
             }
+
+            throw new Exception("Fail to load certificate");
         }
     }
 }
