@@ -1,12 +1,12 @@
 language: csharp
 mono: none
-dotnet: 2.0.0
+dotnet: 2.1.300-rc1-008673
 env:
   matrix:
     - CLI_VERSION=Latest
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-    - DOTNET_CLI_TELEMETRY_OPTOUT: 0
+    - DOTNET_CLI_TELEMETRY_OPTOUT: 1
 branches:
   only:
     - release
