@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- Revert `Newtonsoft.Json` to `v10.0.3` for `PowerShell Core` ([#112][i112])
+
 ## [2.2.1] - 2018-05-15
 ### Added
 - Strong name signing ([#106][i106])
@@ -87,3 +90,4 @@ All notable changes to this project will be documented in this file.
 [i99]: https://github.com/fszlin/certes/issues/99
 [i100]: https://github.com/fszlin/certes/issues/100
 [i106]: https://github.com/fszlin/certes/issues/106
+[i112]: https://github.com/fszlin/certes/issues/112
