@@ -5,6 +5,7 @@ using Xunit;
 
 namespace Certes.Pkcs
 {
+    [Collection(nameof(Helper.GetValidCert))]
     public class PfxBuilderTests
     {
         [Theory]
