@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-dotnet: 2.1.300
+dotnet: 2.0.0
 env:
   matrix:
     - CLI_VERSION=Latest
@@ -14,6 +14,8 @@ branches:
     - dev
     - vnext
 script:
+  - wget https://dot.net/v1/dotnet-install.sh -OutFile dotnet-install.ps1
+  - dotnet-install.sh --version 2.1.300
   - dotnet restore
   - dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp2.0
   - dotnet test ./test/Certes.Tests.Integration/Certes.Tests.Integration.csproj --framework netcoreapp2.0
