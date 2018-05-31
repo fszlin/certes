@@ -14,7 +14,7 @@ branches:
     - dev
     - vnext
 script:
-  - wget https://dot.net/v1/dotnet-install.sh -OutFile dotnet-install.ps1
+  - wget https://dot.net/v1/dotnet-install.sh -OutFile dotnet-install.sh
   - dotnet-install.sh --version 2.1.300
   - dotnet restore
   - dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp2.0
