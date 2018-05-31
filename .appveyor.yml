@@ -17,10 +17,9 @@ nuget:
 
 environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  DOTNET_CLI_TELEMETRY_OPTOUT: 0
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
 cache:
-  - dotnet-pre
 
 branches:
   # whitelist
@@ -35,7 +34,7 @@ init:
 
 install:
   - ps: wget https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
-  - ps: .\dotnet-install.ps1 -InstallDir ./dotnet-pre -Version 2.1.300-rc1-008673 -NoPath
+  - ps: .\dotnet-install.ps1 -Version 2.1.300
 
 before_build:
   - ps: New-Item build -Type directory -Force | Out-Null
@@ -49,7 +48,7 @@ build_script:
   # dotnet tool
   - ps: Copy-Item ./misc/NuGet-tool.config ./src/Certes.Cli/NuGet.config
   - ps: $env:CERTES_PACKAGE_VERSION = (Get-ChildItem ./src/Certes/bin/$($env:CONFIGURATION)/*.nupkg  | Select-Object -ExpandProperty Name).Replace('Certes.', '').Replace('.nupkg', '')
-  - ps: ./dotnet-pre/dotnet.exe pack src\Certes.Cli\Certes.Cli.csproj -c $($env:CONFIGURATION) -property:CertesVersion=$($env:CERTES_PACKAGE_VERSION)
+  - ps: dotnet pack src\Certes.Cli\Certes.Cli.csproj -c $($env:CONFIGURATION) -property:CertesVersion=$($env:CERTES_PACKAGE_VERSION)
   # move packages
   - ps: Get-ChildItem -Path "./src/**/*.nupkg" -Recurse | Move-Item -Destination "./build"
   - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'

@@ -28,7 +28,7 @@ namespace Certes
                 var orderCtx = await AuthzDns(ctx, hosts);
                 while (orderCtx == null)
                 {
-                    Output.WriteLine("DNS authz faild, retrying...");
+                    Output.WriteLine("DNS authz failed, retrying...");
                     orderCtx = await AuthzDns(ctx, hosts);
                 }
 
