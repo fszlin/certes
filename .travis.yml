@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-dotnet: 2.1.300-rc1-008673
+dotnet: 2.1.300
 env:
   matrix:
     - CLI_VERSION=Latest
