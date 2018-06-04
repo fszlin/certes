@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.10.0" />
+    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.11.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Certes\Certes.csproj" />
