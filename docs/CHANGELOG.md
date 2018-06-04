@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.2.2] - 2018-05-31
 ### Changed
 - Revert `Newtonsoft.Json` to `v10.0.3` for `PowerShell Core` ([#112][i112])
 
@@ -78,7 +79,8 @@ All notable changes to this project will be documented in this file.
 [2.1.0]: https://github.com/fszlin/certes/compare/v2.0.1...v2.1.0
 [2.2.0]: https://github.com/fszlin/certes/compare/v2.1.0...v2.2.0
 [2.2.1]: https://github.com/fszlin/certes/compare/v2.2.0...v2.2.1
-[Unreleased]: https://github.com/fszlin/certes/compare/v2.2.1...HEAD
+[2.2.2]: https://github.com/fszlin/certes/compare/v2.2.1...v2.2.2
+[Unreleased]: https://github.com/fszlin/certes/compare/v2.2.2...HEAD
 
 [i5]: https://github.com/fszlin/certes/issues/5
 [i22]: https://github.com/fszlin/certes/issues/22
