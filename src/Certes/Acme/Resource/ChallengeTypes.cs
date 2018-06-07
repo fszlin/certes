@@ -16,8 +16,11 @@
         public const string Dns01 = "dns-01";
 
         /// <summary>
-        /// The tls-alpn-01 challenge.
+        /// Gets the tls-alpn-01 challenge name.
         /// </summary>
-        public const string TlsAlpn01 = "tls-alpn-01";
+        /// <value>
+        /// The tls-alpn-01 challenge name.
+        /// </value>
+        public static string TlsAlpn01 { get; } = "tls-alpn-01";
     }
 }
