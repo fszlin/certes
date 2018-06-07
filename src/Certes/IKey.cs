@@ -1,8 +1,18 @@
-﻿using System.Text;
+﻿using System;
+using System.IO;
+using System.Text;
+using Certes.Acme.Resource;
+using Certes.Crypto;
 using Certes.Json;
 using Certes.Jws;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Crypto.Operators;
+using Org.BouncyCastle.Math;
+using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.X509;
 
 namespace Certes
 {
@@ -17,7 +27,7 @@ namespace Certes
         /// <value>
         /// The algorithm.
         /// </value>
-        KeyAlgorithm Algorithm { get;}
+        KeyAlgorithm Algorithm { get; }
 
         /// <summary>
         /// Gets the json web key.
@@ -33,6 +43,8 @@ namespace Certes
     /// </summary>
     public static class ISignatureKeyExtensions
     {
+        private static readonly DerObjectIdentifier ACME_VALIDATION_V1 = new DerObjectIdentifier("1.3.6.1.5.5.7.1.30.1");
+        private static readonly KeyAlgorithmProvider signatureAlgorithmProvider = new KeyAlgorithmProvider();
         private static readonly JsonSerializerSettings thumbprintSettings = JsonUtil.CreateSettings();
 
         /// <summary>
@@ -84,6 +96,71 @@ namespace Certes
             var keyAuthz = key.KeyAuthorization(token);
             var hashed = DigestUtilities.CalculateDigest("SHA256", Encoding.UTF8.GetBytes(keyAuthz));
             return JwsConvert.ToBase64String(hashed);
+        }
+
+        /// <summary>
+        /// Generates the certificate for <see cref="ChallengeTypes.TlsAlpn01" /> validation.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="token">The <see cref="ChallengeTypes.TlsAlpn01" /> token.</param>
+        /// <param name="subjectName">Name of the subject.</param>
+        /// <param name="certificateKey">The certificate key pair.</param>
+        public static string TlsAlpnCertificate(this IKey key, string token, string subjectName, IKey certificateKey)
+        {
+            var keyAuthz = key.KeyAuthorization(token);
+            var hashed = DigestUtilities.CalculateDigest("SHA256", Encoding.UTF8.GetBytes(keyAuthz));
+
+            var (_, keyPair) = signatureAlgorithmProvider.GetKeyPair(certificateKey.ToDer());
+
+            var gen = new X509V3CertificateGenerator();
+            var certName = new X509Name($"CN={subjectName}");
+            var serialNo = BigInteger.ProbablePrime(120, new SecureRandom());
+
+            gen.SetSerialNumber(serialNo);
+            gen.SetSubjectDN(certName);
+            gen.SetIssuerDN(certName);
+            gen.SetNotBefore(DateTime.UtcNow);
+            gen.SetNotAfter(DateTime.UtcNow.AddDays(7));
+            gen.SetPublicKey(keyPair.Public);
+
+            gen.AddExtension(
+                X509Extensions.AuthorityKeyIdentifier.Id,
+                false,
+                new AuthorityKeyIdentifier(
+                    SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(keyPair.Public),
+                    new GeneralNames(new GeneralName(certName)),
+                    serialNo
+                ));
+
+            // SSL server
+            gen.AddExtension(
+                X509Extensions.ExtendedKeyUsage.Id,
+                false,
+                new ExtendedKeyUsage(new[]
+                {
+                    new DerObjectIdentifier("1.3.6.1.5.5.7.3.1")
+                }));
+
+            // SAN for validation
+            var gns = new GeneralName[1];
+            gns[0] = new GeneralName(GeneralName.DnsName, subjectName);
+            gen.AddExtension(X509Extensions.SubjectAlternativeName.Id, false, new GeneralNames(gns));
+
+            // ACME-TLS/1
+            gen.AddExtension(
+                ACME_VALIDATION_V1.Id,
+                true,
+                hashed);
+
+            var signatureFactory = new Asn1SignatureFactory(certificateKey.Algorithm.ToPkcsObjectId(), keyPair.Private, new SecureRandom());
+            var newCert = gen.Generate(signatureFactory);
+
+            using (var sr = new StringWriter())
+            {
+                var pemWriter = new PemWriter(sr);
+                pemWriter.WriteObject(newCert);
+                return sr.ToString();
+            }
         }
     }
 }
