@@ -14,5 +14,10 @@
         /// The dns-01 challenge.
         /// </summary>
         public const string Dns01 = "dns-01";
+
+        /// <summary>
+        /// The tls-alpn-01 challenge.
+        /// </summary>
+        public const string TlsAlpn01 = "tls-alpn-01";
     }
 }
