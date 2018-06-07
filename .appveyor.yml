@@ -32,10 +32,6 @@ branches:
 init:
   - git config --global core.autocrlf input
 
-install:
-  - ps: wget https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
-  - ps: .\dotnet-install.ps1 -Version 2.1.300
-
 before_build:
   - ps: New-Item build -Type directory -Force | Out-Null
   # regular msbuild
