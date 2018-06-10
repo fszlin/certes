@@ -1,7 +1,10 @@
-﻿using System.Text;
+﻿using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using Certes.Acme;
 using Certes.Acme.Resource;
-using Certes.Pkcs;
+using Certes.Json;
+using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -23,7 +26,7 @@ namespace Certes
             public async Task CanGenerateCertificateTlsAlpn()
             {
                 var dirUri = await GetAcmeUriV2();
-                var hosts = new[] { $"alpn-{DomainSuffix}.certes-ci.dymetis.com" };
+                var hosts = new[] { $"{DomainSuffix}.tls-alpn.certes-ci.dymetis.com" };
                 var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
                 var orderCtx = await ctx.NewOrder(hosts);
                 var order = await orderCtx.Resource();
@@ -39,9 +42,26 @@ namespace Certes
                     var certKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
                     var alpnCert = ctx.AccountKey.TlsAlpnCertificate(tlsAlpnChallenge.Token, hosts[0], certKey);
 
-                    var builder = new PfxBuilder(Encoding.UTF8.GetBytes(alpnCert), certKey);
-                    var pfx = builder.Build(hosts[0], "abcd1234");
+                    var certC = new CertificateChain(alpnCert);
+                    var json = JsonConvert.SerializeObject(new
+                    {
+                        Cert = certC.Certificate.ToDer(),
+                        Key = certKey.ToDer(),
+                    }, JsonUtil.CreateSettings());
+
+                    // setup validation certificate
+                    using (var resp = await http.Value.PostAsync(
+                            $"https://{hosts[0]}:443/tls-alpn-01/{hosts[0]}",
+                            new StringContent(json, Encoding.UTF8, "application/json")))
+                    {
+                        Assert.Equal(hosts[0], await resp.Content.ReadAsStringAsync());
+                        
+                    }
+
+                    await tlsAlpnChallenge.Validate();
                 }
+
+                // TODO: create certificate
             }
         }
     }

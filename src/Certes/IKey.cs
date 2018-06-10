@@ -112,6 +112,7 @@ namespace Certes
 
             var (_, keyPair) = signatureAlgorithmProvider.GetKeyPair(certificateKey.ToDer());
 
+            var signatureFactory = new Asn1SignatureFactory(certificateKey.Algorithm.ToPkcsObjectId(), keyPair.Private, new SecureRandom());
             var gen = new X509V3CertificateGenerator();
             var certName = new X509Name($"CN={subjectName}");
             var serialNo = BigInteger.ProbablePrime(120, new SecureRandom());
@@ -123,24 +124,6 @@ namespace Certes
             gen.SetNotAfter(DateTime.UtcNow.AddDays(7));
             gen.SetPublicKey(keyPair.Public);
 
-            gen.AddExtension(
-                X509Extensions.AuthorityKeyIdentifier.Id,
-                false,
-                new AuthorityKeyIdentifier(
-                    SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(keyPair.Public),
-                    new GeneralNames(new GeneralName(certName)),
-                    serialNo
-                ));
-
-            // SSL server
-            gen.AddExtension(
-                X509Extensions.ExtendedKeyUsage.Id,
-                false,
-                new ExtendedKeyUsage(new[]
-                {
-                    new DerObjectIdentifier("1.3.6.1.5.5.7.3.1")
-                }));
-
             // SAN for validation
             var gns = new GeneralName[1];
             gns[0] = new GeneralName(GeneralName.DnsName, subjectName);
@@ -148,11 +131,10 @@ namespace Certes
 
             // ACME-TLS/1
             gen.AddExtension(
-                ACME_VALIDATION_V1.Id,
+                ACME_VALIDATION_V1,
                 true,
                 hashed);
 
-            var signatureFactory = new Asn1SignatureFactory(certificateKey.Algorithm.ToPkcsObjectId(), keyPair.Private, new SecureRandom());
             var newCert = gen.Generate(signatureFactory);
 
             using (var sr = new StringWriter())

@@ -22,7 +22,7 @@ namespace Certes
             WellKnownServers.LetsEncryptStaging,
         };
 
-        private static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() =>
+        public static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() =>
         {
 #if NETCOREAPP2_0
             var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
