@@ -55,7 +55,6 @@ namespace Certes
                             new StringContent(json, Encoding.UTF8, "application/json")))
                     {
                         Assert.Equal(hosts[0], await resp.Content.ReadAsStringAsync());
-                        
                     }
 
                     await tlsAlpnChallenge.Validate();

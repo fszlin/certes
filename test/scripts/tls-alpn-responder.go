@@ -87,6 +87,8 @@ func setupAlpn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	acmeCertificates[subjectName] = &tlsCert
+
+	fmt.Fprintf(w, subjectName)
 }
 
 // runServer runs a TLS connection that indicates support for HTTP/2 and for
