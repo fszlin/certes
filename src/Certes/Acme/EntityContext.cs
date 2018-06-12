@@ -48,9 +48,7 @@ namespace Certes.Acme
             var resp = await Context.HttpClient.Get<T>(Location);
             if (resp.Error != null)
             {
-                throw new AcmeRequestException(
-                    string.Format(Strings.ErrorFetchResource, Location),
-                    resp.Error);
+                throw new AcmeRequestException(resp.Error);
             }
 
             return resp.Resource;
