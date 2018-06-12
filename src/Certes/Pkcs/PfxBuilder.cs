@@ -79,7 +79,7 @@ namespace Certes.Pkcs
             var entry = new X509CertificateEntry(certificate);
             store.SetCertificateEntry(friendlyName, entry);
 
-            if (FullChain)
+            if (FullChain && !certificate.IssuerDN.Equivalent(certificate.SubjectDN))
             {
                 var certChain = FindIssuers();
                 var certChainEntries = certChain.Select(c => new X509CertificateEntry(c)).ToList();

@@ -171,6 +171,7 @@ Retrieve challenges of the authorzation.
 var challenges = await authz.Challenges();
 var dnsChallenge = await authz.Dns();
 var httpChallenge = await authz.Http();
+var tlsAlpnChallenge = await authz.TlsAlpn();
 ```
  
 Create the respone file for provisioning to `/.well-know/acme-challenge/`.
@@ -184,6 +185,13 @@ Compute the value for DNS TXT record.
 
 ```C#
 var dnsTxt = context.AccountKey.DnsTxt(challenge.Token);
+```
+
+Generate certificate with X509 ACME validation extension.
+
+```C#
+var alpnCertKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
+var alpnCert = context.AccountKey.TlsAlpnCertificate(challenge.Token, "www.my-domain.com", alpnCertKey);
 ```
 
 Let the ACME server to validate the challenge once it is ready.

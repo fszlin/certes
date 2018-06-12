@@ -22,7 +22,7 @@ namespace Certes
 
                 var ctx = new AcmeContext(dirUri, http: GetAcmeHttpClient(dirUri));
                 var account = await ctx.NewAccount(
-                    new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
+                    new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@certes.app" }, true);
                 var location = await ctx.Account().Location();
 
                 var newKey = KeyFactory.NewKey(KeyAlgorithm.ES256);

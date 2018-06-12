@@ -22,7 +22,7 @@ namespace Certes
             WellKnownServers.LetsEncryptStaging,
         };
 
-        private static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() =>
+        public static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() =>
         {
 #if NETCOREAPP2_0
             var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
@@ -108,12 +108,12 @@ namespace Certes
                 {
                     await http.Value.GetStringAsync(uri);
 
-                    foreach (var algo in Enum.GetValues(typeof(KeyAlgorithm)).OfType<KeyAlgorithm>())
+                    foreach (var algo in new[] { KeyAlgorithm.ES256, KeyAlgorithm.ES384, KeyAlgorithm.RS256 })
                     {
                         try
                         {
                             var ctx = new AcmeContext(uri, Helper.GetKeyV2(algo), GetAcmeHttpClient(uri));
-                            await ctx.NewAccount(new[] { "mailto:fszlin@example.com" }, true);
+                            await ctx.NewAccount(new[] { "mailto:ci@certes.app" }, true);
                         }
                         catch
                         {

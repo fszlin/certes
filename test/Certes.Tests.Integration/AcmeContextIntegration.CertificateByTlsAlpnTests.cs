@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Certes.Acme;
 using Certes.Acme.Resource;
+using Certes.Json;
+using Newtonsoft.Json;
 using Org.BouncyCastle.X509;
 using Xunit;
 using Xunit.Abstractions;
@@ -14,31 +18,39 @@ namespace Certes
 {
     public partial class AcmeContextIntegration
     {
-        public class CertificateByHttpTests : AcmeContextIntegration
+        public class CertificateByTlsAlpnTests : AcmeContextIntegration
         {
-            public CertificateByHttpTests(ITestOutputHelper output)
+            public CertificateByTlsAlpnTests(ITestOutputHelper output)
                 : base(output)
             {
             }
 
             [Fact]
-            public async Task CanGenerateCertificateHttp()
+            public async Task CanGenerateCertificateTlsAlpn()
             {
                 var dirUri = await GetAcmeUriV2();
-                var hosts = new[] { $"www-http-{DomainSuffix}.es256.certes-ci.dymetis.com", $"mail-http-{DomainSuffix}.es256.certes-ci.dymetis.com" };
+                var hosts = new[] { $"{DomainSuffix}.tls-alpn.certes-ci.dymetis.com" };
                 var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
                 var orderCtx = await ctx.NewOrder(hosts);
                 var order = await orderCtx.Resource();
                 Assert.NotNull(order);
                 Assert.Equal(hosts.Length, order.Authorizations?.Count);
-                Assert.True(OrderStatus.Pending == order.Status || OrderStatus.Ready == order.Status || OrderStatus.Processing == order.Status);
+                Assert.True(
+                    OrderStatus.Ready == order.Status || OrderStatus.Pending == order.Status || OrderStatus.Processing == order.Status,
+                    $"Invalid order status: {order.Status}");
 
                 var authrizations = await orderCtx.Authorizations();
 
-                foreach (var authz in authrizations)
+                foreach (var authzCtx in authrizations)
                 {
-                    var httpChallenge = await authz.Http();
-                    await httpChallenge.Validate();
+                    var authz = await authzCtx.Resource();
+
+                    var tlsAlpnChallenge = await authzCtx.TlsAlpn();
+                    var alpnCertKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
+                    var alpnCert = ctx.AccountKey.TlsAlpnCertificate(tlsAlpnChallenge.Token, authz.Identifier.Value, alpnCertKey);
+
+                    await SetupValidationResponder(authz, alpnCert, alpnCertKey);
+                    await tlsAlpnChallenge.Validate();
                 }
 
                 while (true)
@@ -71,7 +83,7 @@ namespace Certes
                 var certChain = await orderCtx.Download();
 
                 var pfxBuilder = certChain.ToPfx(certKey);
-                pfxBuilder.AddIssuers(IntegrationHelper.TestCertificates);
+                pfxBuilder.AddIssuers(TestCertificates);
 
                 var pfx = pfxBuilder.Build("my-pfx", "abcd1234");
 
@@ -87,6 +99,24 @@ namespace Certes
                 {
                     var authzRes = await authz.Deactivate();
                     Assert.Equal(AuthorizationStatus.Deactivated, authzRes.Status);
+                }
+            }
+
+            private static async Task SetupValidationResponder(Authorization authz, string alpnCert, IKey certKey)
+            {
+                // setup validation certificate
+                var certC = new CertificateChain(alpnCert);
+                var json = JsonConvert.SerializeObject(new
+                {
+                    Cert = certC.Certificate.ToDer(),
+                    Key = certKey.ToDer(),
+                }, JsonUtil.CreateSettings());
+
+                using (var resp = await http.Value.PostAsync(
+                        $"https://{authz.Identifier.Value}/tls-alpn-01/",
+                        new StringContent(json, Encoding.UTF8, "application/json")))
+                {
+                    Assert.Equal(authz.Identifier.Value, await resp.Content.ReadAsStringAsync());
                 }
             }
         }
