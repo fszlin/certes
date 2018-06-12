@@ -31,7 +31,7 @@ namespace Certes
                 var order = await orderCtx.Resource();
                 Assert.NotNull(order);
                 Assert.Equal(hosts.Length, order.Authorizations?.Count);
-                Assert.True(OrderStatus.Pending == order.Status || OrderStatus.Processing == order.Status);
+                Assert.True(OrderStatus.Pending == order.Status || OrderStatus.Ready == order.Status || OrderStatus.Processing == order.Status);
 
                 var authrizations = await orderCtx.Authorizations();
 

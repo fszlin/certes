@@ -23,7 +23,7 @@ namespace Certes
 
                 var ctx = new AcmeContext(dirUri, http: GetAcmeHttpClient(dirUri));
                 var accountCtx = await ctx.NewAccount(
-                    new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" }, true);
+                    new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@certes.app" }, true);
                 var account = await accountCtx.Resource();
                 var location = accountCtx.Location;
 
@@ -31,7 +31,7 @@ namespace Certes
                 Assert.Equal(AccountStatus.Valid, account.Status);
 
                 await accountCtx.Update(agreeTermsOfService: true);
-                await accountCtx.Update(contact: new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@example.com" });
+                await accountCtx.Update(contact: new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@certes.app" });
 
                 account = await accountCtx.Deactivate();
                 Assert.NotNull(account);
