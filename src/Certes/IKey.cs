@@ -43,7 +43,7 @@ namespace Certes
     /// </summary>
     public static class ISignatureKeyExtensions
     {
-        private static readonly DerObjectIdentifier ACME_VALIDATION_V1 = new DerObjectIdentifier("1.3.6.1.5.5.7.1.30.1");
+        private static readonly DerObjectIdentifier acmeValidationV1Id = new DerObjectIdentifier("1.3.6.1.5.5.7.1.30.1");
         private static readonly KeyAlgorithmProvider signatureAlgorithmProvider = new KeyAlgorithmProvider();
         private static readonly JsonSerializerSettings thumbprintSettings = JsonUtil.CreateSettings();
 
@@ -78,7 +78,7 @@ namespace Certes
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="token">The challenge token.</param>
-        /// <returns></returns>
+        /// <returns>The key authorization string.</returns>
         public static string KeyAuthorization(this IKey key, string token)
         {
             var jwkThumbprintEncoded = key.Thumbprint();
@@ -90,7 +90,7 @@ namespace Certes
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="token">The challenge token.</param>
-        /// <returns></returns>
+        /// <returns>The DNS text value for dns-01 validation.</returns>
         public static string DnsTxt(this IKey key, string token)
         {
             var keyAuthz = key.KeyAuthorization(token);
@@ -105,6 +105,7 @@ namespace Certes
         /// <param name="token">The <see cref="ChallengeTypes.TlsAlpn01" /> token.</param>
         /// <param name="subjectName">Name of the subject.</param>
         /// <param name="certificateKey">The certificate key pair.</param>
+        /// <returns>The tls-alpn-01 certificate in PEM.</returns>
         public static string TlsAlpnCertificate(this IKey key, string token, string subjectName, IKey certificateKey)
         {
             var keyAuthz = key.KeyAuthorization(token);
@@ -125,13 +126,12 @@ namespace Certes
             gen.SetPublicKey(keyPair.Public);
 
             // SAN for validation
-            var gns = new GeneralName[1];
-            gns[0] = new GeneralName(GeneralName.DnsName, subjectName);
+            var gns = new[] { new GeneralName(GeneralName.DnsName, subjectName) };
             gen.AddExtension(X509Extensions.SubjectAlternativeName.Id, false, new GeneralNames(gns));
 
             // ACME-TLS/1
             gen.AddExtension(
-                ACME_VALIDATION_V1,
+                acmeValidationV1Id,
                 true,
                 hashed);
 
