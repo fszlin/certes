@@ -55,17 +55,6 @@ namespace Certes
             Error = error;
         }
 
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AcmeException" /> class.
-        /// </summary>
-        /// <param name="error">The error occurred while processing ACME operations.</param>
-        public AcmeRequestException(AcmeError error)
-            : base(error.Detail)
-        {
-            Error = error;
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeRequestException"/> class.
         /// </summary>
@@ -130,5 +119,21 @@ namespace Certes
             }
         }
 #endif
+
+        /// <summary>
+        /// Gets a message that describes the current exception.
+        /// </summary>
+        public override string Message
+        {
+            get
+            {
+                if (Error != null)
+                {
+                    return $"{base.Message}\n{Error.Type}: {Error.Detail}";
+                }
+
+                return base.Message;
+            }
+        }
     }
 }

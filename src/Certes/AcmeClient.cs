@@ -387,7 +387,9 @@ namespace Certes
         {
             if (response.Error != null)
             {
-                throw new AcmeRequestException(response.Error);
+                throw new AcmeRequestException(
+                    string.Format(Strings.ErrorFetchResource, response.Location),
+                    response.Error);
             }
         }
 

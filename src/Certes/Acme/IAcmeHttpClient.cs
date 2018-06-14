@@ -59,7 +59,9 @@ namespace Certes.Acme
             var resp = await client.Post<T>(uri, payload);
             if (ensureSuccessStatusCode && resp.Error != null)
             {
-                throw new AcmeRequestException(resp.Error);
+                throw new AcmeRequestException(
+                    string.Format(Strings.ErrorFetchResource, resp.Location),
+                    resp.Error);
             }
 
             return resp;
