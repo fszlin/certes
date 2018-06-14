@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -183,6 +185,22 @@ namespace Certes
                 }
 
                 mock.Protected().Verify("Dispose", Times.Never(), true);
+            }
+        }
+
+        [Fact]
+        public void CanCreateWithUri()
+        {
+            var uri = WellKnownServers.LetsEncryptStaging;
+
+            using (var client = new AcmeClient(uri))
+            {
+                var type = typeof(AcmeClient).GetTypeInfo();
+                var field = type.GetField("shouldDisposeHander", BindingFlags.NonPublic | BindingFlags.Instance);
+                Assert.True((bool)field.GetValue(client));
+                Assert.NotNull(client.HttpHandler);
+
+                Assert.Equal(uri, client.HttpHandler.ServerUri);
             }
         }
 
