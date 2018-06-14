@@ -60,7 +60,7 @@ namespace Certes.Acme
             if (ensureSuccessStatusCode && resp.Error != null)
             {
                 throw new AcmeRequestException(
-                    string.Format(Strings.ErrorFetchResource, resp.Location),
+                    string.Format(Strings.ErrorFetchResource, uri),
                     resp.Error);
             }
 
