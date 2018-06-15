@@ -254,6 +254,80 @@ namespace Certes
             }
         }
 
+        [Fact]
+        public async Task CanNewRegistraton()
+        {
+            var accountKey = await Helper.LoadkeyV1();
+            var contacts = new string[] { "mailto:user@example.com" };
+            var regLocation = new Uri("http://example.com/reg/1");
+            var mock = MockHttp(async req =>
+            {
+                if (req.Method == HttpMethod.Post && req.RequestUri == Helper.MockDirectoryV1.NewReg)
+                {
+                    var payload = await ParsePayload<RegistrationEntity>(req);
+                    Assert.Equal(ResourceTypes.NewRegistration, payload.Resource);
+                    Assert.Equal(contacts.Clone(), payload.Contact);
+
+                    var respJson = new
+                    {
+                        contact = payload.Contact,
+                        agreement = payload.Agreement,
+                        resource = ResourceTypes.Registration
+                    };
+
+                    var resp = CreateResponse(respJson, HttpStatusCode.Created, regLocation);
+                    resp.Headers.Add("Link", $"<{tos}>; rel=\"terms-of-service\"");
+                    return resp;
+                }
+
+                return null;
+            });
+
+            using (var http = new HttpClient(mock.Object))
+            using (var handler = new AcmeHttpHandler(server, http))
+            {
+                using (var client = new AcmeClient(handler))
+                {
+                    client.Use(accountKey.Export());
+                    var result = await client.NewRegistraton(contacts);
+                    Assert.Equal(ResourceTypes.Registration, result.Data.Resource);
+                    Assert.Equal(regLocation, result.Location);
+                }
+
+                mock.Protected().Verify("Dispose", Times.Never(), true);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldFailWhenNewAuthorizationWithoutAccount()
+        {
+            using (var client = new AcmeClient(WellKnownServers.LetsEncryptStaging))
+            {
+                await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => client.NewAuthorization(new AuthorizationIdentifier()));
+            }
+        }
+
+        [Fact]
+        public async Task ShouldFailWhenUpdateRegistrationWithoutAccount()
+        {
+            using (var client = new AcmeClient(WellKnownServers.LetsEncryptStaging))
+            {
+                await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => client.UpdateRegistration(new AcmeAccount()));
+            }
+        }
+
+        [Fact]
+        public async Task ShouldFailWhenCompleteChallengeWithoutAccount()
+        {
+            using (var client = new AcmeClient(WellKnownServers.LetsEncryptStaging))
+            {
+                await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => client.CompleteChallenge(new ChallengeEntity()));
+            }
+        }
+
         private async Task<T> ParsePayload<T>(HttpRequestMessage message)
         {
             var accountKey = await Helper.LoadkeyV1();
@@ -283,7 +357,7 @@ namespace Certes
 
         private Mock<HttpMessageHandler> MockHttp(Func<HttpRequestMessage, Task<HttpResponseMessage>> provider)
         {
-            var mock = new Mock<HttpMessageHandler>();
+            var mock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
 
             mock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
@@ -306,6 +380,8 @@ namespace Certes
                         return resp;
                     }
                 });
+
+            mock.Protected().Setup("Dispose", true);
 
             return mock;
         }
