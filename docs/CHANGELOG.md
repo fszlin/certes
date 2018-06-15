@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Added
 - Support `tls-alpn-01` challenge ([#125][i125])
-- aDD `ACME` error details to exception messages ([#109][i109])
+- Add `ACME` error details to exception messages ([#109][i109])
 
 ## [2.2.2] - 2018-05-31
 ### Changed
