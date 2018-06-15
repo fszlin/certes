@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -205,7 +204,7 @@ namespace Certes
         }
 
         [Fact]
-        public async Task CanHandlerExistingAuthorization()
+        public async Task CanHandlerxistingAuthorization()
         {
             var accountKey = await Helper.LoadkeyV1();
             var authzUri = new Uri("http://example.com/new-authz");
@@ -228,7 +227,7 @@ namespace Certes
                             Value = "www.example.com",
                         },
                         Status = EntityStatus.Pending,
-                    }, HttpStatusCode.SeeOther, authzLoc);
+                    }, HttpStatusCode.OK, authzLoc);
                 }
 
                 return null;
@@ -315,6 +314,7 @@ namespace Certes
         {
             var resp = new HttpResponseMessage();
             resp.Headers.Location = location;
+            resp.StatusCode = statusCode;
             if (payload != null)
             {
                 resp.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, JsonContentType);
