@@ -204,6 +204,57 @@ namespace Certes
             }
         }
 
+        [Fact]
+        public async Task CanHandlerExistingAuthorization()
+        {
+            var accountKey = await Helper.LoadkeyV1();
+            var authzUri = new Uri("http://example.com/new-authz");
+            var authzLoc = new Uri("http://example.com/authz/111");
+            var mock = MockHttp(async req =>
+            {
+                if (req.Method == HttpMethod.Post && req.RequestUri == authzUri)
+                {
+                    var payload = await ParsePayload<AuthorizationEntity>(req);
+                    return CreateResponse(null, HttpStatusCode.SeeOther, authzLoc);
+                }
+
+                if (req.Method == HttpMethod.Get && req.RequestUri == authzLoc)
+                {
+                    return CreateResponse(new AuthorizationEntity
+                    {
+                        Identifier = new AuthorizationIdentifier
+                        {
+                            Type = AuthorizationIdentifierTypes.Dns,
+                            Value = "www.example.com",
+                        },
+                        Status = EntityStatus.Pending,
+                    }, HttpStatusCode.SeeOther, authzLoc);
+                }
+
+                return null;
+            });
+
+            using (var http = new HttpClient(mock.Object))
+            using (var handler = new AcmeHttpHandler(server, http))
+            {
+                using (var client = new AcmeClient(handler))
+                {
+                    client.Use(accountKey.Export());
+
+                    var authz = await client.NewAuthorization(new AuthorizationIdentifier
+                    {
+                        Type = AuthorizationIdentifierTypes.Dns,
+                        Value = "www.example.com"
+                    });
+
+                    Assert.NotNull(authz);
+                    Assert.Equal(authzLoc, authz.Location);
+                }
+
+                mock.Protected().Verify("Dispose", Times.Never(), true);
+            }
+        }
+
         private async Task<T> ParsePayload<T>(HttpRequestMessage message)
         {
             var accountKey = await Helper.LoadkeyV1();
