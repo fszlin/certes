@@ -119,5 +119,21 @@ namespace Certes
             }
         }
 #endif
+
+        /// <summary>
+        /// Gets a message that describes the current exception.
+        /// </summary>
+        public override string Message
+        {
+            get
+            {
+                if (Error != null)
+                {
+                    return $"{base.Message}\n{Error.Type}: {Error.Detail}";
+                }
+
+                return base.Message;
+            }
+        }
     }
 }

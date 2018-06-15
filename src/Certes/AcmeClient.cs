@@ -82,7 +82,7 @@ namespace Certes
 
             var uri = await this.handler.GetResourceUri(registration.Resource);
             var result = await this.handler.Post(uri, registration, key);
-            ThrowIfError(result);
+            ThrowIfError(result, uri);
 
             var account = new AcmeAccount
             {
@@ -114,7 +114,7 @@ namespace Certes
             var registration = account.Data;
 
             var result = await this.handler.Post(account.Location, registration, key);
-            ThrowIfError(result);
+            ThrowIfError(result, account.Location);
 
             account.Data = result.Data;
             return account;
@@ -148,7 +148,7 @@ namespace Certes
 
             var uri = await this.handler.GetResourceUri(ResourceTypes.KeyChange);
             var result = await this.handler.Post(uri, payloadWithResourceType, key);
-            ThrowIfError(result);
+            ThrowIfError(result, uri);
 
             this.key = keyPair;
         }
@@ -193,12 +193,12 @@ namespace Certes
 
             var uri = await handler.GetResourceUri(ResourceTypes.NewAuthorization);
             var result = await handler.Post(uri, auth, key);
-            ThrowIfError(result);
+            ThrowIfError(result, uri);
 
             if (result.HttpStatus == HttpStatusCode.SeeOther) // An authentication with the same identifier exists.
             {
                 result = await handler.Get<AuthorizationEntity>(result.Location);
-                ThrowIfError(result);
+                ThrowIfError(result, result.Location);
             }
 
             return new AcmeResult<AuthorizationEntity>
@@ -220,7 +220,7 @@ namespace Certes
         public async Task<AcmeResult<AuthorizationEntity>> GetAuthorization(Uri location)
         {
             var result = await this.handler.Get<AuthorizationEntity>(location);
-            ThrowIfError(result);
+            ThrowIfError(result, location);
 
             return new AcmeResult<AuthorizationEntity>
             {
@@ -279,7 +279,7 @@ namespace Certes
             };
 
             var result = await this.handler.Post(authChallenge.Uri, challenge, key);
-            ThrowIfError(result);
+            ThrowIfError(result, authChallenge.Uri);
 
             return new AcmeResult<ChallengeEntity>
             {
@@ -307,7 +307,7 @@ namespace Certes
 
             var uri = await this.handler.GetResourceUri(ResourceTypes.NewCertificate);
             var result = await this.handler.Post(uri, payload, key);
-            ThrowIfError(result);
+            ThrowIfError(result, uri);
 
             byte[] pem;
             using (var buffer = new MemoryStream())
@@ -377,18 +377,18 @@ namespace Certes
 
             var uri = await this.handler.GetResourceUri(ResourceTypes.RevokeCertificate);
             var result = await this.handler.Post(uri, payload, key);
-            ThrowIfError(result);
+            ThrowIfError(result, uri);
 
             certificate.Revoked = true;
             return certificate;
         }
 
-        private void ThrowIfError<T>(AcmeResponse<T> response)
+        private void ThrowIfError<T>(AcmeResponse<T> response, Uri uri)
         {
             if (response.Error != null)
             {
                 throw new AcmeRequestException(
-                    string.Format(Strings.ErrorFetchResource, response.Location), 
+                    string.Format(Strings.ErrorFetchResource, uri),
                     response.Error);
             }
         }

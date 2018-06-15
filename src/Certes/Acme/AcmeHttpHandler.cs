@@ -195,6 +195,7 @@ namespace Certes.Acme
                 data.Raw = await response.Content.ReadAsByteArrayAsync();
             }
 
+            data.HttpStatus = response.StatusCode;
             return data;
         }
 

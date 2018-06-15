@@ -49,7 +49,7 @@ namespace Certes.Acme
             if (resp.Error != null)
             {
                 throw new AcmeRequestException(
-                    string.Format(Strings.ErrorFetchResource, Location),
+                    string.Format(Strings.ErrorFetchResource, resp.Location),
                     resp.Error);
             }
 
