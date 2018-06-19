@@ -44,13 +44,7 @@ namespace Certes
                 var finalizedOrder = await orderCtx.Finalize(der);
                 var certificate = await orderCtx.Download();
 
-                // deactivate authz so the subsequence can trigger challenge validation
-                var authrizations = await orderCtx.Authorizations();
-                foreach (var authz in authrizations)
-                {
-                    var authzRes = await authz.Deactivate();
-                    Assert.Equal(AuthorizationStatus.Deactivated, authzRes.Status);
-                }
+                await ClearAuthorizations(orderCtx);
             }
         }
 
