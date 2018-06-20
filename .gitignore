@@ -249,3 +249,4 @@ data.json
 gh-pages/
 launchSettings.json
 local.settings.json
+.vscode/
