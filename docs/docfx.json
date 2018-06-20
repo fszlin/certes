@@ -49,6 +49,16 @@
         ]
       }
     ],
+    "globalMetadata": {
+      "_appTitle": "Certes",
+      "_gitContribute": {
+        "repo": "https://github.com/fszlin/certes",
+        "branch": "master",
+        "apiSpecFolder": "docs/overwrite"
+      },
+      "_appLogoPath": "images/logo.svg",
+      "_appFaviconPath": "images/favicon.ico"
+    },
     "dest": "_site",
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
