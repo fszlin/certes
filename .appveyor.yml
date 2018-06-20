@@ -56,8 +56,18 @@ build_script:
   - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
   - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
   # gh-pages
-  - docfx docs/docfx.json
-  - 7z a build\gh-pages.zip .\docs\_site\*.* -r
+  - ps: |
+        docfx docs/docfx.json
+        git config --global credential.helper store
+        Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GITHUB_ACCESS_TOKEN):x-oauth-basic@github.com`n"
+        git config --global user.email ci@certes.app
+        git config --global user.name ci
+        git clone https://github.com/fszlin/certes.git -b gh-pages gh-pages -q
+        Copy-Item docs/_site gh-pages -recurse
+        cd gh-pages
+        git add -A 2>&1
+        git commit -m "CI Updates" -q
+        git push origin gh-pages -q
 
 #test: off
 before_test:
