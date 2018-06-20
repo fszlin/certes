@@ -63,7 +63,7 @@ build_script:
         git config --global user.email ci@certes.app
         git config --global user.name ci
         git clone https://github.com/fszlin/certes.git -b gh-pages gh-pages -q
-        Copy-Item docs/_site gh-pages -recurse
+        Copy-Item ./docs/_site/* ./gh-pages/ -Recurse -Container -Force
         cd gh-pages
         git add -A 2>&1
         git commit -m "CI Updates" -q
