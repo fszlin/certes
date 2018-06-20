@@ -35,9 +35,6 @@ branches:
 init:
   - git config --global core.autocrlf input
 
-install:
-  - choco install docfx -y
-
 before_build:
   - ps: New-Item build -Type directory -Force | Out-Null
   # regular msbuild
@@ -78,19 +75,23 @@ after_test:
 on_success:
   # gh-pages
   - ps: |
-        docfx docs/docfx.json
-        git config --global core.autocrlf false
-        git config --global credential.helper store
-        git config --global user.email ci@certes.app
-        git config --global user.name ci
-        Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GITHUB_ACCESS_TOKEN):x-oauth-basic@github.com`n"
-        git clone https://github.com/fszlin/certes.git -b gh-pages gh-pages -q
-        Copy-Item ./docs/_site/* ./gh-pages/ -Recurse -Container -Force
-        cd gh-pages
-        git add -A 2>&1
-        git commit -m "ci-$($env:APPVEYOR_BUILD_NUMBER)" -q
-        git push origin gh-pages -q
-        cd $env:APPVEYOR_BUILD_FOLDER
+        If (-Not $env:APPVEYOR_PULL_REQUEST_TITLE -And $env:APPVEYOR_REPO_BRANCH -Eq "master")
+        {
+          choco install docfx -y
+          docfx docs/docfx.json
+          git config --global core.autocrlf false
+          git config --global credential.helper store
+          git config --global user.email ci@certes.app
+          git config --global user.name ci
+          Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GITHUB_ACCESS_TOKEN):x-oauth-basic@github.com`n"
+          git clone https://github.com/fszlin/certes.git -b gh-pages gh-pages -q
+          Copy-Item ./docs/_site/* ./gh-pages/ -Recurse -Container -Force
+          cd gh-pages
+          git add -A 2>&1
+          git commit -m "ci-$($env:APPVEYOR_BUILD_NUMBER)" -q
+          git push origin gh-pages -q
+          cd $env:APPVEYOR_BUILD_FOLDER
+        }
 
 configuration: Release
 
