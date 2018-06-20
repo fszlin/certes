@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.3.0] - 2018-06-15
 ### Added
 - Support `tls-alpn-01` challenge ([#125][i125])
 - Add `ACME` error details to exception messages ([#109][i109])
@@ -83,7 +83,8 @@ All notable changes to this project will be documented in this file.
 [2.2.0]: https://github.com/fszlin/certes/compare/v2.1.0...v2.2.0
 [2.2.1]: https://github.com/fszlin/certes/compare/v2.2.0...v2.2.1
 [2.2.2]: https://github.com/fszlin/certes/compare/v2.2.1...v2.2.2
-[Unreleased]: https://github.com/fszlin/certes/compare/v2.2.2...HEAD
+[2.3.0]: https://github.com/fszlin/certes/compare/v2.2.2...v2.3.0
+[Unreleased]: https://github.com/fszlin/certes/compare/v2.3.0...HEAD
 
 [i5]: https://github.com/fszlin/certes/issues/5
 [i22]: https://github.com/fszlin/certes/issues/22

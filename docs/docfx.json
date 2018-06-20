@@ -9,7 +9,7 @@
           "src": "../"
         }
       ],
-      "dest": "api",
+      "dest": "api/certes",
       "properties": {
         "TargetFramework": "netstandard2.0"
       },
@@ -21,13 +21,11 @@
       {
         "files": [
           "api/**.yml",
-          "api/index.md"
+          "api/**.md"
         ]
       },
       {
         "files": [
-          "articles/**.md",
-          "articles/**/toc.yml",
           "toc.yml",
           "*.md"
         ]
@@ -56,7 +54,7 @@
     "fileMetadataFiles": [],
     "template": [
       "default",
-      "mathew/src"
+      "tmpl"
     ],
     "postProcessors": [],
     "markdownEngineName": "markdig",
