@@ -1,0 +1,20 @@
+
+svg:hover path[fill="#4F9FE1"] {
+    fill: #4F9FE1;
+}
+
+svg:hover path[fill="#03477F"] {
+    fill: #03477F;
+}
+
+svg:hover path[fill="url(#A)"] {
+    fill: url(#A);
+}
+
+svg:hover path[fill="none"] {
+    fill: none;
+}
+
+svg:hover path[fill="url(#B)"] {
+    fill: url(#B);
+}

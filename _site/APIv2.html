@@ -1,0 +1,264 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>API for ACME v2 </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="API for ACME v2 ">
+    <meta name="generator" content="docfx 2.36.2.0">
+    
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles/docfx.vendor.css">
+    <link rel="stylesheet" href="styles/docfx.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <meta property="docfx:navrel" content="toc.html">
+    <meta property="docfx:tocrel" content="api/toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="index.html">
+                <img id="logo" class="svg" src="logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="api-for-acme-v2">API for ACME v2</h1>
+
+<p>This document details the API exposed for handling ACME flows, as of <a href="https://tools.ietf.org/html/draft-ietf-acme-acme-12">draft-12</a>.</p>
+<h2 id="initialization">Initialization</h2>
+<p>Create the context with specific ACME server by providing the directory URI.</p>
+<pre><code class="lang-C#">var context = new AcmeContext(WellKnownServers.LetsEncryptStagingV2);
+</code></pre>
+<p>Use specific key for existing account or creating new account.</p>
+<pre><code class="lang-C#">var context = new AcmeContext(
+    WellKnownServers.LetsEncryptStagingV2,
+    KeyFactory.FromPem(&quot;account-key.pem&quot;));
+</code></pre>
+<p>Export the account key for later use.</p>
+<pre><code class="lang-C#">var pem = context.AccountKey.ToPem();
+var der = context.AccountKey.ToDer();
+</code></pre>
+<h2 id="acounts">Acounts</h2>
+<p>Get the url to <code>Terms of Service</code> for user to review.</p>
+<pre><code class="lang-C#">var tos = context.TermsOfService();
+</code></pre>
+<p>Create new account.</p>
+<pre><code class="lang-C#">var account = await context.NewAccount(
+    new [] { &quot;mailto:admin@example.com&quot;, &quot;mailto:it@example.com&quot; }, true);
+var account = await context.NewAccount(&quot;admin@example.com&quot;, true);
+</code></pre>
+<p>Fetch existing account from server.</p>
+<pre><code class="lang-C#">var account = await context.Account();
+</code></pre>
+<p>Fetch the account info from server.</p>
+<pre><code class="lang-C#">var accountInfo = await account.Resource();
+</code></pre>
+<p>Update contacts, or accept <code>Terms of Service</code> again if it's updated.</p>
+<pre><code class="lang-C#">await account.UpdateUpdate(
+    contact: new[] { $&quot;mailto:support@example.com&quot; },
+    agreeTermsOfService: true);
+</code></pre>
+<p>Update the account key.</p>
+<pre><code class="lang-C#">var newKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
+await account.ChangeKey(newKey);
+ 
+File.WriteAllText(&quot;new-key.pem&quot;, newKey.ToPem());
+</code></pre>
+<p>Deactivate account.</p>
+<pre><code class="lang-C#">await account.Deactivate();
+</code></pre>
+<!---
+Navigate to related entities.
+```C#
+var orders = await account.Orders();
+```
+-->
+<h2 id="orders">Orders</h2>
+<p>Apply for certificate issuance.</p>
+<pre><code class="lang-C#">var order = await context.NewOrder(new [] { &quot;*.example.com&quot; });
+var orderUri = order.Location;
+</code></pre>
+<p>Retrieve order by URI.</p>
+<pre><code class="lang-C#">var order = await context.Order(orderUri);
+</code></pre>
+<p>Finalize the order.</p>
+<pre><code class="lang-C#">var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
+await orderCtx.Finalize(
+    new CsrInfo
+    {
+        CountryName = &quot;CA&quot;,
+        State = &quot;State&quot;,
+        Locality = &quot;City&quot;,
+        Organization = &quot;Dept&quot;,
+    }, certKey);
+</code></pre>
+<p>Send customized CSR to finalize the order.</p>
+<pre><code class="lang-C#">var csr = new CertificationRequestBuilder();
+csr.AddName($&quot;C=CA, ST=State, L=City, O=Dept, CN=*.example.com&quot;);
+
+await orderCtx.Finalize(csr.Generate());
+</code></pre>
+<p>Download the certificate PEM.</p>
+<pre><code class="lang-C#">var certChain = await order.Download();
+</code></pre>
+<p>Finalize and download the certificate.</p>
+<pre><code class="lang-C#">var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
+var cert = await order.Generate(
+    new CsrInfo
+    {
+        CountryName = &quot;CA&quot;,
+        State = &quot;State&quot;,
+        Locality = &quot;City&quot;,
+        Organization = &quot;Dept&quot;,
+    }, certKey);
+</code></pre>
+<h2 id="authorizations">Authorizations</h2>
+<p>Retrieve authorizations of the order.</p>
+<pre><code class="lang-C#">var authorizations = await order.Authorizations();
+</code></pre>
+<p>Search authorization by domain name.</p>
+<pre><code class="lang-C#">var authz = await order.Authorization(&quot;*.example.com&quot;);
+var authzUri = authz.Location;
+</code></pre>
+<p>Retrieve authorization by URI.</p>
+<pre><code class="lang-C#">var authz = await context.Authorization(authzUri);
+</code></pre>
+<h2 id="challenges">Challenges</h2>
+<p>Retrieve challenges of the authorzation.</p>
+<pre><code class="lang-C#">var challenges = await authz.Challenges();
+var dnsChallenge = await authz.Dns();
+var httpChallenge = await authz.Http();
+var tlsAlpnChallenge = await authz.TlsAlpn();
+</code></pre>
+<p>Create the respone file for provisioning to <code>/.well-know/acme-challenge/</code>.</p>
+<pre><code class="lang-C#">var keyAuth = httpChallenge.KeyAuthz;
+File.WriteAllText(httpChallenge.Token, keyAuth);
+</code></pre>
+<p>Compute the value for DNS TXT record.</p>
+<pre><code class="lang-C#">var dnsTxt = context.AccountKey.DnsTxt(challenge.Token);
+</code></pre>
+<p>Generate certificate with X509 ACME validation extension.</p>
+<pre><code class="lang-C#">var alpnCertKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
+var alpnCert = context.AccountKey.TlsAlpnCertificate(challenge.Token, &quot;www.my-domain.com&quot;, alpnCertKey);
+</code></pre>
+<p>Let the ACME server to validate the challenge once it is ready.</p>
+<pre><code class="lang-C#">await challenge.Validate();
+</code></pre>
+<h2 id="certificates">Certificates</h2>
+<p>Download certificate for a pending order.</p>
+<pre><code class="lang-C#">var cert = await order.Generate(
+    new CsrInfo
+    {
+        CountryName = &quot;CA&quot;,
+        State = &quot;State&quot;,
+        Locality = &quot;City&quot;,
+        Organization = &quot;Dept&quot;,
+    });
+</code></pre>
+<p>Download the certifcate for a finalized order.</p>
+<pre><code class="lang-C#">var certChain = await order.Download();
+</code></pre>
+<p>Export the certificate to PEM, DER, or PFX.</p>
+<pre><code class="lang-C#">var cert = new CertificateInfo(certChain, certKey);
+
+var pem = cert.ToPem();
+var der = cert.ToDer();
+var pfx = cert.ToPfx(&quot;cert-name&quot;, &quot;abcd1234&quot;);
+
+var keyPem = cert.Key.ToPem();
+</code></pre>
+<p>Revoke certificate with account key.</p>
+<pre><code class="lang-C#">context.RevokeCertificate(cert.ToDer(), RevocationReason.KeyCompromise);
+</code></pre>
+<p>Revoke certificate with certificate private key.</p>
+<pre><code class="lang-C#">context.RevokeCertificate(cert.ToDer(), RevocationReason.KeyCompromise, certKey);
+</code></pre>
+<!---
+## Not Implemented
+* Account
+  * External Account Binding
+-->
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/fszlin/certes/blob/master/docs/APIv2.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>
