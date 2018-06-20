@@ -1,5 +1,3 @@
-- name: Home
-  href: README.md
 - name: API
   href: api/
 - name: Changelog
