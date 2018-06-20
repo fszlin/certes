@@ -79,7 +79,7 @@ on_success:
   # gh-pages
   - ps: |
         docfx docs/docfx.json
-        git config --global core.autocrlf input
+        git config --global core.autocrlf true
         git config --global credential.helper store
         git config --global user.email ci@certes.app
         git config --global user.name ci
@@ -88,7 +88,7 @@ on_success:
         Copy-Item ./docs/_site/* ./gh-pages/ -Recurse -Container -Force
         cd gh-pages
         git add -A 2>&1
-        git commit -m "CI Updates" -q
+        git commit -m "$($env:APPVEYOR_BUILD_ID)" -q
         git push origin gh-pages -q
         cd $env:APPVEYOR_BUILD_FOLDER
 
@@ -100,9 +100,6 @@ artifacts:
       
     - path: build/certes-cli.zip
       name: cli
-      
-    - path: build/gh-pages.zip
-      name: docs
 
 deploy:
   - provider: GitHub
