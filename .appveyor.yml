@@ -32,6 +32,9 @@ branches:
 init:
   - git config --global core.autocrlf input
 
+install:
+  - choco install docfx -y
+
 before_build:
   - choco install docfx -y
   - ps: New-Item build -Type directory -Force | Out-Null
@@ -50,6 +53,9 @@ build_script:
   - ps: Get-ChildItem -Path "./src/**/*.nupkg" -Recurse | Move-Item -Destination "./build"
   - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
   - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
+  # gh-pages
+  - docfx docs/docfx.json
+  - 7z a build\gh-pages.zip .\docs\_site\*.* -r
 
 #test: off
 before_test:
