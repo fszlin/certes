@@ -1,15 +1,27 @@
 {
   "homepages": [],
-  "source_base_path": "D:/Dayforce/dev/repos/certes/docfx",
+  "source_base_path": "C:/projects/certes/docs",
   "xrefmap": "xrefmap.yml",
   "files": [
     {
       "type": "Conceptual",
-      "source_relative_path": "../docs/CHANGELOG.md",
+      "source_relative_path": "APIv2.md",
+      "output": {
+        ".html": {
+          "relative_path": "APIv2.html",
+          "hash": "l7aDc92p1TgQqRIUqv0JYA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "CHANGELOG.md",
       "output": {
         ".html": {
           "relative_path": "CHANGELOG.html",
-          "hash": "M0RHh/AgTLXSKKYbo3WoKg=="
+          "hash": "ALQ4rFX+12jCvff8enGqog=="
         }
       },
       "is_incremental": false,
@@ -17,23 +29,11 @@
     },
     {
       "type": "Conceptual",
-      "source_relative_path": "../docs/CODE_OF_CONDUCT.md",
-      "output": {
-        ".html": {
-          "relative_path": "CODE_OF_CONDUCT.html",
-          "hash": "3vtZIyrsenIcRbknVT1zCg=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "../docs/README.md",
+      "source_relative_path": "README.md",
       "output": {
         ".html": {
           "relative_path": "README.html",
-          "hash": "NqMpoyCeF/xbGrAYPi1Czw=="
+          "hash": "MUCPZKbXvpJD5FBL/M7ylA=="
         }
       },
       "is_incremental": false,
@@ -41,11 +41,11 @@
     },
     {
       "type": "Conceptual",
-      "source_relative_path": "../docs/implementation-status.md",
+      "source_relative_path": "README.v1.md",
       "output": {
         ".html": {
-          "relative_path": "implementation-status.html",
-          "hash": "/tID2jzeNLP5Ozi3ds79BA=="
+          "relative_path": "README.v1.html",
+          "hash": "FEbvNDwxkvU81Qohl9jISQ=="
         }
       },
       "is_incremental": false,
@@ -53,11 +53,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.AcmeAccount.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AcmeAccount.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.AcmeAccount.html",
-          "hash": "2Pz3is44kWDI/VsJzRfy5Q=="
+          "relative_path": "api/certes/Certes.Acme.AcmeAccount.html",
+          "hash": "Y6t9sPTG+s59jQx32HFwew=="
         }
       },
       "is_incremental": false,
@@ -65,11 +65,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.AcmeCertificate.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AcmeCertificate.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.AcmeCertificate.html",
-          "hash": "PQBdY74j912etLQju7IXfQ=="
+          "relative_path": "api/certes/Certes.Acme.AcmeCertificate.html",
+          "hash": "eqtgjW5euNm8oXjcuk4YFQ=="
         }
       },
       "is_incremental": false,
@@ -77,11 +77,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.AcmeCertificateExtensions.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AcmeCertificateExtensions.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.AcmeCertificateExtensions.html",
-          "hash": "yFmQDgvN9KrOPvxkCWFeSw=="
+          "relative_path": "api/certes/Certes.Acme.AcmeCertificateExtensions.html",
+          "hash": "0GbAYm3Mw6VW+2H3bmHEZQ=="
         }
       },
       "is_incremental": false,
@@ -89,11 +89,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.html",
-          "hash": "jFjRKGpD2HSPqL193M8gQg=="
+          "relative_path": "api/certes/Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.html",
+          "hash": "3Tyzuwd25JTejBxK8D+K/w=="
         }
       },
       "is_incremental": false,
@@ -101,11 +101,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.AcmeDirectory.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AcmeDirectory.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.AcmeDirectory.html",
-          "hash": "CN2JuWUPMtjiWqpTgJNl8g=="
+          "relative_path": "api/certes/Certes.Acme.AcmeDirectory.html",
+          "hash": "ejaGSb1CImKIDdHi2qjdbQ=="
         }
       },
       "is_incremental": false,
@@ -113,11 +113,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.AcmeError.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AcmeError.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.AcmeError.html",
-          "hash": "tg3Co9GLca96ZoQlOvLUpA=="
+          "relative_path": "api/certes/Certes.Acme.AcmeError.html",
+          "hash": "aIqPoecCyk6J/IgQ0HYSnQ=="
         }
       },
       "is_incremental": false,
@@ -125,11 +125,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.AcmeHttpHandler.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AcmeHttpClient.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.AcmeHttpHandler.html",
-          "hash": "Ol3X2YKbs04ztJK9v75SLQ=="
+          "relative_path": "api/certes/Certes.Acme.AcmeHttpClient.html",
+          "hash": "gVqd+LYxcW3A5+VToENbkw=="
         }
       },
       "is_incremental": false,
@@ -137,11 +137,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.AcmeRespone-1.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AcmeHttpHandler.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.AcmeRespone-1.html",
-          "hash": "bAV3l8S2JabYhhBPMl+kSg=="
+          "relative_path": "api/certes/Certes.Acme.AcmeHttpHandler.html",
+          "hash": "Qm5ZyMaioPntE4/VvHiJIA=="
         }
       },
       "is_incremental": false,
@@ -149,11 +149,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.AcmeResult-1.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AcmeHttpResponse-1.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.AcmeResult-1.html",
-          "hash": "/Zs2x/Ni7Iy1YRwsiEk2Fw=="
+          "relative_path": "api/certes/Certes.Acme.AcmeHttpResponse-1.html",
+          "hash": "rjGyYut+9CpD+S0h+/BUwA=="
         }
       },
       "is_incremental": false,
@@ -161,11 +161,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.AcmeResultExtensions.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AcmeResponse-1.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.AcmeResultExtensions.html",
-          "hash": "hpLQJ4noY6aLTbasdPYEUA=="
+          "relative_path": "api/certes/Certes.Acme.AcmeResponse-1.html",
+          "hash": "sTKuYW7ilAnMggUM6SRQ1w=="
         }
       },
       "is_incremental": false,
@@ -173,11 +173,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.Authorization.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AcmeResult-1.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.Authorization.html",
-          "hash": "ZajUp3529I5ar8G5+8sWcA=="
+          "relative_path": "api/certes/Certes.Acme.AcmeResult-1.html",
+          "hash": "qY1BeBf0r4o3Dj+DwewqIw=="
         }
       },
       "is_incremental": false,
@@ -185,11 +185,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.AuthorizationIdentifier.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AcmeResultExtensions.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.AuthorizationIdentifier.html",
-          "hash": "b6EprJJfmIbE0lkI5wu66A=="
+          "relative_path": "api/certes/Certes.Acme.AcmeResultExtensions.html",
+          "hash": "CVyxi/sUla2RC563kOf/pw=="
         }
       },
       "is_incremental": false,
@@ -197,11 +197,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.AuthorizationIdentifierTypes.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AuthorizationEntity.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.AuthorizationIdentifierTypes.html",
-          "hash": "qtOfokOa8OlBWX3nTIy2NQ=="
+          "relative_path": "api/certes/Certes.Acme.AuthorizationEntity.html",
+          "hash": "qgdAszyiJAxV/HmAlBoZcA=="
         }
       },
       "is_incremental": false,
@@ -209,11 +209,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.Certificate.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AuthorizationIdentifier.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.Certificate.html",
-          "hash": "iR55pwSio6QnFPTH4DDo9g=="
+          "relative_path": "api/certes/Certes.Acme.AuthorizationIdentifier.html",
+          "hash": "35fGKzencu/O7AATPMQVIg=="
         }
       },
       "is_incremental": false,
@@ -221,11 +221,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.Challenge.yml",
+      "source_relative_path": "api/certes/Certes.Acme.AuthorizationIdentifierTypes.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.Challenge.html",
-          "hash": "kHa95lKYq0lHOqhAJpvecQ=="
+          "relative_path": "api/certes/Certes.Acme.AuthorizationIdentifierTypes.html",
+          "hash": "ZudUXn0RneVcmUqhuPkIsQ=="
         }
       },
       "is_incremental": false,
@@ -233,11 +233,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.ChallengeExtensions.yml",
+      "source_relative_path": "api/certes/Certes.Acme.CertificateChain.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.ChallengeExtensions.html",
-          "hash": "LV74c08YvCJJmmCBAicbLg=="
+          "relative_path": "api/certes/Certes.Acme.CertificateChain.html",
+          "hash": "OkHBJV6p194eYXmMump0Vw=="
         }
       },
       "is_incremental": false,
@@ -245,11 +245,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.ChallengeTypes.yml",
+      "source_relative_path": "api/certes/Certes.Acme.CertificateEntity.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.ChallengeTypes.html",
-          "hash": "1/WctNgLrunSwMHZbC66nw=="
+          "relative_path": "api/certes/Certes.Acme.CertificateEntity.html",
+          "hash": "Un6jGffimtX2OUi5l5LZxQ=="
         }
       },
       "is_incremental": false,
@@ -257,11 +257,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.ChallengeValidation.yml",
+      "source_relative_path": "api/certes/Certes.Acme.ChallengeEntity.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.ChallengeValidation.html",
-          "hash": "hYfcw9qhJJ30n2/YLcAHlg=="
+          "relative_path": "api/certes/Certes.Acme.ChallengeEntity.html",
+          "hash": "/YVVs2qwZLpuheHE3y5Qgg=="
         }
       },
       "is_incremental": false,
@@ -269,11 +269,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.EntityBase.yml",
+      "source_relative_path": "api/certes/Certes.Acme.ChallengeExtensions.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.EntityBase.html",
-          "hash": "skHLajdQ4XqaGOKP/zoAUw=="
+          "relative_path": "api/certes/Certes.Acme.ChallengeExtensions.html",
+          "hash": "AwBMbYQGd2oP/dzA0LdJ+A=="
         }
       },
       "is_incremental": false,
@@ -281,11 +281,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.EntityStatus.yml",
+      "source_relative_path": "api/certes/Certes.Acme.ChallengeValidation.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.EntityStatus.html",
-          "hash": "dBL4/Jzc6xn3hQKWJsIf2Q=="
+          "relative_path": "api/certes/Certes.Acme.ChallengeValidation.html",
+          "hash": "avj184mJ1E5C5xNA4KCr4Q=="
         }
       },
       "is_incremental": false,
@@ -293,11 +293,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.IAcmeHttpHandler.yml",
+      "source_relative_path": "api/certes/Certes.Acme.EntityBase.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.IAcmeHttpHandler.html",
-          "hash": "nBJQLHm6zBRNvq94oWqzrA=="
+          "relative_path": "api/certes/Certes.Acme.EntityBase.html",
+          "hash": "ugIIKPWXR7+BEZlervqipg=="
         }
       },
       "is_incremental": false,
@@ -305,11 +305,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.KeyedAcmeResult-1.yml",
+      "source_relative_path": "api/certes/Certes.Acme.EntityStatus.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.KeyedAcmeResult-1.html",
-          "hash": "eZG7u1l0Er79fI0uObhlKQ=="
+          "relative_path": "api/certes/Certes.Acme.EntityStatus.html",
+          "hash": "HmvjYTz3ttkdZutfOZLvVA=="
         }
       },
       "is_incremental": false,
@@ -317,11 +317,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.Registration.yml",
+      "source_relative_path": "api/certes/Certes.Acme.IAccountContext.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.Registration.html",
-          "hash": "6LFM4rTBsMoOZcmmkNtZ6A=="
+          "relative_path": "api/certes/Certes.Acme.IAccountContext.html",
+          "hash": "XKZp0H75ocuXlvk6bPoRVg=="
         }
       },
       "is_incremental": false,
@@ -329,11 +329,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.RelLink.yml",
+      "source_relative_path": "api/certes/Certes.Acme.IAcmeHttpClient.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.RelLink.html",
-          "hash": "NPIbtQ7GA68petApahvXwg=="
+          "relative_path": "api/certes/Certes.Acme.IAcmeHttpClient.html",
+          "hash": "dAFWun86os1YH6uCt1KreA=="
         }
       },
       "is_incremental": false,
@@ -341,11 +341,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.Resource.Account.yml",
+      "source_relative_path": "api/certes/Certes.Acme.IAcmeHttpHandler.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.Resource.Account.html",
-          "hash": "hg9+Cqujbuub1U6kF4RvyQ=="
+          "relative_path": "api/certes/Certes.Acme.IAcmeHttpHandler.html",
+          "hash": "GxVxcH81xa4D9ER6k1e2iA=="
         }
       },
       "is_incremental": false,
@@ -353,11 +353,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.Resource.AccountStatus.yml",
+      "source_relative_path": "api/certes/Certes.Acme.IAuthorizationContext.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.Resource.AccountStatus.html",
-          "hash": "CsI5i7jVVho1HnNpmVEJPg=="
+          "relative_path": "api/certes/Certes.Acme.IAuthorizationContext.html",
+          "hash": "G7Ow7xv4d9QHJH0JF1W/Iw=="
         }
       },
       "is_incremental": false,
@@ -365,11 +365,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.Resource.Directory.yml",
+      "source_relative_path": "api/certes/Certes.Acme.IChallengeContext.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.Resource.Directory.html",
-          "hash": "jWiZCVeATFZR43v9Kr4IUw=="
+          "relative_path": "api/certes/Certes.Acme.IChallengeContext.html",
+          "hash": "h8jKP/9wrEz9lkyLKsfYpQ=="
         }
       },
       "is_incremental": false,
@@ -377,11 +377,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.Resource.DirectoryMeta.yml",
+      "source_relative_path": "api/certes/Certes.Acme.IOrderContext.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.Resource.DirectoryMeta.html",
-          "hash": "hLNdUMj9xHQgZql21FaLkA=="
+          "relative_path": "api/certes/Certes.Acme.IOrderContext.html",
+          "hash": "9P8OmaTaoDnoQiBxMGcpDA=="
         }
       },
       "is_incremental": false,
@@ -389,11 +389,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.Resource.Order.yml",
+      "source_relative_path": "api/certes/Certes.Acme.IOrderListContext.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.Resource.Order.html",
-          "hash": "rpFtQ4x0cJPoLGWOAEXi+g=="
+          "relative_path": "api/certes/Certes.Acme.IOrderListContext.html",
+          "hash": "/5RmX5pckkC5YtdtJDhFjA=="
         }
       },
       "is_incremental": false,
@@ -401,11 +401,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.Resource.OrderList.yml",
+      "source_relative_path": "api/certes/Certes.Acme.IResourceContext-1.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.Resource.OrderList.html",
-          "hash": "s2U0EAf2AY1p8o331IAiOQ=="
+          "relative_path": "api/certes/Certes.Acme.IResourceContext-1.html",
+          "hash": "tIgXW+wLLf1I/vh7jHj51Q=="
         }
       },
       "is_incremental": false,
@@ -413,11 +413,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.Resource.OrderStatus.yml",
+      "source_relative_path": "api/certes/Certes.Acme.KeyedAcmeResult-1.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.Resource.OrderStatus.html",
-          "hash": "w9gt8wHm1C6zqjegYvGmyg=="
+          "relative_path": "api/certes/Certes.Acme.KeyedAcmeResult-1.html",
+          "hash": "8q+PBcw1b+FtOBE/l4QoZg=="
         }
       },
       "is_incremental": false,
@@ -425,11 +425,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.Resource.yml",
+      "source_relative_path": "api/certes/Certes.Acme.RegistrationEntity.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.Resource.html",
-          "hash": "zAeiz7brYuj0G9p9w/jYpQ=="
+          "relative_path": "api/certes/Certes.Acme.RegistrationEntity.html",
+          "hash": "ZfG0jz5Ts9y24lLvmLVxhg=="
         }
       },
       "is_incremental": false,
@@ -437,11 +437,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.ResourceTypes.yml",
+      "source_relative_path": "api/certes/Certes.Acme.RelLink.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.ResourceTypes.html",
-          "hash": "zsN7LzNB+RThBB/msehhLw=="
+          "relative_path": "api/certes/Certes.Acme.RelLink.html",
+          "hash": "wAthwHVuSgb4rHD7qYvY3w=="
         }
       },
       "is_incremental": false,
@@ -449,11 +449,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.RevokeCertificate.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.Account.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.RevokeCertificate.html",
-          "hash": "bjcZK3BmSubvWv1/NTgw6A=="
+          "relative_path": "api/certes/Certes.Acme.Resource.Account.html",
+          "hash": "NsbxZpmbIZ5UkWG726bDBw=="
         }
       },
       "is_incremental": false,
@@ -461,11 +461,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.WellKnownServers.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.AccountStatus.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.WellKnownServers.html",
-          "hash": "3EK7BfBM04FEv8GZFDPIoQ=="
+          "relative_path": "api/certes/Certes.Acme.Resource.AccountStatus.html",
+          "hash": "SV6dclsGMm5MV0jK+/eGaQ=="
         }
       },
       "is_incremental": false,
@@ -473,11 +473,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Acme.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.Authorization.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Acme.html",
-          "hash": "TYECocB1mpopgyrau9yHTQ=="
+          "relative_path": "api/certes/Certes.Acme.Resource.Authorization.html",
+          "hash": "9UcHM910YGh0unArdo/oRw=="
         }
       },
       "is_incremental": false,
@@ -485,11 +485,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.AcmeClient.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.AuthorizationStatus.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.AcmeClient.html",
-          "hash": "RbxuDxdvd/VMrzfitLoQgw=="
+          "relative_path": "api/certes/Certes.Acme.Resource.AuthorizationStatus.html",
+          "hash": "nCFmFI+PHCNhYoosXq8ImQ=="
         }
       },
       "is_incremental": false,
@@ -497,11 +497,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.IAcmeClient.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.Challenge.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.IAcmeClient.html",
-          "hash": "5aRaHKo6oamkVZLdv6I9jA=="
+          "relative_path": "api/certes/Certes.Acme.Resource.Challenge.html",
+          "hash": "3C7iwZigm8mkZL7gdSX48g=="
         }
       },
       "is_incremental": false,
@@ -509,11 +509,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Json.JsonUtil.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.ChallengeStatus.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Json.JsonUtil.html",
-          "hash": "nrvGmVr1CziYrXXKYJK0dA=="
+          "relative_path": "api/certes/Certes.Acme.Resource.ChallengeStatus.html",
+          "hash": "7ngMXFnF7eRLSnqEnx1iKQ=="
         }
       },
       "is_incremental": false,
@@ -521,11 +521,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Json.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.ChallengeTypes.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Json.html",
-          "hash": "3nNsesrB04MXwnDe8Uunjg=="
+          "relative_path": "api/certes/Certes.Acme.Resource.ChallengeTypes.html",
+          "hash": "7Ahcjwz6K9fbyMqmDnPxEw=="
         }
       },
       "is_incremental": false,
@@ -533,11 +533,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Jws.AccountKey.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.Directory.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Jws.AccountKey.html",
-          "hash": "xh81jl/LtsZXeM4no0wZSw=="
+          "relative_path": "api/certes/Certes.Acme.Resource.Directory.html",
+          "hash": "MS81VQIJE40MiDc4eAwnqw=="
         }
       },
       "is_incremental": false,
@@ -545,11 +545,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Jws.AccountKeyExtensions.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.DirectoryMeta.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Jws.AccountKeyExtensions.html",
-          "hash": "bkYhWjf4A+kHWFM87VolBw=="
+          "relative_path": "api/certes/Certes.Acme.Resource.DirectoryMeta.html",
+          "hash": "iMuNQoKKDxcecTsaG7k6TA=="
         }
       },
       "is_incremental": false,
@@ -557,11 +557,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Jws.IAccountKey.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.Identifier.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Jws.IAccountKey.html",
-          "hash": "TKnvCigQvD69mPGB1ostNg=="
+          "relative_path": "api/certes/Certes.Acme.Resource.Identifier.html",
+          "hash": "JFlYFa23L3cJR9qYXKfSdA=="
         }
       },
       "is_incremental": false,
@@ -569,11 +569,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Jws.JwsConvert.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.IdentifierStatus.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Jws.JwsConvert.html",
-          "hash": "30PDd75EYTOdIZAFaJmjQQ=="
+          "relative_path": "api/certes/Certes.Acme.Resource.IdentifierStatus.html",
+          "hash": "ODpROxlf4qZgNU7WqriB8A=="
         }
       },
       "is_incremental": false,
@@ -581,11 +581,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Jws.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.IdentifierType.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Jws.html",
-          "hash": "DuCCcGLjntXh0tGNsK9rvw=="
+          "relative_path": "api/certes/Certes.Acme.Resource.IdentifierType.html",
+          "hash": "UhUYmcqpCI/J31x4nttnfw=="
         }
       },
       "is_incremental": false,
@@ -593,11 +593,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Pkcs.CertificationRequestBuilder.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.Order.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Pkcs.CertificationRequestBuilder.html",
-          "hash": "1w+DvoA8XhC1STVKBs+/pA=="
+          "relative_path": "api/certes/Certes.Acme.Resource.Order.html",
+          "hash": "A6YewUNNJ5cIenPPHjz6OQ=="
         }
       },
       "is_incremental": false,
@@ -605,11 +605,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Pkcs.CertificationRequestBuilderBase.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.OrderList.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Pkcs.CertificationRequestBuilderBase.html",
-          "hash": "3fcVerLLpANMYBNDprOpGw=="
+          "relative_path": "api/certes/Certes.Acme.Resource.OrderList.html",
+          "hash": "0bHgyblcCUa7L4TTo9cGQw=="
         }
       },
       "is_incremental": false,
@@ -617,11 +617,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Pkcs.ICertificationRequestBuilder.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.OrderStatus.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Pkcs.ICertificationRequestBuilder.html",
-          "hash": "DRArPEeS74fb3BSAi/Ng8g=="
+          "relative_path": "api/certes/Certes.Acme.Resource.OrderStatus.html",
+          "hash": "CDtQDYnk1YWR6qZyXLfvYA=="
         }
       },
       "is_incremental": false,
@@ -629,11 +629,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Pkcs.KeyInfo.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.RevocationReason.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Pkcs.KeyInfo.html",
-          "hash": "4Xe+Af3llxfhLkPxHBDt0Q=="
+          "relative_path": "api/certes/Certes.Acme.Resource.RevocationReason.html",
+          "hash": "K9TK/rK6vuKS6kQC88EOPg=="
         }
       },
       "is_incremental": false,
@@ -641,11 +641,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Pkcs.KeyInfoExtensions.yml",
+      "source_relative_path": "api/certes/Certes.Acme.Resource.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Pkcs.KeyInfoExtensions.html",
-          "hash": "4TF5Gp5ufNh1ef2c5/9HRQ=="
+          "relative_path": "api/certes/Certes.Acme.Resource.html",
+          "hash": "FV9Nl04X8roE22JrqIlSlg=="
         }
       },
       "is_incremental": false,
@@ -653,11 +653,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Pkcs.PfxBuilder.yml",
+      "source_relative_path": "api/certes/Certes.Acme.ResourceTypes.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Pkcs.PfxBuilder.html",
-          "hash": "VpjSnyMSSwXcLfAvBFYBiA=="
+          "relative_path": "api/certes/Certes.Acme.ResourceTypes.html",
+          "hash": "unRM8pRsFx8Oum/h48zbvQ=="
         }
       },
       "is_incremental": false,
@@ -665,11 +665,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Pkcs.SignatureAlgorithm.yml",
+      "source_relative_path": "api/certes/Certes.Acme.RevokeCertificateEntity.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Pkcs.SignatureAlgorithm.html",
-          "hash": "3xT3GCS3plWjdoZ/9ElZVQ=="
+          "relative_path": "api/certes/Certes.Acme.RevokeCertificateEntity.html",
+          "hash": "g0gHe1KsqRnRsX94E8NN/Q=="
         }
       },
       "is_incremental": false,
@@ -677,11 +677,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Pkcs.SignatureAlgorithmExtensions.yml",
+      "source_relative_path": "api/certes/Certes.Acme.WellKnownServers.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Pkcs.SignatureAlgorithmExtensions.html",
-          "hash": "r+13vx6NDq4uIkKPRLbSCw=="
+          "relative_path": "api/certes/Certes.Acme.WellKnownServers.html",
+          "hash": "fL2W6oFmOYFWhFyExC5eTg=="
         }
       },
       "is_incremental": false,
@@ -689,11 +689,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.Pkcs.yml",
+      "source_relative_path": "api/certes/Certes.Acme.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.Pkcs.html",
-          "hash": "P+u4P9eNLNLDeDPN2fgpIg=="
+          "relative_path": "api/certes/Certes.Acme.html",
+          "hash": "/YK9UtLO4Z4SdiOyB/BSrQ=="
         }
       },
       "is_incremental": false,
@@ -701,11 +701,431 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Certes.yml",
+      "source_relative_path": "api/certes/Certes.AcmeClient.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Certes.html",
-          "hash": "kiCcq2Ppl6gel2TfNOnh9A=="
+          "relative_path": "api/certes/Certes.AcmeClient.html",
+          "hash": "eVLgGOyhr9693cGaQTtxAg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.AcmeContext.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.AcmeContext.html",
+          "hash": "Y/c0NR5W0bQF5rVMM7kQDw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.AcmeException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.AcmeException.html",
+          "hash": "WDMbhs5yuYkJ7AKjhprNYQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.AcmeRequestException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.AcmeRequestException.html",
+          "hash": "RjAitx5Imnttarm3snwC/A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.CertificateChainExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.CertificateChainExtensions.html",
+          "hash": "uHMZfy7X0NYhfo0i0G4SBg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.CsrInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.CsrInfo.html",
+          "hash": "HSmG2/oMrr0MGo5WxYEg+Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.IAccountContextExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.IAccountContextExtensions.html",
+          "hash": "08EOReapH25lFVqoV09Ujg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.IAcmeClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.IAcmeClient.html",
+          "hash": "qYdW+yHMaQOd8aOkr5xF2g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.IAcmeContext.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.IAcmeContext.html",
+          "hash": "/0UVqES+wvDmjtgfea8CpA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.IAcmeContextExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.IAcmeContextExtensions.html",
+          "hash": "AYnciTYtF9EA01vJFAiisw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.IAuthorizationContextExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.IAuthorizationContextExtensions.html",
+          "hash": "APbTl5TTbYUMonwO19vi1A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.IEncodable.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.IEncodable.html",
+          "hash": "plrETWmhACLcQ9ux5TwjOA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.IKey.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.IKey.html",
+          "hash": "+if2wL/+tx5ND/vUukfbfg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.IOrderContextExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.IOrderContextExtensions.html",
+          "hash": "IFbK99ZT7fvBVAXMZm6U0w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.ISignatureKeyExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.ISignatureKeyExtensions.html",
+          "hash": "KivxjlfpmS2FfxrMjXPbZw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Json.JsonUtil.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Json.JsonUtil.html",
+          "hash": "uXMZzTibxeOmqxEc661aGw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Json.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Json.html",
+          "hash": "qXVPjH0juhqwvej1khT+SQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Jws.AccountKey.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Jws.AccountKey.html",
+          "hash": "DktVo0JaF/bCYeSvk5n2Rg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Jws.AccountKeyExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Jws.AccountKeyExtensions.html",
+          "hash": "85pYFVLzsg3fMvNGgFtpMQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Jws.IAccountKey.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Jws.IAccountKey.html",
+          "hash": "N9DQNh9q1ebg7bu/kMvaqQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Jws.JsonWebKey.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Jws.JsonWebKey.html",
+          "hash": "ZGLsJERF7hMftjXpOgUafw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Jws.JwsConvert.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Jws.JwsConvert.html",
+          "hash": "XxFZuluMsKG6tuiB32Mm6g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Jws.JwsPayload.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Jws.JwsPayload.html",
+          "hash": "BaE0vT5w44z38PFRMuKrAA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Jws.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Jws.html",
+          "hash": "J0QLjnpQgLul3DIX/pddFA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.KeyAlgorithm.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.KeyAlgorithm.html",
+          "hash": "fLGymPmFeXP36tPKG6bVYw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.KeyAlgorithmExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.KeyAlgorithmExtensions.html",
+          "hash": "b42Y7nURWej0N5/NIsEHNA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.KeyFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.KeyFactory.html",
+          "hash": "sbw+DPYNEo0B2ZBSgkBnVg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Pkcs.CertificateStore.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Pkcs.CertificateStore.html",
+          "hash": "fJ5UTXK0jWS5R4iAjaxLwg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Pkcs.CertificationRequestBuilder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Pkcs.CertificationRequestBuilder.html",
+          "hash": "eyNjUBq26sVpQ0pzDMtzmg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Pkcs.ICertificationRequestBuilder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Pkcs.ICertificationRequestBuilder.html",
+          "hash": "CCcaAmz4gDQI5Oav73Rs7Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Pkcs.KeyInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Pkcs.KeyInfo.html",
+          "hash": "AkpqfUBE+4hwh6XhPYlHGw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Pkcs.KeyInfoExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Pkcs.KeyInfoExtensions.html",
+          "hash": "m6KMRIrS+lu3SsZbKF7HRg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Pkcs.PfxBuilder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Pkcs.PfxBuilder.html",
+          "hash": "YbfssTlK3xdMP5oKyZC1iA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Pkcs.SignatureAlgorithm.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Pkcs.SignatureAlgorithm.html",
+          "hash": "wstu5eSXn/TP673gqDrKCQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.Pkcs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.Pkcs.html",
+          "hash": "2FH6rmNXmIwwg3VhRDrsoA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/certes/Certes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/certes/Certes.html",
+          "hash": "ys3aE12oQgY301cYJGor3Q=="
         }
       },
       "is_incremental": false,
@@ -717,7 +1137,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "rxzrb56PPmnF2HNQMS+GmQ=="
+          "hash": "bsJ8Yzr5rr6LSs4yLEh0tg=="
         }
       },
       "is_incremental": false,
@@ -725,11 +1145,11 @@
     },
     {
       "type": "Conceptual",
-      "source_relative_path": "index.md",
+      "source_relative_path": "implementation-status.md",
       "output": {
         ".html": {
-          "relative_path": "index.html",
-          "hash": "0edYqvgw+gAnql5ydGKzSw=="
+          "relative_path": "implementation-status.html",
+          "hash": "v58n/B6AqLM5i0gKDyTEHw=="
         }
       },
       "is_incremental": false,
@@ -741,7 +1161,7 @@
       "output": {
         ".html": {
           "relative_path": "toc.html",
-          "hash": "c9BmVP/6geH+JXOmkXye9A=="
+          "hash": "R8pyLTjEGop4QWSVpTX5+A=="
         }
       },
       "is_incremental": false,
@@ -752,30 +1172,20 @@
     {
       "status": {
         "can_incremental": false,
-        "details": "Disable incremental build by force rebuild option.",
+        "details": "Cannot build incrementally because last build info is missing.",
         "incrementalPhase": "build"
       },
       "processors": {
-        "ResourceDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor ResourceDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build"
-        },
         "TocDocumentProcessor": {
           "can_incremental": false,
-          "details": "Processor TocDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build"
-        },
-        "RestApiDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor RestApiDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build"
-        },
-        "ManagedReferenceDocumentProcessor": {
-          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build"
         },
         "ConceptualDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build"
+        },
+        "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build"
         }
@@ -784,11 +1194,16 @@
     {
       "status": {
         "can_incremental": false,
-        "details": "Cannot support incremental post processing, the reason is: it's disabled.",
+        "details": "Cannot support incremental post processing, the reason is: last post processor info is null.",
         "incrementalPhase": "postProcessing"
       },
       "processors": {}
     }
   ],
-  "version_info": {}
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
 }
