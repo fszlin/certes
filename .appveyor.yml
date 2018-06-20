@@ -33,6 +33,7 @@ init:
   - git config --global core.autocrlf input
 
 before_build:
+  - choco install docfx -y
   - ps: New-Item build -Type directory -Force | Out-Null
   # regular msbuild
   - cmd: msbuild -t:restore -v:m
