@@ -83,6 +83,9 @@ artifacts:
       
     - path: build/certes-cli.zip
       name: cli
+      
+    - path: build/gh-pages.zip
+      name: docs
 
 deploy:
   - provider: GitHub
