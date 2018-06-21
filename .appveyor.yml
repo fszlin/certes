@@ -18,6 +18,9 @@ nuget:
 environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOCFX_SOURCE_BRANCH_NAME: master
+  GITHUB_ACCESS_TOKEN:
+    secure: MZeiiHM6tnTZKRr0x2MsNUK/kOjSKNMZd/48f2uBs8j5bge+JygXE+flTSI16yxC
 
 cache:
 
@@ -58,16 +61,37 @@ test_script:
   - ps: cd test/Certes.Tests
   - ps: >-
       & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:xunit -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4" "-oldstyle" "-output:./../../build/Certes.Tests.coverage.xml" "-filter:+[*]Certes.* -[*Tests*]*" "-hideskipped:All" "-returntargetcode"
-  - ps: cd ../../
+  - ps: cd $env:APPVEYOR_BUILD_FOLDER
   - ps: cd test/Certes.Tests.Integration
   - ps: >-
       & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:xunit -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4" "-oldstyle" "-output:./../../build/Certes.Tests.Integration.coverage.xml" "-filter:+[*]Certes.* -[*Tests*]*" "-hideskipped:All" "-returntargetcode"
-  - ps: cd ../../
+  - ps: cd $env:APPVEYOR_BUILD_FOLDER
 
 after_test:
   - npm install codecov -g -q
   - codecov -f "./build/Certes.Tests.coverage.xml" -F unit > $null
   - codecov -f "./build/Certes.Tests.Integration.coverage.xml" -F integration > $null
+
+on_success:
+  # gh-pages
+  - ps: |
+        If (-Not $env:APPVEYOR_PULL_REQUEST_TITLE -And $env:APPVEYOR_REPO_BRANCH -Eq "master")
+        {
+          choco install docfx -y
+          docfx docs/docfx.json
+          git config --global core.autocrlf false
+          git config --global credential.helper store
+          git config --global user.email ci@certes.app
+          git config --global user.name ci
+          Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GITHUB_ACCESS_TOKEN):x-oauth-basic@github.com`n"
+          git clone https://github.com/fszlin/certes.git -b gh-pages gh-pages -q
+          Copy-Item ./docs/_site/* ./gh-pages/ -Recurse -Container -Force
+          cd gh-pages
+          git add -A 2>&1
+          git commit -m "ci-$($env:APPVEYOR_BUILD_NUMBER)" -q
+          git push origin gh-pages -q
+          cd $env:APPVEYOR_BUILD_FOLDER
+        }
 
 configuration: Release
 

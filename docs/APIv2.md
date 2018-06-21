@@ -1,7 +1,7 @@
 
 # API for ACME v2
  
-This document details the API exposed for handling ACME flows, as of [draft-09][draft-09].
+This document details the API exposed for handling ACME flows, as of [draft-12][draft].
  
  
 ## Initialization
@@ -251,4 +251,4 @@ context.RevokeCertificate(cert.ToDer(), RevocationReason.KeyCompromise, certKey)
   * External Account Binding
 -->
  
-[draft-09]: https://tools.ietf.org/html/draft-ietf-acme-acme-09
+[draft]: https://tools.ietf.org/html/draft-ietf-acme-acme-12
