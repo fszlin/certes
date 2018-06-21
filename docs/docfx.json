@@ -57,7 +57,8 @@
         "apiSpecFolder": "docs/overwrite"
       },
       "_appLogoPath": "images/logo.svg",
-      "_appFaviconPath": "images/favicon.ico"
+      "_appFaviconPath": "images/favicon.ico",
+      "_appFooter": "&copy; 2018 <a href=\"https://github.com/fszlin/certes\">Certes</a> Project"
     },
     "dest": "_site",
     "globalMetadataFiles": [],
