@@ -73,6 +73,9 @@
     "keepFileLink": false,
     "cleanupCacheHistory": false,
     "disableGitFeatures": false,
+    "xrefService": [
+      "https://xref.docs.microsoft.com/query?uid={uid}"
+    ],
     "sitemap": {
       "baseUrl": "https://docs.certes.app/"
     }
