@@ -124,3 +124,7 @@ svg:hover path[fill="url(#B)"] {
 .toc .nav > li > a {
     margin-left: 12px;
 }
+
+.github-links {
+    padding-left: 8px;
+}
