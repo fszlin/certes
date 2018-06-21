@@ -9,7 +9,7 @@
    | Certes </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AcmeDirectory
-   | Certes ">
+   - Certes ">
     <meta name="generator" content="docfx 2.36.2.0">
     
     <link rel="shortcut icon" href="../../images/favicon.ico">
@@ -83,38 +83,14 @@
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
-    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">AcmeDirectory</span></div>
-  </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <span class="xref">System.Object.Equals(System.Object)</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.GetHashCode()</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.GetType()</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.MemberwiseClone()</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.ToString()</span>
-    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Certes.Acme.html">Certes.Acme</a></h6>
   <h6><strong>Assembly</strong>: Certes.dll</h6>
   <h5 id="Certes_Acme_AcmeDirectory_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class AcmeDirectory</code></pre>
+    <pre><code class="lang-csharp hljs">public class AcmeDirectory : object</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
@@ -132,8 +108,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[JsonProperty(&quot;key-change&quot;)]
-public Uri KeyChange { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public Uri KeyChange { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -145,7 +120,7 @@ public Uri KeyChange { get; set; }</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Uri</span></td>
+        <td><span class="xref">Uri</span></td>
         <td><p>The key change endpoint.</p>
 </td>
       </tr>
@@ -165,8 +140,7 @@ public Uri KeyChange { get; set; }</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[JsonProperty(&quot;meta&quot;)]
-public AcmeDirectory.AcmeDirectoryMeta Meta { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public AcmeDirectory.AcmeDirectoryMeta Meta { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -198,8 +172,7 @@ public AcmeDirectory.AcmeDirectoryMeta Meta { get; set; }</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[JsonProperty(&quot;new-authz&quot;)]
-public Uri NewAuthz { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public Uri NewAuthz { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -211,7 +184,7 @@ public Uri NewAuthz { get; set; }</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Uri</span></td>
+        <td><span class="xref">Uri</span></td>
         <td><p>The new authorization endpoint.</p>
 </td>
       </tr>
@@ -231,8 +204,7 @@ public Uri NewAuthz { get; set; }</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[JsonProperty(&quot;new-cert&quot;)]
-public Uri NewCert { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public Uri NewCert { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -244,7 +216,7 @@ public Uri NewCert { get; set; }</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Uri</span></td>
+        <td><span class="xref">Uri</span></td>
         <td><p>The new certificate endpoint.</p>
 </td>
       </tr>
@@ -264,8 +236,7 @@ public Uri NewCert { get; set; }</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[JsonProperty(&quot;new-reg&quot;)]
-public Uri NewReg { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public Uri NewReg { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -277,7 +248,7 @@ public Uri NewReg { get; set; }</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Uri</span></td>
+        <td><span class="xref">Uri</span></td>
         <td><p>The new registration endpoint.</p>
 </td>
       </tr>
@@ -297,8 +268,7 @@ public Uri NewReg { get; set; }</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[JsonProperty(&quot;revoke-cert&quot;)]
-public Uri RevokeCert { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public Uri RevokeCert { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -310,13 +280,23 @@ public Uri RevokeCert { get; set; }</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Uri</span></td>
+        <td><span class="xref">Uri</span></td>
         <td><p>The revoke cert.</p>
 </td>
       </tr>
     </tbody>
   </table>
 </article>
+            <div id="disqus_thread"></div>
+                <script>
+                (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://certes-doc.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+                })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>        
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">
@@ -330,6 +310,9 @@ public Uri RevokeCert { get; set; }</code></pre>
                     <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeDirectory.cs/#L10" class="contribution-link">View Source</a>
                   </li>
                 </ul>
+              </div>
+              <div class="github-links">
+                  <a class="github-button" href="https://github.com/fszlin/certes" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star fszlin/certes on GitHub">Star</a>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
               <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
@@ -356,5 +339,6 @@ public Uri RevokeCert { get; set; }</code></pre>
     <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
     <script type="text/javascript" src="../../styles/docfx.js"></script>
     <script type="text/javascript" src="../../styles/main.js"></script>
+    <script async="" defer="" src="https://buttons.github.io/buttons.js"></script>
   </body>
 </html>

@@ -9,7 +9,7 @@
    | Certes </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AcmeClient
-   | Certes ">
+   - Certes ">
     <meta name="generator" content="docfx 2.36.2.0">
     
     <link rel="shortcut icon" href="../../images/favicon.ico">
@@ -83,43 +83,19 @@
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
-    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">AcmeClient</span></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="Certes.IAcmeClient.html">IAcmeClient</a></div>
-    <div><span class="xref">System.IDisposable</span></div>
-  </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <span class="xref">System.Object.Equals(System.Object)</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.GetHashCode()</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.GetType()</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.MemberwiseClone()</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.ToString()</span>
-    </div>
+    <div><span class="xref">IDisposable</span></div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Certes.html">Certes</a></h6>
   <h6><strong>Assembly</strong>: Certes.dll</h6>
   <h5 id="Certes_AcmeClient_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class AcmeClient : IAcmeClient, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public class AcmeClient : object, IAcmeClient, IDisposable</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -159,13 +135,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/master/docs/overwrite/new?filename=Certes_AcmeClient__ctor_System_Uri_.md&amp;value=---%0Auid%3A%20Certes.AcmeClient.%23ctor(System.Uri)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/master/docs/overwrite/new?filename=Certes_AcmeClient__ctor_Uri_.md&amp;value=---%0Auid%3A%20Certes.AcmeClient.%23ctor(Uri)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeClient.cs/#L41">View Source</a>
   </span>
   <a id="Certes_AcmeClient__ctor_" data-uid="Certes.AcmeClient.#ctor*"></a>
-  <h4 id="Certes_AcmeClient__ctor_System_Uri_" data-uid="Certes.AcmeClient.#ctor(System.Uri)">AcmeClient(Uri)</h4>
+  <h4 id="Certes_AcmeClient__ctor_Uri_" data-uid="Certes.AcmeClient.#ctor(Uri)">AcmeClient(Uri)</h4>
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Certes.AcmeClient.html">AcmeClient</a> class.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -184,7 +160,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Uri</span></td>
+        <td><span class="xref">Uri</span></td>
         <td><span class="parametername">serverUri</span></td>
         <td><p>The ACME server URI.</p>
 </td>
@@ -277,7 +253,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>The awaitable.</p>
 </td>
       </tr>
@@ -327,24 +303,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeResult-1.html">AcmeResult</a>&lt;<a class="xref" href="Certes.Acme.ChallengeEntity.html">ChallengeEntity</a>&gt;&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeResult-1.html">AcmeResult</a>&lt;<a class="xref" href="Certes.Acme.ChallengeEntity.html">ChallengeEntity</a>&gt;&gt;</td>
         <td><p>The challenge updated.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">System.InvalidOperationException</span></td>
-        <td><p>If the account key is missing.</p>
 </td>
       </tr>
     </tbody>
@@ -393,24 +353,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.String</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><p>The value for the text DNS record.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">System.InvalidOperationException</span></td>
-        <td><p>If the provided challenge is not a DNS challenge.</p>
 </td>
       </tr>
     </tbody>
@@ -459,7 +403,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.String</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><p>The key authorization string.</p>
 </td>
       </tr>
@@ -508,7 +452,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>The awaitable.</p>
 </td>
       </tr>
@@ -557,7 +501,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Boolean</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">disposing</span></td>
         <td><p><code>true</code> to release both managed and unmanaged resources; <code>false</code> to release only unmanaged resources.</p>
 </td>
@@ -566,13 +510,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/master/docs/overwrite/new?filename=Certes_AcmeClient_GetAuthorization_System_Uri_.md&amp;value=---%0Auid%3A%20Certes.AcmeClient.GetAuthorization(System.Uri)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/master/docs/overwrite/new?filename=Certes_AcmeClient_GetAuthorization_Uri_.md&amp;value=---%0Auid%3A%20Certes.AcmeClient.GetAuthorization(Uri)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeClient.cs/#L220">View Source</a>
   </span>
   <a id="Certes_AcmeClient_GetAuthorization_" data-uid="Certes.AcmeClient.GetAuthorization*"></a>
-  <h4 id="Certes_AcmeClient_GetAuthorization_System_Uri_" data-uid="Certes.AcmeClient.GetAuthorization(System.Uri)">GetAuthorization(Uri)</h4>
+  <h4 id="Certes_AcmeClient_GetAuthorization_Uri_" data-uid="Certes.AcmeClient.GetAuthorization(Uri)">GetAuthorization(Uri)</h4>
   <div class="markdown level1 summary"><p>Gets the authorization from <code data-dev-comment-type="paramref" class="paramref">location</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -591,7 +535,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Uri</span></td>
+        <td><span class="xref">Uri</span></td>
         <td><span class="parametername">location</span></td>
         <td><p>The authorization location URI.</p>
 </td>
@@ -608,7 +552,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeResult-1.html">AcmeResult</a>&lt;<a class="xref" href="Certes.Acme.AuthorizationEntity.html">AuthorizationEntity</a>&gt;&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeResult-1.html">AcmeResult</a>&lt;<a class="xref" href="Certes.Acme.AuthorizationEntity.html">AuthorizationEntity</a>&gt;&gt;</td>
         <td><p>The authorization retrieved.</p>
 </td>
       </tr>
@@ -658,24 +602,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeResult-1.html">AcmeResult</a>&lt;<a class="xref" href="Certes.Acme.AuthorizationEntity.html">AuthorizationEntity</a>&gt;&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeResult-1.html">AcmeResult</a>&lt;<a class="xref" href="Certes.Acme.AuthorizationEntity.html">AuthorizationEntity</a>&gt;&gt;</td>
         <td><p>The authorization created.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">System.InvalidOperationException</span></td>
-        <td><p>If the account key is missing.</p>
 </td>
       </tr>
     </tbody>
@@ -724,7 +652,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeCertificate.html">AcmeCertificate</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeCertificate.html">AcmeCertificate</a>&gt;</td>
         <td><p>The certificate issued.</p>
 </td>
       </tr>
@@ -757,7 +685,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Byte</span>[]</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
         <td><span class="parametername">csrBytes</span></td>
         <td><p>The certificate signing request data.</p>
 </td>
@@ -774,7 +702,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeCertificate.html">AcmeCertificate</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeCertificate.html">AcmeCertificate</a>&gt;</td>
         <td><p>The certificate issued.</p>
 </td>
       </tr>
@@ -807,7 +735,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.String</span>[]</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>[]</td>
         <td><span class="parametername">contact</span></td>
         <td><p>The contact method, e.g. <code>mailto:admin@example.com</code>.</p>
 </td>
@@ -824,7 +752,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeAccount.html">AcmeAccount</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeAccount.html">AcmeAccount</a>&gt;</td>
         <td><p>The ACME account created.</p>
 </td>
       </tr>
@@ -874,7 +802,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeCertificate.html">AcmeCertificate</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeCertificate.html">AcmeCertificate</a>&gt;</td>
         <td><p>The certificate revoked.</p>
 </td>
       </tr>
@@ -924,24 +852,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeAccount.html">AcmeAccount</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeAccount.html">AcmeAccount</a>&gt;</td>
         <td><p>The updated ACME account.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">System.InvalidOperationException</span></td>
-        <td><p>If the account key is missing.</p>
 </td>
       </tr>
     </tbody>
@@ -985,9 +897,19 @@
       <a class="xref" href="Certes.IAcmeClient.html">IAcmeClient</a>
   </div>
   <div>
-      <span class="xref">System.IDisposable</span>
+      <span class="xref">IDisposable</span>
   </div>
 </article>
+            <div id="disqus_thread"></div>
+                <script>
+                (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://certes-doc.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+                })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>        
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">
@@ -1001,6 +923,9 @@
                     <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeClient.cs/#L17" class="contribution-link">View Source</a>
                   </li>
                 </ul>
+              </div>
+              <div class="github-links">
+                  <a class="github-button" href="https://github.com/fszlin/certes" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star fszlin/certes on GitHub">Star</a>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
               <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
@@ -1027,5 +952,6 @@
     <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
     <script type="text/javascript" src="../../styles/docfx.js"></script>
     <script type="text/javascript" src="../../styles/main.js"></script>
+    <script async="" defer="" src="https://buttons.github.io/buttons.js"></script>
   </body>
 </html>

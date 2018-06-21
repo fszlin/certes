@@ -276,11 +276,11 @@ references:
   commentId: T:Certes.Acme.AcmeHttpClient
   fullName: Certes.Acme.AcmeHttpClient
   nameWithType: AcmeHttpClient
-- uid: Certes.Acme.AcmeHttpClient.#ctor(System.Uri,System.Net.Http.HttpClient)
+- uid: Certes.Acme.AcmeHttpClient.#ctor(Uri,HttpClient)
   name: AcmeHttpClient(Uri, HttpClient)
-  href: api/certes/Certes.Acme.AcmeHttpClient.html#Certes_Acme_AcmeHttpClient__ctor_System_Uri_System_Net_Http_HttpClient_
-  commentId: M:Certes.Acme.AcmeHttpClient.#ctor(System.Uri,System.Net.Http.HttpClient)
-  fullName: Certes.Acme.AcmeHttpClient.AcmeHttpClient(System.Uri, System.Net.Http.HttpClient)
+  href: api/certes/Certes.Acme.AcmeHttpClient.html#Certes_Acme_AcmeHttpClient__ctor_Uri_HttpClient_
+  commentId: M:Certes.Acme.AcmeHttpClient.#ctor(Uri,HttpClient)
+  fullName: Certes.Acme.AcmeHttpClient.AcmeHttpClient(Uri, HttpClient)
   nameWithType: AcmeHttpClient.AcmeHttpClient(Uri, HttpClient)
 - uid: Certes.Acme.AcmeHttpClient.#ctor*
   name: AcmeHttpClient
@@ -309,13 +309,13 @@ references:
   isSpec: "True"
   fullName: Certes.Acme.AcmeHttpClient.Get
   nameWithType: AcmeHttpClient.Get
-- uid: Certes.Acme.AcmeHttpClient.Get``1(System.Uri)
+- uid: Certes.Acme.AcmeHttpClient.Get``1(Uri)
   name: Get<T>(Uri)
-  href: api/certes/Certes.Acme.AcmeHttpClient.html#Certes_Acme_AcmeHttpClient_Get__1_System_Uri_
-  commentId: M:Certes.Acme.AcmeHttpClient.Get``1(System.Uri)
+  href: api/certes/Certes.Acme.AcmeHttpClient.html#Certes_Acme_AcmeHttpClient_Get__1_Uri_
+  commentId: M:Certes.Acme.AcmeHttpClient.Get``1(Uri)
   name.vb: Get(Of T)(Uri)
-  fullName: Certes.Acme.AcmeHttpClient.Get<T>(System.Uri)
-  fullName.vb: Certes.Acme.AcmeHttpClient.Get(Of T)(System.Uri)
+  fullName: Certes.Acme.AcmeHttpClient.Get<T>(Uri)
+  fullName.vb: Certes.Acme.AcmeHttpClient.Get(Of T)(Uri)
   nameWithType: AcmeHttpClient.Get<T>(Uri)
   nameWithType.vb: AcmeHttpClient.Get(Of T)(Uri)
 - uid: Certes.Acme.AcmeHttpClient.Post*
@@ -325,13 +325,13 @@ references:
   isSpec: "True"
   fullName: Certes.Acme.AcmeHttpClient.Post
   nameWithType: AcmeHttpClient.Post
-- uid: Certes.Acme.AcmeHttpClient.Post``1(System.Uri,System.Object)
+- uid: Certes.Acme.AcmeHttpClient.Post``1(Uri,System.Object)
   name: Post<T>(Uri, Object)
-  href: api/certes/Certes.Acme.AcmeHttpClient.html#Certes_Acme_AcmeHttpClient_Post__1_System_Uri_System_Object_
-  commentId: M:Certes.Acme.AcmeHttpClient.Post``1(System.Uri,System.Object)
+  href: api/certes/Certes.Acme.AcmeHttpClient.html#Certes_Acme_AcmeHttpClient_Post__1_Uri_System_Object_
+  commentId: M:Certes.Acme.AcmeHttpClient.Post``1(Uri,System.Object)
   name.vb: Post(Of T)(Uri, Object)
-  fullName: Certes.Acme.AcmeHttpClient.Post<T>(System.Uri, System.Object)
-  fullName.vb: Certes.Acme.AcmeHttpClient.Post(Of T)(System.Uri, System.Object)
+  fullName: Certes.Acme.AcmeHttpClient.Post<T>(Uri, System.Object)
+  fullName.vb: Certes.Acme.AcmeHttpClient.Post(Of T)(Uri, System.Object)
   nameWithType: AcmeHttpClient.Post<T>(Uri, Object)
   nameWithType.vb: AcmeHttpClient.Post(Of T)(Uri, Object)
 - uid: Certes.Acme.AcmeHttpHandler
@@ -340,23 +340,23 @@ references:
   commentId: T:Certes.Acme.AcmeHttpHandler
   fullName: Certes.Acme.AcmeHttpHandler
   nameWithType: AcmeHttpHandler
-- uid: Certes.Acme.AcmeHttpHandler.#ctor(System.Uri)
+- uid: Certes.Acme.AcmeHttpHandler.#ctor(Uri)
   name: AcmeHttpHandler(Uri)
-  href: api/certes/Certes.Acme.AcmeHttpHandler.html#Certes_Acme_AcmeHttpHandler__ctor_System_Uri_
-  commentId: M:Certes.Acme.AcmeHttpHandler.#ctor(System.Uri)
-  fullName: Certes.Acme.AcmeHttpHandler.AcmeHttpHandler(System.Uri)
+  href: api/certes/Certes.Acme.AcmeHttpHandler.html#Certes_Acme_AcmeHttpHandler__ctor_Uri_
+  commentId: M:Certes.Acme.AcmeHttpHandler.#ctor(Uri)
+  fullName: Certes.Acme.AcmeHttpHandler.AcmeHttpHandler(Uri)
   nameWithType: AcmeHttpHandler.AcmeHttpHandler(Uri)
-- uid: Certes.Acme.AcmeHttpHandler.#ctor(System.Uri,System.Net.Http.HttpClient)
+- uid: Certes.Acme.AcmeHttpHandler.#ctor(Uri,HttpClient)
   name: AcmeHttpHandler(Uri, HttpClient)
-  href: api/certes/Certes.Acme.AcmeHttpHandler.html#Certes_Acme_AcmeHttpHandler__ctor_System_Uri_System_Net_Http_HttpClient_
-  commentId: M:Certes.Acme.AcmeHttpHandler.#ctor(System.Uri,System.Net.Http.HttpClient)
-  fullName: Certes.Acme.AcmeHttpHandler.AcmeHttpHandler(System.Uri, System.Net.Http.HttpClient)
+  href: api/certes/Certes.Acme.AcmeHttpHandler.html#Certes_Acme_AcmeHttpHandler__ctor_Uri_HttpClient_
+  commentId: M:Certes.Acme.AcmeHttpHandler.#ctor(Uri,HttpClient)
+  fullName: Certes.Acme.AcmeHttpHandler.AcmeHttpHandler(Uri, HttpClient)
   nameWithType: AcmeHttpHandler.AcmeHttpHandler(Uri, HttpClient)
-- uid: Certes.Acme.AcmeHttpHandler.#ctor(System.Uri,System.Net.Http.HttpMessageHandler)
+- uid: Certes.Acme.AcmeHttpHandler.#ctor(Uri,HttpMessageHandler)
   name: AcmeHttpHandler(Uri, HttpMessageHandler)
-  href: api/certes/Certes.Acme.AcmeHttpHandler.html#Certes_Acme_AcmeHttpHandler__ctor_System_Uri_System_Net_Http_HttpMessageHandler_
-  commentId: M:Certes.Acme.AcmeHttpHandler.#ctor(System.Uri,System.Net.Http.HttpMessageHandler)
-  fullName: Certes.Acme.AcmeHttpHandler.AcmeHttpHandler(System.Uri, System.Net.Http.HttpMessageHandler)
+  href: api/certes/Certes.Acme.AcmeHttpHandler.html#Certes_Acme_AcmeHttpHandler__ctor_Uri_HttpMessageHandler_
+  commentId: M:Certes.Acme.AcmeHttpHandler.#ctor(Uri,HttpMessageHandler)
+  fullName: Certes.Acme.AcmeHttpHandler.AcmeHttpHandler(Uri, HttpMessageHandler)
   nameWithType: AcmeHttpHandler.AcmeHttpHandler(Uri, HttpMessageHandler)
 - uid: Certes.Acme.AcmeHttpHandler.#ctor*
   name: AcmeHttpHandler
@@ -391,13 +391,13 @@ references:
   isSpec: "True"
   fullName: Certes.Acme.AcmeHttpHandler.Get
   nameWithType: AcmeHttpHandler.Get
-- uid: Certes.Acme.AcmeHttpHandler.Get``1(System.Uri)
+- uid: Certes.Acme.AcmeHttpHandler.Get``1(Uri)
   name: Get<T>(Uri)
-  href: api/certes/Certes.Acme.AcmeHttpHandler.html#Certes_Acme_AcmeHttpHandler_Get__1_System_Uri_
-  commentId: M:Certes.Acme.AcmeHttpHandler.Get``1(System.Uri)
+  href: api/certes/Certes.Acme.AcmeHttpHandler.html#Certes_Acme_AcmeHttpHandler_Get__1_Uri_
+  commentId: M:Certes.Acme.AcmeHttpHandler.Get``1(Uri)
   name.vb: Get(Of T)(Uri)
-  fullName: Certes.Acme.AcmeHttpHandler.Get<T>(System.Uri)
-  fullName.vb: Certes.Acme.AcmeHttpHandler.Get(Of T)(System.Uri)
+  fullName: Certes.Acme.AcmeHttpHandler.Get<T>(Uri)
+  fullName.vb: Certes.Acme.AcmeHttpHandler.Get(Of T)(Uri)
   nameWithType: AcmeHttpHandler.Get<T>(Uri)
   nameWithType.vb: AcmeHttpHandler.Get(Of T)(Uri)
 - uid: Certes.Acme.AcmeHttpHandler.GetResourceUri(System.String)
@@ -420,13 +420,13 @@ references:
   isSpec: "True"
   fullName: Certes.Acme.AcmeHttpHandler.Post
   nameWithType: AcmeHttpHandler.Post
-- uid: Certes.Acme.AcmeHttpHandler.Post``1(System.Uri,``0,Certes.Jws.IAccountKey)
+- uid: Certes.Acme.AcmeHttpHandler.Post``1(Uri,``0,Certes.Jws.IAccountKey)
   name: Post<T>(Uri, T, IAccountKey)
-  href: api/certes/Certes.Acme.AcmeHttpHandler.html#Certes_Acme_AcmeHttpHandler_Post__1_System_Uri___0_Certes_Jws_IAccountKey_
-  commentId: M:Certes.Acme.AcmeHttpHandler.Post``1(System.Uri,``0,Certes.Jws.IAccountKey)
+  href: api/certes/Certes.Acme.AcmeHttpHandler.html#Certes_Acme_AcmeHttpHandler_Post__1_Uri___0_Certes_Jws_IAccountKey_
+  commentId: M:Certes.Acme.AcmeHttpHandler.Post``1(Uri,``0,Certes.Jws.IAccountKey)
   name.vb: Post(Of T)(Uri, T, IAccountKey)
-  fullName: Certes.Acme.AcmeHttpHandler.Post<T>(System.Uri, T, Certes.Jws.IAccountKey)
-  fullName.vb: Certes.Acme.AcmeHttpHandler.Post(Of T)(System.Uri, T, Certes.Jws.IAccountKey)
+  fullName: Certes.Acme.AcmeHttpHandler.Post<T>(Uri, T, Certes.Jws.IAccountKey)
+  fullName.vb: Certes.Acme.AcmeHttpHandler.Post(Of T)(Uri, T, Certes.Jws.IAccountKey)
   nameWithType: AcmeHttpHandler.Post<T>(Uri, T, IAccountKey)
   nameWithType.vb: AcmeHttpHandler.Post(Of T)(Uri, T, IAccountKey)
 - uid: Certes.Acme.AcmeHttpHandler.ServerUri
@@ -451,13 +451,13 @@ references:
   fullName.vb: Certes.Acme.AcmeHttpResponse(Of T)
   nameWithType: AcmeHttpResponse<T>
   nameWithType.vb: AcmeHttpResponse(Of T)
-- uid: Certes.Acme.AcmeHttpResponse`1.#ctor(System.Uri,`0,System.Linq.ILookup{System.String,System.Uri},Certes.Acme.AcmeError)
+- uid: Certes.Acme.AcmeHttpResponse`1.#ctor(Uri,`0,ILookup{System.String,Uri},Certes.Acme.AcmeError)
   name: AcmeHttpResponse(Uri, T, ILookup<String, Uri>, AcmeError)
-  href: api/certes/Certes.Acme.AcmeHttpResponse-1.html#Certes_Acme_AcmeHttpResponse_1__ctor_System_Uri__0_System_Linq_ILookup_System_String_System_Uri__Certes_Acme_AcmeError_
-  commentId: M:Certes.Acme.AcmeHttpResponse`1.#ctor(System.Uri,`0,System.Linq.ILookup{System.String,System.Uri},Certes.Acme.AcmeError)
+  href: api/certes/Certes.Acme.AcmeHttpResponse-1.html#Certes_Acme_AcmeHttpResponse_1__ctor_Uri__0_ILookup_System_String_Uri__Certes_Acme_AcmeError_
+  commentId: M:Certes.Acme.AcmeHttpResponse`1.#ctor(Uri,`0,ILookup{System.String,Uri},Certes.Acme.AcmeError)
   name.vb: AcmeHttpResponse(Uri, T, ILookup(Of String, Uri), AcmeError)
-  fullName: Certes.Acme.AcmeHttpResponse<T>.AcmeHttpResponse(System.Uri, T, System.Linq.ILookup<System.String, System.Uri>, Certes.Acme.AcmeError)
-  fullName.vb: Certes.Acme.AcmeHttpResponse(Of T).AcmeHttpResponse(System.Uri, T, System.Linq.ILookup(Of System.String, System.Uri), Certes.Acme.AcmeError)
+  fullName: Certes.Acme.AcmeHttpResponse<T>.AcmeHttpResponse(Uri, T, ILookup<System.String, Uri>, Certes.Acme.AcmeError)
+  fullName.vb: Certes.Acme.AcmeHttpResponse(Of T).AcmeHttpResponse(Uri, T, ILookup(Of System.String, Uri), Certes.Acme.AcmeError)
   nameWithType: AcmeHttpResponse<T>.AcmeHttpResponse(Uri, T, ILookup<String, Uri>, AcmeError)
   nameWithType.vb: AcmeHttpResponse(Of T).AcmeHttpResponse(Uri, T, ILookup(Of String, Uri), AcmeError)
 - uid: Certes.Acme.AcmeHttpResponse`1.#ctor*
@@ -1286,13 +1286,13 @@ references:
   isSpec: "True"
   fullName: Certes.Acme.IAccountContext.Orders
   nameWithType: IAccountContext.Orders
-- uid: Certes.Acme.IAccountContext.Update(System.Collections.Generic.IList{System.String},System.Boolean)
+- uid: Certes.Acme.IAccountContext.Update(IList{System.String},System.Boolean)
   name: Update(IList<String>, Boolean)
-  href: api/certes/Certes.Acme.IAccountContext.html#Certes_Acme_IAccountContext_Update_System_Collections_Generic_IList_System_String__System_Boolean_
-  commentId: M:Certes.Acme.IAccountContext.Update(System.Collections.Generic.IList{System.String},System.Boolean)
+  href: api/certes/Certes.Acme.IAccountContext.html#Certes_Acme_IAccountContext_Update_IList_System_String__System_Boolean_
+  commentId: M:Certes.Acme.IAccountContext.Update(IList{System.String},System.Boolean)
   name.vb: Update(IList(Of String), Boolean)
-  fullName: Certes.Acme.IAccountContext.Update(System.Collections.Generic.IList<System.String>, System.Boolean)
-  fullName.vb: Certes.Acme.IAccountContext.Update(System.Collections.Generic.IList(Of System.String), System.Boolean)
+  fullName: Certes.Acme.IAccountContext.Update(IList<System.String>, System.Boolean)
+  fullName.vb: Certes.Acme.IAccountContext.Update(IList(Of System.String), System.Boolean)
   nameWithType: IAccountContext.Update(IList<String>, Boolean)
   nameWithType.vb: IAccountContext.Update(IList(Of String), Boolean)
 - uid: Certes.Acme.IAccountContext.Update*
@@ -1328,13 +1328,13 @@ references:
   isSpec: "True"
   fullName: Certes.Acme.IAcmeHttpClient.Get
   nameWithType: IAcmeHttpClient.Get
-- uid: Certes.Acme.IAcmeHttpClient.Get``1(System.Uri)
+- uid: Certes.Acme.IAcmeHttpClient.Get``1(Uri)
   name: Get<T>(Uri)
-  href: api/certes/Certes.Acme.IAcmeHttpClient.html#Certes_Acme_IAcmeHttpClient_Get__1_System_Uri_
-  commentId: M:Certes.Acme.IAcmeHttpClient.Get``1(System.Uri)
+  href: api/certes/Certes.Acme.IAcmeHttpClient.html#Certes_Acme_IAcmeHttpClient_Get__1_Uri_
+  commentId: M:Certes.Acme.IAcmeHttpClient.Get``1(Uri)
   name.vb: Get(Of T)(Uri)
-  fullName: Certes.Acme.IAcmeHttpClient.Get<T>(System.Uri)
-  fullName.vb: Certes.Acme.IAcmeHttpClient.Get(Of T)(System.Uri)
+  fullName: Certes.Acme.IAcmeHttpClient.Get<T>(Uri)
+  fullName.vb: Certes.Acme.IAcmeHttpClient.Get(Of T)(Uri)
   nameWithType: IAcmeHttpClient.Get<T>(Uri)
   nameWithType.vb: IAcmeHttpClient.Get(Of T)(Uri)
 - uid: Certes.Acme.IAcmeHttpClient.Post*
@@ -1344,13 +1344,13 @@ references:
   isSpec: "True"
   fullName: Certes.Acme.IAcmeHttpClient.Post
   nameWithType: IAcmeHttpClient.Post
-- uid: Certes.Acme.IAcmeHttpClient.Post``1(System.Uri,System.Object)
+- uid: Certes.Acme.IAcmeHttpClient.Post``1(Uri,System.Object)
   name: Post<T>(Uri, Object)
-  href: api/certes/Certes.Acme.IAcmeHttpClient.html#Certes_Acme_IAcmeHttpClient_Post__1_System_Uri_System_Object_
-  commentId: M:Certes.Acme.IAcmeHttpClient.Post``1(System.Uri,System.Object)
+  href: api/certes/Certes.Acme.IAcmeHttpClient.html#Certes_Acme_IAcmeHttpClient_Post__1_Uri_System_Object_
+  commentId: M:Certes.Acme.IAcmeHttpClient.Post``1(Uri,System.Object)
   name.vb: Post(Of T)(Uri, Object)
-  fullName: Certes.Acme.IAcmeHttpClient.Post<T>(System.Uri, System.Object)
-  fullName.vb: Certes.Acme.IAcmeHttpClient.Post(Of T)(System.Uri, System.Object)
+  fullName: Certes.Acme.IAcmeHttpClient.Post<T>(Uri, System.Object)
+  fullName.vb: Certes.Acme.IAcmeHttpClient.Post(Of T)(Uri, System.Object)
   nameWithType: IAcmeHttpClient.Post<T>(Uri, Object)
   nameWithType.vb: IAcmeHttpClient.Post(Of T)(Uri, Object)
 - uid: Certes.Acme.IAcmeHttpHandler
@@ -1366,13 +1366,13 @@ references:
   isSpec: "True"
   fullName: Certes.Acme.IAcmeHttpHandler.Get
   nameWithType: IAcmeHttpHandler.Get
-- uid: Certes.Acme.IAcmeHttpHandler.Get``1(System.Uri)
+- uid: Certes.Acme.IAcmeHttpHandler.Get``1(Uri)
   name: Get<T>(Uri)
-  href: api/certes/Certes.Acme.IAcmeHttpHandler.html#Certes_Acme_IAcmeHttpHandler_Get__1_System_Uri_
-  commentId: M:Certes.Acme.IAcmeHttpHandler.Get``1(System.Uri)
+  href: api/certes/Certes.Acme.IAcmeHttpHandler.html#Certes_Acme_IAcmeHttpHandler_Get__1_Uri_
+  commentId: M:Certes.Acme.IAcmeHttpHandler.Get``1(Uri)
   name.vb: Get(Of T)(Uri)
-  fullName: Certes.Acme.IAcmeHttpHandler.Get<T>(System.Uri)
-  fullName.vb: Certes.Acme.IAcmeHttpHandler.Get(Of T)(System.Uri)
+  fullName: Certes.Acme.IAcmeHttpHandler.Get<T>(Uri)
+  fullName.vb: Certes.Acme.IAcmeHttpHandler.Get(Of T)(Uri)
   nameWithType: IAcmeHttpHandler.Get<T>(Uri)
   nameWithType.vb: IAcmeHttpHandler.Get(Of T)(Uri)
 - uid: Certes.Acme.IAcmeHttpHandler.GetResourceUri(System.String)
@@ -1395,13 +1395,13 @@ references:
   isSpec: "True"
   fullName: Certes.Acme.IAcmeHttpHandler.Post
   nameWithType: IAcmeHttpHandler.Post
-- uid: Certes.Acme.IAcmeHttpHandler.Post``1(System.Uri,``0,Certes.Jws.IAccountKey)
+- uid: Certes.Acme.IAcmeHttpHandler.Post``1(Uri,``0,Certes.Jws.IAccountKey)
   name: Post<T>(Uri, T, IAccountKey)
-  href: api/certes/Certes.Acme.IAcmeHttpHandler.html#Certes_Acme_IAcmeHttpHandler_Post__1_System_Uri___0_Certes_Jws_IAccountKey_
-  commentId: M:Certes.Acme.IAcmeHttpHandler.Post``1(System.Uri,``0,Certes.Jws.IAccountKey)
+  href: api/certes/Certes.Acme.IAcmeHttpHandler.html#Certes_Acme_IAcmeHttpHandler_Post__1_Uri___0_Certes_Jws_IAccountKey_
+  commentId: M:Certes.Acme.IAcmeHttpHandler.Post``1(Uri,``0,Certes.Jws.IAccountKey)
   name.vb: Post(Of T)(Uri, T, IAccountKey)
-  fullName: Certes.Acme.IAcmeHttpHandler.Post<T>(System.Uri, T, Certes.Jws.IAccountKey)
-  fullName.vb: Certes.Acme.IAcmeHttpHandler.Post(Of T)(System.Uri, T, Certes.Jws.IAccountKey)
+  fullName: Certes.Acme.IAcmeHttpHandler.Post<T>(Uri, T, Certes.Jws.IAccountKey)
+  fullName.vb: Certes.Acme.IAcmeHttpHandler.Post(Of T)(Uri, T, Certes.Jws.IAccountKey)
   nameWithType: IAcmeHttpHandler.Post<T>(Uri, T, IAccountKey)
   nameWithType.vb: IAcmeHttpHandler.Post(Of T)(Uri, T, IAccountKey)
 - uid: Certes.Acme.IAcmeHttpHandler.ServerUri
@@ -2156,11 +2156,11 @@ references:
   commentId: T:Certes.Acme.Resource.Directory
   fullName: Certes.Acme.Resource.Directory
   nameWithType: Directory
-- uid: Certes.Acme.Resource.Directory.#ctor(System.Uri,System.Uri,System.Uri,System.Uri,System.Uri,Certes.Acme.Resource.DirectoryMeta)
+- uid: Certes.Acme.Resource.Directory.#ctor(Uri,Uri,Uri,Uri,Uri,Certes.Acme.Resource.DirectoryMeta)
   name: Directory(Uri, Uri, Uri, Uri, Uri, DirectoryMeta)
-  href: api/certes/Certes.Acme.Resource.Directory.html#Certes_Acme_Resource_Directory__ctor_System_Uri_System_Uri_System_Uri_System_Uri_System_Uri_Certes_Acme_Resource_DirectoryMeta_
-  commentId: M:Certes.Acme.Resource.Directory.#ctor(System.Uri,System.Uri,System.Uri,System.Uri,System.Uri,Certes.Acme.Resource.DirectoryMeta)
-  fullName: Certes.Acme.Resource.Directory.Directory(System.Uri, System.Uri, System.Uri, System.Uri, System.Uri, Certes.Acme.Resource.DirectoryMeta)
+  href: api/certes/Certes.Acme.Resource.Directory.html#Certes_Acme_Resource_Directory__ctor_Uri_Uri_Uri_Uri_Uri_Certes_Acme_Resource_DirectoryMeta_
+  commentId: M:Certes.Acme.Resource.Directory.#ctor(Uri,Uri,Uri,Uri,Uri,Certes.Acme.Resource.DirectoryMeta)
+  fullName: Certes.Acme.Resource.Directory.Directory(Uri, Uri, Uri, Uri, Uri, Certes.Acme.Resource.DirectoryMeta)
   nameWithType: Directory.Directory(Uri, Uri, Uri, Uri, Uri, DirectoryMeta)
 - uid: Certes.Acme.Resource.Directory.#ctor*
   name: Directory
@@ -2253,13 +2253,13 @@ references:
   commentId: T:Certes.Acme.Resource.DirectoryMeta
   fullName: Certes.Acme.Resource.DirectoryMeta
   nameWithType: DirectoryMeta
-- uid: Certes.Acme.Resource.DirectoryMeta.#ctor(System.Uri,System.Uri,System.Collections.Generic.IList{System.String},System.Nullable{System.Boolean})
+- uid: Certes.Acme.Resource.DirectoryMeta.#ctor(Uri,Uri,IList{System.String},System.Nullable{System.Boolean})
   name: DirectoryMeta(Uri, Uri, IList<String>, Nullable<Boolean>)
-  href: api/certes/Certes.Acme.Resource.DirectoryMeta.html#Certes_Acme_Resource_DirectoryMeta__ctor_System_Uri_System_Uri_System_Collections_Generic_IList_System_String__System_Nullable_System_Boolean__
-  commentId: M:Certes.Acme.Resource.DirectoryMeta.#ctor(System.Uri,System.Uri,System.Collections.Generic.IList{System.String},System.Nullable{System.Boolean})
+  href: api/certes/Certes.Acme.Resource.DirectoryMeta.html#Certes_Acme_Resource_DirectoryMeta__ctor_Uri_Uri_IList_System_String__System_Nullable_System_Boolean__
+  commentId: M:Certes.Acme.Resource.DirectoryMeta.#ctor(Uri,Uri,IList{System.String},System.Nullable{System.Boolean})
   name.vb: DirectoryMeta(Uri, Uri, IList(Of String), Nullable(Of Boolean))
-  fullName: Certes.Acme.Resource.DirectoryMeta.DirectoryMeta(System.Uri, System.Uri, System.Collections.Generic.IList<System.String>, System.Nullable<System.Boolean>)
-  fullName.vb: Certes.Acme.Resource.DirectoryMeta.DirectoryMeta(System.Uri, System.Uri, System.Collections.Generic.IList(Of System.String), System.Nullable(Of System.Boolean))
+  fullName: Certes.Acme.Resource.DirectoryMeta.DirectoryMeta(Uri, Uri, IList<System.String>, System.Nullable<System.Boolean>)
+  fullName.vb: Certes.Acme.Resource.DirectoryMeta.DirectoryMeta(Uri, Uri, IList(Of System.String), System.Nullable(Of System.Boolean))
   nameWithType: DirectoryMeta.DirectoryMeta(Uri, Uri, IList<String>, Nullable<Boolean>)
   nameWithType.vb: DirectoryMeta.DirectoryMeta(Uri, Uri, IList(Of String), Nullable(Of Boolean))
 - uid: Certes.Acme.Resource.DirectoryMeta.#ctor*
@@ -2794,11 +2794,11 @@ references:
   commentId: M:Certes.AcmeClient.#ctor(Certes.Acme.IAcmeHttpHandler)
   fullName: Certes.AcmeClient.AcmeClient(Certes.Acme.IAcmeHttpHandler)
   nameWithType: AcmeClient.AcmeClient(IAcmeHttpHandler)
-- uid: Certes.AcmeClient.#ctor(System.Uri)
+- uid: Certes.AcmeClient.#ctor(Uri)
   name: AcmeClient(Uri)
-  href: api/certes/Certes.AcmeClient.html#Certes_AcmeClient__ctor_System_Uri_
-  commentId: M:Certes.AcmeClient.#ctor(System.Uri)
-  fullName: Certes.AcmeClient.AcmeClient(System.Uri)
+  href: api/certes/Certes.AcmeClient.html#Certes_AcmeClient__ctor_Uri_
+  commentId: M:Certes.AcmeClient.#ctor(Uri)
+  fullName: Certes.AcmeClient.AcmeClient(Uri)
   nameWithType: AcmeClient.AcmeClient(Uri)
 - uid: Certes.AcmeClient.#ctor*
   name: AcmeClient
@@ -2891,11 +2891,11 @@ references:
   isSpec: "True"
   fullName: Certes.AcmeClient.Dispose
   nameWithType: AcmeClient.Dispose
-- uid: Certes.AcmeClient.GetAuthorization(System.Uri)
+- uid: Certes.AcmeClient.GetAuthorization(Uri)
   name: GetAuthorization(Uri)
-  href: api/certes/Certes.AcmeClient.html#Certes_AcmeClient_GetAuthorization_System_Uri_
-  commentId: M:Certes.AcmeClient.GetAuthorization(System.Uri)
-  fullName: Certes.AcmeClient.GetAuthorization(System.Uri)
+  href: api/certes/Certes.AcmeClient.html#Certes_AcmeClient_GetAuthorization_Uri_
+  commentId: M:Certes.AcmeClient.GetAuthorization(Uri)
+  fullName: Certes.AcmeClient.GetAuthorization(Uri)
   nameWithType: AcmeClient.GetAuthorization(Uri)
 - uid: Certes.AcmeClient.GetAuthorization*
   name: GetAuthorization
@@ -3013,11 +3013,11 @@ references:
   commentId: T:Certes.AcmeContext
   fullName: Certes.AcmeContext
   nameWithType: AcmeContext
-- uid: Certes.AcmeContext.#ctor(System.Uri,Certes.IKey,Certes.Acme.IAcmeHttpClient)
+- uid: Certes.AcmeContext.#ctor(Uri,Certes.IKey,Certes.Acme.IAcmeHttpClient)
   name: AcmeContext(Uri, IKey, IAcmeHttpClient)
-  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext__ctor_System_Uri_Certes_IKey_Certes_Acme_IAcmeHttpClient_
-  commentId: M:Certes.AcmeContext.#ctor(System.Uri,Certes.IKey,Certes.Acme.IAcmeHttpClient)
-  fullName: Certes.AcmeContext.AcmeContext(System.Uri, Certes.IKey, Certes.Acme.IAcmeHttpClient)
+  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext__ctor_Uri_Certes_IKey_Certes_Acme_IAcmeHttpClient_
+  commentId: M:Certes.AcmeContext.#ctor(Uri,Certes.IKey,Certes.Acme.IAcmeHttpClient)
+  fullName: Certes.AcmeContext.AcmeContext(Uri, Certes.IKey, Certes.Acme.IAcmeHttpClient)
   nameWithType: AcmeContext.AcmeContext(Uri, IKey, IAcmeHttpClient)
 - uid: Certes.AcmeContext.#ctor*
   name: AcmeContext
@@ -3052,11 +3052,11 @@ references:
   isSpec: "True"
   fullName: Certes.AcmeContext.AccountKey
   nameWithType: AcmeContext.AccountKey
-- uid: Certes.AcmeContext.Authorization(System.Uri)
+- uid: Certes.AcmeContext.Authorization(Uri)
   name: Authorization(Uri)
-  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_Authorization_System_Uri_
-  commentId: M:Certes.AcmeContext.Authorization(System.Uri)
-  fullName: Certes.AcmeContext.Authorization(System.Uri)
+  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_Authorization_Uri_
+  commentId: M:Certes.AcmeContext.Authorization(Uri)
+  fullName: Certes.AcmeContext.Authorization(Uri)
   nameWithType: AcmeContext.Authorization(Uri)
 - uid: Certes.AcmeContext.Authorization*
   name: Authorization
@@ -3117,13 +3117,13 @@ references:
   isSpec: "True"
   fullName: Certes.AcmeContext.HttpClient
   nameWithType: AcmeContext.HttpClient
-- uid: Certes.AcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean)
+- uid: Certes.AcmeContext.NewAccount(IList{System.String},System.Boolean)
   name: NewAccount(IList<String>, Boolean)
-  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_NewAccount_System_Collections_Generic_IList_System_String__System_Boolean_
-  commentId: M:Certes.AcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean)
+  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_NewAccount_IList_System_String__System_Boolean_
+  commentId: M:Certes.AcmeContext.NewAccount(IList{System.String},System.Boolean)
   name.vb: NewAccount(IList(Of String), Boolean)
-  fullName: Certes.AcmeContext.NewAccount(System.Collections.Generic.IList<System.String>, System.Boolean)
-  fullName.vb: Certes.AcmeContext.NewAccount(System.Collections.Generic.IList(Of System.String), System.Boolean)
+  fullName: Certes.AcmeContext.NewAccount(IList<System.String>, System.Boolean)
+  fullName.vb: Certes.AcmeContext.NewAccount(IList(Of System.String), System.Boolean)
   nameWithType: AcmeContext.NewAccount(IList<String>, Boolean)
   nameWithType.vb: AcmeContext.NewAccount(IList(Of String), Boolean)
 - uid: Certes.AcmeContext.NewAccount*
@@ -3133,13 +3133,13 @@ references:
   isSpec: "True"
   fullName: Certes.AcmeContext.NewAccount
   nameWithType: AcmeContext.NewAccount
-- uid: Certes.AcmeContext.NewOrder(System.Collections.Generic.IList{System.String},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset})
+- uid: Certes.AcmeContext.NewOrder(IList{System.String},System.Nullable{DateTimeOffset},System.Nullable{DateTimeOffset})
   name: NewOrder(IList<String>, Nullable<DateTimeOffset>, Nullable<DateTimeOffset>)
-  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_NewOrder_System_Collections_Generic_IList_System_String__System_Nullable_System_DateTimeOffset__System_Nullable_System_DateTimeOffset__
-  commentId: M:Certes.AcmeContext.NewOrder(System.Collections.Generic.IList{System.String},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset})
+  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_NewOrder_IList_System_String__System_Nullable_DateTimeOffset__System_Nullable_DateTimeOffset__
+  commentId: M:Certes.AcmeContext.NewOrder(IList{System.String},System.Nullable{DateTimeOffset},System.Nullable{DateTimeOffset})
   name.vb: NewOrder(IList(Of String), Nullable(Of DateTimeOffset), Nullable(Of DateTimeOffset))
-  fullName: Certes.AcmeContext.NewOrder(System.Collections.Generic.IList<System.String>, System.Nullable<System.DateTimeOffset>, System.Nullable<System.DateTimeOffset>)
-  fullName.vb: Certes.AcmeContext.NewOrder(System.Collections.Generic.IList(Of System.String), System.Nullable(Of System.DateTimeOffset), System.Nullable(Of System.DateTimeOffset))
+  fullName: Certes.AcmeContext.NewOrder(IList<System.String>, System.Nullable<DateTimeOffset>, System.Nullable<DateTimeOffset>)
+  fullName.vb: Certes.AcmeContext.NewOrder(IList(Of System.String), System.Nullable(Of DateTimeOffset), System.Nullable(Of DateTimeOffset))
   nameWithType: AcmeContext.NewOrder(IList<String>, Nullable<DateTimeOffset>, Nullable<DateTimeOffset>)
   nameWithType.vb: AcmeContext.NewOrder(IList(Of String), Nullable(Of DateTimeOffset), Nullable(Of DateTimeOffset))
 - uid: Certes.AcmeContext.NewOrder*
@@ -3149,11 +3149,11 @@ references:
   isSpec: "True"
   fullName: Certes.AcmeContext.NewOrder
   nameWithType: AcmeContext.NewOrder
-- uid: Certes.AcmeContext.Order(System.Uri)
+- uid: Certes.AcmeContext.Order(Uri)
   name: Order(Uri)
-  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_Order_System_Uri_
-  commentId: M:Certes.AcmeContext.Order(System.Uri)
-  fullName: Certes.AcmeContext.Order(System.Uri)
+  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_Order_Uri_
+  commentId: M:Certes.AcmeContext.Order(Uri)
+  fullName: Certes.AcmeContext.Order(Uri)
   nameWithType: AcmeContext.Order(Uri)
 - uid: Certes.AcmeContext.Order*
   name: Order
@@ -3178,11 +3178,11 @@ references:
   isSpec: "True"
   fullName: Certes.AcmeContext.RevokeCertificate
   nameWithType: AcmeContext.RevokeCertificate
-- uid: Certes.AcmeContext.Sign(System.Object,System.Uri)
+- uid: Certes.AcmeContext.Sign(System.Object,Uri)
   name: Sign(Object, Uri)
-  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_Sign_System_Object_System_Uri_
-  commentId: M:Certes.AcmeContext.Sign(System.Object,System.Uri)
-  fullName: Certes.AcmeContext.Sign(System.Object, System.Uri)
+  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_Sign_System_Object_Uri_
+  commentId: M:Certes.AcmeContext.Sign(System.Object,Uri)
+  fullName: Certes.AcmeContext.Sign(System.Object, Uri)
   nameWithType: AcmeContext.Sign(Object, Uri)
 - uid: Certes.AcmeContext.Sign*
   name: Sign
@@ -3203,11 +3203,11 @@ references:
   commentId: M:Certes.AcmeException.#ctor
   fullName: Certes.AcmeException.AcmeException()
   nameWithType: AcmeException.AcmeException()
-- uid: Certes.AcmeException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+- uid: Certes.AcmeException.#ctor(SerializationInfo,StreamingContext)
   name: AcmeException(SerializationInfo, StreamingContext)
-  href: api/certes/Certes.AcmeException.html#Certes_AcmeException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
-  commentId: M:Certes.AcmeException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
-  fullName: Certes.AcmeException.AcmeException(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  href: api/certes/Certes.AcmeException.html#Certes_AcmeException__ctor_SerializationInfo_StreamingContext_
+  commentId: M:Certes.AcmeException.#ctor(SerializationInfo,StreamingContext)
+  fullName: Certes.AcmeException.AcmeException(SerializationInfo, StreamingContext)
   nameWithType: AcmeException.AcmeException(SerializationInfo, StreamingContext)
 - uid: Certes.AcmeException.#ctor(System.String)
   name: AcmeException(String)
@@ -3215,11 +3215,11 @@ references:
   commentId: M:Certes.AcmeException.#ctor(System.String)
   fullName: Certes.AcmeException.AcmeException(System.String)
   nameWithType: AcmeException.AcmeException(String)
-- uid: Certes.AcmeException.#ctor(System.String,System.Exception)
+- uid: Certes.AcmeException.#ctor(System.String,Exception)
   name: AcmeException(String, Exception)
-  href: api/certes/Certes.AcmeException.html#Certes_AcmeException__ctor_System_String_System_Exception_
-  commentId: M:Certes.AcmeException.#ctor(System.String,System.Exception)
-  fullName: Certes.AcmeException.AcmeException(System.String, System.Exception)
+  href: api/certes/Certes.AcmeException.html#Certes_AcmeException__ctor_System_String_Exception_
+  commentId: M:Certes.AcmeException.#ctor(System.String,Exception)
+  fullName: Certes.AcmeException.AcmeException(System.String, Exception)
   nameWithType: AcmeException.AcmeException(String, Exception)
 - uid: Certes.AcmeException.#ctor*
   name: AcmeException
@@ -3240,11 +3240,11 @@ references:
   commentId: M:Certes.AcmeRequestException.#ctor
   fullName: Certes.AcmeRequestException.AcmeRequestException()
   nameWithType: AcmeRequestException.AcmeRequestException()
-- uid: Certes.AcmeRequestException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+- uid: Certes.AcmeRequestException.#ctor(SerializationInfo,StreamingContext)
   name: AcmeRequestException(SerializationInfo, StreamingContext)
-  href: api/certes/Certes.AcmeRequestException.html#Certes_AcmeRequestException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
-  commentId: M:Certes.AcmeRequestException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
-  fullName: Certes.AcmeRequestException.AcmeRequestException(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  href: api/certes/Certes.AcmeRequestException.html#Certes_AcmeRequestException__ctor_SerializationInfo_StreamingContext_
+  commentId: M:Certes.AcmeRequestException.#ctor(SerializationInfo,StreamingContext)
+  fullName: Certes.AcmeRequestException.AcmeRequestException(SerializationInfo, StreamingContext)
   nameWithType: AcmeRequestException.AcmeRequestException(SerializationInfo, StreamingContext)
 - uid: Certes.AcmeRequestException.#ctor(System.String)
   name: AcmeRequestException(String)
@@ -3258,11 +3258,11 @@ references:
   commentId: M:Certes.AcmeRequestException.#ctor(System.String,Certes.Acme.AcmeError)
   fullName: Certes.AcmeRequestException.AcmeRequestException(System.String, Certes.Acme.AcmeError)
   nameWithType: AcmeRequestException.AcmeRequestException(String, AcmeError)
-- uid: Certes.AcmeRequestException.#ctor(System.String,System.Exception)
+- uid: Certes.AcmeRequestException.#ctor(System.String,Exception)
   name: AcmeRequestException(String, Exception)
-  href: api/certes/Certes.AcmeRequestException.html#Certes_AcmeRequestException__ctor_System_String_System_Exception_
-  commentId: M:Certes.AcmeRequestException.#ctor(System.String,System.Exception)
-  fullName: Certes.AcmeRequestException.AcmeRequestException(System.String, System.Exception)
+  href: api/certes/Certes.AcmeRequestException.html#Certes_AcmeRequestException__ctor_System_String_Exception_
+  commentId: M:Certes.AcmeRequestException.#ctor(System.String,Exception)
+  fullName: Certes.AcmeRequestException.AcmeRequestException(System.String, Exception)
   nameWithType: AcmeRequestException.AcmeRequestException(String, Exception)
 - uid: Certes.AcmeRequestException.#ctor*
   name: AcmeRequestException
@@ -3284,11 +3284,11 @@ references:
   isSpec: "True"
   fullName: Certes.AcmeRequestException.Error
   nameWithType: AcmeRequestException.Error
-- uid: Certes.AcmeRequestException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+- uid: Certes.AcmeRequestException.GetObjectData(SerializationInfo,StreamingContext)
   name: GetObjectData(SerializationInfo, StreamingContext)
-  href: api/certes/Certes.AcmeRequestException.html#Certes_AcmeRequestException_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
-  commentId: M:Certes.AcmeRequestException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
-  fullName: Certes.AcmeRequestException.GetObjectData(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  href: api/certes/Certes.AcmeRequestException.html#Certes_AcmeRequestException_GetObjectData_SerializationInfo_StreamingContext_
+  commentId: M:Certes.AcmeRequestException.GetObjectData(SerializationInfo,StreamingContext)
+  fullName: Certes.AcmeRequestException.GetObjectData(SerializationInfo, StreamingContext)
   nameWithType: AcmeRequestException.GetObjectData(SerializationInfo, StreamingContext)
 - uid: Certes.AcmeRequestException.GetObjectData*
   name: GetObjectData
@@ -3432,13 +3432,13 @@ references:
   commentId: T:Certes.IAccountContextExtensions
   fullName: Certes.IAccountContextExtensions
   nameWithType: IAccountContextExtensions
-- uid: Certes.IAccountContextExtensions.Deactivate(System.Threading.Tasks.Task{Certes.Acme.IAccountContext})
+- uid: Certes.IAccountContextExtensions.Deactivate(Task{Certes.Acme.IAccountContext})
   name: Deactivate(Task<IAccountContext>)
-  href: api/certes/Certes.IAccountContextExtensions.html#Certes_IAccountContextExtensions_Deactivate_System_Threading_Tasks_Task_Certes_Acme_IAccountContext__
-  commentId: M:Certes.IAccountContextExtensions.Deactivate(System.Threading.Tasks.Task{Certes.Acme.IAccountContext})
+  href: api/certes/Certes.IAccountContextExtensions.html#Certes_IAccountContextExtensions_Deactivate_Task_Certes_Acme_IAccountContext__
+  commentId: M:Certes.IAccountContextExtensions.Deactivate(Task{Certes.Acme.IAccountContext})
   name.vb: Deactivate(Task(Of IAccountContext))
-  fullName: Certes.IAccountContextExtensions.Deactivate(System.Threading.Tasks.Task<Certes.Acme.IAccountContext>)
-  fullName.vb: Certes.IAccountContextExtensions.Deactivate(System.Threading.Tasks.Task(Of Certes.Acme.IAccountContext))
+  fullName: Certes.IAccountContextExtensions.Deactivate(Task<Certes.Acme.IAccountContext>)
+  fullName.vb: Certes.IAccountContextExtensions.Deactivate(Task(Of Certes.Acme.IAccountContext))
   nameWithType: IAccountContextExtensions.Deactivate(Task<IAccountContext>)
   nameWithType.vb: IAccountContextExtensions.Deactivate(Task(Of IAccountContext))
 - uid: Certes.IAccountContextExtensions.Deactivate*
@@ -3448,13 +3448,13 @@ references:
   isSpec: "True"
   fullName: Certes.IAccountContextExtensions.Deactivate
   nameWithType: IAccountContextExtensions.Deactivate
-- uid: Certes.IAccountContextExtensions.Location(System.Threading.Tasks.Task{Certes.Acme.IAccountContext})
+- uid: Certes.IAccountContextExtensions.Location(Task{Certes.Acme.IAccountContext})
   name: Location(Task<IAccountContext>)
-  href: api/certes/Certes.IAccountContextExtensions.html#Certes_IAccountContextExtensions_Location_System_Threading_Tasks_Task_Certes_Acme_IAccountContext__
-  commentId: M:Certes.IAccountContextExtensions.Location(System.Threading.Tasks.Task{Certes.Acme.IAccountContext})
+  href: api/certes/Certes.IAccountContextExtensions.html#Certes_IAccountContextExtensions_Location_Task_Certes_Acme_IAccountContext__
+  commentId: M:Certes.IAccountContextExtensions.Location(Task{Certes.Acme.IAccountContext})
   name.vb: Location(Task(Of IAccountContext))
-  fullName: Certes.IAccountContextExtensions.Location(System.Threading.Tasks.Task<Certes.Acme.IAccountContext>)
-  fullName.vb: Certes.IAccountContextExtensions.Location(System.Threading.Tasks.Task(Of Certes.Acme.IAccountContext))
+  fullName: Certes.IAccountContextExtensions.Location(Task<Certes.Acme.IAccountContext>)
+  fullName.vb: Certes.IAccountContextExtensions.Location(Task(Of Certes.Acme.IAccountContext))
   nameWithType: IAccountContextExtensions.Location(Task<IAccountContext>)
   nameWithType.vb: IAccountContextExtensions.Location(Task(Of IAccountContext))
 - uid: Certes.IAccountContextExtensions.Location*
@@ -3535,11 +3535,11 @@ references:
   isSpec: "True"
   fullName: Certes.IAcmeClient.DeleteRegistration
   nameWithType: IAcmeClient.DeleteRegistration
-- uid: Certes.IAcmeClient.GetAuthorization(System.Uri)
+- uid: Certes.IAcmeClient.GetAuthorization(Uri)
   name: GetAuthorization(Uri)
-  href: api/certes/Certes.IAcmeClient.html#Certes_IAcmeClient_GetAuthorization_System_Uri_
-  commentId: M:Certes.IAcmeClient.GetAuthorization(System.Uri)
-  fullName: Certes.IAcmeClient.GetAuthorization(System.Uri)
+  href: api/certes/Certes.IAcmeClient.html#Certes_IAcmeClient_GetAuthorization_Uri_
+  commentId: M:Certes.IAcmeClient.GetAuthorization(Uri)
+  fullName: Certes.IAcmeClient.GetAuthorization(Uri)
   nameWithType: IAcmeClient.GetAuthorization(Uri)
 - uid: Certes.IAcmeClient.GetAuthorization*
   name: GetAuthorization
@@ -3683,11 +3683,11 @@ references:
   isSpec: "True"
   fullName: Certes.IAcmeContext.AccountKey
   nameWithType: IAcmeContext.AccountKey
-- uid: Certes.IAcmeContext.Authorization(System.Uri)
+- uid: Certes.IAcmeContext.Authorization(Uri)
   name: Authorization(Uri)
-  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_Authorization_System_Uri_
-  commentId: M:Certes.IAcmeContext.Authorization(System.Uri)
-  fullName: Certes.IAcmeContext.Authorization(System.Uri)
+  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_Authorization_Uri_
+  commentId: M:Certes.IAcmeContext.Authorization(Uri)
+  fullName: Certes.IAcmeContext.Authorization(Uri)
   nameWithType: IAcmeContext.Authorization(Uri)
 - uid: Certes.IAcmeContext.Authorization*
   name: Authorization
@@ -3748,13 +3748,13 @@ references:
   isSpec: "True"
   fullName: Certes.IAcmeContext.HttpClient
   nameWithType: IAcmeContext.HttpClient
-- uid: Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean)
+- uid: Certes.IAcmeContext.NewAccount(IList{System.String},System.Boolean)
   name: NewAccount(IList<String>, Boolean)
-  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_NewAccount_System_Collections_Generic_IList_System_String__System_Boolean_
-  commentId: M:Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean)
+  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_NewAccount_IList_System_String__System_Boolean_
+  commentId: M:Certes.IAcmeContext.NewAccount(IList{System.String},System.Boolean)
   name.vb: NewAccount(IList(Of String), Boolean)
-  fullName: Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList<System.String>, System.Boolean)
-  fullName.vb: Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList(Of System.String), System.Boolean)
+  fullName: Certes.IAcmeContext.NewAccount(IList<System.String>, System.Boolean)
+  fullName.vb: Certes.IAcmeContext.NewAccount(IList(Of System.String), System.Boolean)
   nameWithType: IAcmeContext.NewAccount(IList<String>, Boolean)
   nameWithType.vb: IAcmeContext.NewAccount(IList(Of String), Boolean)
 - uid: Certes.IAcmeContext.NewAccount*
@@ -3764,13 +3764,13 @@ references:
   isSpec: "True"
   fullName: Certes.IAcmeContext.NewAccount
   nameWithType: IAcmeContext.NewAccount
-- uid: Certes.IAcmeContext.NewOrder(System.Collections.Generic.IList{System.String},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset})
+- uid: Certes.IAcmeContext.NewOrder(IList{System.String},System.Nullable{DateTimeOffset},System.Nullable{DateTimeOffset})
   name: NewOrder(IList<String>, Nullable<DateTimeOffset>, Nullable<DateTimeOffset>)
-  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_NewOrder_System_Collections_Generic_IList_System_String__System_Nullable_System_DateTimeOffset__System_Nullable_System_DateTimeOffset__
-  commentId: M:Certes.IAcmeContext.NewOrder(System.Collections.Generic.IList{System.String},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset})
+  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_NewOrder_IList_System_String__System_Nullable_DateTimeOffset__System_Nullable_DateTimeOffset__
+  commentId: M:Certes.IAcmeContext.NewOrder(IList{System.String},System.Nullable{DateTimeOffset},System.Nullable{DateTimeOffset})
   name.vb: NewOrder(IList(Of String), Nullable(Of DateTimeOffset), Nullable(Of DateTimeOffset))
-  fullName: Certes.IAcmeContext.NewOrder(System.Collections.Generic.IList<System.String>, System.Nullable<System.DateTimeOffset>, System.Nullable<System.DateTimeOffset>)
-  fullName.vb: Certes.IAcmeContext.NewOrder(System.Collections.Generic.IList(Of System.String), System.Nullable(Of System.DateTimeOffset), System.Nullable(Of System.DateTimeOffset))
+  fullName: Certes.IAcmeContext.NewOrder(IList<System.String>, System.Nullable<DateTimeOffset>, System.Nullable<DateTimeOffset>)
+  fullName.vb: Certes.IAcmeContext.NewOrder(IList(Of System.String), System.Nullable(Of DateTimeOffset), System.Nullable(Of DateTimeOffset))
   nameWithType: IAcmeContext.NewOrder(IList<String>, Nullable<DateTimeOffset>, Nullable<DateTimeOffset>)
   nameWithType.vb: IAcmeContext.NewOrder(IList(Of String), Nullable(Of DateTimeOffset), Nullable(Of DateTimeOffset))
 - uid: Certes.IAcmeContext.NewOrder*
@@ -3780,11 +3780,11 @@ references:
   isSpec: "True"
   fullName: Certes.IAcmeContext.NewOrder
   nameWithType: IAcmeContext.NewOrder
-- uid: Certes.IAcmeContext.Order(System.Uri)
+- uid: Certes.IAcmeContext.Order(Uri)
   name: Order(Uri)
-  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_Order_System_Uri_
-  commentId: M:Certes.IAcmeContext.Order(System.Uri)
-  fullName: Certes.IAcmeContext.Order(System.Uri)
+  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_Order_Uri_
+  commentId: M:Certes.IAcmeContext.Order(Uri)
+  fullName: Certes.IAcmeContext.Order(Uri)
   nameWithType: IAcmeContext.Order(Uri)
 - uid: Certes.IAcmeContext.Order*
   name: Order
@@ -3809,11 +3809,11 @@ references:
   isSpec: "True"
   fullName: Certes.IAcmeContext.RevokeCertificate
   nameWithType: IAcmeContext.RevokeCertificate
-- uid: Certes.IAcmeContext.Sign(System.Object,System.Uri)
+- uid: Certes.IAcmeContext.Sign(System.Object,Uri)
   name: Sign(Object, Uri)
-  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_Sign_System_Object_System_Uri_
-  commentId: M:Certes.IAcmeContext.Sign(System.Object,System.Uri)
-  fullName: Certes.IAcmeContext.Sign(System.Object, System.Uri)
+  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_Sign_System_Object_Uri_
+  commentId: M:Certes.IAcmeContext.Sign(System.Object,Uri)
+  fullName: Certes.IAcmeContext.Sign(System.Object, Uri)
   nameWithType: IAcmeContext.Sign(Object, Uri)
 - uid: Certes.IAcmeContext.Sign*
   name: Sign
@@ -4760,11 +4760,11 @@ references:
   commentId: T:Certes.Pkcs.KeyInfo
   fullName: Certes.Pkcs.KeyInfo
   nameWithType: KeyInfo
-- uid: Certes.Pkcs.KeyInfo.From(System.IO.Stream)
+- uid: Certes.Pkcs.KeyInfo.From(Stream)
   name: From(Stream)
-  href: api/certes/Certes.Pkcs.KeyInfo.html#Certes_Pkcs_KeyInfo_From_System_IO_Stream_
-  commentId: M:Certes.Pkcs.KeyInfo.From(System.IO.Stream)
-  fullName: Certes.Pkcs.KeyInfo.From(System.IO.Stream)
+  href: api/certes/Certes.Pkcs.KeyInfo.html#Certes_Pkcs_KeyInfo_From_Stream_
+  commentId: M:Certes.Pkcs.KeyInfo.From(Stream)
+  fullName: Certes.Pkcs.KeyInfo.From(Stream)
   nameWithType: KeyInfo.From(Stream)
 - uid: Certes.Pkcs.KeyInfo.From*
   name: From
@@ -4792,11 +4792,11 @@ references:
   commentId: T:Certes.Pkcs.KeyInfoExtensions
   fullName: Certes.Pkcs.KeyInfoExtensions
   nameWithType: KeyInfoExtensions
-- uid: Certes.Pkcs.KeyInfoExtensions.Save(Certes.Pkcs.KeyInfo,System.IO.Stream)
+- uid: Certes.Pkcs.KeyInfoExtensions.Save(Certes.Pkcs.KeyInfo,Stream)
   name: Save(KeyInfo, Stream)
-  href: api/certes/Certes.Pkcs.KeyInfoExtensions.html#Certes_Pkcs_KeyInfoExtensions_Save_Certes_Pkcs_KeyInfo_System_IO_Stream_
-  commentId: M:Certes.Pkcs.KeyInfoExtensions.Save(Certes.Pkcs.KeyInfo,System.IO.Stream)
-  fullName: Certes.Pkcs.KeyInfoExtensions.Save(Certes.Pkcs.KeyInfo, System.IO.Stream)
+  href: api/certes/Certes.Pkcs.KeyInfoExtensions.html#Certes_Pkcs_KeyInfoExtensions_Save_Certes_Pkcs_KeyInfo_Stream_
+  commentId: M:Certes.Pkcs.KeyInfoExtensions.Save(Certes.Pkcs.KeyInfo,Stream)
+  fullName: Certes.Pkcs.KeyInfoExtensions.Save(Certes.Pkcs.KeyInfo, Stream)
   nameWithType: KeyInfoExtensions.Save(KeyInfo, Stream)
 - uid: Certes.Pkcs.KeyInfoExtensions.Save*
   name: Save

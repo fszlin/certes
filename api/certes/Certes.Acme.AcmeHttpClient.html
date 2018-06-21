@@ -9,7 +9,7 @@
    | Certes </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AcmeHttpClient
-   | Certes ">
+   - Certes ">
     <meta name="generator" content="docfx 2.36.2.0">
     
     <link rel="shortcut icon" href="../../images/favicon.ico">
@@ -83,54 +83,30 @@
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
-    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">AcmeHttpClient</span></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="Certes.Acme.IAcmeHttpClient.html">IAcmeHttpClient</a></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <span class="xref">System.Object.Equals(System.Object)</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.GetHashCode()</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.GetType()</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.MemberwiseClone()</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
-    </div>
-    <div>
-      <span class="xref">System.Object.ToString()</span>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Certes.Acme.html">Certes.Acme</a></h6>
   <h6><strong>Assembly</strong>: Certes.dll</h6>
   <h5 id="Certes_Acme_AcmeHttpClient_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class AcmeHttpClient : IAcmeHttpClient</code></pre>
+    <pre><code class="lang-csharp hljs">public class AcmeHttpClient : object, IAcmeHttpClient</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/master/docs/overwrite/new?filename=Certes_Acme_AcmeHttpClient__ctor_System_Uri_System_Net_Http_HttpClient_.md&amp;value=---%0Auid%3A%20Certes.Acme.AcmeHttpClient.%23ctor(System.Uri%2CSystem.Net.Http.HttpClient)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/master/docs/overwrite/new?filename=Certes_Acme_AcmeHttpClient__ctor_Uri_HttpClient_.md&amp;value=---%0Auid%3A%20Certes.Acme.AcmeHttpClient.%23ctor(Uri%2CHttpClient)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpClient.cs/#L45">View Source</a>
   </span>
   <a id="Certes_Acme_AcmeHttpClient__ctor_" data-uid="Certes.Acme.AcmeHttpClient.#ctor*"></a>
-  <h4 id="Certes_Acme_AcmeHttpClient__ctor_System_Uri_System_Net_Http_HttpClient_" data-uid="Certes.Acme.AcmeHttpClient.#ctor(System.Uri,System.Net.Http.HttpClient)">AcmeHttpClient(Uri, HttpClient)</h4>
+  <h4 id="Certes_Acme_AcmeHttpClient__ctor_Uri_HttpClient_" data-uid="Certes.Acme.AcmeHttpClient.#ctor(Uri,HttpClient)">AcmeHttpClient(Uri, HttpClient)</h4>
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Certes.Acme.AcmeHttpClient.html">AcmeHttpClient</a> class.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -149,31 +125,15 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Uri</span></td>
+        <td><span class="xref">Uri</span></td>
         <td><span class="parametername">directoryUri</span></td>
         <td><p>The ACME directory URI.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Net.Http.HttpClient</span></td>
+        <td><span class="xref">HttpClient</span></td>
         <td><span class="parametername">http</span></td>
         <td><p>The HTTP.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">System.ArgumentNullException</span></td>
-        <td><p>directoryUri</p>
 </td>
       </tr>
     </tbody>
@@ -206,7 +166,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.String</span>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
         <td><p>The nonce.</p>
 </td>
       </tr>
@@ -214,13 +174,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/master/docs/overwrite/new?filename=Certes_Acme_AcmeHttpClient_Get__1_System_Uri_.md&amp;value=---%0Auid%3A%20Certes.Acme.AcmeHttpClient.Get%60%601(System.Uri)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/master/docs/overwrite/new?filename=Certes_Acme_AcmeHttpClient_Get__1_Uri_.md&amp;value=---%0Auid%3A%20Certes.Acme.AcmeHttpClient.Get%60%601(Uri)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpClient.cs/#L57">View Source</a>
   </span>
   <a id="Certes_Acme_AcmeHttpClient_Get_" data-uid="Certes.Acme.AcmeHttpClient.Get*"></a>
-  <h4 id="Certes_Acme_AcmeHttpClient_Get__1_System_Uri_" data-uid="Certes.Acme.AcmeHttpClient.Get``1(System.Uri)">Get&lt;T&gt;(Uri)</h4>
+  <h4 id="Certes_Acme_AcmeHttpClient_Get__1_Uri_" data-uid="Certes.Acme.AcmeHttpClient.Get``1(Uri)">Get&lt;T&gt;(Uri)</h4>
   <div class="markdown level1 summary"><p>Gets the specified URI.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -239,7 +199,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Uri</span></td>
+        <td><span class="xref">Uri</span></td>
         <td><span class="parametername">uri</span></td>
         <td><p>The URI.</p>
 </td>
@@ -256,7 +216,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeHttpResponse-1.html">AcmeHttpResponse</a>&lt;T&gt;&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeHttpResponse-1.html">AcmeHttpResponse</a>&lt;T&gt;&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -278,13 +238,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/master/docs/overwrite/new?filename=Certes_Acme_AcmeHttpClient_Post__1_System_Uri_System_Object_.md&amp;value=---%0Auid%3A%20Certes.Acme.AcmeHttpClient.Post%60%601(System.Uri%2CSystem.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/master/docs/overwrite/new?filename=Certes_Acme_AcmeHttpClient_Post__1_Uri_System_Object_.md&amp;value=---%0Auid%3A%20Certes.Acme.AcmeHttpClient.Post%60%601(Uri%2CSystem.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpClient.cs/#L72">View Source</a>
   </span>
   <a id="Certes_Acme_AcmeHttpClient_Post_" data-uid="Certes.Acme.AcmeHttpClient.Post*"></a>
-  <h4 id="Certes_Acme_AcmeHttpClient_Post__1_System_Uri_System_Object_" data-uid="Certes.Acme.AcmeHttpClient.Post``1(System.Uri,System.Object)">Post&lt;T&gt;(Uri, Object)</h4>
+  <h4 id="Certes_Acme_AcmeHttpClient_Post__1_Uri_System_Object_" data-uid="Certes.Acme.AcmeHttpClient.Post``1(Uri,System.Object)">Post&lt;T&gt;(Uri, Object)</h4>
   <div class="markdown level1 summary"><p>Posts the specified URI.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -303,13 +263,13 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Uri</span></td>
+        <td><span class="xref">Uri</span></td>
         <td><span class="parametername">uri</span></td>
         <td><p>The URI.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Object</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">payload</span></td>
         <td><p>The payload.</p>
 </td>
@@ -326,7 +286,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeHttpResponse-1.html">AcmeHttpResponse</a>&lt;T&gt;&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="Certes.Acme.AcmeHttpResponse-1.html">AcmeHttpResponse</a>&lt;T&gt;&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -355,6 +315,16 @@
       <div><a class="xref" href="Certes.Acme.IAcmeHttpClient.html">IAcmeHttpClient</a></div>
   </div>
 </article>
+            <div id="disqus_thread"></div>
+                <script>
+                (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://certes-doc.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+                })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>        
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">
@@ -368,6 +338,9 @@
                     <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpClient.cs/#L18" class="contribution-link">View Source</a>
                   </li>
                 </ul>
+              </div>
+              <div class="github-links">
+                  <a class="github-button" href="https://github.com/fszlin/certes" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star fszlin/certes on GitHub">Star</a>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
               <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
@@ -394,5 +367,6 @@
     <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
     <script type="text/javascript" src="../../styles/docfx.js"></script>
     <script type="text/javascript" src="../../styles/main.js"></script>
+    <script async="" defer="" src="https://buttons.github.io/buttons.js"></script>
   </body>
 </html>
