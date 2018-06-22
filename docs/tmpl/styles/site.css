@@ -6,7 +6,18 @@
 .affix .nav li,
 .sidetoc .nav li {
     max-width: 100%;
+    position: relative;
 }
+
+    .sidetoc .nav li > .expand-stub {
+        position: absolute;
+        width: 1.5rem;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        height: 1.5rem;
+        cursor: pointer;
+    }
 
 .affix .nav .nav-item > a::before,
 .sidetoc .nav .nav-item > a::before {
@@ -58,10 +69,15 @@
 
 .sidetoc .nav .nav-item > a {
     padding: 0.1rem 0;
+    font-size: 0.95rem;
 }
 
-.sidetoc .nav .level2 > .nav-item > a {
+.sidetoc .nav.level1 > .nav-item > a {
     font-size: 1rem;
+    font-weight: 600;
+}
+
+.sidetoc .nav.level2 > .nav-item > a {
     font-weight: 600;
 }
 
@@ -74,6 +90,22 @@
     content: '\f14a';
 }
 
+.sidetoc .nav .nav-item.in > .expand-stub + a:focus::before,
+.sidetoc .nav .nav-item.in > .expand-stub + a:focus::before,
+.sidetoc .nav .nav-item.in > .expand-stub + a::before {
+    content: '\f107';
+}
+
+.sidetoc .nav .nav-item > .expand-stub + a:focus::before,
+.sidetoc .nav .nav-item > .expand-stub + a:focus::before,
+.sidetoc .nav .nav-item > .expand-stub + a::before {
+    content: '\f106';
+}
+
+.sidetoc .nav .nav-item:not(.in) > ul.nav {
+    display: none;
+}
+
 header .breadcrumb {
     margin-bottom: 0;
 }
@@ -84,4 +116,8 @@ footer {
 
 .toc-toggle {
     display: none;
+}
+
+article.content {
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
 }

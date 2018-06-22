@@ -500,7 +500,7 @@ $(function () {
                 }
                 var currentHref = util.getAbsolutePath(window.location.pathname);
                 $('#sidetoc').find('a[href]').each(function (i, e) {
-                    $(e).parent('li').addClass('nav-item').parent('ul').addClass('flex-column');
+                    //$(e).parent('li').addClass('nav-item').parent('ul').addClass('flex-column');
                     var href = $(e).addClass('nav-link').addClass('text-dark').addClass('text-truncate').attr("href");
                     if (util.isRelativePath(href)) {
                         href = tocrel + href;
@@ -512,6 +512,10 @@ $(function () {
                     }
 
                     //$(e).breakWord();
+                });
+
+                $('#sidetoc').find('li').each(function (i, e) {
+                    $(e).addClass('nav-item').parent('ul').addClass('flex-column');
                 });
 
                 $('form.toc-filter').html(
