@@ -1,0 +1,16 @@
+{{!Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE file in the project root for full license information.}}
+
+<div class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light container">
+  {{>partials/logo}}
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbar">
+    <!--<form id="search" role="search" class="form-inline my-2 my-lg-0">
+      <input id="search-query" class="form-control mr-sm-2" type="search" placeholder="Search" autocomplete="off" aria-label="Search">
+    </form>-->
+  </div>
+</nav>
+</div>

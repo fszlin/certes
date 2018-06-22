@@ -51,6 +51,7 @@
     ],
     "globalMetadata": {
       "_appTitle": "Certes",
+      "_appName": "Certes",
       "_gitContribute": {
         "repo": "https://github.com/fszlin/certes",
         "branch": "master",

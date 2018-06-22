@@ -1,0 +1,9 @@
+﻿
+.replaced-svg {
+    display: block;
+}
+
+.sideaffix {
+    position: sticky;
+    top: 1rem;
+}
