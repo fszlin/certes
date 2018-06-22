@@ -24,18 +24,22 @@
       </div>
       {{/_enableSearch}}
       <div role="main" class="container body-content hide-when-search">
+      <div class="row">
       {{^_disableToc}}
         {{>partials/toc}}
-        <div class="article row grid-right">
+        <!--<div class="article row grid-right">-->
+        <div class="article col-md-9">
       {{/_disableToc}}
       {{#_disableToc}}
-        <div class="article row grid">
-        {{/_disableToc}}
+        <div class="article col">
+      {{/_disableToc}}
+      <div class="row">
           {{#_disableAffix}}
           <div class="col-md-12">
           {{/_disableAffix}}
           {{^_disableAffix}}
-          <div class="col-md-10">
+          <!--div class="col-md-12">-->
+          <div class="col-md-9">
           {{/_disableAffix}}
             <article class="content wrap" id="_content" data-uid="{{uid}}">
                 {{!body}}
@@ -55,7 +59,9 @@
           {{^_disableAffix}}
           {{>partials/affix}}
           {{/_disableAffix}}
+          </div>
         </div>
+      </div>
       </div>
       {{^_disableFooter}}
       {{>partials/footer}}

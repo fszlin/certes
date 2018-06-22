@@ -11,7 +11,7 @@ Install [Certes](https://www.nuget.org/packages/Certes/) nuget package into your
 Install-Package Certes
 ```
 or using .NET CLI:
-```Batchfile
+```DOS
 dotnet add package Certes
 ```
 
@@ -120,12 +120,12 @@ The CLI is available as a dotnet global tool.
  is required to use dotnet tools.
 
 To install Certes CLI *(you may need to restart the console session if this is the first dotnet tool installed)*
-```Batchfile
+```DOS
 dotnet tool install --global dotnet-certes
 ```
 
 Use the `--help` option to get started
-```Batchfile
+```DOS
 certes --help
 ```
 

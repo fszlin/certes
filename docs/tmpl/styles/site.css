@@ -3,7 +3,85 @@
     display: block;
 }
 
+.affix .nav li,
+.sidetoc .nav li {
+    max-width: 100%;
+}
+
+.affix .nav .nav-item > a::before,
+.sidetoc .nav .nav-item > a::before {
+    font-family: "Font Awesome 5 Pro";
+    content: '';
+    font-size: smaller;
+    margin-right: 0.2rem;
+    width: 1.25rem;
+    text-align: center;
+    display: inline-block;
+}
+
+.sidenav,
 .sideaffix {
     position: sticky;
-    top: 1rem;
+    overflow-y: auto;
+}
+
+.sidefilter {
+    margin-bottom: 0.8rem;
+}
+
+.affix .nav .nav-item > ul {
+    padding-left: 0.5rem;
+}
+
+.affix .nav .nav-item > a {
+    padding: 0.1rem 0;
+    font-size: 0.85rem;
+}
+
+.affix .nav .level1 > .nav-item > a {
+    font-size: 0.95rem;
+}
+
+.affix .nav .nav-item > a.active:before {
+    content: '\f124';
+}
+
+.affix .nav .nav-item > a:focus::before,
+.affix .nav .nav-item > a:hover::before {
+    content: '\f13d';
+}
+
+/*
+.sidetoc .nav .nav-item > ul {
+    padding-left: 0.5rem;
+}*/
+
+.sidetoc .nav .nav-item > a {
+    padding: 0.1rem 0;
+}
+
+.sidetoc .nav .level2 > .nav-item > a {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.sidetoc .nav .nav-item > a:focus::before,
+.sidetoc .nav .nav-item > a:hover::before {
+    content: '\f356';
+}
+
+.sidetoc .nav .nav-item > a.active:before {
+    content: '\f14a';
+}
+
+header .breadcrumb {
+    margin-bottom: 0;
+}
+
+footer {
+    height: 3rem;
+}
+
+.toc-toggle {
+    display: none;
 }
