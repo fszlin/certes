@@ -59,7 +59,7 @@
       },
       "_appLogoPath": "images/logo.svg",
       "_appFaviconPath": "images/favicon.ico",
-      "_appFooter": "&copy; 2018 <a href=\"https://github.com/fszlin/certes\">Certes</a> Project"
+      "_appFooter": "&copy; 2018 <a class=\"text-white\" href=\"https://github.com/fszlin/certes\">Certes</a> Project"
     },
     "dest": "_site",
     "globalMetadataFiles": [],

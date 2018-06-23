@@ -120,10 +120,6 @@ header .breadcrumb {
     margin-bottom: 0;
 }
 
-footer {
-    height: 3rem;
-}
-
 .toc-toggle {
     display: none;
 }
@@ -190,4 +186,8 @@ article.content .source-link {
 .implements a[data-toggle="collapse"][aria-expanded="true"]::after,
 .inheritedMembers a[data-toggle="collapse"][aria-expanded="true"]::after {
     content: '\f107';
+}
+
+.contribution a:hover {
+    text-decoration: none;
 }

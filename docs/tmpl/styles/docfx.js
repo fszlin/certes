@@ -556,7 +556,7 @@ $(function () {
     function renderAffix() {
         var hierarchy = getHierarchy();
         if (hierarchy && hierarchy.length > 0) {
-            var html = '<h5 class="title">In This Article</h5>'
+            var html = '';//'<h5 class="title">In This Article</h5>'
             html += util.formList(hierarchy, ['nav', 'flex-column'], 'nav-item', ['nav-link', 'text-secondary', 'text-truncate']);
             $("#affix").empty().append(html);
             if ($('footer').is(':visible')) {
