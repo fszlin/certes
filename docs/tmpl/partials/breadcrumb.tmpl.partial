@@ -2,8 +2,8 @@
 
 <div class="bg-dark">
 <nav aria-label="breadcrumb" id="breadcrumb" class="container hide-when-search">
-  <ol class="breadcrumb">
+  <!--<ol class="breadcrumb">
     <li class="breadcrumb-item" aria-current="page">{{_tocTitle}}</li>
-  </ol>
+  </ol>-->
 </nav>
 </div>

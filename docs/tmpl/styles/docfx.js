@@ -53,7 +53,7 @@ $(function () {
     // Styling for tables in conceptual documents using Bootstrap.
     // See http://getbootstrap.com/css/#tables
     function renderTables() {
-        $('table').addClass('table table-bordered table-striped table-condensed').wrap('<div class=\"table-responsive\"></div>');
+        $('table').removeClass('table-bordered table-condensed').addClass('table table-sm table-striped table-hover').wrap('<div class=\"table-responsive\"></div>');
     }
 
     // Styling for alerts.
@@ -66,7 +66,9 @@ $(function () {
     // Enable anchors for headings.
     (function () {
         anchors.options = {
-            placement: 'left',
+            placement: 'right',
+            icon: '#',
+            'class': 'text-info',
             visible: 'touch'
         };
         anchors.add('article h2:not(.no-anchor), article h3:not(.no-anchor), article h4:not(.no-anchor)');
@@ -443,7 +445,7 @@ $(function () {
                     $('#toc li').removeClass(filtered).removeClass(hide);
                     return;
                 }
-               
+
                 // Get leaf nodes
                 $('#toc li>a').filter(function (i, e) {
                     return $(e).siblings().length === 0
@@ -508,7 +510,7 @@ $(function () {
                     }
 
                     if (util.getAbsolutePath(e.href) === currentHref) {
-                        $(e).addClass(active);
+                        $(e).addClass(active).addClass('current');
                     }
 
                     //$(e).breakWord();
@@ -1164,7 +1166,7 @@ $(function () {
         scrollToCurrent();
     }
 
-    $(window).on('resize, scroll', function () {
+    $(window).on('resize scroll', function () {
         var headerBottom = $('header').offset().top + $('header').height() - $(window).scrollTop();
         var topPx = headerBottom > 0 ? headerBottom : 0;
 
@@ -1179,5 +1181,48 @@ $(function () {
                 height: height + 'px'
             });
         });
+    });
+
+    $('article.content').find('a').each(function (i, e) {
+        $(e).addClass('text-info');
+    });
+
+    $('article .markdown.summary p').each(function (i, e) {
+        $(e).addClass('lead text-dark font-weight-bold');
+    });
+
+    $('h3, h4, h5, h6').each(function (i, e) {
+        var hasTextCls = $(e).is('.text-muted');
+        if (!hasTextCls) {
+            var txtCls = $(e).attr('data-uid') ? 'text-dark' : 'text-secondary';
+            $(e).addClass(txtCls);
+        }
+    });
+
+    $('code:not(.hljs)').each(function (i, e) {
+        $(e).addClass('bg-light text-dark');
+    });
+
+    $('article.content table.table td > p').each(function (i, e) {
+        $(e).addClass('mb-0');
+    });
+
+    $('article.content .small.pull-right.mobile-hide').each(function (i, e) {
+        var $e = $(e);
+        var txt = $(e).find('a').text();
+        if (txt === 'Improve this Doc') {
+            $e.addClass('improve-link');
+            $e.find('.divider').remove();
+            $e.find('a').empty()
+                .attr('title', txt)
+                .append('<i class="fas fa-edit fa-fw fa-lg" />')
+                .append($('<span class="sr-only" />').text(txt));
+        } else if (txt === 'View Source') {
+            $e.addClass('source-link');
+            $e.find('a').empty()
+                .attr('title', txt)
+                .append('<i class="fas fa-code fa-fw fa-lg" />')
+                .append($('<span class="sr-only" />').text(txt));
+        }
     });
 });

@@ -19,6 +19,8 @@
         cursor: pointer;
     }
 
+.implements a[data-toggle="collapse"]::after,
+.inheritedMembers a[data-toggle="collapse"]::after,
 .affix .nav .nav-item > a::before,
 .sidetoc .nav .nav-item > a::before {
     font-family: "Font Awesome 5 Pro";
@@ -62,6 +64,10 @@
     content: '\f13d';
 }
 
+.affix .nav-item > a:not(.active) + ul {
+    display: none;
+}
+
 /*
 .sidetoc .nav .nav-item > ul {
     padding-left: 0.5rem;
@@ -86,7 +92,7 @@
     content: '\f356';
 }
 
-.sidetoc .nav .nav-item > a.active:before {
+.sidetoc .nav .nav-item > a.current:before {
     content: '\f14a';
 }
 
@@ -100,6 +106,10 @@
 .sidetoc .nav .nav-item > .expand-stub + a:focus::before,
 .sidetoc .nav .nav-item > .expand-stub + a::before {
     content: '\f106';
+}
+
+.sidetoc .nav .nav-item > .expand-stub + a {
+    cursor: pointer;
 }
 
 .sidetoc .nav .nav-item:not(.in) > ul.nav {
@@ -118,6 +128,66 @@ footer {
     display: none;
 }
 
+h1 a:hover,
+h2 a:hover,
+h3 a:hover,
+h4 a:hover,
+h5 a:hover,
+h6 a:hover {
+    text-decoration: none;
+}
+
+/*
 article.content {
-    padding: 0.5rem 0.5rem 0.5rem 1rem;
+    padding-top: 1rem;
+}
+*/
+
+article.content section {
+    margin-left: 0.5rem;
+}
+
+article.content .improve-link,
+article.content .source-link {
+    float: right;
+    margin-top: 0.45rem;
+    margin-right: 0.5rem;
+}
+/*
+.implements,
+.inheritance {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+    .implements h5,
+    .inheritance h5 {
+        width: 100%;
+        font-weight: 400;
+        font-style: italic;
+        margin-bottom: 0;
+    }
+
+    .inheritance div.level0::before {
+        content: '';
+        display: none;
+    }
+
+    .inheritance div::before {
+        content: '\f355';
+        margin-left: 0.25rem;
+    }*/
+
+
+.implements a[data-toggle="collapse"]::after,
+.inheritedMembers a[data-toggle="collapse"]::after {
+    content: '\f106';
+    font-style: normal;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.implements a[data-toggle="collapse"][aria-expanded="true"]::after,
+.inheritedMembers a[data-toggle="collapse"][aria-expanded="true"]::after {
+    content: '\f107';
 }
