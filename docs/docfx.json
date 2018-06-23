@@ -21,7 +21,7 @@
       {
         "files": [
           "api/**.yml",
-          "api/**.md"
+          "api/topics/**.md"
         ]
       },
       {
@@ -38,24 +38,14 @@
         ]
       }
     ],
-    "overwrite": [
-      {
-        "files": [
-          "apidoc/**.md"
-        ],
-        "exclude": [
-          "obj/**",
-          "_site/**"
-        ]
-      }
-    ],
+    "overwrite": "api/spec/*.md",
     "globalMetadata": {
       "_appTitle": "Certes",
       "_appName": "Certes",
       "_gitContribute": {
         "repo": "https://github.com/fszlin/certes",
         "branch": "master",
-        "apiSpecFolder": "docs/overwrite"
+        "apiSpecFolder": "docs/api/spec"
       },
       "_appLogoPath": "images/logo.svg",
       "_appFaviconPath": "images/favicon.ico",
