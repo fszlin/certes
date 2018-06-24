@@ -399,6 +399,19 @@ $(function () {
                             $(e).addClass(active);
                         }
                     }
+
+                    var title = $(e).attr('title');
+                    if (title === 'API Doc') {
+                        $(e).prepend('<i class="fal fa-book"></i>&nbsp;');
+                    } else if (title === 'GitHub') {
+                        $(e).prepend('<i class="fab fa-github"></i>&nbsp;');
+                    } else if (title === 'Changelog') {
+                        $(e).prepend('<i class="fal fa-calendar-alt"></i>&nbsp;');
+                    }
+
+                    if (href.indexOf('://') > 0) {
+                        $(e).append('&nbsp;<i class="fa-external-link-alt fa-xs fal text-muted"></i>');
+                    }
                 });
                 renderNavbar();
             });
@@ -1166,29 +1179,48 @@ $(function () {
         scrollToCurrent();
     }
 
-    $(window).on('resize scroll', function () {
-        var headerBottom = $('header').offset().top + $('header').height() - $(window).scrollTop();
-        var topPx = headerBottom > 0 ? headerBottom : 0;
-
-        var footerTop = $(window).height() + $(window).scrollTop() - ($('body').height() - $('footer').height());
-        var bottomPx = footerTop > 0 ? footerTop : 0;
-
-        var height = $(window).height() - topPx - bottomPx;
-        $('.sidenav, .sideaffix').each(function (i, e) {
-            $(e).css({
-                top: topPx + 'px',
-                bottom: bottomPx + 'px',
-                height: height + 'px'
+    function updateStickyPanels() {
+        if ($('.toc-toggle').is(':visible')) {
+            $('#sidetoggle').removeClass('d-block');
+            $('.sidenav').each(function (i, e) {
+                $(e).css({
+                    top: '',
+                    bottom: '',
+                    height: '',
+                    position: 'relative'
+                });
             });
-        });
-    });
+        } else {
+            var headerBottom = $('header').offset().top + $('header').height() - $(window).scrollTop();
+            var topPx = headerBottom > 0 ? headerBottom : 0;
+
+            var footerTop = $(window).height() + $(window).scrollTop() - ($('body').height() - $('footer').height());
+            var bottomPx = footerTop > 0 ? footerTop : 0;
+
+            var height = $(window).height() - topPx - bottomPx;
+            $('.sidenav, .sideaffix').each(function (i, e) {
+                $(e).css({
+                    top: topPx + 'px',
+                    bottom: bottomPx + 'px',
+                    height: height + 'px',
+                    position: 'sticky'
+                });
+            });
+
+            $('#sidetoggle').addClass('d-block');
+        }
+    }
+
+    updateStickyPanels();
+
+    $(window).on('resize scroll', updateStickyPanels);
 
     $('article.content').find('a').each(function (i, e) {
         $(e).addClass('text-info');
     });
 
     $('article .markdown.summary p').each(function (i, e) {
-        $(e).addClass('lead text-dark font-weight-bold');
+        $(e).addClass('text-dark font-weight-bold');
     });
 
     $('h3, h4, h5, h6').each(function (i, e) {

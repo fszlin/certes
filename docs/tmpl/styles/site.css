@@ -112,7 +112,7 @@
     cursor: pointer;
 }
 
-.sidetoc .nav .nav-item:not(.in) > ul.nav {
+.sidetoc .nav .nav-item:not(.in):not(.filtered) > ul.nav {
     display: none;
 }
 
@@ -120,9 +120,9 @@ header .breadcrumb {
     margin-bottom: 0;
 }
 
-.toc-toggle {
+/*.toc-toggle {
     display: none;
-}
+}*/
 
 h1 a:hover,
 h2 a:hover,
@@ -190,4 +190,8 @@ article.content .source-link {
 
 .contribution a:hover {
     text-decoration: none;
+}
+
+.navbar .fa-external-link-alt {
+    vertical-align: top;
 }

@@ -27,7 +27,6 @@
       <div class="row">
       {{^_disableToc}}
         {{>partials/toc}}
-        <!--<div class="article row grid-right">-->
         <div class="article col-md-9">
       {{/_disableToc}}
       {{#_disableToc}}
@@ -38,13 +37,12 @@
           <div class="col-md-12">
           {{/_disableAffix}}
           {{^_disableAffix}}
-          <!--div class="col-md-12">-->
           <div class="col-lg-9">
           {{/_disableAffix}}
             <article class="content wrap pt-2 pb-2" id="_content" data-uid="{{uid}}">
                 {{!body}}
             </article>
-            <!--<div id="disqus_thread"></div>
+            <div id="disqus_thread"></div>
                 <script>
                 (function() {
                 var d = document, s = d.createElement('script');
@@ -54,7 +52,6 @@
                 })();
                 </script>
                 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-            -->
           </div>
           {{^_disableAffix}}
           {{>partials/affix}}
