@@ -31,6 +31,7 @@ init:
   - git config --global core.autocrlf input
 
 install:
+  - git clone -q --depth=1 https://github.com/fszlin/docstrap.git docs/docstrap
   - choco install docfx -y
 
 build_script:
@@ -42,7 +43,6 @@ before_test:
 on_success:
   # gh-pages
   - ps: |
-        git clone https://github.com/fszlin/docstrap.git docs/docstrap
         git config --global core.autocrlf false
         git config --global credential.helper store
         git config --global user.email $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL
