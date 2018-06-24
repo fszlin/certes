@@ -56,7 +56,7 @@
     "fileMetadataFiles": [],
     "template": [
       "default",
-      "tmpl"
+      "docstrap/tmpl"
     ],
     "postProcessors": [],
     "markdownEngineName": "markdig",
