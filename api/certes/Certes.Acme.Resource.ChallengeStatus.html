@@ -83,7 +83,8 @@
   <h6 class="mt-1"><i class="text-muted font-weight-light font-italic mb-0">Assembly:</i> Certes.dll</h6>
   <h5 id="Certes_Acme_Resource_ChallengeStatus_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public enum ChallengeStatus : int</code></pre>
+    <pre><code class="lang-csharp hljs">[JsonConverter(typeof(StringEnumConverter))]
+public enum ChallengeStatus</code></pre>
   </div>
   <h3 id="fields">Fields
   </h3>

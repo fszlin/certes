@@ -83,15 +83,84 @@
     <h5 class="text-muted font-weight-light font-italic mb-0">Inheritance</h5>
     <div class="d-flex flex-wrap">
     <div class="level0 mr-1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a><i class="fal fa-arrow-alt-left fa-fw"></i></div>
-    <div class="level1 mr-1"><a class="xref" href="Certes.AcmeException.html">AcmeException</a><i class="fal fa-arrow-alt-left fa-fw"></i></div>
-    <div class="level2"><span class="xref">AcmeRequestException</span></div>
+    <div class="level1 mr-1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception">Exception</a><i class="fal fa-arrow-alt-left fa-fw"></i></div>
+    <div class="level2 mr-1"><a class="xref" href="Certes.AcmeException.html">AcmeException</a><i class="fal fa-arrow-alt-left fa-fw"></i></div>
+    <div class="level3"><span class="xref">AcmeRequestException</span></div>
+    </div>
+  </div>
+  <div class="implements mt-1">
+    <h5 class="font-weight-light font-italic mb-0">
+      <a class="text-muted" data-toggle="collapse" data-target="#implementsCollapse" role="button" aria-expanded="false" aria-controls="implementsCollapse">
+      Implements
+      </a>
+    </h5>
+    <div class="collapse" id="implementsCollapse">
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.iserializable">ISerializable</a></div>
+    </div>
+  </div>
+  <div class="inheritedMembers mt-1">
+    <h5 class="font-weight-light font-italic mb-0">
+      <a class="text-muted" data-toggle="collapse" data-target="#inheritedMembersCollapse" role="button" aria-expanded="false" aria-controls="inheritedMembersCollapse">
+      Inherited Members
+      </a>
+    </h5>
+    <div class="collapse" id="inheritedMembersCollapse">
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception.getbaseexception#System_Exception_GetBaseException">Exception.GetBaseException()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception.gettype#System_Exception_GetType">Exception.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception.tostring#System_Exception_ToString">Exception.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception.data#System_Exception_Data">Exception.Data</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception.helplink#System_Exception_HelpLink">Exception.HelpLink</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception.hresult#System_Exception_HResult">Exception.HResult</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception.innerexception#System_Exception_InnerException">Exception.InnerException</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception.source#System_Exception_Source">Exception.Source</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception.stacktrace#System_Exception_StackTrace">Exception.StackTrace</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception.targetsite#System_Exception_TargetSite">Exception.TargetSite</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception.serializeobjectstate">Exception.SerializeObjectState</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
     </div>
   </div>
   <h6 class="mt-1"><i class="text-muted font-weight-light font-italic mb-0">Namespace:</i> <a class="xref" href="Certes.html">Certes</a></h6>
   <h6 class="mt-1"><i class="text-muted font-weight-light font-italic mb-0">Assembly:</i> Certes.dll</h6>
   <h5 id="Certes_AcmeRequestException_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class AcmeRequestException : AcmeException</code></pre>
+    <pre><code class="lang-csharp hljs">[Serializable]
+public class AcmeRequestException : AcmeException, ISerializable</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -113,13 +182,13 @@
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeRequestException__ctor_SerializationInfo_StreamingContext_.md&amp;value=---%0Auid%3A%20Certes.AcmeRequestException.%23ctor(SerializationInfo%2CStreamingContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeRequestException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_.md&amp;value=---%0Auid%3A%20Certes.AcmeRequestException.%23ctor(System.Runtime.Serialization.SerializationInfo%2CSystem.Runtime.Serialization.StreamingContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeRequestException.cs/#L86">View Source</a>
   </span>
   <a id="Certes_AcmeRequestException__ctor_" data-uid="Certes.AcmeRequestException.#ctor*"></a>
-  <h4 id="Certes_AcmeRequestException__ctor_SerializationInfo_StreamingContext_" data-uid="Certes.AcmeRequestException.#ctor(SerializationInfo,StreamingContext)">AcmeRequestException(SerializationInfo, StreamingContext)</h4>
+  <h4 id="Certes_AcmeRequestException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_" data-uid="Certes.AcmeRequestException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">AcmeRequestException(SerializationInfo, StreamingContext)</h4>
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Certes.AcmeRequestException.html">AcmeRequestException</a> class.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -138,16 +207,16 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">SerializationInfo</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.serializationinfo">SerializationInfo</a></td>
         <td><span class="parametername">info</span></td>
-        <td><p>The <see cref="!:SerializationInfo"></see> that
+        <td><p>The <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.serializationinfo">SerializationInfo</a> that
 holds the serialized object data about the exception being thrown.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">StreamingContext</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.streamingcontext">StreamingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The <see cref="!:StreamingContext"></see>
+        <td><p>The <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.streamingcontext">StreamingContext</a>
 that contains contextual information about the source or destination.</p>
 </td>
       </tr>
@@ -229,13 +298,13 @@ that contains contextual information about the source or destination.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeRequestException__ctor_System_String_Exception_.md&amp;value=---%0Auid%3A%20Certes.AcmeRequestException.%23ctor(System.String%2CException)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeRequestException__ctor_System_String_System_Exception_.md&amp;value=---%0Auid%3A%20Certes.AcmeRequestException.%23ctor(System.String%2CSystem.Exception)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeRequestException.cs/#L69">View Source</a>
   </span>
   <a id="Certes_AcmeRequestException__ctor_" data-uid="Certes.AcmeRequestException.#ctor*"></a>
-  <h4 id="Certes_AcmeRequestException__ctor_System_String_Exception_" data-uid="Certes.AcmeRequestException.#ctor(System.String,Exception)">AcmeRequestException(String, Exception)</h4>
+  <h4 id="Certes_AcmeRequestException__ctor_System_String_System_Exception_" data-uid="Certes.AcmeRequestException.#ctor(System.String,System.Exception)">AcmeRequestException(String, Exception)</h4>
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Certes.AcmeRequestException.html">AcmeRequestException</a> class.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -260,7 +329,7 @@ that contains contextual information about the source or destination.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">Exception</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception">Exception</a></td>
         <td><span class="parametername">innerException</span></td>
         <td><p>The exception that is the cause of the current exception,
 or a null reference (Nothing in Visual Basic) if no inner
@@ -334,18 +403,20 @@ exception is specified.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="text-muted font-weight-light font-italic overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception.message#System_Exception_Message">Exception.Message</a></div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeRequestException_GetObjectData_SerializationInfo_StreamingContext_.md&amp;value=---%0Auid%3A%20Certes.AcmeRequestException.GetObjectData(SerializationInfo%2CStreamingContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeRequestException_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_.md&amp;value=---%0Auid%3A%20Certes.AcmeRequestException.GetObjectData(System.Runtime.Serialization.SerializationInfo%2CSystem.Runtime.Serialization.StreamingContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeRequestException.cs/#L108">View Source</a>
   </span>
   <a id="Certes_AcmeRequestException_GetObjectData_" data-uid="Certes.AcmeRequestException.GetObjectData*"></a>
-  <h4 id="Certes_AcmeRequestException_GetObjectData_SerializationInfo_StreamingContext_" data-uid="Certes.AcmeRequestException.GetObjectData(SerializationInfo,StreamingContext)">GetObjectData(SerializationInfo, StreamingContext)</h4>
-  <div class="markdown level1 summary"><p>Sets the <see cref="!:SerializationInfo"></see>
+  <h4 id="Certes_AcmeRequestException_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_" data-uid="Certes.AcmeRequestException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">GetObjectData(SerializationInfo, StreamingContext)</h4>
+  <div class="markdown level1 summary"><p>Sets the <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.serializationinfo">SerializationInfo</a>
 with information about the exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -364,21 +435,27 @@ with information about the exception.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">SerializationInfo</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.serializationinfo">SerializationInfo</a></td>
         <td><span class="parametername">info</span></td>
-        <td><p>The <see cref="!:SerializationInfo"></see> that
+        <td><p>The <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.serializationinfo">SerializationInfo</a> that
 holds the serialized object data about the exception being thrown.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">StreamingContext</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.streamingcontext">StreamingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The <see cref="!:StreamingContext"></see> that
+        <td><p>The <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.streamingcontext">StreamingContext</a> that
 contains contextual information about the source or destination.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="text-muted font-weight-light font-italic overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception.getobjectdata#System_Exception_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_">Exception.GetObjectData(SerializationInfo, StreamingContext)</a></div>
+  <h3 id="implements" class="text-muted font-weight-light font-italic">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.iserializable">System.Runtime.Serialization.ISerializable</a>
+  </div>
   <h3 id="seealso" class="text-muted font-weight-light font-italic">See Also</h3>
   <div class="seealso">
       <div><a class="xref" href="Certes.AcmeException.html">AcmeException</a></div>

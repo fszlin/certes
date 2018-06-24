@@ -83,7 +83,8 @@
   <h6 class="mt-1"><i class="text-muted font-weight-light font-italic mb-0">Assembly:</i> Certes.dll</h6>
   <h5 id="Certes_Acme_Resource_OrderStatus_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public enum OrderStatus : int</code></pre>
+    <pre><code class="lang-csharp hljs">[JsonConverter(typeof(StringEnumConverter))]
+public enum OrderStatus</code></pre>
   </div>
   <h5 id="Certes_Acme_Resource_OrderStatus_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>As <a href="https://tools.ietf.org/html/draft-ietf-acme-acme-07#section-7.1.3">https://tools.ietf.org/html/draft-ietf-acme-acme-07#section-7.1.3</a></p>
