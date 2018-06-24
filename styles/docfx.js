@@ -401,7 +401,7 @@ $(function () {
                     }
 
                     var title = $(e).attr('title');
-                    if (title === 'API Doc') {
+                    if (title === 'Documentation') {
                         $(e).prepend('<i class="fal fa-book"></i>&nbsp;');
                     } else if (title === 'GitHub') {
                         $(e).prepend('<i class="fab fa-github"></i>&nbsp;');
