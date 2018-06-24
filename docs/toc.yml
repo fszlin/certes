@@ -1,4 +1,6 @@
-- name: API
+- name: Documentation
   href: api/
 - name: Changelog
   href: CHANGELOG.md
+- name: GitHub
+  href: https://github.com/fszlin/certes

@@ -1,4 +1,4 @@
-- name: ACME
-  href: ../APIv2.md
+- name: Topics
+  href: topics/toc.yml
 - name: Reference
   href: certes/toc.yml
