@@ -33,6 +33,7 @@ init:
 install:
 
 build_script:
+  - echo skip build
 
 #test: off
 before_test:
