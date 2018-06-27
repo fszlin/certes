@@ -124,12 +124,12 @@ To install Certes CLI *(you may need to restart the console session if this is t
 dotnet tool install --global dotnet-certes
 ```
 
-Use the `--help` option to get started
+See [CLI usage](CLI.md), or simply use the `--help` option to get started
 ```DOS
 certes --help
 ```
 
-or check this [AppVeyor script][AppVeyorCliSample] for renewing certificates on Azure apps.
+Also check this [AppVeyor script][AppVeyorCliSample] for renewing certificates on Azure apps.
 
 ## Versioning
 

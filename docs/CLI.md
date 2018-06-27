@@ -1,5 +1,5 @@
 
-# Generate certificates using Certes CLI
+# Free certificates using Certes CLI
 
 [Certes CLI](https://www.nuget.org/packages/dotnet-certes/)
 is delivered as a `dotnet` global tool, and it can be install
@@ -19,7 +19,7 @@ have one already, you can register a new account:
 certes account new email@example.com
 ```
 
-To use an existing account, the account key can be imported as:
+To use an existing account, simply import your account key:
 
 ```PowerShell
 certes account set ./account-key.pem
@@ -56,7 +56,7 @@ With an `valid` ACME account, we can start generating SSL certificates now.
 certes order new *.example.com api.example.net
 ```
 
-Keep a note of the order location, which we will use it in the next steps:
+Keep note of the order location, which we will use it in the next steps:
 
 ```json
 {
@@ -93,6 +93,8 @@ can fullfill any one of them.
 
 > For wildcard domains, currently only `DNS` challenge is accepted.
 
+### Setup for Challenges
+
 Certes CLI provides commands for generating necessary data to fullfill
 the challenges. To get the `TXT` record value for `DNS` challenge:
 
@@ -104,10 +106,107 @@ The output will contain the `TXT` record value.
 
 ```json
 {
-  // ...
+  "...": "..."
   "dnsTxt": "Uil-TOCuvR9qnC7H3V65ossmqPgDERDg_9ahr6ZYBd0",
-  "resource": {
-      // ...
-  }
+  "resource": "..."
 }
 ```
+
+<!--
+TODO: HTTP-01 and TLS-ALPN-01
+-->
+
+### Configure DNS challenge on Azure DNS
+
+If you are using [Azure DNS](https://azure.microsoft.com/en-ca/services/dns) service,
+you can setup the `TXT` recod using command:
+
+```PowerShell
+certes az dns https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
+  --resource-group my-res-grp                                     `
+  --subscription-id abcdefgh-1234-abcd-abcd-abcdefghijkl          `
+  --tenant-id abcdefgh-1234-abcd-abcd-abcdefghijkl                `
+  --client-id abcdefgh-1234-abcd-abcd-abcdefghijkl                `
+  --client-secret my-pwd
+```
+
+> Azure service principal is used to deploy azure resources. If you don't have
+> one already, follow [these steps](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal?view=azure-cli-latest) to create one, and please ensure the 
+> application has `DNS Zone Contributor` role assigned.
+
+### Completing Challenges
+
+Once the responses for challenges are ready, we can let the ACME service to
+perform validation:
+
+```Powershell
+certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 *.example.com dns
+certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 api.example.net http
+```
+
+The statuses should now changed to `valid` for the authorizations of the domains.
+
+```JSON
+{
+  "identifier": {
+    "type": "dns",
+    "value": "*.example.com"
+  },
+  "status": "valid",
+  "expires": "2018-07-24T00:01:32Z",
+  "challenges": [
+    "..."
+  ],
+  "wildcard": true
+}
+```
+
+## Exporting SSL Certificate
+
+Once all the domains are validated, we can finilize the order with a random
+private key:
+
+```PowerShell
+certes order finalize https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
+  --out cert-key.pem
+```
+
+> The `--private-key` option can be used to specify the private key for the certificate.
+
+To export the certificate in `PEM`:
+
+```PowerShell
+certes cert pem https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
+  --out my-cert.pem
+```
+
+Or pack the certificate and private key in `PFX`:
+
+```PowerShell
+certes cert pem https://acme-v02.api.letsencrypt.org/acme/order/2/3 pfx-password `
+  --private-key cert-key.pem
+  --out my-cert.pfx
+```
+
+That's all, you now have your free SSL certificate ready for deploy.
+
+### Deploy SSL Certificate to Azure App Services
+
+Certes CLI also support for deploying the certificates to [Azure App Service](https://azure.microsoft.com/en-us/services/app-service/), `Web App` or `Function App`:
+
+```PowerShell
+certes az app https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
+  app-svc-name *.example.com                                      `
+  --private-key cert-key.pem                                      `
+  --resource-group my-res-grp                                     `
+  --subscription-id abcdefgh-1234-abcd-abcd-abcdefghijkl          `
+  --tenant-id abcdefgh-1234-abcd-abcd-abcdefghijkl                `
+  --client-id abcdefgh-1234-abcd-abcd-abcdefghijkl                `
+  --client-secret my-pwd
+```
+
+> The Azure service principal should have `Website Contributor` role assigned.
+
+> Use the `--slot` option to deploy the SSL certificate to non-production slots.
+
+
