@@ -24,7 +24,7 @@ namespace Certes
                 var dirUri = await GetAcmeUriV2();
                 var hosts = new[] { $"www-http-{DomainSuffix}.es256.certes-ci.dymetis.com", $"mail-http-{DomainSuffix}.es256.certes-ci.dymetis.com" };
                 var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
-                var orderCtx = await AuthorizateHttp(ctx, hosts);
+                var orderCtx = await AuthorizeHttp(ctx, hosts);
 
                 var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
                 var finalizedOrder = await orderCtx.Finalize(new CsrInfo

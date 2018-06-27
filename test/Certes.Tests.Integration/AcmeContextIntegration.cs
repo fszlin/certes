@@ -32,7 +32,7 @@ namespace Certes
             var dirUri = await GetAcmeUriV2();
             var hosts = new[] { $"www-ec-{DomainSuffix}.{algo}.certes-ci.dymetis.com".ToLower() };
             var ctx = new AcmeContext(dirUri, GetKeyV2(algo), http: GetAcmeHttpClient(dirUri));
-            var orderCtx = await AuthorizateHttp(ctx, hosts);
+            var orderCtx = await AuthorizeHttp(ctx, hosts);
 
             var certKey = KeyFactory.NewKey(algo);
             var finalizedOrder = await orderCtx.Finalize(new CsrInfo
@@ -110,7 +110,7 @@ namespace Certes
             return orderCtx;
         }
 
-        private static async Task<IOrderContext> AuthorizateHttp(AcmeContext ctx, IList<string> hosts)
+        private static async Task<IOrderContext> AuthorizeHttp(AcmeContext ctx, IList<string> hosts)
         {
             for (var i = 0; i < 10; ++i)
             {
