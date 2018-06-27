@@ -6,6 +6,7 @@ is delivered as a `dotnet` global tool, and it can be install
 using [dotnet tool](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-tool-install)
 command:
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=install.ps1"></script>
 ```PowerShell
 dotnet tool install --global dotnet-certes
 ```
@@ -15,24 +16,28 @@ dotnet tool install --global dotnet-certes
 An ACME account is needed for generating SSL certificates. If you don't
 have one already, you can register a new account:
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=account-new.ps1"></script>
 ```PowerShell
 certes account new email@example.com
 ```
 
 To use an existing account, simply import your account key:
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=account-set.ps1"></script>
 ```PowerShell
 certes account set ./account-key.pem
 ```
 
 You may review the current account:
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=account-show.ps1"></script>
 ```PowerShell
 certes account show
 ```
 
 The result should look similar to this:
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=account-result.json"></script>
 ```json
 {
   "location": "https://acme-v02.api.letsencrypt.org/acme/acct/1",
@@ -52,12 +57,14 @@ With an `valid` ACME account, we can start generating SSL certificates now.
 > You may add up to 100 domains in one order, and mixing wildcard and non-wildcard
 > domains, as long as the domains don't overlap with each other.
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=new-order.ps1"></script>
 ```PowerShell
 certes order new *.example.com api.example.net
 ```
 
 Keep note of the order location, which we will use it in the next steps:
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=order-result.json"></script>
 ```json
 {
   "location": "https://acme-v02.api.letsencrypt.org/acme/order/2/3",
@@ -98,12 +105,14 @@ can fullfill any one of them.
 Certes CLI provides commands for generating necessary data to fullfill
 the challenges. To get the `TXT` record value for `DNS` challenge:
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=dns-challenge.ps1"></script>
 ```Powershell
 certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 *.example.com dns
 ```
 
 The output will contain the `TXT` record value.
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=dns-challenge.json"></script>
 ```json
 {
   "...": "..."
@@ -121,6 +130,7 @@ TODO: HTTP-01 and TLS-ALPN-01
 If you are using [Azure DNS](https://azure.microsoft.com/en-ca/services/dns) service,
 you can setup the `TXT` recod using command:
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=deploy-azure-dns.ps1"></script>
 ```PowerShell
 certes az dns https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
   --resource-group my-res-grp                                     `
@@ -139,13 +149,15 @@ certes az dns https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
 Once the responses for challenges are ready, we can let the ACME service to
 perform validation:
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=validate-challenge.ps1"></script>
 ```Powershell
-certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 *.example.com dns
-certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 api.example.net http
+certes order validate https://acme-v02.api.letsencrypt.org/acme/order/2/3 *.example.com dns
+certes order validate https://acme-v02.api.letsencrypt.org/acme/order/2/3 api.example.net http
 ```
 
 The statuses should now changed to `valid` for the authorizations of the domains.
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=authorization-result.json"></script>
 ```JSON
 {
   "identifier": {
@@ -166,6 +178,7 @@ The statuses should now changed to `valid` for the authorizations of the domains
 Once all the domains are validated, we can finilize the order with a random
 private key:
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=finalize-order.ps1"></script>
 ```PowerShell
 certes order finalize https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
   --out cert-key.pem
@@ -175,6 +188,7 @@ certes order finalize https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
 
 To export the certificate in `PEM`:
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=export-pem.ps1"></script>
 ```PowerShell
 certes cert pem https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
   --out my-cert.pem
@@ -182,6 +196,7 @@ certes cert pem https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
 
 Or pack the certificate and private key in `PFX`:
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=export-pfx.ps1"></script>
 ```PowerShell
 certes cert pem https://acme-v02.api.letsencrypt.org/acme/order/2/3 pfx-password `
   --private-key cert-key.pem
@@ -194,6 +209,7 @@ That's all, you now have your free SSL certificate ready for deploy.
 
 Certes CLI also support for deploying the certificates to [Azure App Service](https://azure.microsoft.com/en-us/services/app-service/), `Web App` or `Function App`:
 
+<script src="https://gist.github.com/fszlin/81dddfec8b3e9e160cd680103ab3561c.js?file=deploy-ssl-web-app.ps1"></script>
 ```PowerShell
 certes az app https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
   app-svc-name *.example.com                                      `
