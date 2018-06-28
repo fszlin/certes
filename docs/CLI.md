@@ -106,7 +106,7 @@ The output will contain the `TXT` record value.
 
 ```json
 {
-  "...": "..."
+  "...": "...",
   "dnsTxt": "Uil-TOCuvR9qnC7H3V65ossmqPgDERDg_9ahr6ZYBd0",
   "resource": "..."
 }
@@ -124,9 +124,9 @@ you can setup the `TXT` recod using command:
 ```PowerShell
 certes az dns https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
   --resource-group my-res-grp                                     `
-  --subscription-id abcdefgh-1234-abcd-abcd-abcdefghijkl          `
-  --tenant-id abcdefgh-1234-abcd-abcd-abcdefghijkl                `
-  --client-id abcdefgh-1234-abcd-abcd-abcdefghijkl                `
+  --subscription-id 00000000-0000-0000-0000-000000000000          `
+  --tenant-id 00000000-0000-0000-0000-000000000000                `
+  --client-id 00000000-0000-0000-0000-000000000000                `
   --client-secret my-pwd
 ```
 
@@ -140,8 +140,8 @@ Once the responses for challenges are ready, we can let the ACME service to
 perform validation:
 
 ```Powershell
-certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 *.example.com dns
-certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 api.example.net http
+certes order validate https://acme-v02.api.letsencrypt.org/acme/order/2/3 *.example.com dns
+certes order validate https://acme-v02.api.letsencrypt.org/acme/order/2/3 api.example.net http
 ```
 
 The statuses should now changed to `valid` for the authorizations of the domains.
@@ -184,7 +184,7 @@ Or pack the certificate and private key in `PFX`:
 
 ```PowerShell
 certes cert pem https://acme-v02.api.letsencrypt.org/acme/order/2/3 pfx-password `
-  --private-key cert-key.pem
+  --private-key cert-key.pem                                                     `
   --out my-cert.pfx
 ```
 
@@ -199,9 +199,9 @@ certes az app https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
   app-svc-name *.example.com                                      `
   --private-key cert-key.pem                                      `
   --resource-group my-res-grp                                     `
-  --subscription-id abcdefgh-1234-abcd-abcd-abcdefghijkl          `
-  --tenant-id abcdefgh-1234-abcd-abcd-abcdefghijkl                `
-  --client-id abcdefgh-1234-abcd-abcd-abcdefghijkl                `
+  --subscription-id 00000000-0000-0000-0000-000000000000          `
+  --tenant-id 00000000-0000-0000-0000-000000000000                `
+  --client-id 00000000-0000-0000-0000-000000000000                `
   --client-secret my-pwd
 ```
 
