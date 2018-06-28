@@ -86,7 +86,11 @@ $(function () {
     // Enable highlight.js
     function highlight() {
         $('pre code').each(function (i, block) {
-            hljs.highlightBlock(block);
+            if ($(block).parent().prev('div.gist').length) {
+                $(block).parent().hide();
+            } else {
+                hljs.highlightBlock(block);
+            }
         });
         $('pre code[highlight-lines]').each(function (i, block) {
             if (block.innerHTML === "") return;

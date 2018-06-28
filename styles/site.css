@@ -195,3 +195,8 @@ article.content .source-link {
 .navbar .fa-external-link-alt {
     vertical-align: top;
 }
+
+.gist table td,
+.gist table th {
+    border-top: none;
+}
