@@ -27,7 +27,7 @@ before using production environment, to avoid hitting the
 Creating new ACME account:
 ```C#
 var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2);
-var account = acme.NewAccount("admin@example.com", true);
+var account = await acme.NewAccount("admin@example.com", true);
 
 // Save the account key for later use
 var pemKey = acme.AccountKey.ToPem();
@@ -37,7 +37,7 @@ Use an existing ACME account:
 // Load the saved account key
 var accountKey = KeyFactory.FromPem(pemKey);
 var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2, accountKey);
-var account = acme.Account();
+var account = await acme.Account();
 ```
 
 See [API doc](APIv2.md#acounts) for additional operations.
