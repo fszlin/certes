@@ -183,7 +183,7 @@ certes cert pem https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
 Or pack the certificate and private key in `PFX`:
 
 ```PowerShell
-certes cert pem https://acme-v02.api.letsencrypt.org/acme/order/2/3 pfx-password `
+certes cert pfx https://acme-v02.api.letsencrypt.org/acme/order/2/3 pfx-password `
   --private-key cert-key.pem                                                     `
   --out my-cert.pfx
 ```
