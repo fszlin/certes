@@ -205,7 +205,7 @@ private key:</p>
   --out my-cert.pem
 </code></pre>
 <p>Or pack the certificate and private key in <code>PFX</code>:</p>
-<pre><code class="lang-PowerShell">certes cert pem https://acme-v02.api.letsencrypt.org/acme/order/2/3 pfx-password `
+<pre><code class="lang-PowerShell">certes cert pfx https://acme-v02.api.letsencrypt.org/acme/order/2/3 pfx-password `
   --private-key cert-key.pem                                                     `
   --out my-cert.pfx
 </code></pre>
