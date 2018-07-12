@@ -197,6 +197,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Additional certificates for building the certificate chain..
+        /// </summary>
+        internal static string HelpCertificateIssuer {
+            get {
+                return ResourceManager.GetString("HelpCertificateIssuer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Path to save the certificate..
         /// </summary>
         internal static string HelpCertificateOut {
