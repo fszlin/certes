@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Added
+- [CLI] Add `--issuer` option to `cert pfx` command ([#142][i142])
+
 ## [2.3.0] - 2018-06-15
 ### Added
 - Support `tls-alpn-01` challenge ([#125][i125])
@@ -99,3 +103,4 @@ All notable changes to this project will be documented in this file.
 [i112]: https://github.com/fszlin/certes/issues/112
 [i125]: https://github.com/fszlin/certes/issues/125
 [i109]: https://github.com/fszlin/certes/issues/109
+[i142]: https://github.com/fszlin/certes/issues/142

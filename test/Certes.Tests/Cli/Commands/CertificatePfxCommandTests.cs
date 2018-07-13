@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CommandLine;
+using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
@@ -75,16 +76,29 @@ namespace Certes.Cli.Commands
                 JsonConvert.SerializeObject(ret));
 
             fileMock.Verify(m => m.WriteAllBytes(outPath, It.IsAny<byte[]>()), Times.Once);
+            fileMock.ResetCalls();
+
+            // Export PFX with external issuers
+            var leafCert = certChain.Certificate.ToPem();
+            orderMock.Setup(m => m.Download()).ReturnsAsync(new CertificateChain(leafCert));
+
+            var issuersPem = string.Join(Environment.NewLine, certChain.Issuers.Select(i => i.ToPem()));
+            fileMock.Setup(m => m.ReadAllText("./issuers.pem")).ReturnsAsync(issuersPem);
+
+            syntax = DefineCommand($"pfx {orderLoc} --private-key {privateKeyPath} abcd1234 --out {outPath} --issuer ./issuers.pem");
+            ret = await cmd.Execute(syntax);
+            fileMock.Verify(m => m.WriteAllBytes(outPath, It.IsAny<byte[]>()), Times.Once);
         }
 
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"pfx http://acme.com/o/1 --private-key ./my-key.pem abcd1234 --server {LetsEncryptStagingV2}";
+            var args = $"pfx http://acme.com/o/1 --private-key ./my-key.pem abcd1234 --server {LetsEncryptStagingV2} --issuer ./root-cert.pem";
             var syntax = DefineCommand(args);
 
             Assert.Equal("pfx", syntax.ActiveCommand.Value);
             ValidateOption(syntax, "server", LetsEncryptStagingV2);
+            ValidateOption(syntax, "issuer", "./root-cert.pem");
             ValidateParameter(syntax, "order-id", new Uri("http://acme.com/o/1"));
             ValidateParameter(syntax, "private-key", "./my-key.pem");
             ValidateParameter(syntax, "password", "abcd1234");

@@ -267,4 +267,7 @@
   <data name="HelpCommandAzureSet" xml:space="preserve">
     <value>Configure default credentials for Microsoft Azure.</value>
   </data>
+  <data name="HelpCertificateIssuer" xml:space="preserve">
+    <value>Additional certificates for building the certificate chain.</value>
+  </data>
 </root>
