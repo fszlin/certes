@@ -458,6 +458,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Friendly name for the certificate..
+        /// </summary>
+        internal static string HelpFriendlyName {
+            get {
+                return ResourceManager.GetString("HelpFriendlyName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Path to the ACME account key..
         /// </summary>
         internal static string HelpKey {

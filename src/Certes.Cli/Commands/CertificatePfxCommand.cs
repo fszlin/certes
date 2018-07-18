@@ -11,6 +11,7 @@ namespace Certes.Cli.Commands
     internal class CertificatePfxCommand : CertificateCommand, ICliCommand
     {
         private const string CommandText = "pfx";
+        private const string FriendlyNameOption = "friendly-name";
         private const string PasswordParam = "password";
         private const string PrivateKeyOption = "private-key";
         private const string OutOption = "out";
@@ -38,6 +39,7 @@ namespace Certes.Cli.Commands
                 .DefineKeyOption()
                 .DefineOption(OutOption, help: Strings.HelpCertificateOut)
                 .DefineOption(PrivateKeyOption, help: Strings.HelpPrivateKey)
+                .DefineOption(FriendlyNameOption, help: Strings.HelpFriendlyName)
                 .DefineOption(IssuerOption, help: Strings.HelpCertificateIssuer)
                 .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId)
                 .DefineParameter(PasswordParam, help: Strings.HelpPfxPassword);
@@ -50,10 +52,15 @@ namespace Certes.Cli.Commands
             var keyPath = syntax.GetParameter<string>(PrivateKeyOption, true);
             var pwd = syntax.GetParameter<string>(PasswordParam, true);
             var issuer = syntax.GetParameter<string>(IssuerOption);
+            var friendlyName = syntax.GetParameter<string>(FriendlyNameOption);
             var (location, cert) = await DownloadCertificate(syntax);
 
-            var pfxName = string.Format(CultureInfo.InvariantCulture, "[certes] {0:yyyyMMddhhmmss}", DateTime.UtcNow);
             var privKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment, true);
+            var pfxName = string.Format(CultureInfo.InvariantCulture, "[certes] {0:yyyyMMddhhmmss}", DateTime.UtcNow);
+            if (!string.IsNullOrWhiteSpace(friendlyName))
+            {
+                pfxName = string.Concat(friendlyName, " ", pfxName);
+            }
 
             var pfxBuilder = cert.ToPfx(privKey);
             if (!string.IsNullOrWhiteSpace(issuer))
