@@ -85,7 +85,7 @@ namespace Certes.Cli.Commands
             var issuersPem = string.Join(Environment.NewLine, certChain.Issuers.Select(i => i.ToPem()));
             fileMock.Setup(m => m.ReadAllText("./issuers.pem")).ReturnsAsync(issuersPem);
 
-            syntax = DefineCommand($"pfx {orderLoc} --private-key {privateKeyPath} abcd1234 --out {outPath} --issuer ./issuers.pem");
+            syntax = DefineCommand($"pfx {orderLoc} --private-key {privateKeyPath} abcd1234 --out {outPath} --issuer ./issuers.pem --friendly-name friendly");
             ret = await cmd.Execute(syntax);
             fileMock.Verify(m => m.WriteAllBytes(outPath, It.IsAny<byte[]>()), Times.Once);
         }
@@ -93,12 +93,13 @@ namespace Certes.Cli.Commands
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"pfx http://acme.com/o/1 --private-key ./my-key.pem abcd1234 --server {LetsEncryptStagingV2} --issuer ./root-cert.pem";
+            var args = $"pfx http://acme.com/o/1 --private-key ./my-key.pem abcd1234 --server {LetsEncryptStagingV2} --issuer ./root-cert.pem --friendly-name friendly";
             var syntax = DefineCommand(args);
 
             Assert.Equal("pfx", syntax.ActiveCommand.Value);
             ValidateOption(syntax, "server", LetsEncryptStagingV2);
             ValidateOption(syntax, "issuer", "./root-cert.pem");
+            ValidateOption(syntax, "friendly-name", "friendly");
             ValidateParameter(syntax, "order-id", new Uri("http://acme.com/o/1"));
             ValidateParameter(syntax, "private-key", "./my-key.pem");
             ValidateParameter(syntax, "password", "abcd1234");
