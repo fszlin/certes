@@ -270,4 +270,7 @@
   <data name="HelpCertificateIssuer" xml:space="preserve">
     <value>Additional certificates for building the certificate chain.</value>
   </data>
+  <data name="HelpFriendlyName" xml:space="preserve">
+    <value>Friendly name for the certificate.</value>
+  </data>
 </root>
