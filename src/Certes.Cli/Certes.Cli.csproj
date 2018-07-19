@@ -5,7 +5,7 @@
     <OutputType>Exe</OutputType>
     <TargetFrameworks>netcoreapp1.0;netcoreapp2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(CertesVersion)' != ''">netcoreapp2.1</TargetFrameworks>
-    <AssemblyVersion>1.0.2</AssemblyVersion>
+    <AssemblyVersion>1.0.3</AssemblyVersion>
     <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
     <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
     <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
@@ -34,8 +34,8 @@
     <PackageReference Include="Autofac" Version="4.8.1" />
     <PackageReference Include="NLog" Version="4.5.6" PrivateAssets="all" />
     <PackageReference Include="System.CommandLine" Version="0.1.0-*" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.11.1" />
-    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.11.1" />
+    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.13.0" />
+    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.13.0" />
   </ItemGroup>
 
   <ItemGroup>
