@@ -27,7 +27,7 @@ var pem = context.AccountKey.ToPem();
 var der = context.AccountKey.ToDer();
 ```
 
-## Acounts
+## Accounts
  
 Get the url to `Terms of Service` for user to review.
  
