@@ -40,7 +40,7 @@ var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2, accountKey);
 var account = await acme.Account();
 ```
 
-See [API doc](APIv2.md#acounts) for additional operations.
+See [API doc](APIv2.md#accounts) for additional operations.
 
 ## Order
 
