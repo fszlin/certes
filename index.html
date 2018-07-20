@@ -92,7 +92,7 @@ var accountKey = KeyFactory.FromPem(pemKey);
 var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2, accountKey);
 var account = await acme.Account();
 </code></pre>
-<p>See <a href="APIv2.html#acounts">API doc</a> for additional operations.</p>
+<p>See <a href="APIv2.html#accounts">API doc</a> for additional operations.</p>
 <h2 id="order">Order</h2>
 <p>Place a wildcard certificate order
 <em>(DNS validation is required for wildcard certificates)</em></p>
