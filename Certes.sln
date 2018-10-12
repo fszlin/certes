@@ -20,7 +20,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E420B696-0E51-40E1-B534-96E66C2C27F5}"
 	ProjectSection(SolutionItems) = preProject
 		.appveyor.yml = .appveyor.yml
-		.azure-pipelines.yml = .azure-pipelines.yml
+		azure-pipelines.yml = azure-pipelines.yml
 		.bettercodehub.yml = .bettercodehub.yml
 		.codecov.yml = .codecov.yml
 		.editorconfig = .editorconfig
