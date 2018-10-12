@@ -1,0 +1,8 @@
+
+pool:
+  vmImage: 'macOS-10.13'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: restore
+    projects: '**/*.csproj'
