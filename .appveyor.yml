@@ -37,8 +37,7 @@ init:
 
 before_build:
   - ps: New-Item build -Type directory -Force | Out-Null
-  # regular msbuild
-  - cmd: msbuild -t:restore -v:m
+  - cmd: dotnet restore
 
 build_script:
   - msbuild -p:DebugType=Full -v:m
