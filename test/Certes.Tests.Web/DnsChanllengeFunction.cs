@@ -10,7 +10,7 @@ using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 using static Certes.Tests.CI.Helper;
@@ -23,7 +23,7 @@ namespace Certes.Tests.CI
         public static async Task<IActionResult> SetupDns(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "dns-01/{algo}")]HttpRequest request,
             string algo,
-            TraceWriter log)
+            ILogger log)
         {
             Dictionary<string, string> tokens;
             using (var reader = new StreamReader(request.Body))
