@@ -1,6 +1,6 @@
 
 pool:
-  vmImage: 'macOS-10.13'
+  vmImage: 'Hosted macOS'
 
 - task: DotNetCoreCLI@2
   inputs:
