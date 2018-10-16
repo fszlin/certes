@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [2.3.1] - 2018-10-16
+### Changed
+- Remove package reference to `System.Net.Http` ([#158][i158])
 ### Added
 - [CLI] Add `--friendly-name` option to `cert pfx` command ([#145][i145])
 - [CLI] Add `--issuer` option to `cert pfx` command ([#142][i142])
@@ -106,3 +110,4 @@ All notable changes to this project will be documented in this file.
 [i109]: https://github.com/fszlin/certes/issues/109
 [i142]: https://github.com/fszlin/certes/issues/142
 [i145]: https://github.com/fszlin/certes/issues/145
+[i158]: https://github.com/fszlin/certes/issues/158
