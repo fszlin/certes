@@ -8,6 +8,7 @@ using Microsoft.Azure.Management.Dns.Fluent;
 using Microsoft.Azure.Management.Dns.Fluent.Models;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
@@ -42,7 +43,12 @@ namespace Certes.Tests.CI
             };
 
             var credentials = new AzureCredentials(loginInfo, Env("CERTES_AZURE_TENANT_ID"), AzureEnvironment.AzureGlobalCloud);
-            using (var client = new DnsManagementClient(credentials))
+            var builder = RestClient.Configure();
+            var resClient = builder.WithEnvironment(AzureEnvironment.AzureGlobalCloud)
+                .WithCredentials(credentials)
+                .Build();
+
+            using (var client = new DnsManagementClient(resClient))
             {
                 client.SubscriptionId = Env("CERTES_AZURE_SUBSCRIPTION_ID");
 

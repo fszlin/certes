@@ -34,8 +34,8 @@
     <PackageReference Include="Autofac" Version="4.8.1" />
     <PackageReference Include="NLog" Version="4.5.10" PrivateAssets="all" />
     <PackageReference Include="System.CommandLine" Version="0.1.0-*" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.16.0" />
-    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.16.0" />
+    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.16.1" />
+    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.16.1" />
   </ItemGroup>
 
   <ItemGroup>
