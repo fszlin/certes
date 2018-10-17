@@ -8,3 +8,6 @@ jobs:
     inputs:
       command: restore
       projects: '**/*.csproj'
+      feedsToUse: 'config'
+      nugetConfigPath: 'Nuget.config'
+      workingDirectory: './'
