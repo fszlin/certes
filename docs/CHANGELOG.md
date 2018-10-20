@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Changed
+- Fix account key roll-over missing old key field ([#154](https://github.com/fszlin/certes/issues/154))
 
 ## [2.3.1] - 2018-10-16
 ### Changed
