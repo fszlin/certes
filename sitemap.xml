@@ -2,583 +2,583 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AcmeAccount.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AcmeCertificate.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AcmeCertificateExtensions.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AcmeDirectory.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AcmeError.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AcmeHttpClient.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AcmeHttpHandler.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AcmeHttpResponse-1.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AcmeResponse-1.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AcmeResult-1.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AcmeResultExtensions.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AuthorizationEntity.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AuthorizationIdentifier.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.AuthorizationIdentifierTypes.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.CertificateChain.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.CertificateEntity.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.ChallengeEntity.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.ChallengeExtensions.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.ChallengeValidation.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.EntityBase.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.EntityStatus.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.IAccountContext.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.IAcmeHttpClient.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.IAcmeHttpHandler.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.IAuthorizationContext.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.IChallengeContext.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.IOrderContext.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.IOrderListContext.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.IResourceContext-1.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.KeyedAcmeResult-1.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.RegistrationEntity.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.RelLink.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.Account.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.AccountStatus.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.Authorization.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.AuthorizationStatus.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.Challenge.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.ChallengeStatus.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.ChallengeTypes.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.Directory.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.DirectoryMeta.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.Identifier.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.IdentifierStatus.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.IdentifierType.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.Order.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.OrderList.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.OrderStatus.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.RevocationReason.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.Resource.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.ResourceTypes.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.RevokeCertificateEntity.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.WellKnownServers.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Acme.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.AcmeClient.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.AcmeContext.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.AcmeException.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.AcmeRequestException.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.CertificateChainExtensions.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.CsrInfo.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.IAccountContextExtensions.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.IAcmeClient.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.IAcmeContext.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.IAcmeContextExtensions.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.IAuthorizationContextExtensions.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.IEncodable.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.IKey.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.IOrderContextExtensions.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.ISignatureKeyExtensions.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Json.JsonUtil.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Json.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Jws.AccountKey.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Jws.AccountKeyExtensions.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Jws.IAccountKey.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Jws.JsonWebKey.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Jws.JwsConvert.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Jws.JwsPayload.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Jws.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.KeyAlgorithm.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.KeyAlgorithmExtensions.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.KeyFactory.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Pkcs.CertificateStore.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Pkcs.CertificationRequestBuilder.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Pkcs.ICertificationRequestBuilder.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Pkcs.KeyInfo.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Pkcs.KeyInfoExtensions.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Pkcs.PfxBuilder.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Pkcs.SignatureAlgorithm.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.Pkcs.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/api/certes/Certes.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/APIv2.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/CHANGELOG.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/CLI.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/implementation-status.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/index.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/README.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://docs.certes.app/README.v1.html</loc>
-    <lastmod>2018-10-20T03:23:16+00:00</lastmod>
+    <lastmod>2018-10-20T04:17:05+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
