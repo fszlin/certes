@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace Certes.Tests.CI
@@ -18,7 +18,7 @@ namespace Certes.Tests.CI
         [FunctionName("CertData")]
         public static async Task<IActionResult> CertData(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "cert-data")]HttpRequest request,
-            TraceWriter log)
+            ILogger log)
         {
             if (certificateData == null)
             {
@@ -49,7 +49,7 @@ namespace Certes.Tests.CI
         [FunctionName("CertKey")]
         public static async Task<IActionResult> CertKey(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "cert-key")]HttpRequest request,
-            TraceWriter log)
+            ILogger log)
         {
             if (certificateKey == null)
             {
