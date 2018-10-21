@@ -89,7 +89,7 @@ namespace Certes
             var keyChange = new
             {
                 account = location,
-                newKey = newKey.JsonWebKey
+                oldKey = AccountKey.JsonWebKey,
             };
 
             var jws = new JwsSigner(newKey);

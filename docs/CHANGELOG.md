@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Changed
+- Fix account key roll-over missing old key field ([#154](https://github.com/fszlin/certes/issues/154))
+- Update TLS-ALPN OID as [draft-03](https://tools.ietf.org/html/draft-ietf-acme-tls-alpn-03)
 
 ## [2.3.1] - 2018-10-16
 ### Changed
@@ -93,7 +96,8 @@ All notable changes to this project will be documented in this file.
 [2.2.1]: https://github.com/fszlin/certes/compare/v2.2.0...v2.2.1
 [2.2.2]: https://github.com/fszlin/certes/compare/v2.2.1...v2.2.2
 [2.3.0]: https://github.com/fszlin/certes/compare/v2.2.2...v2.3.0
-[Unreleased]: https://github.com/fszlin/certes/compare/v2.3.0...HEAD
+[2.3.1]: https://github.com/fszlin/certes/compare/v2.3.0...v2.3.1
+[Unreleased]: https://github.com/fszlin/certes/compare/v2.3.1...HEAD
 
 [i5]: https://github.com/fszlin/certes/issues/5
 [i22]: https://github.com/fszlin/certes/issues/22
