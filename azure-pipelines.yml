@@ -14,3 +14,5 @@ jobs:
       feedsToUse: 'config'
       nugetConfigPath: 'NuGet.config'
       workingDirectory: './'
+
+  - script: dotnet build -c Release
