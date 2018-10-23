@@ -66,7 +66,7 @@ namespace Certes.Cli
             {
                 var isHelpRequested = IsHelpRequested(args);
                 ICliCommand matchCommand = null;
-                var cmdSyntax = ArgumentSyntax.Parse(args.Skip(1).ToArray(), s =>
+                ArgumentSyntax.Parse(args.Skip(1).ToArray(), s =>
                 {
                     s.HandleErrors = false;
                     s.HandleHelp = false;

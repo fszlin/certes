@@ -15,4 +15,4 @@ jobs:
       nugetConfigPath: 'NuGet.config'
       workingDirectory: './'
 
-  - script: dotnet build -c Release
+  - script: dotnet build -c Release --framework netcoreapp2.1
