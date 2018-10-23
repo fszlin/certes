@@ -15,4 +15,5 @@ jobs:
       nugetConfigPath: 'NuGet.config'
       workingDirectory: './'
 
-  - script: dotnet build -c Release --framework netcoreapp2.1
+  - script: dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp2.1
+  - script: dotnet test ./test/Certes.Tests/Certes.Tests.Integration.csproj --framework netcoreapp2.1
