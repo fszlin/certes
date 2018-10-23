@@ -7,13 +7,6 @@ jobs:
     vmImage: 'Ubuntu 16.04'
 
   steps:
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: restore
-      projects: '**/*.csproj'
-      feedsToUse: 'config'
-      nugetConfigPath: 'NuGet.config'
-      workingDirectory: './'
-
+  - script: dotnet restore
   - script: dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp2.1
   - script: dotnet test ./test/Certes.Tests/Certes.Tests.Integration.csproj --framework netcoreapp2.1
