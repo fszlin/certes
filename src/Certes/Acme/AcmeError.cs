@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
+using Certes.Acme.Resource;
 
 namespace Certes.Acme
 {
@@ -22,6 +24,22 @@ namespace Certes.Acme
         /// The detail message.
         /// </value>
         public string Detail { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier for this error.
+        /// </summary>
+        /// <value>
+        /// The identifier for this error.
+        /// </value>
+        public Identifier Identifier { get; set;}
+
+        /// <summary>
+        /// Gets or sets the subproblems.
+        /// </summary>
+        /// <value>
+        /// The subproblems.
+        /// </value>
+        public IList<AcmeError> Subproblems { get; set; }
 
         /// <summary>
         /// Gets or sets the HTTP status.

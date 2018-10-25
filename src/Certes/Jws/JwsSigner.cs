@@ -1,7 +1,7 @@
-﻿using Certes.Json;
-using Certes.Pkcs;
-using Newtonsoft.Json;
+﻿using System;
 using System.Text;
+using Certes.Json;
+using Newtonsoft.Json;
 
 namespace Certes.Jws
 {
@@ -10,30 +10,57 @@ namespace Certes.Jws
     /// </summary>
     internal class JwsSigner
     {
-        private readonly IAccountKey keyPair;
+        private readonly IKey keyPair;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JwsSigner"/> class.
         /// </summary>
         /// <param name="keyPair">The keyPair.</param>
-        public JwsSigner(IAccountKey keyPair)
+        public JwsSigner(IKey keyPair)
         {
             this.keyPair = keyPair;
         }
 
         /// <summary>
+        /// Signs the specified payload.
+        /// </summary>
+        /// <param name="payload">The payload.</param>
+        /// <param name="nonce">The nonce.</param>
+        /// <returns></returns>
+        public JwsPayload Sign(object payload, string nonce)
+            => Sign(payload, null, null, nonce);
+
+        /// <summary>
         /// Encodes this instance.
         /// </summary>
-        public JwsPayload Sign(object payload, string nonce = null)
+        /// <param name="payload">The payload.</param>
+        /// <param name="keyId">The key identifier.</param>
+        /// <param name="url">The URL.</param>
+        /// <param name="nonce">The nonce.</param>
+        /// <returns></returns>
+        public JwsPayload Sign(
+            object payload,
+            Uri keyId = null,
+            Uri url = null,
+            string nonce = null)
         {
             var jsonSettings = JsonUtil.CreateSettings();
 
-            var protectedHeader = new
-            {
-                nonce = nonce,
-                alg = keyPair.Algorithm.ToJwsAlgorithm(),
-                jwk = keyPair.JsonWebKey,
-            };
+            var protectedHeader = keyId == null ?
+                (object)new
+                {
+                    alg = keyPair.Algorithm.ToJwsAlgorithm(),
+                    jwk = keyPair.JsonWebKey,
+                    nonce,
+                    url,
+                } :
+                new
+                {
+                    alg = keyPair.Algorithm.ToJwsAlgorithm(),
+                    kid = keyId,
+                    nonce,
+                    url,
+                };
 
             var entityJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
             var protectedHeaderJson = JsonConvert.SerializeObject(protectedHeader, Formatting.None, jsonSettings);
@@ -42,8 +69,8 @@ namespace Certes.Jws
             var protectedHeaderEncoded = JwsConvert.ToBase64String(Encoding.UTF8.GetBytes(protectedHeaderJson));
 
             var signature = $"{protectedHeaderEncoded}.{payloadEncoded}";
-            var signatureBytes = Encoding.ASCII.GetBytes(signature);
-            var signedSignatureBytes = keyPair.SignData(signatureBytes);
+            var signatureBytes = Encoding.UTF8.GetBytes(signature);
+            var signedSignatureBytes = keyPair.GetSigner().SignData(signatureBytes);
             var signedSignatureEncoded = JwsConvert.ToBase64String(signedSignatureBytes);
 
             var body = new JwsPayload

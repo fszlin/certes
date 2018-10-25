@@ -7,9 +7,9 @@ namespace Certes.Crypto
 {
     internal sealed class EllipticCurveSigner : AsymmetricCipherSigner
     {
-        private readonly int FieldSize;
+        private readonly int fieldSize;
 
-        public EllipticCurveSigner(ISignatureKey key, string signingAlgorithm, string hashAlgorithm)
+        public EllipticCurveSigner(IKey key, string signingAlgorithm, string hashAlgorithm)
             : base(key)
         {
             var privKey = Key.KeyPair.Private as ECPrivateKeyParameters;
@@ -18,7 +18,7 @@ namespace Certes.Crypto
                 throw new ArgumentException("The given key is not an EC private key.", nameof(key));
             }
 
-            FieldSize = privKey.Parameters.Curve.FieldSize / 8;
+            fieldSize = privKey.Parameters.Curve.FieldSize / 8;
             SigningAlgorithm = signingAlgorithm;
             HashAlgorithm = hashAlgorithm;
         }
@@ -37,13 +37,13 @@ namespace Certes.Crypto
                 .Select(i => i.Value.ToByteArrayUnsigned())
                 .ToArray();
 
-            var signatureBytes = new byte[FieldSize * nums.Length];
+            var signatureBytes = new byte[fieldSize * nums.Length];
 
             for (var i = 0; i < nums.Length; ++i)
             {
                 Array.Copy(
                     nums[i], 0, 
-                    signatureBytes, FieldSize * (i + 1) - nums[i].Length, 
+                    signatureBytes, fieldSize * (i + 1) - nums[i].Length, 
                     nums[i].Length);
             }
 

@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ErrorChallengeNotAvailable" xml:space="preserve">
+    <value>Challenge with type '{0}' is not supported.</value>
+  </data>
+  <data name="ErrorExportInvalidOrder" xml:space="preserve">
+    <value>Can not export certificate for order with '{0}' status.</value>
+  </data>
+  <data name="ErrorIdentifierNotAvailable" xml:space="preserve">
+    <value>Identifier '{0}' not found in the certificate order.</value>
+  </data>
+  <data name="ErrorInvalidChallengeType" xml:space="preserve">
+    <value>Challenge type '{0}' is not supported.</value>
+  </data>
+  <data name="ErrorNoAccountKey" xml:space="preserve">
+    <value>No account available for ACME server '{0}'.</value>
+  </data>
+  <data name="ErrorOptionMissing" xml:space="preserve">
+    <value>Option '--{0}' is required.</value>
+  </data>
+  <data name="ErrorParameterMissing" xml:space="preserve">
+    <value>Parameter '{0}' is required.</value>
+  </data>
+  <data name="HelpCertificateOut" xml:space="preserve">
+    <value>Path to save the certificate.</value>
+  </data>
+  <data name="HelpChallengeType" xml:space="preserve">
+    <value>The challenge type, http or dns.</value>
+  </data>
+  <data name="HelpCommandAccount" xml:space="preserve">
+    <value>Manage ACME accounts.</value>
+  </data>
+  <data name="HelpCommandAccountNew" xml:space="preserve">
+    <value>Create new ACME account.</value>
+  </data>
+  <data name="HelpCommandAccountSet" xml:space="preserve">
+    <value>Set the default ACME account.</value>
+  </data>
+  <data name="HelpCommandAccountShow" xml:space="preserve">
+    <value>Get the ACME account.</value>
+  </data>
+  <data name="HelpCommandAccountUpdate" xml:space="preserve">
+    <value>Update ACME account.</value>
+  </data>
+  <data name="HelpCommandCertificate" xml:space="preserve">
+    <value>Export certificates.</value>
+  </data>
+  <data name="HelpCommandCertificatePem" xml:space="preserve">
+    <value>Export certificate to PEM for an order.</value>
+  </data>
+  <data name="HelpCommandCertificatePfx" xml:space="preserve">
+    <value>Export certificate to PFX for an order.</value>
+  </data>
+  <data name="HelpCommandOrder" xml:space="preserve">
+    <value>Manage certificate orders.</value>
+  </data>
+  <data name="HelpCommandOrderAuthz" xml:space="preserve">
+    <value>Get the details of an authorization.</value>
+  </data>
+  <data name="HelpCommandOrderFinalize" xml:space="preserve">
+    <value>Finalize an order.</value>
+  </data>
+  <data name="HelpCommandOrderList" xml:space="preserve">
+    <value>List all certificate orders.</value>
+  </data>
+  <data name="HelpCommandOrderNew" xml:space="preserve">
+    <value>Create new certificate order.</value>
+  </data>
+  <data name="HelpCommandOrderShow" xml:space="preserve">
+    <value>Get the details of a certificate order.</value>
+  </data>
+  <data name="HelpCommandOrderValidate" xml:space="preserve">
+    <value>Validate the authorization challenge.</value>
+  </data>
+  <data name="HelpCommandServer" xml:space="preserve">
+    <value>Manage ACME servers.</value>
+  </data>
+  <data name="HelpCommandServerSet" xml:space="preserve">
+    <value>Configure the default ACME server.</value>
+  </data>
+  <data name="HelpCommandServerShow" xml:space="preserve">
+    <value>Get the details of a ACME server.</value>
+  </data>
+  <data name="HelpDn" xml:space="preserve">
+    <value>The distinguished name for the certificate request.</value>
+  </data>
+  <data name="HelpDomain" xml:space="preserve">
+    <value>The domain.</value>
+  </data>
+  <data name="HelpDomains" xml:space="preserve">
+    <value>The domains for the certificate order.</value>
+  </data>
+  <data name="HelpEmail" xml:space="preserve">
+    <value>The E-mail for ACME account.</value>
+  </data>
+  <data name="HelpKey" xml:space="preserve">
+    <value>Path to the ACME account key.</value>
+  </data>
+  <data name="HelpKeyOut" xml:space="preserve">
+    <value>Path to save the generated key.</value>
+  </data>
+  <data name="HelpOrderId" xml:space="preserve">
+    <value>The URI of the certificate order.</value>
+  </data>
+  <data name="HelpServer" xml:space="preserve">
+    <value>The dictionary URI to an ACME server.</value>
+  </data>
+  <data name="HelpPfxPassword" xml:space="preserve">
+    <value>The password for the PFX.</value>
+  </data>
+  <data name="HelpPrivateKey" xml:space="preserve">
+    <value>The private key for the certificate.</value>
+  </data>
+  <data name="HelpCommandAzure" xml:space="preserve">
+    <value>Deploy certificates to Microsoft Azure.</value>
+  </data>
+  <data name="HelpAzureClientId" xml:space="preserve">
+    <value>The client ID of the Azure service principal.</value>
+  </data>
+  <data name="HelpAzureSecret" xml:space="preserve">
+    <value>The client secret of the Azure service principal.</value>
+  </data>
+  <data name="HelpAzureSubscriptionId" xml:space="preserve">
+    <value>The Azure subscription ID.</value>
+  </data>
+  <data name="HelpCommandAzureDns" xml:space="preserve">
+    <value>Configure Azure DNS to respone to ACME DNS challenge.</value>
+  </data>
+  <data name="HelpAzureTenantId" xml:space="preserve">
+    <value>The Azure tenant ID.</value>
+  </data>
+  <data name="ErrorDnsZoneNotFound" xml:space="preserve">
+    <value>DNS zone for '{0}' not found.</value>
+  </data>
+  <data name="HelpAzureResourceGroup" xml:space="preserve">
+    <value>The resource group.</value>
+  </data>
+  <data name="HelpCommandAzureApp" xml:space="preserve">
+    <value>Deploy certificates to Azure app services.</value>
+  </data>
+  <data name="ErrorOrderIncompleted" xml:space="preserve">
+    <value>Can not down certificate for order '{0}'.</value>
+  </data>
+  <data name="HelpAppName" xml:space="preserve">
+    <value>The Auzre app service name.</value>
+  </data>
+  <data name="HelpSlot" xml:space="preserve">
+    <value>The Azure app service deployment slot.</value>
+  </data>
+  <data name="HelpCommandAzureSet" xml:space="preserve">
+    <value>Configure default credentials for Microsoft Azure.</value>
+  </data>
+  <data name="HelpCertificateIssuer" xml:space="preserve">
+    <value>Additional certificates for building the certificate chain.</value>
+  </data>
+  <data name="HelpFriendlyName" xml:space="preserve">
+    <value>Friendly name for the certificate.</value>
+  </data>
+</root>

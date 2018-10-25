@@ -1,11 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
+using Certes.Crypto;
+using Certes.Properties;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
-using Org.BouncyCastle.Security;
 
 namespace Certes.Pkcs
 {
@@ -33,11 +32,10 @@ namespace Certes.Pkcs
             using (var streamReader = new StreamReader(stream))
             {
                 var reader = new PemReader(streamReader);
-                var keyPair = reader.ReadObject() as AsymmetricCipherKeyPair;
 
-                if (keyPair == null)
+                if (!(reader.ReadObject() is AsymmetricCipherKeyPair keyPair))
                 {
-                    throw new Exception("Invaid key data.");
+                    throw new AcmeException(Strings.ErrorInvalidKeyData);
                 }
 
                 return keyPair.Export();
@@ -50,6 +48,8 @@ namespace Certes.Pkcs
     /// </summary>
     public static class KeyInfoExtensions
     {
+        private static readonly KeyAlgorithmProvider keyAlgorithmProvider = new KeyAlgorithmProvider();
+
         /// <summary>
         /// Saves the key pair to the specified stream.
         /// </summary>
@@ -65,37 +65,22 @@ namespace Certes.Pkcs
             }
         }
 
+        /// <summary>
+        /// Gets the key pair.
+        /// </summary>
+        /// <param name="keyInfo">The key data.</param>
+        /// <returns>The key pair</returns>
         internal static AsymmetricCipherKeyPair CreateKeyPair(this KeyInfo keyInfo)
         {
-            var keyParam = PrivateKeyFactory.CreateKey(keyInfo.PrivateKeyInfo);
-
-            if (keyParam is RsaPrivateCrtKeyParameters)
-            {
-                var privateKey = (RsaPrivateCrtKeyParameters)keyParam;
-                var publicKey = new RsaKeyParameters(false, privateKey.Modulus, privateKey.PublicExponent);
-                return new AsymmetricCipherKeyPair(publicKey, keyParam);
-            }
-            else if (keyParam is ECPrivateKeyParameters)
-            {
-                var privateKey = (ECPrivateKeyParameters)keyParam;
-                var domain = privateKey.Parameters;
-                var q = domain.G.Multiply(privateKey.D);
-                var publicKey = new ECPublicKeyParameters(q, domain);
-
-                var algo =
-                    domain.Curve.FieldSize == 256 ? SignatureAlgorithm.ES256 :
-                    domain.Curve.FieldSize == 384 ? SignatureAlgorithm.ES384 :
-                    domain.Curve.FieldSize == 521 ? SignatureAlgorithm.ES512 :
-                    throw new NotSupportedException();
-
-                return new AsymmetricCipherKeyPair(publicKey, keyParam);
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
+            var (_, keyPair) = keyAlgorithmProvider.GetKeyPair(keyInfo.PrivateKeyInfo);
+            return keyPair;
         }
 
+        /// <summary>
+        /// Exports the key pair.
+        /// </summary>
+        /// <param name="keyPair">The key pair.</param>
+        /// <returns>The key data.</returns>
         internal static KeyInfo Export(this AsymmetricCipherKeyPair keyPair)
         {
             var privateKey = PrivateKeyInfoFactory.CreatePrivateKeyInfo(keyPair.Private);

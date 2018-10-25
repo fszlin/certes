@@ -1,12 +1,13 @@
-﻿using Certes.Json;
-using Certes.Jws;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Certes.Json;
+using Certes.Jws;
+using Certes.Properties;
+using Newtonsoft.Json;
 
 namespace Certes.Acme
 {
@@ -24,7 +25,7 @@ namespace Certes.Acme
         private readonly bool shouldDisposeHttp;
 
         private string nonce;
-        private Resource.Directory directory;
+        private AcmeDirectory directory;
 
         private readonly JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
 
@@ -93,7 +94,7 @@ namespace Certes.Acme
 
             if (resourceUri == null)
             {
-                throw new Exception($"Unsupported resource type '{resourceType}'.");
+                throw new AcmeException(string.Format(Strings.ErrorUnsupportedResourceType, resourceType));
             }
 
             return resourceUri;
@@ -105,7 +106,7 @@ namespace Certes.Acme
         /// <typeparam name="T">The resource entity type.</typeparam>
         /// <param name="uri">The URI.</param>
         /// <returns>The ACME response.</returns>
-        public async Task<AcmeRespone<T>> Get<T>(Uri uri)
+        public async Task<AcmeResponse<T>> Get<T>(Uri uri)
         {
             var resp = await http.GetAsync(uri);
             var result = await ReadResponse<T>(resp);
@@ -120,7 +121,7 @@ namespace Certes.Acme
         /// <param name="entity">The entity.</param>
         /// <param name="keyPair">The signing key pair.</param>
         /// <returns>The ACME response.</returns>
-        public async Task<AcmeRespone<T>> Post<T>(Uri uri, T entity, IAccountKey keyPair)
+        public async Task<AcmeResponse<T>> Post<T>(Uri uri, T entity, IAccountKey keyPair)
         {
             await FetchDirectory(false);
 
@@ -139,7 +140,7 @@ namespace Certes.Acme
         /// <returns>The encoded JSON.</returns>
         private static object Encode(object entity, IAccountKey keyPair, string nonce)
         {
-            var encoder = new JwsSigner(keyPair);
+            var encoder = new JwsSigner(keyPair.SignatureKey);
             return encoder.Sign(entity, nonce);
         }
 
@@ -148,7 +149,7 @@ namespace Certes.Acme
             if (this.directory == null || force)
             {
                 var uri = serverUri;
-                var resp = await this.Get<Resource.Directory>(uri);
+                var resp = await this.Get<AcmeDirectory>(uri);
                 this.directory = resp.Data;
             }
         }
@@ -159,13 +160,15 @@ namespace Certes.Acme
             var body = Encode(entity, keyPair, nonce);
             var bodyJson = JsonConvert.SerializeObject(body, Formatting.None, jsonSettings);
 
-            return new StringContent(bodyJson, Encoding.ASCII, MimeJson);
+            return new StringContent(bodyJson, Encoding.UTF8, MimeJson);
         }
 
-        private async Task<AcmeRespone<T>> ReadResponse<T>(HttpResponseMessage response, string resourceType = null)
+        private async Task<AcmeResponse<T>> ReadResponse<T>(HttpResponseMessage response, string resourceType = null)
         {
-            var data = new AcmeRespone<T>();
-            if (IsJsonMedia(response.Content?.Headers.ContentType.MediaType))
+            var data = new AcmeResponse<T>();
+
+            ParseHeaders(data, response);
+            if (IsJsonMedia(response.Content?.Headers.ContentType?.MediaType))
             {
                 var json = await response.Content.ReadAsStringAsync();
                 data.Json = json;
@@ -182,18 +185,21 @@ namespace Certes.Acme
                 {
                     data.Error = JsonConvert.DeserializeObject<AcmeError>(json, jsonSettings);
                 }
+
+                // take the replay-nonce from JOSN response
+                // it appears the nonces returned with certificate are invalid
+                nonce = data.ReplayNonce;
             }
             else if (response.Content?.Headers.ContentLength > 0)
             {
                 data.Raw = await response.Content.ReadAsByteArrayAsync();
             }
 
-            ParseHeaders(data, response);
-            this.nonce = data.ReplayNonce;
+            data.HttpStatus = response.StatusCode;
             return data;
         }
 
-        private static void ParseHeaders<T>(AcmeRespone<T> data, HttpResponseMessage response)
+        private static void ParseHeaders<T>(AcmeResponse<T> data, HttpResponseMessage response)
         {
             data.Location = response.Headers.Location;
 
@@ -231,7 +237,7 @@ namespace Certes.Acme
                     .ToArray();
             }
 
-            data.ContentType = response.Content?.Headers.ContentType.MediaType;
+            data.ContentType = response.Content?.Headers.ContentType?.MediaType;
         }
 
         private static bool IsJsonMedia(string mediaType)
@@ -274,7 +280,7 @@ namespace Certes.Acme
                 {
                     http?.Dispose();
                 }
-                
+
                 disposedValue = true;
             }
         }

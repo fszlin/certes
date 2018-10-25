@@ -1,34 +1,61 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../misc/certes.props" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp2.0;netcoreapp1.0</TargetFrameworks>
-    <AssemblyName>dotnet-acme</AssemblyName>
-    <Version>1.0.0</Version>
+    <TargetFrameworks>netcoreapp1.0;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CertesVersion)' != ''">netcoreapp2.1</TargetFrameworks>
+    <AssemblyVersion>1.0.4</AssemblyVersion>
+    <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
+    <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
+    <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
     <Authors>Certes Contributors</Authors>
     <Company />
-    <Product>CLI for Certes</Product>
-    <Description>CLI for Certes</Description>
-    <PackageType>DotnetCliTool</PackageType>
+    <Product>Certes ACME Client CLI</Product>
+    <Description>Dotnet tool for Automated Certificate Management Environment (ACME) protocol, powered by Certes.</Description>
+    <PackageType>DotnetTool</PackageType>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate</PackageTags>
+    <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate;dotnettool</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
-    <PackageId>Certes.Cli</PackageId>
+    <PackageId>dotnet-certes</PackageId>
+    <PackageIconUrl>https://raw.githubusercontent.com/fszlin/certes/master/misc/logo.png</PackageIconUrl>
+    <PackAsTool Condition="'$(CertesVersion)' != ''">true</PackAsTool>
+    <ToolCommandName>certes</ToolCommandName>
+    <AssemblyName>dotnet-certes</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
-    <Compile Include="..\..\external\src\**\*.cs" />
-    <EmbeddedResource Include="..\..\external\src\**\*.resx" />
+    <Compile Include="..\..\misc\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.8.1" />
+    <PackageReference Include="NLog" Version="4.5.7" PrivateAssets="all" />
+    <PackageReference Include="System.CommandLine" Version="0.1.0-*" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.13.0" />
+    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.13.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Certes\Certes.csproj" />
   </ItemGroup>
 
-  <Import Project="../../common.props" />
+  <ItemGroup>
+    <Compile Update="Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <DebugType>Full</DebugType>

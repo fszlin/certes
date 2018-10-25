@@ -9,14 +9,14 @@ namespace Certes.Pkcs
         public void ToJwsAlgorithmInvalid()
         {
             Assert.Throws<ArgumentException>(() =>
-                ((SignatureAlgorithm)1000).ToJwsAlgorithm());
+                ((KeyAlgorithm)1000).ToJwsAlgorithm());
         }
 
         [Fact]
         public void ToPkcsObjectIdInvalid()
         {
             Assert.Null(
-                ((SignatureAlgorithm)1000).ToPkcsObjectId());
+                ((KeyAlgorithm)1000).ToPkcsObjectId());
         }
     }
 }

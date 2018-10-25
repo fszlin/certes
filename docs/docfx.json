@@ -1,0 +1,74 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [
+            "src/Certes/**.csproj"
+          ],
+          "src": "../"
+        }
+      ],
+      "dest": "api/certes",
+      "properties": {
+        "TargetFramework": "netstandard2.0"
+      },
+      "disableGitFeatures": false
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "api/**.yml",
+          "api/topics/**.md"
+        ]
+      },
+      {
+        "files": [
+          "toc.yml",
+          "*.md"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**"
+        ]
+      }
+    ],
+    "overwrite": "api/spec/*.md",
+    "globalMetadata": {
+      "_appTitle": "Certes",
+      "_appName": "Certes",
+      "_gitContribute": {
+        "repo": "https://github.com/fszlin/certes",
+        "branch": "master",
+        "apiSpecFolder": "docs/api/spec"
+      },
+      "_appLogoPath": "images/logo.svg",
+      "_appFaviconPath": "images/favicon.ico",
+      "_appFooter": "&copy; 2018 <a class=\"text-white\" href=\"https://github.com/fszlin/certes\">Certes</a> Project"
+    },
+    "dest": "_site",
+    "globalMetadataFiles": [],
+    "fileMetadataFiles": [],
+    "template": [
+      "default",
+      "docstrap/tmpl"
+    ],
+    "postProcessors": [],
+    "markdownEngineName": "markdig",
+    "noLangKeyword": false,
+    "keepFileLink": false,
+    "cleanupCacheHistory": false,
+    "disableGitFeatures": false,
+    "xrefService": [
+      "https://xref.docs.microsoft.com/query?uid={uid}"
+    ],
+    "sitemap": {
+      "baseUrl": "https://docs.certes.app/"
+    }
+  }
+}

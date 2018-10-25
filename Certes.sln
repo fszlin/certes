@@ -1,15 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{E9E7371E-AB81-4ECF-9684-2ACB1EF7FF67}"
 	ProjectSection(SolutionItems) = preProject
+		docs\APIv2.md = docs\APIv2.md
 		docs\CHANGELOG.md = docs\CHANGELOG.md
-		docs\CODE_OF_CONDUCT.md = docs\CODE_OF_CONDUCT.md
 		docs\implementation-status.md = docs\implementation-status.md
 		LICENSE = LICENSE
 		docs\README.md = docs\README.md
+		docs\README.v1.md = docs\README.v1.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7B11358C-CCDB-4A64-8CAF-9AA29AFD7DE3}"
@@ -18,10 +19,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{556F2BFB-D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E420B696-0E51-40E1-B534-96E66C2C27F5}"
 	ProjectSection(SolutionItems) = preProject
+		.appveyor.yml = .appveyor.yml
+		.bettercodehub.yml = .bettercodehub.yml
+		.codecov.yml = .codecov.yml
+		.editorconfig = .editorconfig
 		.travis.yml = .travis.yml
-		appveyor.yml = appveyor.yml
-		codecov.yml = codecov.yml
-		common.props = common.props
+		misc\certes.props = misc\certes.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Certes", "src\Certes\Certes.csproj", "{7AA85BF4-2A4F-42C8-A107-82B22C640C4E}"
@@ -30,7 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Certes.Cli", "src\Certes.Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Certes.Tests", "test\Certes.Tests\Certes.Tests.csproj", "{67194186-A678-40D3-BEB2-A5572539C423}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Certes.Tests.Web", "test\Certes.Tests.Web\Certes.Tests.Web.csproj", "{DB1230D1-3C6C-4E86-BED0-64FCDEA91F8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Certes.Tests.Web", "test\Certes.Tests.Web\Certes.Tests.Web.csproj", "{38D99EC8-967B-495D-AE33-18FAF4DAE161}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Certes.Tests.Integration", "test\Certes.Tests.Integration\Certes.Tests.Integration.csproj", "{741DD8E1-DDCB-4D34-9E65-FEE6AC861022}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vsts", "vsts", "{BA323DC5-E936-4BC8-B15D-4BB87162E1FC}"
 EndProject
@@ -62,6 +67,14 @@ Global
 		{A03C4706-BD9B-4E27-B094-E915BC8AFA10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A03C4706-BD9B-4E27-B094-E915BC8AFA10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A03C4706-BD9B-4E27-B094-E915BC8AFA10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38D99EC8-967B-495D-AE33-18FAF4DAE161}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38D99EC8-967B-495D-AE33-18FAF4DAE161}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38D99EC8-967B-495D-AE33-18FAF4DAE161}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38D99EC8-967B-495D-AE33-18FAF4DAE161}.Release|Any CPU.Build.0 = Release|Any CPU
+		{741DD8E1-DDCB-4D34-9E65-FEE6AC861022}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{741DD8E1-DDCB-4D34-9E65-FEE6AC861022}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{741DD8E1-DDCB-4D34-9E65-FEE6AC861022}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{741DD8E1-DDCB-4D34-9E65-FEE6AC861022}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,6 +83,8 @@ Global
 		{7AA85BF4-2A4F-42C8-A107-82B22C640C4E} = {7B11358C-CCDB-4A64-8CAF-9AA29AFD7DE3}
 		{B416791A-F073-446B-87B8-0D63049DB1A8} = {7B11358C-CCDB-4A64-8CAF-9AA29AFD7DE3}
 		{67194186-A678-40D3-BEB2-A5572539C423} = {556F2BFB-DE9B-4673-BADC-63C365DA2A55}
+		{38D99EC8-967B-495D-AE33-18FAF4DAE161} = {556F2BFB-DE9B-4673-BADC-63C365DA2A55}
+		{741DD8E1-DDCB-4D34-9E65-FEE6AC861022} = {556F2BFB-DE9B-4673-BADC-63C365DA2A55}
 		{DB1230D1-3C6C-4E86-BED0-64FCDEA91F8D} = {556F2BFB-DE9B-4673-BADC-63C365DA2A55}
 		{A03C4706-BD9B-4E27-B094-E915BC8AFA10} = {BA323DC5-E936-4BC8-B15D-4BB87162E1FC}
 	EndGlobalSection

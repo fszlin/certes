@@ -247,6 +247,9 @@ build/
 .certes/
 data.json
 gh-pages/
+launchSettings.json
+local.settings.json
+.vscode/
 .taskkey
 .nyc_output/
 coverage

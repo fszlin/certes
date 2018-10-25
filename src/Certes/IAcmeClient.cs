@@ -23,35 +23,35 @@ namespace Certes
         /// </summary>
         /// <param name="authChallenge">The authentication challenge.</param>
         /// <returns>The challenge updated.</returns>
-        Task<AcmeResult<Challenge>> CompleteChallenge(Challenge authChallenge);
+        Task<AcmeResult<ChallengeEntity>> CompleteChallenge(ChallengeEntity authChallenge);
 
         /// <summary>
         /// Computes the DNS value for the <paramref name="challenge"/>.
         /// </summary>
         /// <param name="challenge">The challenge.</param>
         /// <returns>The value for the text DNS record.</returns>
-        string ComputeDnsValue(Challenge challenge);
+        string ComputeDnsValue(ChallengeEntity challenge);
 
         /// <summary>
         /// Computes the key authorization string for <paramref name="challenge"/>.
         /// </summary>
         /// <param name="challenge">The challenge.</param>
         /// <returns>The key authorization string.</returns>
-        string ComputeKeyAuthorization(Challenge challenge);
+        string ComputeKeyAuthorization(ChallengeEntity challenge);
 
         /// <summary>
         /// Gets the authorization from <paramref name="location"/>.
         /// </summary>
         /// <param name="location">The authorization location URI.</param>
         /// <returns>The authorization retrieved.</returns>
-        Task<AcmeResult<Authorization>> GetAuthorization(Uri location);
+        Task<AcmeResult<AuthorizationEntity>> GetAuthorization(Uri location);
 
         /// <summary>
         /// Create a new authorization.
         /// </summary>
         /// <param name="identifier">The identifier to be authorized.</param>
         /// <returns>The authorization created.</returns>
-        Task<AcmeResult<Authorization>> NewAuthorization(AuthorizationIdentifier identifier);
+        Task<AcmeResult<AuthorizationEntity>> NewAuthorization(AuthorizationIdentifier identifier);
 
         /// <summary>
         /// Creates a new certificate.

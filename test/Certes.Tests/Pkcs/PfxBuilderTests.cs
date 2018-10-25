@@ -1,26 +1,40 @@
 ﻿using System.IO;
+using System.Text;
 using System.Threading.Tasks;
-using Certes.Jws;
 using Xunit;
 
 namespace Certes.Pkcs
 {
+    [Collection(nameof(Helper.GetValidCert))]
     public class PfxBuilderTests
     {
         [Theory]
-        [InlineData(SignatureAlgorithm.RS256)]
-        [InlineData(SignatureAlgorithm.ES256)]
-        [InlineData(SignatureAlgorithm.ES384)]
-        [InlineData(SignatureAlgorithm.ES512)]
-        public async Task CanCreatePfxChain(SignatureAlgorithm alog)
+        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES384)]
+        [InlineData(KeyAlgorithm.ES512)]
+        public async Task CanCreatePfxChain(KeyAlgorithm alog)
         {
-            await Task.Yield();
-            var leafCert = File.ReadAllBytes("./Data/leaf-cert.cer");
+            var (cert, key) = await Helper.GetValidCert();
 
-            var pfxBuilder = new PfxBuilder(leafCert, new AccountKey(alog).Export());
+            var pfxBuilder = new PfxBuilder(
+                Encoding.UTF8.GetBytes(cert), KeyFactory.NewKey(alog));
+            pfxBuilder.AddIssuers(Encoding.UTF8.GetBytes(cert));
+            var pfx = pfxBuilder.Build("my-cert", "abcd1234");
+        }
 
-            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-ca2.cer"));
-            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.cer"));
+        [Theory]
+        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES384)]
+        [InlineData(KeyAlgorithm.ES512)]
+        public void CanCreatePfxWithoutChain(KeyAlgorithm alog)
+        {
+            var leafCert = File.ReadAllText("./Data/leaf-cert.pem");
+
+            var pfxBuilder = new PfxBuilder(
+                Encoding.UTF8.GetBytes(leafCert), KeyFactory.NewKey(alog));
+            pfxBuilder.FullChain = false;
             var pfx = pfxBuilder.Build("my-cert", "abcd1234");
         }
     }

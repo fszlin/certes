@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Certes.Crypto;
 using Certes.Pkcs;
 
@@ -11,22 +10,19 @@ namespace Certes.Jws
     /// <seealso cref="Certes.Jws.IAccountKey" />
     public class AccountKey : IAccountKey
     {
-        private static readonly SignatureAlgorithmProvider signatureAlgorithmProvider = new SignatureAlgorithmProvider();
+        private static readonly KeyAlgorithmProvider keyAlgorithmProvider = new KeyAlgorithmProvider();
         
         private JsonWebKey jwk;
-        private readonly ISignatureAlgorithm signatureAlgorithm;
-        private readonly ISignatureKey signatureKey;
         private readonly ISigner signer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountKey"/> class.
         /// </summary>
         /// <param name="algorithm">The JWS signature algorithm.</param>
-        public AccountKey(SignatureAlgorithm algorithm = SignatureAlgorithm.RS256)
+        public AccountKey(KeyAlgorithm algorithm = KeyAlgorithm.ES256)
         {
-            signatureAlgorithm = signatureAlgorithmProvider.Get(algorithm);
-            signatureKey = signatureAlgorithm.GenerateKey();
-            signer = signatureAlgorithm.CreateSigner(signatureKey);
+            SignatureKey = KeyFactory.NewKey(algorithm);
+            signer = SignatureKey.GetSigner();
         }
 
         /// <summary>
@@ -35,7 +31,7 @@ namespace Certes.Jws
         /// <param name="keyInfo">The key information.</param>
         /// <exception cref="ArgumentNullException">keyInfo</exception>
         /// <exception cref="NotSupportedException">
-        /// If the provided key is not one of the supported <seealso cref="SignatureAlgorithm" />.
+        /// If the provided key is not one of the supported <seealso cref="KeyAlgorithm" />.
         /// </exception>
         public AccountKey(KeyInfo keyInfo)
         {
@@ -44,13 +40,8 @@ namespace Certes.Jws
                 throw new ArgumentNullException(nameof(keyInfo));
             }
 
-            using (var buffer = new MemoryStream(keyInfo.PrivateKeyInfo))
-            {
-                signatureKey = signatureAlgorithmProvider.GetKey(buffer);
-            }
-
-            signatureAlgorithm = signatureAlgorithmProvider.Get(signatureKey.Algorithm);
-            signer = signatureAlgorithm.CreateSigner(signatureKey);
+            SignatureKey = KeyFactory.FromDer(keyInfo.PrivateKeyInfo);
+            signer = SignatureKey.GetSigner();
         }
 
         /// <summary>
@@ -59,11 +50,11 @@ namespace Certes.Jws
         /// <value>
         /// The signing algorithm.
         /// </value>
-        public SignatureAlgorithm Algorithm
+        public KeyAlgorithm Algorithm
         {
             get
             {
-                return signatureKey.Algorithm;
+                return SignatureKey.Algorithm;
             }
         }
 
@@ -82,7 +73,15 @@ namespace Certes.Jws
         /// <value>
         /// The JSON web key.
         /// </value>
-        public JsonWebKey JsonWebKey => jwk ?? (jwk = signatureKey.JsonWebKey);
+        public JsonWebKey JsonWebKey => jwk ?? (jwk = SignatureKey.JsonWebKey);
+
+        /// <summary>
+        /// Gets the signature key.
+        /// </summary>
+        /// <value>
+        /// The signature key.
+        /// </value>
+        public IKey SignatureKey { get; private set; }
 
         /// <summary>
         /// Computes the hash for given data.
@@ -104,14 +103,10 @@ namespace Certes.Jws
         /// <returns>The key pair.</returns>
         public KeyInfo Export()
         {
-            using (var buffer = new MemoryStream())
+            return new KeyInfo
             {
-                signatureKey.Save(buffer);
-                return new KeyInfo
-                {
-                    PrivateKeyInfo = buffer.ToArray()
-                };
-            }   
+                PrivateKeyInfo = SignatureKey.ToDer()
+            };
         }
     }
 }

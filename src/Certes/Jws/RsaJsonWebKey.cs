@@ -2,6 +2,10 @@
 
 namespace Certes.Jws
 {
+    /// <summary>
+    /// Represents a JWK using RSA.
+    /// </summary>
+    /// <seealso cref="Certes.Jws.JsonWebKey" />
     internal class RsaJsonWebKey : JsonWebKey
     {
         /// <summary>

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Text;
+using Certes.Crypto;
 using Certes.Json;
 using Certes.Pkcs;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Security;
 
 namespace Certes.Jws
 {
@@ -17,7 +19,7 @@ namespace Certes.Jws
         /// <value>
         /// The signing algorithm.
         /// </value>
-        SignatureAlgorithm Algorithm { get; }
+        KeyAlgorithm Algorithm { get; }
 
         /// <summary>
         /// Signs the data.
@@ -51,6 +53,14 @@ namespace Certes.Jws
         JsonWebKey JsonWebKey { get; }
 
         /// <summary>
+        /// Gets the signature key.
+        /// </summary>
+        /// <value>
+        /// The signature key.
+        /// </value>
+        IKey SignatureKey { get; }
+
+        /// <summary>
         /// Exports the key pair.
         /// </summary>
         /// <returns>The key pair.</returns>
@@ -69,15 +79,21 @@ namespace Certes.Jws
         /// </summary>
         /// <param name="key">The account key.</param>
         /// <returns>The thumbprint.</returns>
-        public static byte[] GenerateThumbprint(this IAccountKey key)
-        {
-            var jwk = key.JsonWebKey;
-            var json = JsonConvert.SerializeObject(jwk, Formatting.None, thumbprintSettings);
-            var bytes = Encoding.UTF8.GetBytes(json);
-            var hashed = key.ComputeHash(bytes);
+        public static byte[] GenerateThumbprint(this IAccountKey key) => key.GenerateThumbprint();
 
-            return hashed;
-        }
-        
+        /// <summary>
+        /// Generates the base64 encoded thumbprint for the given account <paramref name="key"/>.
+        /// </summary>
+        /// <param name="key">The account key.</param>
+        /// <returns>The thumbprint.</returns>
+        public static string Thumbprint(this IAccountKey key) => key.SignatureKey.Thumbprint();
+
+        /// <summary>
+        /// Generates key authorization string.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="token">The challenge token.</param>
+        /// <returns></returns>
+        public static string KeyAuthorization(this IAccountKey key, string token) => $"{token}.{key.Thumbprint()}";
     }
 }

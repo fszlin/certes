@@ -9,7 +9,7 @@ namespace Certes.Crypto
         [Fact]
         public void CtorNull()
         {
-            Assert.Throws<ArgumentNullException>(() => new AsymmetricCipherSignatureKey(SignatureAlgorithm.ES256, null));
+            Assert.Throws<ArgumentNullException>(() => new AsymmetricCipherKey(KeyAlgorithm.ES256, null));
         }
     }
 }

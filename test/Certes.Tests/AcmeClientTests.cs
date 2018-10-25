@@ -1,17 +1,17 @@
-﻿using Certes.Acme;
-using Certes.Acme.Resource;
+﻿using System;
+using System.Net;
+using System.Net.Http;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Certes.Acme;
 using Certes.Json;
 using Certes.Jws;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Certes
@@ -24,20 +24,20 @@ namespace Certes
         private readonly Uri server = new Uri("http://example.com/dir");
         private readonly Uri tos = new Uri("http://example.com/tos");
 
-        private readonly Directory acmeDir = Helper.AcmeDir;
+        private readonly AcmeDirectory acmeDir = Helper.MockDirectoryV1;
 
         private int nonce = 0;
 
         [Fact]
         public async Task CanCreateRegistration()
         {
-            var accountKey = await Helper.Loadkey();
+            var accountKey = await Helper.LoadkeyV1();
             var regLocation = new Uri("http://example.com/reg/1");
             var mock = MockHttp(async req =>
             {
                 if (req.Method == HttpMethod.Post && req.RequestUri == acmeDir.NewReg)
                 {
-                    var payload = await ParsePayload<Registration>(req);
+                    var payload = await ParsePayload<RegistrationEntity>(req);
                     Assert.Equal(ResourceTypes.NewRegistration, payload.Resource);
                     Assert.Equal(1, payload.Contact?.Count);
                     Assert.Equal(email, payload.Contact[0]);
@@ -78,13 +78,13 @@ namespace Certes
         [Fact]
         public async Task CanDeleteRegistration()
         {
-            var accountKey = await Helper.Loadkey();
+            var accountKey = await Helper.LoadkeyV1();
             var regLocation = new Uri("http://example.com/reg/1");
             var mock = MockHttp(async req =>
             {
                 if (req.Method == HttpMethod.Post && req.RequestUri == regLocation)
                 {
-                    var payload = await ParsePayload<Registration>(req);
+                    var payload = await ParsePayload<RegistrationEntity>(req);
                     Assert.Equal(ResourceTypes.Registration, payload.Resource);
                     Assert.True(payload.Delete);
 
@@ -104,7 +104,7 @@ namespace Certes
                     var account = new AcmeAccount
                     {
                         Location = regLocation,
-                        Data = new Registration
+                        Data = new RegistrationEntity
                         {
                             Resource = ResourceTypes.Registration,
                             Contact = new[] { $"another-{email}" },
@@ -132,13 +132,13 @@ namespace Certes
         [Fact]
         public async Task CanUpdateRegistration()
         {
-            var accountKey = await Helper.Loadkey();
+            var accountKey = await Helper.LoadkeyV1();
             var regLocation = new Uri("http://example.com/reg/1");
             var mock = MockHttp(async req =>
             {
                 if (req.Method == HttpMethod.Post && req.RequestUri == regLocation)
                 {
-                    var payload = await ParsePayload<Registration>(req);
+                    var payload = await ParsePayload<RegistrationEntity>(req);
                     Assert.Equal(ResourceTypes.Registration, payload.Resource);
                     Assert.Equal(1, payload.Contact?.Count);
                     Assert.Equal($"another-{email}", payload.Contact[0]);
@@ -169,7 +169,7 @@ namespace Certes
                     var account = new AcmeAccount
                     {
                         Location = regLocation,
-                        Data = new Registration
+                        Data = new RegistrationEntity
                         {
                             Resource = ResourceTypes.Registration,
                             Contact = new[] { $"another-{email}" },
@@ -187,9 +187,150 @@ namespace Certes
             }
         }
 
+        [Fact]
+        public void CanCreateWithUri()
+        {
+            var uri = WellKnownServers.LetsEncryptStaging;
+
+            using (var client = new AcmeClient(uri))
+            {
+                var type = typeof(AcmeClient).GetTypeInfo();
+                var field = type.GetField("shouldDisposeHander", BindingFlags.NonPublic | BindingFlags.Instance);
+                Assert.True((bool)field.GetValue(client));
+                Assert.NotNull(client.HttpHandler);
+
+                Assert.Equal(uri, client.HttpHandler.ServerUri);
+            }
+        }
+
+        [Fact]
+        public async Task CanHandlerxistingAuthorization()
+        {
+            var accountKey = await Helper.LoadkeyV1();
+            var authzUri = new Uri("http://example.com/new-authz");
+            var authzLoc = new Uri("http://example.com/authz/111");
+            var mock = MockHttp(async req =>
+            {
+                if (req.Method == HttpMethod.Post && req.RequestUri == authzUri)
+                {
+                    var payload = await ParsePayload<AuthorizationEntity>(req);
+                    return CreateResponse(null, HttpStatusCode.SeeOther, authzLoc);
+                }
+
+                if (req.Method == HttpMethod.Get && req.RequestUri == authzLoc)
+                {
+                    return CreateResponse(new AuthorizationEntity
+                    {
+                        Identifier = new AuthorizationIdentifier
+                        {
+                            Type = AuthorizationIdentifierTypes.Dns,
+                            Value = "www.example.com",
+                        },
+                        Status = EntityStatus.Pending,
+                    }, HttpStatusCode.OK, authzLoc);
+                }
+
+                return null;
+            });
+
+            using (var http = new HttpClient(mock.Object))
+            using (var handler = new AcmeHttpHandler(server, http))
+            {
+                using (var client = new AcmeClient(handler))
+                {
+                    client.Use(accountKey.Export());
+
+                    var authz = await client.NewAuthorization(new AuthorizationIdentifier
+                    {
+                        Type = AuthorizationIdentifierTypes.Dns,
+                        Value = "www.example.com"
+                    });
+
+                    Assert.NotNull(authz);
+                    Assert.Equal(authzLoc, authz.Location);
+                }
+
+                mock.Protected().Verify("Dispose", Times.Never(), true);
+            }
+        }
+
+        [Fact]
+        public async Task CanNewRegistraton()
+        {
+            var accountKey = await Helper.LoadkeyV1();
+            var contacts = new string[] { "mailto:user@example.com" };
+            var regLocation = new Uri("http://example.com/reg/1");
+            var mock = MockHttp(async req =>
+            {
+                if (req.Method == HttpMethod.Post && req.RequestUri == Helper.MockDirectoryV1.NewReg)
+                {
+                    var payload = await ParsePayload<RegistrationEntity>(req);
+                    Assert.Equal(ResourceTypes.NewRegistration, payload.Resource);
+                    Assert.Equal(contacts.Clone(), payload.Contact);
+
+                    var respJson = new
+                    {
+                        contact = payload.Contact,
+                        agreement = payload.Agreement,
+                        resource = ResourceTypes.Registration
+                    };
+
+                    var resp = CreateResponse(respJson, HttpStatusCode.Created, regLocation);
+                    resp.Headers.Add("Link", $"<{tos}>; rel=\"terms-of-service\"");
+                    return resp;
+                }
+
+                return null;
+            });
+
+            using (var http = new HttpClient(mock.Object))
+            using (var handler = new AcmeHttpHandler(server, http))
+            {
+                using (var client = new AcmeClient(handler))
+                {
+                    client.Use(accountKey.Export());
+                    var result = await client.NewRegistraton(contacts);
+                    Assert.Equal(ResourceTypes.Registration, result.Data.Resource);
+                    Assert.Equal(regLocation, result.Location);
+                }
+
+                mock.Protected().Verify("Dispose", Times.Never(), true);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldFailWhenNewAuthorizationWithoutAccount()
+        {
+            using (var client = new AcmeClient(WellKnownServers.LetsEncryptStaging))
+            {
+                await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => client.NewAuthorization(new AuthorizationIdentifier()));
+            }
+        }
+
+        [Fact]
+        public async Task ShouldFailWhenUpdateRegistrationWithoutAccount()
+        {
+            using (var client = new AcmeClient(WellKnownServers.LetsEncryptStaging))
+            {
+                await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => client.UpdateRegistration(new AcmeAccount()));
+            }
+        }
+
+        [Fact]
+        public async Task ShouldFailWhenCompleteChallengeWithoutAccount()
+        {
+            using (var client = new AcmeClient(WellKnownServers.LetsEncryptStaging))
+            {
+                await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => client.CompleteChallenge(new ChallengeEntity()));
+            }
+        }
+
         private async Task<T> ParsePayload<T>(HttpRequestMessage message)
         {
-            var accountKey = await Helper.Loadkey();
+            var accountKey = await Helper.LoadkeyV1();
             var content = message.Content;
             Assert.Equal(JsonContentType, content.Headers.ContentType.MediaType);
 
@@ -205,7 +346,7 @@ namespace Certes
             var payloadJson = Encoding.UTF8.GetString(JwsConvert.FromBase64String(payloadBase64));
 
             var signature = $"{protectedBase64}.{payloadBase64}";
-            var signatureBytes = Encoding.ASCII.GetBytes(signature);
+            var signatureBytes = Encoding.UTF8.GetBytes(signature);
             var signedSignatureBytes = accountKey.SignData(signatureBytes);
             var signedSignatureEncoded = JwsConvert.ToBase64String(signedSignatureBytes);
 
@@ -216,7 +357,7 @@ namespace Certes
 
         private Mock<HttpMessageHandler> MockHttp(Func<HttpRequestMessage, Task<HttpResponseMessage>> provider)
         {
-            var mock = new Mock<HttpMessageHandler>();
+            var mock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
 
             mock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
@@ -240,6 +381,8 @@ namespace Certes
                     }
                 });
 
+            mock.Protected().Setup("Dispose", true);
+
             return mock;
         }
 
@@ -247,6 +390,7 @@ namespace Certes
         {
             var resp = new HttpResponseMessage();
             resp.Headers.Location = location;
+            resp.StatusCode = statusCode;
             if (payload != null)
             {
                 resp.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, JsonContentType);

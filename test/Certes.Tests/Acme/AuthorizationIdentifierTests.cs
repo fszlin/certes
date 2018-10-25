@@ -33,6 +33,29 @@ namespace Certes.Acme
 
             Assert.False(i1.Equals((object)i3));
             Assert.False(i1.Equals(i3));
+
+            var i4 = new AuthorizationIdentifier
+            {
+                Value = "www.example.com"
+            };
+
+            Assert.NotEqual(i4.GetHashCode(), i1.GetHashCode());
+            Assert.False(i4.Equals(i1));
+
+            var i5 = new AuthorizationIdentifier
+            {
+                Type = "other",
+            };
+
+            Assert.NotEqual(i5.GetHashCode(), i1.GetHashCode());
+            Assert.False(i5.Equals(i1));
+
+            var i6 = new AuthorizationIdentifier
+            {
+            };
+
+            Assert.NotEqual(i6.GetHashCode(), i1.GetHashCode());
+            Assert.False(i6.Equals(i1));
         }
 
         [Fact]

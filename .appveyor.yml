@@ -1,0 +1,126 @@
+version: 2.3.1.{build}
+build:
+  verbosity: minimal
+  project: Certes.sln
+
+skip_tags: true
+image: Visual Studio 2017
+
+skip_commits:
+  files:
+  - '*.md'
+  #- '*.yml'
+
+clone_depth: 1  
+nuget:  
+  disable_publish_on_pr: true
+
+environment:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOCFX_SOURCE_BRANCH_NAME: master
+  GITHUB_ACCESS_TOKEN:
+    secure: MZeiiHM6tnTZKRr0x2MsNUK/kOjSKNMZd/48f2uBs8j5bge+JygXE+flTSI16yxC
+
+cache:
+
+branches:
+  # whitelist
+  only:
+    - master
+    - preview
+    - beta
+    - release
+
+init:
+  - git config --global core.autocrlf input
+
+before_build:
+  - ps: New-Item build -Type directory -Force | Out-Null
+  - cmd: dotnet restore
+
+build_script:
+  - msbuild -p:DebugType=Full -v:m
+  - msbuild -t:src\Certes:pack -p:DebugType=Full -v:m
+  - msbuild -t:src\Certes_Cli:Publish -p:TargetFramework=netcoreapp1.0 -p:DebugType=Full -v:m
+  # dotnet tool
+  - ps: Copy-Item ./misc/NuGet-tool.config ./src/Certes.Cli/NuGet.config
+  - ps: $env:CERTES_PACKAGE_VERSION = (Get-ChildItem ./src/Certes/bin/$($env:CONFIGURATION)/*.nupkg  | Select-Object -ExpandProperty Name).Replace('Certes.', '').Replace('.nupkg', '')
+  - ps: dotnet pack src\Certes.Cli\Certes.Cli.csproj -c $($env:CONFIGURATION) -property:CertesVersion=$($env:CERTES_PACKAGE_VERSION)
+  # move packages
+  - ps: Get-ChildItem -Path "./src/**/*.nupkg" -Recurse | Move-Item -Destination "./build"
+  - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
+  - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
+
+#test: off
+before_test:
+
+test_script:
+  - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
+  - ps: cd test/Certes.Tests
+  - ps: >-
+      & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:xunit -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4" "-oldstyle" "-output:./../../build/Certes.Tests.coverage.xml" "-filter:+[*]Certes.* -[*Tests*]*" "-hideskipped:All" "-returntargetcode"
+  - ps: cd $env:APPVEYOR_BUILD_FOLDER
+  - ps: cd test/Certes.Tests.Integration
+  - ps: >-
+      & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:xunit -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4" "-oldstyle" "-output:./../../build/Certes.Tests.Integration.coverage.xml" "-filter:+[*]Certes.* -[*Tests*]*" "-hideskipped:All" "-returntargetcode"
+  - ps: cd $env:APPVEYOR_BUILD_FOLDER
+
+after_test:
+  - npm install codecov -g -q
+  - codecov -f "./build/Certes.Tests.coverage.xml" -F unit > $null
+  - codecov -f "./build/Certes.Tests.Integration.coverage.xml" -F integration > $null
+
+on_success:
+  # gh-pages
+  - ps: |
+        If (-Not $env:APPVEYOR_PULL_REQUEST_TITLE -And $env:APPVEYOR_REPO_BRANCH -Eq "master")
+        {
+          git clone -q --depth=1 https://github.com/fszlin/docstrap.git docs/docstrap
+          choco install docfx -y
+          docfx docs/docfx.json
+          git config --global core.autocrlf false
+          git config --global credential.helper store
+          git config --global user.email $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL
+          git config --global user.name $env:APPVEYOR_REPO_COMMIT_AUTHOR
+          Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GITHUB_ACCESS_TOKEN):x-oauth-basic@github.com`n"
+          git clone https://github.com/fszlin/certes.git -b gh-pages gh-pages -q
+          Copy-Item ./docs/_site/* ./gh-pages/ -Recurse -Container -Force
+          cd gh-pages
+          git add -A 2>&1
+          git commit -m $env:APPVEYOR_REPO_COMMIT_MESSAGE -q
+          git push origin gh-pages -q
+          cd $env:APPVEYOR_BUILD_FOLDER
+        }
+
+configuration: Release
+
+artifacts:
+    - path: build/*.nupkg
+      name: nupkg
+      
+    - path: build/certes-cli.zip
+      name: cli
+
+deploy:
+  - provider: GitHub
+    release: v$(CERTES_PACKAGE_VERSION)
+    description: 'Certes v$(CERTES_PACKAGE_VERSION)'
+    auth_token:
+      secure: B+lTI7i/tnZeg1ZSmho3HvOWjs0C4hptNy5cvWgF0Nn7b6v8nwT/mxEWVCfIJ7Fy
+    artifact: nupkg,cli
+    draft: false
+    prerelease: false
+    on:
+      branch: release
+
+  - provider: NuGet
+    server: https://www.myget.org/F/certes/api/v2/package
+    api_key:
+      secure: RSdqUIwRSn8DI5xaa4iWBzOtYU6y3K9JRh07myQpAIRf5IhlwsZpFsnQOpCg1g7J
+    skip_symbols: true
+    symbol_server:
+    artifact: nupkg
+    on:
+      branch:
+        - master

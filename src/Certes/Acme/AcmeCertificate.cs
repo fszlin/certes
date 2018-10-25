@@ -1,10 +1,11 @@
-﻿using Certes.Pkcs;
-using System;
+﻿using System;
+using Certes.Pkcs;
+using Certes.Properties;
 
 namespace Certes.Acme
 {
     /// <summary>
-    /// Represents a ACME <see cref="Certificate"/>.
+    /// Represents a ACME <see cref="CertificateEntity"/>.
     /// </summary>
     public class AcmeCertificate : KeyedAcmeResult<string>
     {
@@ -38,9 +39,10 @@ namespace Certes.Acme
         /// <exception cref="System.Exception">If the certificate data is missing.</exception>
         public static PfxBuilder ToPfx(this AcmeCertificate cert)
         {
-            if (cert?.Raw == null)
+            if ((cert ?? throw new ArgumentNullException(nameof(cert))).Raw == null)
             {
-                throw new Exception($"Certificate data missing, please fetch the certificate from ${cert.Location}");
+                throw new AcmeException(
+                    string.Format(Strings.ErrorMissingCertificateData, cert.Location));
             }
 
             var pfxBuilder = new PfxBuilder(cert.Raw, cert.Key);
