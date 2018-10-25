@@ -67,11 +67,15 @@
 <h2 id="232---2018-10-20"><a href="https://github.com/fszlin/certes/compare/v2.3.1...v2.3.2">2.3.2</a> - 2018-10-20</h2>
 <h3 id="changed">Changed</h3>
 <ul>
+<li>Implement <code>POST-as-GET</code> for loading ACME resources</li>
+</ul>
+<h3 id="changed-1">Changed</h3>
+<ul>
 <li>Fix account key roll-over missing old key field (<a href="https://github.com/fszlin/certes/issues/154">#154</a>)</li>
 <li>Update TLS-ALPN OID as <a href="https://tools.ietf.org/html/draft-ietf-acme-tls-alpn-03">draft-03</a></li>
 </ul>
 <h2 id="231---2018-10-16"><a href="https://github.com/fszlin/certes/compare/v2.3.0...v2.3.1">2.3.1</a> - 2018-10-16</h2>
-<h3 id="changed-1">Changed</h3>
+<h3 id="changed-2">Changed</h3>
 <ul>
 <li>Remove package reference to <code>System.Net.Http</code> (<a href="https://github.com/fszlin/certes/issues/158">#158</a>)</li>
 </ul>
@@ -87,7 +91,7 @@
 <li>Add <code>ACME</code> error details to exception messages (<a href="https://github.com/fszlin/certes/issues/109">#109</a>)</li>
 </ul>
 <h2 id="222---2018-05-31"><a href="https://github.com/fszlin/certes/compare/v2.2.1...v2.2.2">2.2.2</a> - 2018-05-31</h2>
-<h3 id="changed-2">Changed</h3>
+<h3 id="changed-3">Changed</h3>
 <ul>
 <li>Revert <code>Newtonsoft.Json</code> to <code>v10.0.3</code> for <code>PowerShell Core</code> (<a href="https://github.com/fszlin/certes/issues/112">#112</a>)</li>
 </ul>
@@ -101,7 +105,7 @@
 <ul>
 <li>Add <code>Challenge.Error</code> for challenge valdidation error (<a href="https://github.com/fszlin/certes/issues/99">#99</a>)</li>
 </ul>
-<h3 id="changed-3">Changed</h3>
+<h3 id="changed-4">Changed</h3>
 <ul>
 <li>Fix certificate chain for PFX (<a href="https://github.com/fszlin/certes/issues/100">#100</a>)</li>
 </ul>
@@ -111,7 +115,7 @@
 <li>Export full chain certification in PEM (<a href="https://github.com/fszlin/certes/issues/87">#87</a>)</li>
 <li>Support custom <code>HttpClient</code> (<a href="https://github.com/fszlin/certes/issues/95">#95</a>)</li>
 </ul>
-<h3 id="changed-4">Changed</h3>
+<h3 id="changed-5">Changed</h3>
 <ul>
 <li>Encapsulating ACME errors in exceptions (<a href="https://github.com/fszlin/certes/issues/65">#65</a>)</li>
 <li>[CLI] Change argument <del>talent-id</del> to <code>tenant-id</code> (<a href="https://github.com/fszlin/certes/issues/86">#86</a>)</li>
@@ -121,7 +125,7 @@
 <ul>
 <li>Add <code>Processing</code> status for challenges.</li>
 </ul>
-<h3 id="changed-5">Changed</h3>
+<h3 id="changed-6">Changed</h3>
 <ul>
 <li>Fix <code>Content-Type</code> header for POST requests (<a href="https://github.com/fszlin/certes/issues/76">#76</a>)</li>
 </ul>
@@ -132,18 +136,18 @@
 <li>Add support for JSON web signature using ECDSA key</li>
 </ul>
 <h2 id="114---2018-03-04"><a href="https://github.com/fszlin/certes/compare/v1.1.3...v1.1.4">1.1.4</a> - 2018-03-04</h2>
-<h3 id="changed-6">Changed</h3>
+<h3 id="changed-7">Changed</h3>
 <ul>
 <li>Fix error when processing server response without <code>Content-Type</code> header</li>
 <li>Fix <code>full-chain-off</code> option for CLI</li>
 </ul>
 <h2 id="113---2017-11-23"><a href="https://github.com/fszlin/certes/compare/v1.1.2...v1.1.3">1.1.3</a> - 2017-11-23</h2>
-<h3 id="changed-7">Changed</h3>
+<h3 id="changed-8">Changed</h3>
 <ul>
 <li>Fix MissingFieldException when running with BouncyCastle v1.8.1.3 (<a href="https://github.com/fszlin/certes/issues/22">#22</a>)</li>
 </ul>
 <h2 id="112---2017-09-27"><a href="https://github.com/fszlin/certes/compare/v1.1.1...v1.1.2">1.1.2</a> - 2017-09-27</h2>
-<h3 id="changed-8">Changed</h3>
+<h3 id="changed-9">Changed</h3>
 <ul>
 <li>Fix CLI script error</li>
 </ul>
@@ -159,12 +163,12 @@
 <li>Add support for deleting registration</li>
 <li>Add support for account key roll-over</li>
 </ul>
-<h3 id="changed-9">Changed</h3>
+<h3 id="changed-10">Changed</h3>
 <ul>
 <li>Allow assigning SAN when creating <code>CertificationRequestBuilder</code> instances</li>
 </ul>
 <h2 id="107---2017-07-20">1.0.7 - 2017-07-20</h2>
-<h3 id="changed-10">Changed</h3>
+<h3 id="changed-11">Changed</h3>
 <ul>
 <li>Fix error when parsing directory resource with <em>meta</em> property. (<a href="https://github.com/fszlin/certes/issues/5">#5</a>)</li>
 </ul>
