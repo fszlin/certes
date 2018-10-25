@@ -149,8 +149,8 @@ namespace Certes.Cli.Commands
                         {
                             value = new CertificateInner[]
                             {
-                                new CertificateInner("certes", thumbprint: "another-cert"),
-                                new CertificateInner("certes", thumbprint: cert.Thumbprint)
+                                new CertificateInner("certes", "pass", thumbprint: "another-cert"),
+                                new CertificateInner("certes", "pass", thumbprint: cert.Thumbprint),
                             }
                         })
                     )

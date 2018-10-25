@@ -23,19 +23,6 @@ namespace Certes.Acme
         }
 
         /// <summary>
-        /// Gets the account entity data.
-        /// </summary>
-        /// <returns>
-        /// The account entity data.
-        /// </returns>
-        public override async Task<Account> Resource()
-        {
-            var payload = await Context.Sign(new Account(), Location);
-            var resp = await Context.HttpClient.Post<Account>(Location, payload, true);
-            return resp.Resource;
-        }
-
-        /// <summary>
         /// Deactivates the current account.
         /// </summary>
         /// <returns>

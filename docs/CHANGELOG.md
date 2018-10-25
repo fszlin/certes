@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [2.3.2] - 2018-10-20
+### Changed
+- Implement `POST-as-GET` for loading ACME resources
+
+### Changed
+- Fix account key roll-over missing old key field ([#154](https://github.com/fszlin/certes/issues/154))
+- Update TLS-ALPN OID as [draft-03](https://tools.ietf.org/html/draft-ietf-acme-tls-alpn-03)
+
+## [2.3.1] - 2018-10-16
+### Changed
+- Remove package reference to `System.Net.Http` ([#158][i158])
 ### Added
 - [CLI] Add `--friendly-name` option to `cert pfx` command ([#145][i145])
 - [CLI] Add `--issuer` option to `cert pfx` command ([#142][i142])
@@ -89,7 +101,9 @@ All notable changes to this project will be documented in this file.
 [2.2.1]: https://github.com/fszlin/certes/compare/v2.2.0...v2.2.1
 [2.2.2]: https://github.com/fszlin/certes/compare/v2.2.1...v2.2.2
 [2.3.0]: https://github.com/fszlin/certes/compare/v2.2.2...v2.3.0
-[Unreleased]: https://github.com/fszlin/certes/compare/v2.3.0...HEAD
+[2.3.1]: https://github.com/fszlin/certes/compare/v2.3.0...v2.3.1
+[2.3.2]: https://github.com/fszlin/certes/compare/v2.3.1...v2.3.2
+[Unreleased]: https://github.com/fszlin/certes/compare/v2.3.2...HEAD
 
 [i5]: https://github.com/fszlin/certes/issues/5
 [i22]: https://github.com/fszlin/certes/issues/22
@@ -106,3 +120,4 @@ All notable changes to this project will be documented in this file.
 [i109]: https://github.com/fszlin/certes/issues/109
 [i142]: https://github.com/fszlin/certes/issues/142
 [i145]: https://github.com/fszlin/certes/issues/145
+[i158]: https://github.com/fszlin/certes/issues/158

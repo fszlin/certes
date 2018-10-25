@@ -43,7 +43,7 @@ namespace Certes
     /// </summary>
     public static class ISignatureKeyExtensions
     {
-        private static readonly DerObjectIdentifier acmeValidationV1Id = new DerObjectIdentifier("1.3.6.1.5.5.7.1.30.1");
+        private static readonly DerObjectIdentifier acmeValidationV1Id = new DerObjectIdentifier("1.3.6.1.5.5.7.1.31");
         private static readonly KeyAlgorithmProvider signatureAlgorithmProvider = new KeyAlgorithmProvider();
         private static readonly JsonSerializerSettings thumbprintSettings = JsonUtil.CreateSettings();
 
