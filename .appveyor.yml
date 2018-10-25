@@ -43,6 +43,7 @@ before_build:
   - ps: $vssExtVersion = [version]$vssExt.version
   - ps: $vssExt.version = "{0}.{1}.{2}" -f  $vssExtVersion.Major,  $vssExtVersion.Minor, $env:APPVEYOR_BUILD_NUMBER
   - ps: $vssExt | ConvertTo-Json -Depth 20 | Set-Content 'vsts/Certes.Vsts/vss-extension.json'
+  - cd ./vsts/Certes.Vsts && npm install && cd ../../
 
 build_script:
   - msbuild -p:DebugType=Full -v:m
