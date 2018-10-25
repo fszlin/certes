@@ -26,7 +26,7 @@ namespace Certes.Jws
         /// </summary>
         /// <param name="payload">The payload.</param>
         /// <param name="nonce">The nonce.</param>
-        /// <returns></returns>
+        /// <returns>The signed payload.</returns>
         public JwsPayload Sign(object payload, string nonce)
             => Sign(payload, null, null, nonce);
 
@@ -37,7 +37,7 @@ namespace Certes.Jws
         /// <param name="keyId">The key identifier.</param>
         /// <param name="url">The URL.</param>
         /// <param name="nonce">The nonce.</param>
-        /// <returns></returns>
+        /// <returns>The signed payload.</returns>
         public JwsPayload Sign(
             object payload,
             Uri keyId = null,
@@ -62,7 +62,9 @@ namespace Certes.Jws
                     url,
                 };
 
-            var entityJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
+            var entityJson = payload == null ?
+                "" :
+                JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
             var protectedHeaderJson = JsonConvert.SerializeObject(protectedHeader, Formatting.None, jsonSettings);
 
             var payloadEncoded = JwsConvert.ToBase64String(Encoding.UTF8.GetBytes(entityJson));

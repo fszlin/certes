@@ -54,7 +54,7 @@ namespace Certes.Acme
             var expectedAccount = new Account();
 
             var expectedPayload = new JwsSigner(Helper.GetKeyV2())
-                .Sign(new Account(), null, location, "nonce");
+                .Sign("", null, location, "nonce");
 
             contextMock.Reset();
             httpClientMock.Reset();
@@ -70,9 +70,7 @@ namespace Certes.Acme
                 .Setup(c => c.Sign(It.IsAny<object>(), location))
                 .Callback((object payload, Uri loc) =>
                 {
-                    Assert.Equal(
-                        JsonConvert.SerializeObject(new Account()),
-                        JsonConvert.SerializeObject(payload));
+                    Assert.Null(payload);
                     Assert.Equal(location, loc);
                 })
                 .ReturnsAsync(expectedPayload);
