@@ -31,6 +31,7 @@ branches:
     - preview
     - beta
     - release
+    - vsts
 
 init:
   - git config --global core.autocrlf input
@@ -38,6 +39,10 @@ init:
 before_build:
   - ps: New-Item build -Type directory -Force | Out-Null
   - cmd: dotnet restore
+  - ps: $vssExt = Get-Content 'vsts/Certes.Vsts/vss-extension.json' -raw | ConvertFrom-Json
+  - ps: $vssExtVersion = [version]$vssExt.version
+  - ps: $vssExt.version = "{0}.{1}.{2}" -f  $vssExtVersion.Major,  $vssExtVersion.Minor, $env:APPVEYOR_BUILD_NUMBER
+  - ps: $vssExt | ConvertTo-Json -Depth 20 | Set-Content 'vsts/Certes.Vsts/vss-extension.json'
 
 build_script:
   - msbuild -p:DebugType=Full -v:m
@@ -51,11 +56,13 @@ build_script:
   - ps: Get-ChildItem -Path "./src/**/*.nupkg" -Recurse | Move-Item -Destination "./build"
   - ps: '"dotnet %~dp0dotnet-acme.dll %* " | Set-Content .\src\Certes.Cli\bin\$($env:CONFIGURATION)\netcoreapp1.0\publish\certes.bat'
   - 7z a build\certes-cli.zip .\src\Certes.Cli\bin\%CONFIGURATION%\netcoreapp1.0\publish\*.* -r
+  - cd ./vsts/Certes.Vsts && npm run tfx-pack && cd ../../
 
 #test: off
 before_test:
 
 test_script:
+  - cd ./vsts/Certes.Vsts && npm run nyc-lcov && cd ../../
   - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
   - ps: cd test/Certes.Tests
   - ps: >-
@@ -70,6 +77,7 @@ after_test:
   - npm install codecov -g -q
   - codecov -f "./build/Certes.Tests.coverage.xml" -F unit > $null
   - codecov -f "./build/Certes.Tests.Integration.coverage.xml" -F integration > $null
+  - codecov -f "./build/coverage.lcov" -F vsts
 
 on_success:
   # gh-pages
