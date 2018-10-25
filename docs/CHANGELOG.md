@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Changed
+- Implement `POST-as-GET` for loading ACME resources
+
+### Changed
 - Fix account key roll-over missing old key field ([#154](https://github.com/fszlin/certes/issues/154))
 - Update TLS-ALPN OID as [draft-03](https://tools.ietf.org/html/draft-ietf-acme-tls-alpn-03)
 
