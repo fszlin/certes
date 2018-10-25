@@ -111,6 +111,9 @@ artifacts:
     - path: build/certes-cli.zip
       name: cli
 
+    - path: build/*.vsix
+      name: vsix
+
 deploy:
   - provider: GitHub
     release: v$(CERTES_PACKAGE_VERSION)
