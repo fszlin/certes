@@ -57,7 +57,8 @@ namespace Certes.Acme
         public async Task<CertificateChain> Download()
         {
             var order = await Resource();
-            var resp = await Context.HttpClient.Get<string>(order.Certificate);
+            var payload = await Context.Sign(null, order.Certificate);
+            var resp = await Context.HttpClient.Post<string>(order.Certificate, payload);
 
             return new CertificateChain(resp.Resource);
         }

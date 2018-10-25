@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
+using Certes.Jws;
 using Moq;
 using Xunit;
 
@@ -11,22 +12,49 @@ namespace Certes.Acme
         [Fact]
         public async Task CanLoadResource()
         {
-            var loc = new Uri("http://acme.d/acct/1");
+            var location = new Uri("http://acme.d/acct/1");
             var acct = new Account();
+
+            var expectedPayload = new JwsSigner(Helper.GetKeyV2())
+                .Sign("", null, location, "nonce");
 
             var httpMock = new Mock<IAcmeHttpClient>();
             var ctxMock = new Mock<IAcmeContext>();
             ctxMock.SetupGet(m => m.HttpClient).Returns(httpMock.Object);
+            ctxMock
+                .Setup(c => c.Sign(It.IsAny<object>(),  It.IsAny<Uri>()))
+                .Callback((object payload, Uri loc) =>
+                {
+                    Assert.Null(payload);
+                    Assert.Equal(location, loc);
+                })
+                .ReturnsAsync(expectedPayload);
 
-            httpMock.Setup(m => m.Get<Account>(loc)).ReturnsAsync(new AcmeHttpResponse<Account>(loc, acct, default, default));
-            var ctx = new EntityContext<Account>(ctxMock.Object, loc);
+            httpMock
+                .Setup(m => m.Post<Account>(location, It.IsAny<JwsPayload>()))
+                .Callback((Uri _, object o) =>
+                {
+                    var p = (JwsPayload)o;
+                    Assert.Equal(expectedPayload.Payload, p.Payload);
+                    Assert.Equal(expectedPayload.Protected, p.Protected);
+                })
+                .ReturnsAsync(new AcmeHttpResponse<Account>(location, acct, default, default));
+            var ctx = new EntityContext<Account>(ctxMock.Object, location);
 
             var res = await ctx.Resource();
             Assert.Equal(acct, res);
 
-            loc = new Uri("http://acme.d/acct/2");
-            httpMock.Setup(m => m.Get<Account>(loc)).ReturnsAsync(new AcmeHttpResponse<Account>(loc, default, default, new AcmeError { Detail = "err" }));
-            ctx = new EntityContext<Account>(ctxMock.Object, loc);
+            location = new Uri("http://acme.d/acct/2");
+            httpMock
+                .Setup(m => m.Post<Account>(location, It.IsAny<JwsPayload>()))
+                .Callback((Uri _, object o) =>
+                {
+                    var p = (JwsPayload)o;
+                    Assert.Equal(expectedPayload.Payload, p.Payload);
+                    Assert.Equal(expectedPayload.Protected, p.Protected);
+                })
+                .ReturnsAsync(new AcmeHttpResponse<Account>(location, default, default, new AcmeError { Detail = "err" }));
+            ctx = new EntityContext<Account>(ctxMock.Object, location);
             await Assert.ThrowsAsync<AcmeRequestException>(() => ctx.Resource());
         }
     }

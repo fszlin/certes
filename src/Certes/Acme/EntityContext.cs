@@ -45,14 +45,8 @@ namespace Certes.Acme
         /// <returns>The resource entity data.</returns>
         public virtual async Task<T> Resource()
         {
-            var resp = await Context.HttpClient.Get<T>(Location);
-            if (resp.Error != null)
-            {
-                throw new AcmeRequestException(
-                    string.Format(Strings.ErrorFetchResource, resp.Location),
-                    resp.Error);
-            }
-
+            var payload = await Context.Sign(null, Location);
+            var resp = await Context.HttpClient.Post<T>(Location, payload, true);
             return resp.Resource;
         }
     }
