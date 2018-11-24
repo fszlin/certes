@@ -10,6 +10,18 @@ namespace Certes.Crypto
 {
     internal class AsymmetricCipherKey : IKey
     {
+        private byte[] PadBytes(byte[] bytes, int padding)
+        {
+            int remainder = padding - bytes.Length;
+            if (remainder <= 0) return bytes;
+
+            var newArray = new byte[bytes.Length + remainder];
+
+            var startAt = newArray.Length - bytes.Length;
+            Array.Copy(bytes, 0, newArray, startAt, bytes.Length);
+            return newArray;
+        }
+
         public JsonWebKey JsonWebKey
         {
             get
@@ -30,12 +42,22 @@ namespace Certes.Crypto
                     var curve =
                         Algorithm == KeyAlgorithm.ES256 ? "P-256" :
                         Algorithm == KeyAlgorithm.ES384 ? "P-384" : "P-521";
+
+                    // https://tools.ietf.org/html/rfc7518#section-6.2.1.2
+                    // get the byte representation of the x & y coords on the Elliptic Curve,
+                    // then pad bytes to the required field length before encoding
+
+                    var xBytes = ecKey.Q.AffineXCoord.ToBigInteger().ToByteArrayUnsigned();
+                    var yBytes = ecKey.Q.AffineYCoord.ToBigInteger().ToByteArrayUnsigned();
+
+                    int requiredLength = ecKey.Parameters.Curve.FieldSize / 8;
+
                     return new EcJsonWebKey
                     {
                         KeyType = "EC",
                         Curve = curve,
-                        X = JwsConvert.ToBase64String(ecKey.Q.AffineXCoord.ToBigInteger().ToByteArrayUnsigned()),
-                        Y = JwsConvert.ToBase64String(ecKey.Q.AffineYCoord.ToBigInteger().ToByteArrayUnsigned()),
+                        X = JwsConvert.ToBase64String(PadBytes(xBytes, requiredLength)),
+                        Y = JwsConvert.ToBase64String(PadBytes(yBytes, requiredLength))
                     };
                 }
             }
@@ -47,7 +69,7 @@ namespace Certes.Crypto
 
         public AsymmetricCipherKey(KeyAlgorithm algorithm, AsymmetricCipherKeyPair keyPair)
         {
-           KeyPair = keyPair ?? throw new ArgumentNullException(nameof(keyPair));
+            KeyPair = keyPair ?? throw new ArgumentNullException(nameof(keyPair));
             Algorithm = algorithm;
         }
 
