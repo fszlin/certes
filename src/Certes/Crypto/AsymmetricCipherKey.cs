@@ -10,10 +10,14 @@ namespace Certes.Crypto
 {
     internal class AsymmetricCipherKey : IKey
     {
-        private byte[] PadBytes(byte[] bytes, int padding)
+        private static byte[] PadBytes(byte[] bytes, int padding)
         {
-            int remainder = padding - bytes.Length;
-            if (remainder <= 0) return bytes;
+            var remainder = padding - bytes.Length;
+
+            if (remainder <= 0)
+            {
+                return bytes;
+            }
 
             var newArray = new byte[bytes.Length + remainder];
 
