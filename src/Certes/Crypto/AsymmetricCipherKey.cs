@@ -10,22 +10,6 @@ namespace Certes.Crypto
 {
     internal class AsymmetricCipherKey : IKey
     {
-        private static byte[] PadBytes(byte[] bytes, int padding)
-        {
-            var remainder = padding - bytes.Length;
-
-            if (remainder <= 0)
-            {
-                return bytes;
-            }
-
-            var newArray = new byte[bytes.Length + remainder];
-
-            var startAt = newArray.Length - bytes.Length;
-            Array.Copy(bytes, 0, newArray, startAt, bytes.Length);
-            return newArray;
-        }
-
         public JsonWebKey JsonWebKey
         {
             get
@@ -49,19 +33,17 @@ namespace Certes.Crypto
 
                     // https://tools.ietf.org/html/rfc7518#section-6.2.1.2
                     // get the byte representation of the x & y coords on the Elliptic Curve,
-                    // then pad bytes to the required field length before encoding
+                    // with padding bytes to the required field length
 
-                    var xBytes = ecKey.Q.AffineXCoord.ToBigInteger().ToByteArrayUnsigned();
-                    var yBytes = ecKey.Q.AffineYCoord.ToBigInteger().ToByteArrayUnsigned();
-
-                    int requiredLength = ecKey.Parameters.Curve.FieldSize / 8;
+                    var xBytes = ecKey.Q.AffineXCoord.GetEncoded();
+                    var yBytes = ecKey.Q.AffineYCoord.GetEncoded();
 
                     return new EcJsonWebKey
                     {
                         KeyType = "EC",
                         Curve = curve,
-                        X = JwsConvert.ToBase64String(PadBytes(xBytes, requiredLength)),
-                        Y = JwsConvert.ToBase64String(PadBytes(yBytes, requiredLength))
+                        X = JwsConvert.ToBase64String(xBytes),
+                        Y = JwsConvert.ToBase64String(yBytes)
                     };
                 }
             }
