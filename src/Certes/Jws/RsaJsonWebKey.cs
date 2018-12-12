@@ -14,7 +14,7 @@ namespace Certes.Jws
         /// <value>
         /// The exponent value for the RSA public key.
         /// </value>
-        [JsonProperty("e")]
+        [JsonProperty("e", Order = 1)]
         internal string Exponent { get; set; }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace Certes.Jws
         /// <value>
         /// The modulus value for the RSA public key.
         /// </value>
-        [JsonProperty("n")]
+        [JsonProperty("n", Order =3)]
         internal string Modulus { get; set; }
     }
 }

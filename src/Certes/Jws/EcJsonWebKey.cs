@@ -14,7 +14,7 @@ namespace Certes.Jws
         /// <value>
         /// The curve identifies the cryptographic curve used with the key.
         /// </value>
-        [JsonProperty("crv")]
+        [JsonProperty("crv", Order = 1)]
         internal string Curve { get; set; }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace Certes.Jws
         /// <value>
         /// The x coordinate for the Elliptic Curve point.
         /// </value>
-        [JsonProperty("x")]
+        [JsonProperty("x", Order = 3)]
         internal string X { get; set; }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Certes.Jws
         /// <value>
         /// The y coordinate for the Elliptic Curve point.
         /// </value>
-        [JsonProperty("y")]
+        [JsonProperty("y", Order = 4)]
         internal string Y { get; set; }
     }
 }
