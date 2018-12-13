@@ -1,4 +1,4 @@
-﻿namespace Certes
+namespace Certes
 {
     public static class Keys
     {
@@ -34,6 +34,13 @@ qeIAldJH4zaLqkEXH/643NjLFeQy7w4cbdODASwGqBEJa9SJJjMfbw==
         internal const string ES256Key = @"-----BEGIN EC PRIVATE KEY-----
 MDECAQEEIJTKjLb/7vi68uMaaktLL8A8uKeM5r2ibBJm1KPG/xhVoAoGCCqGSM49
 AwEH
+-----END EC PRIVATE KEY-----";
+
+        // Special case: X coord of EC point is a 31 bytes instead of 32 and requires padding before encoding
+        internal const string ES256Key_Alt1 = @"-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIDWajU0PyhYKeulfy/luNtkAve7DkwQ01bXJ97zbxB66oAoGCCqGSM49
+AwEHoUQDQgAEAJz0yAAXAwEmOhTRkjXxwgedbWO6gobYM3lWszrS68G8QSzhXR6A
+mQ3IzZDimnTTXO7XhVylDT8SLzE44/Epmw==
 -----END EC PRIVATE KEY-----";
 
         internal const string ES384Key = @"-----BEGIN EC PRIVATE KEY-----
