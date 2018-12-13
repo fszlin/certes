@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="title" content="Namespace Certes.Jws
    - Certes ">
-    <meta name="generator" content="docfx 2.40.1.0">
+    <meta name="generator" content="docfx 2.40.4.0">
     
     <link rel="shortcut icon" href="../../images/favicon.ico">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
@@ -87,7 +87,8 @@
       <section><p>Helper methods for <a class="xref" href="Certes.Jws.AccountKey.html">AccountKey</a>.</p>
 </section>
       <h4><a class="xref" href="Certes.Jws.JsonWebKey.html">JsonWebKey</a></h4>
-      <section><p>Represents and JSON web key.</p>
+      <section><p>Represents and JSON web key.
+Note that inheriting classes must define JSON serialisation order to maintain lexographic order as per <a href="https://tools.ietf.org/html/rfc7638#page-8">https://tools.ietf.org/html/rfc7638#page-8</a></p>
 </section>
       <h4><a class="xref" href="Certes.Jws.JwsConvert.html">JwsConvert</a></h4>
       <section><p>Base64 URL encoding without padding.</p>
