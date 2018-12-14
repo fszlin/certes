@@ -21,6 +21,9 @@ namespace Certes.Json
         {
             var jsonSettings = new JsonSerializerSettings
             {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
                 NullValueHandling = NullValueHandling.Ignore,
                 MissingMemberHandling = MissingMemberHandling.Ignore
             };
