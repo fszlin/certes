@@ -3,12 +3,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.3.3] - 2018-12-16
+### Changed
+- Fix EC account key encoding [#173](https://github.com/fszlin/certes/issues/173)
+
 ## [2.3.2] - 2018-10-20
 ### Changed
 - Implement `POST-as-GET` for loading ACME resources
 
 ### Changed
-- Fix account key roll-over missing old key field ([#154](https://github.com/fszlin/certes/issues/154))
+- Fix account key roll-over missing old key field [#154](https://github.com/fszlin/certes/issues/154)
 - Update TLS-ALPN OID as [draft-03](https://tools.ietf.org/html/draft-ietf-acme-tls-alpn-03)
 
 ## [2.3.1] - 2018-10-16
@@ -103,7 +107,8 @@ All notable changes to this project will be documented in this file.
 [2.3.0]: https://github.com/fszlin/certes/compare/v2.2.2...v2.3.0
 [2.3.1]: https://github.com/fszlin/certes/compare/v2.3.0...v2.3.1
 [2.3.2]: https://github.com/fszlin/certes/compare/v2.3.1...v2.3.2
-[Unreleased]: https://github.com/fszlin/certes/compare/v2.3.2...HEAD
+[2.3.2]: https://github.com/fszlin/certes/compare/v2.3.2...v2.3.3
+[Unreleased]: https://github.com/fszlin/certes/compare/v2.3.3...HEAD
 
 [i5]: https://github.com/fszlin/certes/issues/5
 [i22]: https://github.com/fszlin/certes/issues/22

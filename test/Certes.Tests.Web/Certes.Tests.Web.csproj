@@ -7,8 +7,8 @@
     <Compile Include="..\Certes.Tests\Keys.cs" Link="Keys.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.16.1" />
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.23" />
+    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.18.0" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.24" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Certes\Certes.csproj" />
