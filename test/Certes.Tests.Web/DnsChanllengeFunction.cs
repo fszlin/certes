@@ -26,44 +26,56 @@ namespace Certes.Tests.CI
             string algo,
             ILogger log)
         {
-            Dictionary<string, string> tokens;
-            using (var reader = new StreamReader(request.Body))
+            try
             {
-                var json = await reader.ReadToEndAsync();
-                tokens = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            }
-
-            var keyType = (KeyAlgorithm)Enum.Parse(typeof(KeyAlgorithm), algo, true);
-            var accountKey = GetTestKey(keyType);
-
-            var loginInfo = new ServicePrincipalLoginInformation
-            {
-                ClientId = Env("CERTES_AZURE_CLIENT_ID"),
-                ClientSecret = Env("CERTES_AZURE_CLIENT_SECRET"),
-            };
-
-            var credentials = new AzureCredentials(loginInfo, Env("CERTES_AZURE_TENANT_ID"), AzureEnvironment.AzureGlobalCloud);
-            var builder = RestClient.Configure();
-            var resClient = builder.WithEnvironment(AzureEnvironment.AzureGlobalCloud)
-                .WithCredentials(credentials)
-                .Build();
-            using (var client = new DnsManagementClient(resClient))
-            {
-                client.SubscriptionId = Env("CERTES_AZURE_SUBSCRIPTION_ID");
-
-                foreach (var p in tokens)
+                Dictionary<string, string> tokens;
+                using (var reader = new StreamReader(request.Body))
                 {
-                    var name = "_acme-challenge." + p.Key.Replace(".dymetis.com", "");
-                    await client.RecordSets.CreateOrUpdateAsync(
-                        "dymetis",
-                        "dymetis.com",
-                        name,
-                        RecordType.TXT,
-                        new RecordSetInner(
-                            name: name,
-                            tTL: 1,
-                            txtRecords: new[] { new TxtRecord(new[] { accountKey.SignatureKey.DnsTxt(p.Value) }) }));
+                    var json = await reader.ReadToEndAsync();
+                    tokens = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
                 }
+
+                var keyType = (KeyAlgorithm)Enum.Parse(typeof(KeyAlgorithm), algo, true);
+                var accountKey = GetTestKey(keyType);
+
+                var loginInfo = new ServicePrincipalLoginInformation
+                {
+                    ClientId = Env("CERTES_AZURE_CLIENT_ID"),
+                    ClientSecret = Env("CERTES_AZURE_CLIENT_SECRET"),
+                };
+
+                var credentials = new AzureCredentials(loginInfo, Env("CERTES_AZURE_TENANT_ID"), AzureEnvironment.AzureGlobalCloud);
+                var builder = RestClient.Configure();
+                var resClient = builder.WithEnvironment(AzureEnvironment.AzureGlobalCloud)
+                    .WithCredentials(credentials)
+                    .Build();
+                using (var client = new DnsManagementClient(resClient))
+                {
+                    client.SubscriptionId = Env("CERTES_AZURE_SUBSCRIPTION_ID");
+
+                    foreach (var p in tokens)
+                    {
+                        var name = "_acme-challenge." + p.Key.Replace(".dymetis.com", "");
+                        await client.RecordSets.CreateOrUpdateAsync(
+                            "dymetis",
+                            "dymetis.com",
+                            name,
+                            RecordType.TXT,
+                            new RecordSetInner(
+                                name: name,
+                                tTL: 1,
+                                txtRecords: new[] { new TxtRecord(new[] { accountKey.SignatureKey.DnsTxt(p.Value) }) }));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ContentResult()
+                {
+                    StatusCode = 500,
+                    ContentType = "text/plain",
+                    Content = ex.ToString(),
+                };
             }
 
             return new OkResult();

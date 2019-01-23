@@ -133,7 +133,10 @@ namespace Certes
 
         public static async Task DeployDns01(KeyAlgorithm algo, Dictionary<string, string> tokens)
         {
-            using (await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens)))) { }
+            using (var respMsg = await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens))))
+            {
+                respMsg.EnsureSuccessStatusCode();
+            }
         }
 
         public static void AddTestCert(this PfxBuilder pfx) => pfx.AddIssuers(TestCertificates);
