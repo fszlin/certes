@@ -36,6 +36,8 @@ init:
   - git config --global core.autocrlf input
 
 before_build:
+  - choco install opencover.portable
+  - choco install codecov
   - ps: New-Item build -Type directory -Force | Out-Null
   - cmd: dotnet restore
 
@@ -56,7 +58,7 @@ build_script:
 before_test:
 
 test_script:
-  - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.7.922/tools/OpenCover.Console.exe"
+  - ps: $openCover = "OpenCover.Console.exe"
   - ps: cd test/Certes.Tests
   - ps: >-
       & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:xunit -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4" "-oldstyle" "-output:./../../build/Certes.Tests.coverage.xml" "-filter:+[*]Certes.* -[*Tests*]*" "-hideskipped:All" "-returntargetcode"
@@ -67,7 +69,6 @@ test_script:
   - ps: cd $env:APPVEYOR_BUILD_FOLDER
 
 after_test:
-  - npm install codecov -g -q
   - codecov -f "./build/Certes.Tests.coverage.xml" -F unit > $null
   - codecov -f "./build/Certes.Tests.Integration.coverage.xml" -F integration > $null
 
