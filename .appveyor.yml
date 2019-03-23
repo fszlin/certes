@@ -56,7 +56,7 @@ build_script:
 before_test:
 
 test_script:
-  - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.6.519/tools/OpenCover.Console.exe"
+  - ps: $openCover = "$($env:USERPROFILE)/.nuget/packages/opencover/4.7.922/tools/OpenCover.Console.exe"
   - ps: cd test/Certes.Tests
   - ps: >-
       & $openCover "-register:user" "-target:dotnet.exe" "-targetargs:xunit -fxversion 2.0.0 -configuration Release -nobuild -maxthreads 4" "-oldstyle" "-output:./../../build/Certes.Tests.coverage.xml" "-filter:+[*]Certes.* -[*Tests*]*" "-hideskipped:All" "-returntargetcode"
