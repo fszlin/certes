@@ -71,7 +71,7 @@ namespace Certes.Pkcs
         /// <param name="friendlyName">The friendly name.</param>
         /// <param name="password">The password.</param>
         /// <returns>The PFX data.</returns>
-        public byte[] Build(string friendlyName, string password)
+        public byte[] Build(string friendlyName, string password = null)
         {
             var keyPair = LoadKeyPair();
             var store = new Pkcs12StoreBuilder().Build();
@@ -94,7 +94,7 @@ namespace Certes.Pkcs
 
             using (var buffer = new MemoryStream())
             {
-                store.Save(buffer, password.ToCharArray(), new SecureRandom());
+                store.Save(buffer, password?.ToCharArray(), new SecureRandom());
                 return buffer.ToArray();
             }
         }

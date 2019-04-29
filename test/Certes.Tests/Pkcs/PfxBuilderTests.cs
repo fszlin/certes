@@ -28,6 +28,21 @@ namespace Certes.Pkcs
         [InlineData(KeyAlgorithm.ES256)]
         [InlineData(KeyAlgorithm.ES384)]
         [InlineData(KeyAlgorithm.ES512)]
+        public async Task CanCreatePfxChainWithNoPassword(KeyAlgorithm alog)
+        {
+            var (cert, key) = await Helper.GetValidCert();
+
+            var pfxBuilder = new PfxBuilder(
+                Encoding.UTF8.GetBytes(cert), KeyFactory.NewKey(alog));
+            pfxBuilder.AddIssuers(Encoding.UTF8.GetBytes(cert));
+            var pfx = pfxBuilder.Build("my-cert");
+        }
+
+        [Theory]
+        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES384)]
+        [InlineData(KeyAlgorithm.ES512)]
         public void CanCreatePfxWithoutChain(KeyAlgorithm alog)
         {
             var leafCert = File.ReadAllText("./Data/leaf-cert.pem");
@@ -36,6 +51,21 @@ namespace Certes.Pkcs
                 Encoding.UTF8.GetBytes(leafCert), KeyFactory.NewKey(alog));
             pfxBuilder.FullChain = false;
             var pfx = pfxBuilder.Build("my-cert", "abcd1234");
+        }
+
+        [Theory]
+        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES384)]
+        [InlineData(KeyAlgorithm.ES512)]
+        public void CanCreatePfxWithoutChainAndNoPassword(KeyAlgorithm alog)
+        {
+            var leafCert = File.ReadAllText("./Data/leaf-cert.pem");
+
+            var pfxBuilder = new PfxBuilder(
+                Encoding.UTF8.GetBytes(leafCert), KeyFactory.NewKey(alog));
+            pfxBuilder.FullChain = false;
+            var pfx = pfxBuilder.Build("my-cert");
         }
     }
 }
