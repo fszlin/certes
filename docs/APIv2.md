@@ -96,7 +96,7 @@ var orderUri = order.Location;
 Retrieve order by URI.
  
 ```C#
-var order = await context.Order(orderUri);
+var order = context.Order(orderUri);
 ```
 
 Finalize the order.
