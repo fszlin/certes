@@ -8,7 +8,7 @@
     <title>API for ACME v2 | Certes </title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="title" content="API for ACME v2 - Certes ">
-    <meta name="generator" content="docfx 2.40.4.0">
+    <meta name="generator" content="docfx 2.42.4.0">
     
     <link rel="shortcut icon" href="images/favicon.ico">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
@@ -127,7 +127,7 @@ var orders = await account.Orders();
 var orderUri = order.Location;
 </code></pre>
 <p>Retrieve order by URI.</p>
-<pre><code class="lang-C#">var order = await context.Order(orderUri);
+<pre><code class="lang-C#">var order = context.Order(orderUri);
 </code></pre>
 <p>Finalize the order.</p>
 <pre><code class="lang-C#">var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
