@@ -20,7 +20,7 @@ namespace Certes.Acme
         private const string MimeJoseJson = "application/jose+json";
 
         private readonly static JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
-        private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(() => new HttpClient());
+        private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(()=>HttpClientFactory.CreateInternalHttpClient());
         private readonly Lazy<HttpClient> http;
 
         private Uri newNonceUri;

@@ -2,6 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- Implement custom UserAgent http header for Certes [#189](https://github.com/fszlin/certes/issues/189)
 
 ## [2.3.3] - 2018-12-16
 ### Changed

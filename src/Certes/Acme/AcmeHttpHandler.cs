@@ -19,7 +19,7 @@ namespace Certes.Acme
     {
         private const string MimeJson = "application/json";
 
-        private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(() => new HttpClient());
+        private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(()=>HttpClientFactory.CreateInternalHttpClient());
         private readonly HttpClient http;
         private readonly Uri serverUri;
         private readonly bool shouldDisposeHttp;
