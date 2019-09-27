@@ -58,6 +58,7 @@ namespace Certes.Cli.Commands
             challengeMock1.SetupGet(m => m.Location).Returns(challenge1Loc);
             challengeMock1.SetupGet(m => m.Type).Returns(ChallengeTypes.Http01);
             challengeMock1.Setup(m => m.Resource()).ReturnsAsync(authz.Challenges[0]);
+            challengeMock1.Setup(m => m.KeyAuthz).Returns(GetKeyV2().KeyAuthorization("http-token"));
             var challengeMock2 = new Mock<IChallengeContext>(MockBehavior.Strict);
             challengeMock2.SetupGet(m => m.Location).Returns(challenge2Loc);
             challengeMock2.SetupGet(m => m.Type).Returns(ChallengeTypes.Dns01);
@@ -87,6 +88,7 @@ namespace Certes.Cli.Commands
                 {
                     location = challenge1Loc,
                     resource = authz.Challenges[0],
+                    keyAuthz = GetKeyV2().KeyAuthorization("http-token"),
                 }),
                 JsonConvert.SerializeObject(ret));
 
