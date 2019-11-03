@@ -1,5 +1,4 @@
-﻿/*
-using System;
+﻿using System;
 using System.CommandLine;
 using System.Linq;
 using System.Net.Http;
@@ -43,4 +42,3 @@ namespace Certes.Cli
         }
     }
 }
-*/
