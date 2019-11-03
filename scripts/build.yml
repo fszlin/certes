@@ -25,7 +25,6 @@ jobs:
     inputs:
       command: 'test'
       projects: 'test/Certes.Tests/Certes.Tests.csproj'
-      publishTestResults: false
       arguments: '-f ${{ parameters.appFramework }} --collect "Code Coverage"'
       testRunTitle: 'Unit Tests'
 
@@ -34,6 +33,6 @@ jobs:
     inputs:
       command: 'test'
       projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
-      publishTestResults: false
       arguments: '-f ${{ parameters.appFramework }} --collect "Code Coverage"'
       testRunTitle: 'Integration Tests'
+
