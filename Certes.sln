@@ -39,8 +39,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Certes.Tests.Integration", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Certes.Tests2", "test\Certes.Tests2\Certes.Tests2.csproj", "{F6156DA2-6753-4580-B194-524610BB72C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Certes.Cli.Tests", "test\Certes.Cli.Tests\Certes.Cli.Tests.csproj", "{1E531B78-44FC-4E9C-9AA7-4AEA7C42E4E0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,10 +69,6 @@ Global
 		{F6156DA2-6753-4580-B194-524610BB72C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6156DA2-6753-4580-B194-524610BB72C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6156DA2-6753-4580-B194-524610BB72C0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1E531B78-44FC-4E9C-9AA7-4AEA7C42E4E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E531B78-44FC-4E9C-9AA7-4AEA7C42E4E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E531B78-44FC-4E9C-9AA7-4AEA7C42E4E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E531B78-44FC-4E9C-9AA7-4AEA7C42E4E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,7 +80,6 @@ Global
 		{38D99EC8-967B-495D-AE33-18FAF4DAE161} = {556F2BFB-DE9B-4673-BADC-63C365DA2A55}
 		{741DD8E1-DDCB-4D34-9E65-FEE6AC861022} = {556F2BFB-DE9B-4673-BADC-63C365DA2A55}
 		{F6156DA2-6753-4580-B194-524610BB72C0} = {556F2BFB-DE9B-4673-BADC-63C365DA2A55}
-		{1E531B78-44FC-4E9C-9AA7-4AEA7C42E4E0} = {556F2BFB-DE9B-4673-BADC-63C365DA2A55}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1E394B03-F0AB-4024-BDCB-334EE482380C}
