@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!--<OutputType Condition="'$(UnitTest)' != 'true'">Exe</OutputType>-->
+    <OutputType Condition="'$(UnitTest)' != 'true'">Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     
     <PackAsTool>true</PackAsTool>
