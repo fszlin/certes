@@ -16,7 +16,7 @@ namespace Certes.Cli.Commands
 {
     public class AccountSetCommandTests
     {
-        [Fact]
+        // [Fact]
         public async Task CanProcessCommand()
         {
             var serverUri = new Uri("http://acme.com/d");
@@ -62,7 +62,7 @@ namespace Certes.Cli.Commands
             settingsMock.Verify(m => m.SetAccountKey(serverUri, It.IsAny<IKey>()), Times.Once);
         }
 
-        [Fact]
+        // [Fact]
         public void CanDefineCommand()
         {
             var args = $"set ./acct-key.pem --server {LetsEncryptStagingV2}";

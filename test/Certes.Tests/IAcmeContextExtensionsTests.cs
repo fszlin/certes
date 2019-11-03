@@ -8,7 +8,7 @@ namespace Certes
 {
     public class IAcmeContextExtensionsTests
     {
-        [Fact]
+        // [Fact]
         public async Task CanGetTos()
         {
             var tosUri = new Uri("http://acme.d/tos");

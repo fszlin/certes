@@ -5,7 +5,7 @@ namespace Certes.Jws
 {
     public class AccountKeyTests
     {
-        [Fact]
+        // [Fact]
         public void CanGetSetProperties()
         {
             var key = new AccountKey();
@@ -14,7 +14,7 @@ namespace Certes.Jws
 #pragma warning restore 0612
         }
 
-        [Fact]
+        // [Fact]
         public void CreateWithNull()
         {
             Assert.Throws<ArgumentNullException>(() => new AccountKey(null));

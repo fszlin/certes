@@ -15,7 +15,7 @@ namespace Certes.Cli.Commands
 {
     public class AccountShowCommandTests
     {
-        [Fact]
+        // [Fact]
         public async Task CanProcessCommand()
         {
             var serverUri = new Uri("http://acme.com/d");
@@ -75,7 +75,7 @@ namespace Certes.Cli.Commands
             await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
         }
 
-        [Fact]
+        // [Fact]
         public void CanDefineCommand()
         {
             var args = $"show --server {LetsEncryptStagingV2}";
