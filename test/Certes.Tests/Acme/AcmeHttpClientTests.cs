@@ -44,7 +44,7 @@ namespace Certes.Acme
             }
         }
 
-        // [Fact]
+        [Fact]
         public async Task ThrowWhenNoNonce()
         {
             var dirUri = new Uri("https://acme.d/directory");

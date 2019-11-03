@@ -48,7 +48,7 @@ namespace Certes.Crypto
             Assert.Equal(ecKey.X.Length, ecKey.X.Length);
         }
 
-        // [Fact]
+        [Fact]
         private void CanPadECCoordBytes()
         {
             var k = KeyFactory.FromPem(Keys.ES256Key_Alt1);
@@ -64,7 +64,7 @@ namespace Certes.Crypto
             Assert.Equal("2xBzsnlAASQN0jQYuxdWybSzEQtsxoT-z7XGIDp0k_c", ecKey.Y);
         }
 
-        // [Fact]
+        [Fact]
         private void EnsurePropertySerializationOrder()
         {
             /// https://tools.ietf.org/html/rfc7638#page-8

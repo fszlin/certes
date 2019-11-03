@@ -17,7 +17,7 @@ namespace Certes.Cli.Commands
     [Collection(nameof(Helper.GetValidCert))]
     public class CertificatePfxCommandTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanProcessCommand()
         {
             var orderLoc = new Uri("http://acme.com/o/1");
@@ -90,7 +90,7 @@ namespace Certes.Cli.Commands
             fileMock.Verify(m => m.WriteAllBytes(outPath, It.IsAny<byte[]>()), Times.Once);
         }
 
-        // [Fact]
+        [Fact]
         public void CanDefineCommand()
         {
             var args = $"pfx http://acme.com/o/1 --private-key ./my-key.pem abcd1234 --server {LetsEncryptStagingV2} --issuer ./root-cert.pem --friendly-name friendly";

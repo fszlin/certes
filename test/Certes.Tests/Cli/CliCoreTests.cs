@@ -9,7 +9,7 @@ namespace Certes.Cli
 {
     public class CliCoreTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanRunCommand()
         {
             var serverUri = new Uri("http://acme.com/d");
@@ -28,7 +28,7 @@ namespace Certes.Cli
             Assert.True(succeed);
         }
 
-        // [Fact]
+        [Fact]
         public async Task CanShowHelpForGroup()
         {
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
@@ -44,7 +44,7 @@ namespace Certes.Cli
             Assert.False(await cli.Run(new[] { "-h" }));
         }
 
-        // [Fact]
+        [Fact]
         public async Task CanShowHelpForCommand()
         {
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
@@ -61,7 +61,7 @@ namespace Certes.Cli
             Assert.False(await cli.Run(new[] { "server", "set", "-h" }));
         }
 
-        // [Fact]
+        [Fact]
         public async Task InvalidCommand()
         {
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);

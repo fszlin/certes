@@ -5,7 +5,7 @@ namespace Certes.Acme
     public class RevokeCertificateTests
     {
 
-        // [Fact]
+        [Fact]
         public void CanGetSetProperties()
         {
             var authz = new RevokeCertificateEntity();

@@ -5,7 +5,7 @@ namespace Certes.Acme
 {
     public class ChallengeTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanComputeDnsKeyAuth()
         {
             var challenge = new ChallengeEntity
