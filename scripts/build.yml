@@ -23,7 +23,6 @@ jobs:
     displayName: 'run unit tests'
     inputs:
       command: 'test'
-      projects: 'test/Certes/Certes.Tests.csproj'
+      projects: 'test/Certes.Tests/Certes.Tests.csproj'
       arguments: '-f ${{ parameters.framework }}'
       testRunTitle: 'Unit Tests'
-      
