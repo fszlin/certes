@@ -7,6 +7,8 @@
     <RootNamespace>Certes.Cli</RootNamespace>
     <NoWarn>1701;1702;1705;0618</NoWarn>
     <IsPackable>false</IsPackable>
+
+    <UnitTest>true</UnitTest>
   </PropertyGroup>
 
   <ItemGroup>
