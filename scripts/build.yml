@@ -20,13 +20,13 @@ jobs:
   #     projects: 'src/Certes/Certes.csproj'
   #     arguments: '-f ${{ parameters.framework }}'
 
-  - task: DotNetCoreCLI@2
-    displayName: 'Run unit tests'
-    inputs:
-      command: 'test'
-      projects: 'test/Certes.Tests/Certes.Tests.csproj'
-      arguments: '-f ${{ parameters.appFramework }} --collect "Code Coverage"'
-      testRunTitle: 'Unit Tests'
+  # - task: DotNetCoreCLI@2
+  #   displayName: 'Run unit tests'
+  #   inputs:
+  #     command: 'test'
+  #     projects: 'test/Certes.Tests/Certes.Tests.csproj'
+  #     arguments: '-f ${{ parameters.appFramework }} --collect "Code Coverage"'
+  #     testRunTitle: 'Unit Tests'
 
   - task: DotNetCoreCLI@2
     displayName: 'Run unit tests'
