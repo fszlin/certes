@@ -15,7 +15,7 @@ namespace Certes.Cli.Commands
 {
     public class OrderValidateCommandTests
     {
-        [Fact]
+        // [Fact]
         public async Task CanProcessCommand()
         {
             var domain = "www.abc.com";
@@ -90,7 +90,7 @@ namespace Certes.Cli.Commands
             await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
         }
 
-        [Fact]
+        // [Fact]
         public void CanDefineCommand()
         {
             var args = $"validate http://acme.com/o/1 www.abc.com http --server {LetsEncryptStagingV2}";

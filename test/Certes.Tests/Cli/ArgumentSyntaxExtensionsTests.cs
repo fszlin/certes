@@ -9,7 +9,7 @@ namespace Certes.Cli
 {
     public class ArgumentSyntaxExtensionsTests
     {
-        [Fact]
+        // [Fact]
         public void CanGetOption()
         {
             var args = new[] { "--my-opt", "1" };
@@ -23,7 +23,7 @@ namespace Certes.Cli
             Assert.Throws<ArgumentSyntaxException>(() => s.GetOption<string>("another-opt", true));
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanReadKeyFromEnv()
         {
             var args = new[] { "--opt", "1" };

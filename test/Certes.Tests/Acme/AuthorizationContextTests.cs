@@ -14,7 +14,7 @@ namespace Certes.Acme
         private Mock<IAcmeContext> contextMock = new Mock<IAcmeContext>(MockBehavior.Strict);
         private Mock<IAcmeHttpClient> httpClientMock = new Mock<IAcmeHttpClient>(MockBehavior.Strict);
 
-        [Fact]
+        // [Fact]
         public async Task CanLoadChallenges()
         {
             var authz = new Authorization

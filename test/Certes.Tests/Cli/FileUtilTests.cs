@@ -1,5 +1,4 @@
-﻿/*
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -8,7 +7,7 @@ namespace Certes.Cli
 {
     public class FileUtilTests
     {
-        [Fact]
+        // [Fact]
         public async Task CanReadWriteText()
         {
             var file = new FileUtil();
@@ -20,14 +19,14 @@ namespace Certes.Cli
             Assert.Equal("certes", await file.ReadAllText("./Data/new-dir/my-text.txt"));
             Directory.Delete("./Data/new-dir/", true);
         }
-        [Fact]
+        // [Fact]
         public async Task NullIfNotExists()
         {
             var file = new FileUtil();
             Assert.Null(await file.ReadAllText("./Data/not-exists.txt"));
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanWriteBytes()
         {
             var file = new FileUtil();
@@ -41,4 +40,3 @@ namespace Certes.Cli
         }
     }
 }
-*/

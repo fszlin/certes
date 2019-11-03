@@ -4,20 +4,20 @@ namespace Certes.Cli
 {
     public class CertesCliExceptionTests
     {
-        [Fact]
+        // [Fact]
         public void CanCreateException()
         {
             var ex = new CertesCliException();
         }
 
-        [Fact]
+        // [Fact]
         public void CanCreateExceptionWithMessage()
         {
             var ex = new CertesCliException("certes");
             Assert.Equal("certes", ex.Message);
         }
 
-        [Fact]
+        // [Fact]
         public void CanCreateExceptionWithInnerException()
         {
             var inner = new AcmeException();
