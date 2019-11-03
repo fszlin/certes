@@ -8,7 +8,7 @@ namespace Certes
 {
     public class IAuthorizationContextExtensionsTests
     {
-        [Fact]
+        // [Fact]
         public async Task CanGetTlsAlpnChallenge()
         {
             var ctxMock = new Mock<IAuthorizationContext>(MockBehavior.Strict);

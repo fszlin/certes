@@ -6,7 +6,7 @@ namespace Certes.Pkcs
 {
     public class CertificationRequestBuilderTests
     {
-        [Fact]
+        // [Fact]
         public async Task CanCreateCsrWithKey()
         {
             var key = await Helper.LoadkeyV1();
@@ -15,14 +15,14 @@ namespace Certes.Pkcs
 #pragma warning restore 0612
         }
 
-        [Fact]
+        // [Fact]
         public void CanCreateCsrWithSignatureKey()
         {
             var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
             new CertificationRequestBuilder(key);
         }
 
-        [Fact]
+        // [Fact]
         public void CanSetSubjectAlternativeNames()
         {
             var san = new[]
@@ -41,7 +41,7 @@ namespace Certes.Pkcs
             Assert.Throws<ArgumentNullException>(() => csr.SubjectAlternativeNames = null);
         }
 
-        [Fact]
+        // [Fact]
         public void CanAddAttributes()
         {
             var csr = new CertificationRequestBuilder();
@@ -52,7 +52,7 @@ namespace Certes.Pkcs
                 csr.AddName("invalid-name", "omg"));
         }
 
-        [Fact]
+        // [Fact]
         public void CanBuildCsrWithoutSubjectAlternativeName()
         {
             var csr = new CertificationRequestBuilder();

@@ -15,7 +15,7 @@ namespace Certes.Cli.Commands
 {
     public class OrderListCommandTests
     {
-        [Fact]
+        // [Fact]
         public async Task CanProcessCommand()
         {
             var order1Loc = new Uri("http://acme.com/o/1");
@@ -79,7 +79,7 @@ namespace Certes.Cli.Commands
                 JsonConvert.SerializeObject(ret));
         }
 
-        [Fact]
+        // [Fact]
         public void CanDefineCommand()
         {
             var args = $"list --server {LetsEncryptStagingV2}";

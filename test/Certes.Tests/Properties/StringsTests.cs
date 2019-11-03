@@ -5,14 +5,14 @@ namespace Certes.Properties
 {
     public class StringsTests
     {
-        [Fact]
+        // [Fact]
         public void CanCreateInstance()
         {
             var res = new Strings();
         }
 
 #if !NETCOREAPP1_0
-        [Fact]
+        // [Fact]
         public void CanGetSetCulture()
         {
             Strings.Culture = CultureInfo.GetCultureInfo("fr-CA");
