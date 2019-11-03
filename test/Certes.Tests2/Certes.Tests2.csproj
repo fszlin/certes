@@ -6,19 +6,13 @@
     <RootNamespace>Certes</RootNamespace>
     <NoWarn>1701;1702;1705;0618</NoWarn>
     <IsPackable>false</IsPackable>
-    <IncludeCli Condition="'$(TargetFramework)' == 'netcoreapp2.1'">True</IncludeCli>
-    <AssemblyName>Certes.Tests</AssemblyName>
+    <AssemblyName>Certes.Tests</AssemblyName> 
   </PropertyGroup>
-  
-  <ItemGroup Condition="'$(IncludeCli)' != 'True'">
-    <Compile Remove="Cli\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="NLog" Version="4.6.7" />
-    <PackageReference Include="System.CommandLine" Version="0.1.0-*" Condition="'$(IncludeCli)' == 'True'" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
@@ -31,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Certes.Cli\Certes.Cli.csproj" Condition="'$(IncludeCli)' == 'True'" />
     <ProjectReference Include="..\..\src\Certes\Certes.csproj" />
   </ItemGroup>
 
