@@ -10,7 +10,7 @@ namespace Certes
 {
     public class IOrderContextExtensionsTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanGenerateCertificateWhenOrderReady()
         {
             var pem = File.ReadAllText("./Data/cert-es256.pem");
@@ -54,7 +54,7 @@ namespace Certes
                 certInfoNoCn.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
         }
 
-        // [Fact]
+        [Fact]
         public async Task CanGenerateCertificateWhenOrderPending()
         {
             var pem = File.ReadAllText("./Data/cert-es256.pem");
@@ -98,7 +98,7 @@ namespace Certes
                 certInfoNoCn.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
         }
 
-        // [Fact]
+        [Fact]
         public async Task ThrowWhenOrderNotReady()
         {
             var orderCtxMock = new Mock<IOrderContext>();
@@ -120,7 +120,7 @@ namespace Certes
                 }, key));
         }
 
-        // [Fact]
+        [Fact]
         public async Task ThrowWhenFinalizeFailed()
         {
             var pem = File.ReadAllText("./Data/cert-es256.pem");

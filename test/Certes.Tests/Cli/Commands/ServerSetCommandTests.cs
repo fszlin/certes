@@ -13,7 +13,7 @@ namespace Certes.Cli.Commands
 {
     public class ServerSetCommandTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanProcessCommand()
         {
             var serverUri = new Uri("http://acme.com/d");
@@ -40,7 +40,7 @@ namespace Certes.Cli.Commands
             await Assert.ThrowsAsync<ArgumentSyntaxException>(() => cmd.Execute(syntax));
         }
 
-        // [Fact]
+        [Fact]
         public void CanDefineCommand()
         {
             var args = $"set {LetsEncryptStagingV2}";

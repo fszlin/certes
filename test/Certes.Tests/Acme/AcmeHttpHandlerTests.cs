@@ -18,7 +18,7 @@ namespace Certes.Acme
 
         private int nonce = 0;
 
-        // [Fact]
+        [Fact]
         public async Task CanRetrieveResourceUriFromDirectory()
         {
             using (var http = new HttpClient(CreateHttpMock().Object))
@@ -31,7 +31,7 @@ namespace Certes.Acme
             }
         }
 
-        // [Fact]
+        [Fact]
         public async Task ShouldFaildWithInvalidResourceType()
         {
             using (var http = new HttpClient(CreateHttpMock().Object))
@@ -41,7 +41,7 @@ namespace Certes.Acme
             }
         }
 
-        // [Fact]
+        [Fact]
         public void CanCreateInstance()
         {
             using (var handler = new AcmeHttpHandler(server)) { }
@@ -59,7 +59,7 @@ namespace Certes.Acme
 #pragma warning restore 0618
         }
 
-        // [Fact]
+        [Fact]
         public void CanGetServerUri()
         {
             using (var handler = new AcmeHttpHandler(server, (HttpClient)null))

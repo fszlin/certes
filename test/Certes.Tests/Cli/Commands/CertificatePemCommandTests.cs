@@ -17,7 +17,7 @@ namespace Certes.Cli.Commands
 {
     public class CertificatePemCommandTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanProcessCommand()
         {
             var orderLoc = new Uri("http://acme.com/o/1");
@@ -96,7 +96,7 @@ namespace Certes.Cli.Commands
             await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
         }
 
-        // [Fact]
+        [Fact]
         public void CanDefineCommand()
         {
             var args = $"pem http://acme.com/o/1 --server {LetsEncryptStagingV2}";

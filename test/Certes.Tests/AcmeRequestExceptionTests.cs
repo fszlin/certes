@@ -10,20 +10,20 @@ namespace Certes
 {
     public class AcmeRequestExceptionTests
     {
-        // [Fact]
+        [Fact]
         public void CanCreateException()
         {
             var ex = new AcmeRequestException();
         }
 
-        // [Fact]
+        [Fact]
         public void CanCreateExceptionWithMessage()
         {
             var ex = new AcmeRequestException("certes");
             Assert.Equal("certes", ex.Message);
         }
 
-        // [Fact]
+        [Fact]
         public void CanCreateExceptionWithInnerException()
         {
             var inner = new AcmeException();
@@ -33,7 +33,7 @@ namespace Certes
         }
 
 #if !NETCOREAPP1_0
-        // [Fact]
+        [Fact]
         public void CanSerialize()
         {
             var ex = new AcmeRequestException("certes");
@@ -51,7 +51,7 @@ namespace Certes
             }
         }
         
-        // [Fact]
+        [Fact]
         public void CanSerializeWithErrorAndMessage()
         {
             var error = new AcmeError { Type = "t", Detail = "error" };

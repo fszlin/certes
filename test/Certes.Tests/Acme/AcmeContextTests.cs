@@ -11,7 +11,7 @@ namespace Certes.Acme
 {
     public class AcmeContextTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanChangeKey()
         {
             var accountLoc = new Uri("https://acme.d/acct/1");
@@ -52,7 +52,7 @@ namespace Certes.Acme
             Assert.NotEqual(key.ToPem(), ctx.AccountKey.ToPem());
         }
 
-        // [Fact]
+        [Fact]
         public void CanGetOrderByLocation()
         {
             var loc = new Uri("http://d.com/order/1");
@@ -62,7 +62,7 @@ namespace Certes.Acme
             Assert.Equal(loc, order.Location);
         }
 
-        // [Fact]
+        [Fact]
         public void CanGetAuthzByLocation()
         {
             var loc = new Uri("http://d.com/authz/1");
@@ -72,7 +72,7 @@ namespace Certes.Acme
             Assert.Equal(loc, authz.Location);
         }
 
-        // [Fact]
+        [Fact]
         public async Task CanRevokeCertByPrivateKey()
         {
             var directoryUri = new Uri("http://acme.d/dict");

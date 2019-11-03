@@ -4,7 +4,7 @@ namespace Certes.Acme.Resource
 {
     public class CertificateRevocationTests
     {
-        // [Fact]
+        [Fact]
         public void CanGetSetProperties()
         {
             var entity = new CertificateRevocation();

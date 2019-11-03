@@ -15,7 +15,7 @@ namespace Certes.Cli.Commands
 {
     public class OrderShowCommandTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanProcessCommand()
         {
             var orderLoc = new Uri("http://acme.com/o/1");
@@ -57,7 +57,7 @@ namespace Certes.Cli.Commands
             ctxMock.Verify(m => m.Order(orderLoc), Times.Once);
         }
 
-        // [Fact]
+        [Fact]
         public void CanDefineCommand()
         {
             var args = $"show http://acme.com/o/1 --server {LetsEncryptStagingV2}";

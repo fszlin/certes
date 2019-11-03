@@ -5,14 +5,14 @@ namespace Certes.Pkcs
 {
     public class SignatureAlgorithmTests
     {
-        // [Fact]
+        [Fact]
         public void ToJwsAlgorithmInvalid()
         {
             Assert.Throws<ArgumentException>(() =>
                 ((KeyAlgorithm)1000).ToJwsAlgorithm());
         }
 
-        // [Fact]
+        [Fact]
         public void ToPkcsObjectIdInvalid()
         {
             Assert.Null(

@@ -5,7 +5,7 @@ namespace Certes.Tests.Acme.Resource
 {
     public class IdentifierTests
     {
-        // [Fact]
+        [Fact]
         public void CanGetSetProperties()
         {
             var authorizationIdentifier = new Identifier();
