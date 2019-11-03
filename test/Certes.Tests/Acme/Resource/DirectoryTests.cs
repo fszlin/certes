@@ -5,7 +5,7 @@ namespace Certes.Acme.Resource
 {
     public class DirectoryTests
     {
-        [Fact]
+        // [Fact]
         public void CanGetSetProperties()
         {
             var data = new

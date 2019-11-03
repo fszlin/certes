@@ -9,7 +9,7 @@ namespace Certes.Acme
 {
     public class EntityContextTests
     {
-        [Fact]
+        // [Fact]
         public async Task CanLoadResource()
         {
             var location = new Uri("http://acme.d/acct/1");

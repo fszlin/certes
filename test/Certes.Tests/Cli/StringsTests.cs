@@ -5,7 +5,7 @@ namespace Certes.Cli
 {
     public class StringsTests
     {
-        [Fact]
+        // [Fact]
         public void CanSetCulture()
         {
             var fr = new CultureInfo("fr-CA");
@@ -14,13 +14,13 @@ namespace Certes.Cli
             Assert.Equal(fr, Strings.Culture);
         }
 
-        [Fact]
+        // [Fact]
         public void CanGetResManager()
         {
             Assert.NotNull(Strings.ResourceManager);
         }
 
-        [Fact]
+        // [Fact]
         public void Ctor()
         {
             var instance = new Strings();

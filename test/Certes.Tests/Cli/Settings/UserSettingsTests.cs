@@ -12,7 +12,7 @@ namespace Certes.Cli
 {
     public class UserSettingsTests
     {
-        [Fact]
+        // [Fact]
         public async Task CanSetServer()
         {
             var uri = new Uri("http://acme.d/d");
@@ -44,7 +44,7 @@ namespace Certes.Cli
             fileMock.Verify(m => m.WriteAllText(configPath, json), Times.Once);
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanGetServer()
         {
             var uri = new Uri("http://acme.d/d");
@@ -69,7 +69,7 @@ namespace Certes.Cli
             fileMock.Verify(m => m.ReadAllText(configPath), Times.Once);
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanGetAzureSettings()
         {
             var fullPath = Path.GetFullPath($"./{nameof(CanGetAzureSettings)}");
@@ -92,7 +92,7 @@ namespace Certes.Cli
             Assert.Equal(default, azSettings.SubscriptionId);
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanGetAzureSettingsFromEnv()
         {
             var fullPath = Path.GetFullPath($"./{nameof(CanGetAzureSettingsFromEnv)}");
@@ -122,7 +122,7 @@ namespace Certes.Cli
             Assert.Equal(envSettings.ClientSecret, azSettings.ClientSecret);
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanSetAzureSettings()
         {
             var fullPath = Path.GetFullPath($"./{nameof(CanSetAzureSettings)}");
@@ -148,7 +148,7 @@ namespace Certes.Cli
             fileMock.Verify(m => m.WriteAllText(configPath, json), Times.Once);
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanGetAccountKeyFromSettings()
         {
             var uri = new Uri("http://acme.d/d");
@@ -178,7 +178,7 @@ namespace Certes.Cli
             fileMock.Verify(m => m.ReadAllText(configPath), Times.Once);
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanGetAccountKeyFromEnv()
         {
             var uri = new Uri("http://acme.d/d");
@@ -200,7 +200,7 @@ namespace Certes.Cli
             fileMock.Verify(m => m.ReadAllText(configPath), Times.Never);
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanGetAccountKeyNull()
         {
             var uri = new Uri("http://acme.d/d");
@@ -219,7 +219,7 @@ namespace Certes.Cli
             Assert.Null(ret);
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanSetAccountKey()
         {
             var uri = new Uri("http://acme.d/d");
@@ -249,7 +249,7 @@ namespace Certes.Cli
             fileMock.Verify(m => m.WriteAllText(configPath, json), Times.Once);
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanReplaceAccountKey()
         {
             var uri = new Uri("http://acme.d/d");

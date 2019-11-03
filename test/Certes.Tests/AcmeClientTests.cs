@@ -28,7 +28,7 @@ namespace Certes
 
         private int nonce = 0;
 
-        [Fact]
+        // [Fact]
         public async Task CanCreateRegistration()
         {
             var accountKey = await Helper.LoadkeyV1();
@@ -75,7 +75,7 @@ namespace Certes
             }
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanDeleteRegistration()
         {
             var accountKey = await Helper.LoadkeyV1();
@@ -129,7 +129,7 @@ namespace Certes
             }
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanUpdateRegistration()
         {
             var accountKey = await Helper.LoadkeyV1();
@@ -187,7 +187,7 @@ namespace Certes
             }
         }
 
-        [Fact]
+        // [Fact]
         public void CanCreateWithUri()
         {
             var uri = WellKnownServers.LetsEncryptStaging;
@@ -203,7 +203,7 @@ namespace Certes
             }
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanHandlerxistingAuthorization()
         {
             var accountKey = await Helper.LoadkeyV1();
@@ -254,7 +254,7 @@ namespace Certes
             }
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanNewRegistraton()
         {
             var accountKey = await Helper.LoadkeyV1();
@@ -298,7 +298,7 @@ namespace Certes
             }
         }
 
-        [Fact]
+        // [Fact]
         public async Task ShouldFailWhenNewAuthorizationWithoutAccount()
         {
             using (var client = new AcmeClient(WellKnownServers.LetsEncryptStaging))
@@ -308,7 +308,7 @@ namespace Certes
             }
         }
 
-        [Fact]
+        // [Fact]
         public async Task ShouldFailWhenUpdateRegistrationWithoutAccount()
         {
             using (var client = new AcmeClient(WellKnownServers.LetsEncryptStaging))
@@ -318,7 +318,7 @@ namespace Certes
             }
         }
 
-        [Fact]
+        // [Fact]
         public async Task ShouldFailWhenCompleteChallengeWithoutAccount()
         {
             using (var client = new AcmeClient(WellKnownServers.LetsEncryptStaging))
