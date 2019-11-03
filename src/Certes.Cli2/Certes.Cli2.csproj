@@ -2,8 +2,7 @@
 
   <PropertyGroup>
     <!--<OutputType Condition="'$(UnitTest)' != 'true'">Exe</OutputType>-->
-    <!--<TargetFramework>netcoreapp2.1</TargetFramework>-->
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>certes</ToolCommandName>
