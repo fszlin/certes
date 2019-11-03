@@ -2,7 +2,7 @@
   <Import Project="../../misc/certes.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
 
     <RootNamespace>Certes.Cli</RootNamespace>
     <NoWarn>1701;1702;1705;0618</NoWarn>
@@ -30,6 +30,7 @@
   <ItemGroup>
     <!--<ProjectReference Include="..\..\src\Certes.Cli2\Certes.Cli2.csproj" />-->
     <ProjectReference Include="..\..\src\Certes.Cli3\Certes.Cli3.csproj" />
+    <ProjectReference Include="..\Certes.Tests\Certes.Tests.csproj" />
   </ItemGroup>
 
 </Project>
