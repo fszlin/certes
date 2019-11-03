@@ -3,6 +3,7 @@ trigger:
 
 variables:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
 jobs:
 
@@ -11,7 +12,7 @@ jobs:
     name: Linux_netstandard20
     displayName: Linux - netstandard2.0
     framework: netstandard2.0
-    appFramework: netcoreapp2.1
+    appFramework: netcoreapp2.0
     pool:
       vmImage: 'ubuntu-latest'
 
@@ -20,7 +21,7 @@ jobs:
     name: macOS_netstandard20
     displayName: macOS - netstandard2.0
     framework: netstandard2.0
-    appFramework: netcoreapp2.1
+    appFramework: netcoreapp2.0
     pool:
       vmImage: 'macOS-latest'
 
@@ -29,7 +30,7 @@ jobs:
     name: Windows_netstandard20
     displayName: Windows - netstandard2.0
     framework: netstandard2.0
-    appFramework: netcoreapp2.1
+    appFramework: netcoreapp2.0
     pool:
       vmImage: 'windows-latest'
 
