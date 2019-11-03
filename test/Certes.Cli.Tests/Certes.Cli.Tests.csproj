@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Certes.Cli\Certes.Cli.csproj" />
-    <ProjectReference Include="..\Certes.Tests\Certes.Tests.csproj" />
+    <ProjectReference Include="..\Certes.Tests2\Certes.Tests2.csproj" />
   </ItemGroup>
 
 </Project>
