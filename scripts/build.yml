@@ -21,7 +21,7 @@ jobs:
   #     arguments: '-f ${{ parameters.framework }}'
 
   - task: DotNetCoreCLI@2
-    displayName: 'Run unit tests'
+    displayName: 'run unit tests'
     inputs:
       command: 'test'
       projects: 'test/Certes.Tests2/Certes.Tests2.csproj'
