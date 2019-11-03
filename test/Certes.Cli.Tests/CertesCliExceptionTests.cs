@@ -1,5 +1,4 @@
-﻿/*
-using Xunit;
+﻿using Xunit;
 
 namespace Certes.Cli
 {
@@ -28,4 +27,3 @@ namespace Certes.Cli
         }
     }
 }
-*/

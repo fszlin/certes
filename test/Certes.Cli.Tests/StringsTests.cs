@@ -1,5 +1,4 @@
-﻿/*
-using System.Globalization;
+﻿using System.Globalization;
 using Xunit;
 
 namespace Certes.Cli
@@ -28,4 +27,3 @@ namespace Certes.Cli
         }
     }
 }
-*/

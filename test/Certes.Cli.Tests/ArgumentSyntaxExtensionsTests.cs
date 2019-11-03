@@ -1,5 +1,4 @@
-﻿/*
-using System;
+﻿using System;
 using System.CommandLine;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
@@ -47,4 +46,3 @@ namespace Certes.Cli
         }
     }
 }
-*/
