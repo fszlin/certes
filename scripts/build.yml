@@ -13,19 +13,19 @@ jobs:
 
   steps:
 
-  - task: DotNetCoreCLI@2
-    displayName: 'build certes'
-    inputs:
-      command: 'build'
-      projects: 'src/Certes/Certes.csproj'
-      arguments: '-f ${{ parameters.framework }}'
+  # - task: DotNetCoreCLI@2
+  #   displayName: 'build certes'
+  #   inputs:
+  #     command: 'build'
+  #     projects: 'src/Certes/Certes.csproj'
+  #     arguments: '-f ${{ parameters.framework }}'
 
   - task: DotNetCoreCLI@2
     displayName: 'run unit tests'
     inputs:
       command: 'test'
       projects: 'test/Certes.Tests/Certes.Tests.csproj'
-      arguments: '-f ${{ parameters.appFramework }} --collect "Code Coverage" --no-build --filter Certes.Acme.Resource'
+      arguments: '-f ${{ parameters.appFramework }} --collect "Code Coverage" --filter Certes.Acme.Resource'
       testRunTitle: 'Unit Tests'
 
   # - task: DotNetCoreCLI@2
