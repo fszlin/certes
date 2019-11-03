@@ -18,3 +18,12 @@ jobs:
       command: 'build'
       projects: 'src/Certes/Certes.csproj'
       arguments: '-f ${{ parameters.framework }}'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'run unit tests'
+    inputs:
+      command: 'test'
+      projects: 'test/Certes/Certes.Tests.csproj'
+      arguments: '-f ${{ parameters.framework }}'
+      testRunTitle: 'Unit Tests'
+      
