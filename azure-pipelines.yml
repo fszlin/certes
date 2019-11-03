@@ -11,7 +11,8 @@ jobs:
     displayName: 'build certes'
     inputs:
       command: 'build'
-      projects: './src/Certes/Certes.csproj'
+      projects: 'src/Certes/Certes.csproj'
+      arguments: '-f netstandard2.0'
 
 - job: macOS
 
@@ -24,7 +25,8 @@ jobs:
     displayName: 'build certes'
     inputs:
       command: 'build'
-      projects: './src/Certes/Certes.csproj'
+      projects: 'src/Certes/Certes.csproj'
+      arguments: '-f netstandard2.0'
 
 - job: Windows
 
@@ -37,4 +39,5 @@ jobs:
     displayName: 'build certes'
     inputs:
       command: 'build'
-      projects: './src/Certes/Certes.csproj'
+      projects: 'src/Certes/Certes.csproj'
+      arguments: '-f netstandard2.0'
