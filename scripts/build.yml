@@ -32,7 +32,7 @@ jobs:
     displayName: 'Run unit tests'
     inputs:
       command: 'test'
-      projects: 'test/Certes.Cli.Tests2/Certes.Cli.Tests2.csproj'
+      projects: 'test/Certes.Tests2/Certes.Tests2.csproj'
       arguments: '-f ${{ parameters.appFramework }} --collect "Code Coverage"'
       testRunTitle: 'Unit Tests'
     condition: eq('${{ parameters.appFramework }}', 'netcoreapp2.1')
