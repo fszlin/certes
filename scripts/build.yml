@@ -25,7 +25,7 @@ jobs:
     inputs:
       command: 'test'
       projects: 'test/Certes.Tests2/Certes.Tests2.csproj'
-      arguments: '-f ${{ parameters.appFramework }} --collect "Code Coverage"'
+      arguments: '-f ${{ parameters.appFramework }} --collect "Code Coverage" --filter Certes.Acme.Resource'
       testRunTitle: 'Unit Tests'
 
   # - task: DotNetCoreCLI@2
