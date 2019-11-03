@@ -5,8 +5,8 @@
     <!--<TargetFramework>netcoreapp2.1</TargetFramework>-->
     <TargetFramework>netstandard2.0</TargetFramework>
     
-    <PackAsTool>true</PackAsTool>
-    <ToolCommandName>certes</ToolCommandName>
+    <!--<PackAsTool>true</PackAsTool>
+    <ToolCommandName>certes</ToolCommandName>-->
   </PropertyGroup>
 
 </Project>
