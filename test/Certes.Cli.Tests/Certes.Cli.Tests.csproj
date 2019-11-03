@@ -2,7 +2,7 @@
   <Import Project="../../misc/certes.props" />
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
 
     <RootNamespace>Certes.Cli</RootNamespace>
     <NoWarn>1701;1702;1705;0618</NoWarn>
