@@ -11,7 +11,7 @@ jobs:
     name: Linux_netstandard20
     displayName: Linux - netstandard2.0
     framework: netstandard2.0
-    appFramework: netcoreapp2.1
+    appFramework: netcoreapp2.0
     pool:
       vmImage: 'ubuntu-latest'
 
@@ -20,7 +20,7 @@ jobs:
     name: macOS_netstandard20
     displayName: macOS - netstandard2.0
     framework: netstandard2.0
-    appFramework: netcoreapp2.1
+    appFramework: netcoreapp2.0
     pool:
       vmImage: 'macOS-latest'
 
@@ -29,15 +29,15 @@ jobs:
     name: Windows_netstandard20
     displayName: Windows - netstandard2.0
     framework: netstandard2.0
-    appFramework: netcoreapp2.1
+    appFramework: netcoreapp2.0
     pool:
       vmImage: 'windows-latest'
 
 - template: scripts/build.yml
   parameters:
-    name: Windows_net461
-    displayName: Windows - net461
-    framework: net461
-    appFramework: net461
+    name: Windows_net47
+    displayName: Windows - net47
+    framework: net47
+    appFramework: net47
     pool:
       vmImage: 'windows-latest'
