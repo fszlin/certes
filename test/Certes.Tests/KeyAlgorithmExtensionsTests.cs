@@ -4,7 +4,7 @@ namespace Certes
 {
     public class KeyAlgorithmExtensionsTests
     {
-        // [Fact]
+        [Fact]
         public void CanGetAlgoId()
         {
             Assert.Equal("1.2.840.10045.4.3.2", KeyAlgorithm.ES256.ToPkcsObjectId());

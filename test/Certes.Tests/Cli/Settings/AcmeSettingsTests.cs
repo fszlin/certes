@@ -6,7 +6,7 @@ namespace Certes.Cli.Settings
 {
     public class AcmeSettingsTests
     {
-        // [Fact]
+        [Fact]
         public void CanGetSetProperties()
         {
             var entity = new AcmeSettings();

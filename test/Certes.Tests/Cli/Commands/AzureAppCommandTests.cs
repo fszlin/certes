@@ -22,7 +22,7 @@ namespace Certes.Cli.Commands
     [Collection(nameof(Helper.GetValidCert))]
     public class AzureAppCommandTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanProcessCommand()
         {
             var domain = "www.certes.com";
@@ -173,7 +173,7 @@ namespace Certes.Cli.Commands
             await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
         }
 
-        // [Fact]
+        [Fact]
         public void CanDefineCommand()
         {
             var args = $"app http://acme.com/o/1 www.abc.com my-app --private-key ./cert-key.pem"

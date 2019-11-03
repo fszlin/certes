@@ -7,7 +7,7 @@ namespace Certes
 {
     public class IAccountContextExtensionsTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanDeactivateAccount()
         {
             var ctx = new Mock<IAccountContext>();

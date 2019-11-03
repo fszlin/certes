@@ -15,7 +15,7 @@ namespace Certes.Cli.Commands
 {
     public class OrderFinalizeCommandTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanProcessCommand()
         {
             var orderLoc = new Uri("http://acme.com/o/1");
@@ -99,7 +99,7 @@ namespace Certes.Cli.Commands
             orderMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Once);
         }
 
-        // [Fact]
+        [Fact]
         public void CanDefineCommand()
         {
             var args = $"finalize http://a.com/o/1 --dn CN=www.m.com --out ./p.pem --server {LetsEncryptStagingV2}";

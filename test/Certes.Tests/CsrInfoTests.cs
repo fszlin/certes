@@ -5,7 +5,7 @@ namespace Certes
 {
     public class CsrInfoTests
     {
-        // [Fact]
+        [Fact]
         public void CanSetInfo()
         {
             var csr = new CsrInfo

@@ -10,7 +10,7 @@ namespace Certes.Crypto
 {
     public class RS256SignerTests
     {
-        // [Fact]
+        [Fact]
         public void InvalidPrivateKey()
         {
             var provider = new KeyAlgorithmProvider();
@@ -20,7 +20,7 @@ namespace Certes.Crypto
             Assert.Throws<ArgumentException>(() => new RS256Signer(key));
         }
 
-        // [Fact]
+        [Fact]
         public void InvalidKey()
         {
             var mock = new Mock<IKey>();
