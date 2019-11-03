@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>certes</ToolCommandName>
+    <AssemblyName>dotnet-certes</AssemblyName>
   </PropertyGroup>
 
 </Project>
