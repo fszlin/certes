@@ -27,3 +27,12 @@ jobs:
       projects: 'test/Certes.Tests/Certes.Tests.csproj'
       arguments: '-f ${{ parameters.appFramework }}'
       testRunTitle: 'Unit Tests'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'run integration tests'
+    inputs:
+      command: 'test'
+      projects: 'test/Certes.Integration/Certes.Integration.csproj'
+      arguments: '-f ${{ parameters.appFramework }}'
+      testRunTitle: 'Integration Tests'
+
