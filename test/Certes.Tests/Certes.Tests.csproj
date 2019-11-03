@@ -5,24 +5,13 @@
     <TargetFrameworks>netcoreapp2.1;net47</TargetFrameworks>
     <RootNamespace>Certes</RootNamespace>
     <NoWarn>1701;1702;1705;0618</NoWarn>
-    <IncludeCli Condition="'$(TargetFramework)' == 'netcoreapp2.1'">True</IncludeCli>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
-
-  <ItemGroup Condition="'$(IncludeCli)' != 'True'">
-    <Compile Remove="Cli\**" />
-    <EmbeddedResource Remove="Cli\**" />
-    <None Remove="Cli\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Net.Http" Condition="'$(TargetFramework)' == 'net47'" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="NLog" Version="4.6.7" />
-    <PackageReference Include="System.CommandLine" Version="0.1.0-*" Condition="'$(IncludeCli)' == 'True'" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
@@ -35,12 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Certes.Cli\Certes.Cli.csproj" Condition="'$(IncludeCli)' == 'True'" />
     <ProjectReference Include="..\..\src\Certes\Certes.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
   <ItemGroup>
@@ -78,5 +62,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  
+
 </Project>
