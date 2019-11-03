@@ -20,7 +20,7 @@
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
     <PackageId>dotnet-certes</PackageId>
     <PackageIconUrl>https://raw.githubusercontent.com/fszlin/certes/master/misc/logo.png</PackageIconUrl>
-    <PackAsTool Condition="'$(CertesVersion)' != ''">true</PackAsTool>
+    <PackAsTool>true</PackAsTool>
     <ToolCommandName>certes</ToolCommandName>
     <AssemblyName>dotnet-certes</AssemblyName>
   </PropertyGroup>
