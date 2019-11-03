@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿/*
+using System.Collections.Generic;
 using Autofac;
 using Certes.Cli.Commands;
 using Xunit;
@@ -27,3 +28,4 @@ namespace Certes.Cli
         }
     }
 }
+*/
