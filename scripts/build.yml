@@ -13,6 +13,12 @@ jobs:
 
   steps:
 
+  - task: UseDotNet@2
+    displayName: 'use sdk v2.2'
+    inputs:
+      packageType: sdk
+      version: 2.2.x
+      
   - task: DotNetCoreCLI@2
     displayName: 'build certes'
     inputs:
@@ -32,7 +38,7 @@ jobs:
     displayName: 'run integration tests'
     inputs:
       command: 'test'
-      projects: 'test/Certes.Integration/Certes.Integration.csproj --collect "Code Coverage"'
+      projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj --collect "Code Coverage"'
       arguments: '-f ${{ parameters.appFramework }}'
       testRunTitle: 'Integration Tests'
 
