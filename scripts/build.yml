@@ -24,7 +24,7 @@ jobs:
     displayName: 'run unit tests'
     inputs:
       command: 'test'
-      projects: 'test/Certes.Tests/Certes.Tests.csproj'
+      projects: 'test/Certes.Tests2/Certes.Tests2.csproj'
       arguments: '-f ${{ parameters.appFramework }} --collect "Code Coverage" --filter Certes.Acme.Resource'
       testRunTitle: 'Unit Tests'
 
