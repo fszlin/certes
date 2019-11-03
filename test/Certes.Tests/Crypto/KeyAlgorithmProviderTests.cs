@@ -28,7 +28,7 @@ namespace Certes.Crypto
             Assert.NotNull(key.JsonWebKey);
         }
 
-        // [Fact]
+        [Fact]
         public void CtorWithInvalidAlgo()
         {
             var provider = new KeyAlgorithmProvider();
@@ -55,7 +55,7 @@ namespace Certes.Crypto
             Assert.Equal(keyData, restoredData);
         }
 
-        // [Fact]
+        [Fact]
         public void InvalidCurve()
         {
             var provider = new KeyAlgorithmProvider();
@@ -69,7 +69,7 @@ namespace Certes.Crypto
             Assert.Throws<NotSupportedException>(() => provider.GetKey(der));
         }
 
-        // [Fact]
+        [Fact]
         public void InvalidKeyData()
         {
             var provider = new KeyAlgorithmProvider();

@@ -16,7 +16,7 @@ namespace Certes.Cli.Commands
 {
     public class AccountNewCommandTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanProcessCommand()
         {
             var serverUri = new Uri("http://acme.com/d");
@@ -91,7 +91,7 @@ namespace Certes.Cli.Commands
             fileMock.Verify(m => m.ReadAllText(keyPath), Times.Once);
         }
 
-        // [Fact]
+        [Fact]
         public void CanDefineCommand()
         {
             var args = $"new abc@example.com --server {LetsEncryptStagingV2}";

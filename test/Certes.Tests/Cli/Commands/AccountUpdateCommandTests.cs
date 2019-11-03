@@ -16,7 +16,7 @@ namespace Certes.Cli.Commands
 {
     public class AccountUpdateCommandTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanProcessCommand()
         {
             var serverUri = new Uri("http://acme.com/d");
@@ -58,7 +58,7 @@ namespace Certes.Cli.Commands
             acctCtxMock.Verify(m => m.Update(new[] { $"mailto://{email}" }, true), Times.Once);
         }
 
-        // [Fact]
+        [Fact]
         public void CanDefineCommand()
         {
             var args = $"update abc@example.com --server {LetsEncryptStagingV2}";

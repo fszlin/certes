@@ -13,7 +13,7 @@ namespace Certes.Cli.Commands
 {
     public class ServerShowCommandTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanProcessCommand()
         {
             var serverUri = new Uri("http://acme.com/d");
@@ -48,7 +48,7 @@ namespace Certes.Cli.Commands
                 JsonConvert.SerializeObject(ret));
         }
 
-        // [Fact]
+        [Fact]
         public void CanDefineCommand()
         {
             var args = $"show --server {LetsEncryptStagingV2}";

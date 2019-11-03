@@ -8,7 +8,7 @@ namespace Certes.Crypto
 {
     public class EllipticCurveSignerTests
     {
-        // [Fact]
+        [Fact]
         public void InvalidPrivateKey()
         {
             var provider = new KeyAlgorithmProvider();

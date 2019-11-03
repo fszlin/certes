@@ -6,7 +6,7 @@ namespace Certes.Tests.Acme.Resource
 {
     public class AuthorizationTests
     {
-        // [Fact]
+        [Fact]
         public void CanGetSetProperties()
         {
             var authz = new Authorization();

@@ -6,7 +6,7 @@ namespace Certes.Pkcs
 {
     public class KeyInfoTests
     {
-        // [Fact]
+        [Fact]
         public void CanReloadKeyPair()
         {
             var keyInfo = new KeyInfo
@@ -20,7 +20,7 @@ namespace Certes.Pkcs
             Assert.Equal(Helper.GetTestKeyV1(), Convert.ToBase64String(exported.PrivateKeyInfo));
         }
 
-        // [Fact]
+        [Fact]
         public void LoadKeyWithInvalidObject()
         {
             Assert.Throws<AcmeException>(() => KeyInfo.From(new MemoryStream()));

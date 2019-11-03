@@ -6,7 +6,7 @@ namespace Certes.Acme.Resource
 {
     public class OrderTests
     {
-        // [Fact]
+        [Fact]
         public void CanGetSetProperties()
         {
             var entity = new Order();

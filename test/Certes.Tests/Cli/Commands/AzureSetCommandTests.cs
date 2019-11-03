@@ -14,7 +14,7 @@ namespace Certes.Cli.Commands
 {
     public class AzureSetCommandTests
     {
-        // [Fact]
+        [Fact]
         public async Task CanProcessCommand()
         {
             var resourceGroups = new[] 
@@ -66,7 +66,7 @@ namespace Certes.Cli.Commands
             settingsMock.Verify(m => m.SetAzureSettings(It.IsAny<AzureSettings>()), Times.Once);
         }
 
-        // [Fact]
+        [Fact]
         public void CanDefineCommand()
         {
             var args = $"set"

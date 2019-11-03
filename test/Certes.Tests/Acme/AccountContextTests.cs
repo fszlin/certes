@@ -14,7 +14,7 @@ namespace Certes.Acme
         private Mock<IAcmeContext> contextMock = new Mock<IAcmeContext>();
         private Mock<IAcmeHttpClient> httpClientMock = new Mock<IAcmeHttpClient>();
 
-        // [Fact]
+        [Fact]
         public async Task CanDeactivateAccount()
         {
             var expectedPayload = new JwsPayload();
@@ -48,7 +48,7 @@ namespace Certes.Acme
             Assert.Equal(expectedAccount, account);
         }
 
-        // [Fact]
+        [Fact]
         public async Task CanLoadResource()
         {
             var expectedAccount = new Account();
@@ -93,7 +93,7 @@ namespace Certes.Acme
             Assert.Equal(expectedAccount, account);
         }
 
-        // [Fact]
+        [Fact]
         public async Task CanLoadOrderList()
         {
             var loc = new Uri("http://acme.d/acct/1/orders");
