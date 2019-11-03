@@ -12,33 +12,34 @@ jobs:
   pool: ${{ parameters.pool }}
 
   steps:
-
-  - task: UseDotNet@2
-    displayName: 'use sdk v2.2'
-    inputs:
-      packageType: sdk
-      version: 2.2.x
       
   - task: DotNetCoreCLI@2
-    displayName: 'build certes'
+    displayName: 'build unit tests'
     inputs:
       command: 'build'
-      projects: 'src/Certes/Certes.csproj'
-      arguments: '-f ${{ parameters.framework }}'
-
+      projects: 'test/Certes.Tests/Certes.Tests.csproj'
+      arguments: '-f ${{ parameters.appFramework }} -p:CliOutputType=Library'
+      
   - task: DotNetCoreCLI@2
     displayName: 'run unit tests'
     inputs:
       command: 'test'
       projects: 'test/Certes.Tests/Certes.Tests.csproj'
-      arguments: '-f ${{ parameters.appFramework }} --collect "Code Coverage"'
+      arguments: '-f ${{ parameters.appFramework }} --collect "Code Coverage" --no-build'
+      
+  - task: DotNetCoreCLI@2
+    displayName: 'build integration tests'
+    inputs:
+      command: 'build'
+      projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
+      arguments: '-f ${{ parameters.appFramework }} -p:CliOutputType=Library'
       testRunTitle: 'Unit Tests'
 
   - task: DotNetCoreCLI@2
     displayName: 'run integration tests'
     inputs:
       command: 'test'
-      projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj --collect "Code Coverage"'
-      arguments: '-f ${{ parameters.appFramework }}'
+      projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
+      arguments: '-f ${{ parameters.appFramework }} --collect "Code Coverage" --no-build'
       testRunTitle: 'Integration Tests'
 

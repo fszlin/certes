@@ -26,6 +26,11 @@
     <AssemblyName>dotnet-certes</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <OutputType Condition="'$(CliOutputType)' != ''">$(CliOutputType)</OutputType>
+    <TargetFrameworks Condition="'$(CliOutputType)' == 'Library'">netstandard1.6</TargetFrameworks>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\..\misc\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
   </ItemGroup>
