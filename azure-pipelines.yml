@@ -3,62 +3,34 @@ trigger:
 
 jobs:
 
-- job: Linux_netstandard20
-  displayName: Linux - netstandard2.0
+- template: scripts/build.yml
+  parameters:
+    name: Linux_netstandard20
+    displayName: Linux - netstandard2.0
+    framework: netstandard2.0
+    pool:
+      vmImage: 'ubuntu-latest'
 
-  pool:
-    vmImage: 'ubuntu-latest'
+- template: scripts/build.yml
+  parameters:
+    name: macOS_netstandard20
+    displayName: macOS - netstandard2.0
+    framework: netstandard2.0
+    pool:
+      vmImage: 'macOS-latest'
 
-  steps:
+- template: scripts/build.yml
+  parameters:
+    name: Windows_netstandard20
+    displayName: Windows - netstandard2.0
+    framework: netstandard2.0
+    pool:
+      vmImage: 'windows-latest'
 
-  - task: DotNetCoreCLI@2
-    displayName: 'build certes'
-    inputs:
-      command: 'build'
-      projects: 'src/Certes/Certes.csproj'
-      arguments: '-f netstandard2.0'
-
-- job: macOS_netstandard20
-  displayName: macOS - netstandard2.0
-
-  pool:
-    vmImage: 'macOS-latest'
-
-  steps:
-
-  - task: DotNetCoreCLI@2
-    displayName: 'build certes'
-    inputs:
-      command: 'build'
-      projects: 'src/Certes/Certes.csproj'
-      arguments: '-f netstandard2.0'
-
-- job: Windows_netstandard20
-  displayName: Windows - netstandard2.0
-
-  pool:
-    vmImage: 'windows-latest'
-
-  steps:
-  
-  - task: DotNetCoreCLI@2
-    displayName: 'build certes'
-    inputs:
-      command: 'build'
-      projects: 'src/Certes/Certes.csproj'
-      arguments: '-f netstandard2.0'
-
-- job: Windows_net47
-  displayName: Windows - net47
-
-  pool:
-    vmImage: 'windows-latest'
-
-  steps:
-  
-  - task: DotNetCoreCLI@2
-    displayName: 'build certes'
-    inputs:
-      command: 'build'
-      projects: 'src/Certes/Certes.csproj'
-      arguments: '-f net47'
+- template: scripts/build.yml
+  parameters:
+    name: Windows_net47
+    displayName: Windows - net47
+    framework: net47
+    pool:
+      vmImage: 'windows-latest'

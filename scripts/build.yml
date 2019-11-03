@@ -1,0 +1,20 @@
+
+parameters:
+  name: ''
+  displayName: ''
+  pool: ''
+  framework: ''
+
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName }}
+  pool: ${{ parameters.pool }}
+
+  steps:
+
+  - task: DotNetCoreCLI@2
+    displayName: 'build certes'
+    inputs:
+      command: 'build'
+      projects: 'src/Certes/Certes.csproj'
+      arguments: '-f ${{ parameters.framework }}'
