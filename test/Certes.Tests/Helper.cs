@@ -17,7 +17,6 @@ namespace Certes
 {
     public static partial class Helper
     {
-        private static readonly KeyAlgorithmProvider signatureAlgorithmProvider = new KeyAlgorithmProvider();
         private static (string Certificate, string Key)? validCertificate;
 
         public static IList<string> Logs
