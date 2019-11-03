@@ -4,6 +4,7 @@ parameters:
   displayName: ''
   pool: ''
   framework: ''
+  appFramework: ''
 
 jobs:
 - job: ${{ parameters.name }}
@@ -24,5 +25,5 @@ jobs:
     inputs:
       command: 'test'
       projects: 'test/Certes.Tests/Certes.Tests.csproj'
-      arguments: '-f ${{ parameters.framework }}'
+      arguments: '-f ${{ parameters.appFramework }}'
       testRunTitle: 'Unit Tests'
