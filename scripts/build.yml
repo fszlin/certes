@@ -30,7 +30,8 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: 'Upload unit tests code coverage'
     inputs:
-      command: 'codecov'
+      command: 'custom'
+      custom: codecov
       arguments: '-f test/Certes.Tests/coverage.opencover.xml --flag unitests'
       
   - task: DotNetCoreCLI@2
@@ -52,5 +53,6 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: 'Upload integration tests code coverage'
     inputs:
-      command: 'codecov'
+      command: 'custom'
+      custom: codecov
       arguments: '-f test/Certes.Integration/coverage.opencover.xml --flag integration'
