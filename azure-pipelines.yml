@@ -60,9 +60,15 @@ stages:
       inputs:
         command: 'custom'
         custom: 'pack'
-        arguments: 'src/Certes/Certes.csproj -p:CertesPreview=true'
+        arguments: 'src/Certes/Certes.csproj -p:CertesPreview=true --include-symbols -c Release'
         includesymbols: true
         versioningScheme: 'off'
+
+    - task: CopyFiles@2
+      inputs:
+        Contents: 'src/Certes/bin/**/*.nupkg'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        flattenFolders: true
 
     - task: PublishBuildArtifacts@1
       inputs:
