@@ -13,7 +13,7 @@
     <CertesPackageVersionSuffix Condition="'$(APPVEYOR_REPO_BRANCH)' != 'release'">$(CertesInformationalVersionSuffix)</CertesPackageVersionSuffix>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BUILD_SOURCEBRANCHNAME)' != '' AND '$(BUILD_BUILDNUMBER)' != ''">
-    <CertesFileVersionSuffix>.$(BUILD_BUILDNUMBER)</CertesFileVersionSuffix>
+    <CertesFileVersionSuffix>.$(BuildId)</CertesFileVersionSuffix>
     <CertesInformationalVersionSuffix>-$(BUILD_SOURCEBRANCHNAME)-$(BUILD_BUILDNUMBER)</CertesInformationalVersionSuffix>
     <CertesPackageVersionSuffix Condition="'$(CertesPreview)' == 'true'">$(CertesInformationalVersionSuffix)</CertesPackageVersionSuffix>
   </PropertyGroup>
