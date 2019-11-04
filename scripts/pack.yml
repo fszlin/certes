@@ -18,7 +18,7 @@ jobs:
     inputs:
       command: 'custom'
       custom: 'pack'
-      arguments: 'src/${{ parameters.projectName }}/*.csproj -p:CertesPreview=${{ parameters.project }} --include-symbols -c Release'
+      arguments: 'src/${{ parameters.projectName }}/${{ parameters.projectName }}.csproj -p:CertesPreview=${{ parameters.project }} --include-symbols -c Release'
 
   - task: CopyFiles@2
     displayName: Copy nupkg
