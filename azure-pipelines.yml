@@ -54,9 +54,9 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: Pack certes preview
     inputs:
-      command: 'pack'
-      packagesToPack: 'src/Certes/Certes.csproj'
-      arguments: '-p:CertesPreview=true'
+      command: 'custom'
+      custom: 'pack'
+      arguments: 'src/Certes/Certes.csproj -p:CertesPreview=true'
       includesymbols: true
       versioningScheme: 'off'
 
@@ -107,9 +107,9 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: Pack certes.tool preview
     inputs:
-      command: 'pack'
-      packagesToPack: 'src/Certes.Cli/Certes.Cli.csproj'
-      arguments: '-p:CertesPreview=true'
+      command: 'custom'
+      custom: 'pack'
+      arguments: 'src/Certes.Cli/Certes.Cli.csproj -p:CertesPreview=true'
       includesymbols: true
       versioningScheme: 'off'
 
