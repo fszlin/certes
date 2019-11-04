@@ -37,7 +37,7 @@ jobs:
     inputs:
       command: 'build'
       projects: 'test/Certes.Tests/Certes.Tests.csproj'
-      arguments: '-f ${{ parameters.appFramework }} -p:CliOutputType=Library -p:SkipSigning=true'
+      arguments: '-f ${{ parameters.appFramework }} -p:CliOutputType=Library -p:SkipSigning=true -p:CertesAssemblyVersion=$(Certes.AssemblyVersion)'
       
   - task: DotNetCoreCLI@2
     displayName: 'Run unit tests'
@@ -58,7 +58,7 @@ jobs:
     inputs:
       command: 'build'
       projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
-      arguments: '-f ${{ parameters.appFramework }} -p:CliOutputType=Library -p:SkipSigning=true'
+      arguments: '-f ${{ parameters.appFramework }} -p:CliOutputType=Library -p:SkipSigning=true -p:CertesToolAssemblyVersion=$(Certes.Tool.AssemblyVersion)'
       testRunTitle: 'Unit Tests'
 
   - task: DotNetCoreCLI@2
