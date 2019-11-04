@@ -26,6 +26,12 @@ jobs:
       command: 'test'
       projects: 'test/Certes.Tests/Certes.Tests.csproj'
       arguments: '-f ${{ parameters.appFramework }} -p:CollectCoverage=true --no-build -p:CoverletOutputFormat=opencover'
+ 
+  - task: DotNetCoreCLI@2
+    displayName: 'Upload unit tests code coverage'
+    inputs:
+      command: 'codecov'
+      arguments: '-f test/Certes.Tests/coverage.opencover.xml --flag unitests'
       
   - task: DotNetCoreCLI@2
     displayName: 'Build integration tests'
@@ -42,3 +48,9 @@ jobs:
       projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
       arguments: '-f ${{ parameters.appFramework }} -p:CollectCoverage=true --no-build -p:CoverletOutputFormat=opencover'
       testRunTitle: 'Integration Tests'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Upload integration tests code coverage'
+    inputs:
+      command: 'codecov'
+      arguments: '-f test/Certes.Integration/coverage.opencover.xml --flag integration'
