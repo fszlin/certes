@@ -40,8 +40,8 @@ before_build:
   - cmd: dotnet restore
 
 build_script:
-  - ps: dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp2.1
-  - ps: dotnet test ./test/Certes.Tests.Integration/Certes.Tests.Integration.csproj --framework netcoreapp2.1
+  - ps: dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp2.0
+  - ps: dotnet test ./test/Certes.Tests.Integration/Certes.Tests.Integration.csproj --framework netcoreapp2.0
 
 test: off
 before_test:
