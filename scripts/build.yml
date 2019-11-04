@@ -39,7 +39,7 @@ jobs:
     inputs:
       command: 'custom'
       custom: codecov
-      arguments: '-f test/Certes.Tests/coverage.opencover.xml --flag unitests'
+      arguments: '-f test/Certes.Tests/coverage.opencover.xml --flag unittests'
       
   - task: DotNetCoreCLI@2
     displayName: 'Build integration tests'

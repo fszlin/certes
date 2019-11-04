@@ -1,3 +1,5 @@
+name: Certes CI
+
 trigger:
 - master
 
