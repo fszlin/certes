@@ -41,3 +41,31 @@ jobs:
     appFramework: net47
     pool:
       vmImage: 'windows-latest'
+
+- job: pack
+  displayName: Pack nupkg
+  pool:
+    vmImage: 'windows-latest'
+  dependsOn:
+  - Linux_netstandard20
+  - macOS_netstandard20
+  - Windows_netstandard20
+  - Windows_net47
+  
+  steps:
+
+  - task: DotNetCoreCLI@2
+    displayName: Pack certes
+    inputs:
+      command: 'pack'
+      packagesToPack: 'src/Certes/Certes.csproj'
+      includesymbols: true
+      versioningScheme: 'off'
+
+  - task: DotNetCoreCLI@2
+    displayName: Pack certes.tool
+    inputs:
+      command: 'pack'
+      packagesToPack: 'src/Certes.Cli/Certes.Cli.csproj'
+      includesymbols: true
+      versioningScheme: 'off'
