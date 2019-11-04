@@ -48,94 +48,30 @@ stages:
   dependsOn: test
   jobs:
 
-  - job: pack_preview
-    displayName: Pack Certes preview
-    pool:
-      vmImage: 'windows-latest'
-    
-    steps:
+  - template: scripts/pack.yml
+    parameters:
+      name: 'pack_preview'
+      displayName: 'Pack Certes preview'
+      projectName: 'Certes'
+      previewPackage: 'true'
 
-    - task: DotNetCoreCLI@2
-      displayName: Pack certes preview
-      inputs:
-        command: 'custom'
-        custom: 'pack'
-        arguments: 'src/Certes/Certes.csproj -p:CertesPreview=true --include-symbols -c Release'
-        includesymbols: true
-        versioningScheme: 'off'
+  - template: scripts/pack.yml
+    parameters:
+      name: 'pack'
+      displayName: 'Pack Certes'
+      projectName: 'Certes'
+      previewPackage: 'false'
 
-    - task: CopyFiles@2
-      inputs:
-        Contents: 'src/Certes/bin/**/*.nupkg'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
-        flattenFolders: true
+  - template: scripts/pack.yml
+    parameters:
+      name: 'pack_tool_preview'
+      displayName: 'Pack Certes.Tool preview'
+      projectName: 'Certes.Cli'
+      previewPackage: 'true'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'certes_preview'
-        publishLocation: 'Container'
-
-  - job: pack
-    displayName: Pack Certes
-    pool:
-      vmImage: 'windows-latest'
-    
-    steps:
-
-    - task: DotNetCoreCLI@2
-      displayName: Pack certes
-      inputs:
-        command: 'pack'
-        packagesToPack: 'src/Certes/Certes.csproj'
-        includesymbols: true
-        versioningScheme: 'off'
-
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'certes'
-        publishLocation: 'Container'
-
-  - job: pack_tool_preview
-    displayName: Pack Certes.Tool preview
-    pool:
-      vmImage: 'windows-latest'
-    
-    steps:
-
-    - task: DotNetCoreCLI@2
-      displayName: Pack certes.tool preview
-      inputs:
-        command: 'custom'
-        custom: 'pack'
-        arguments: 'src/Certes.Cli/Certes.Cli.csproj -p:CertesPreview=true'
-        includesymbols: true
-        versioningScheme: 'off'
-
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'certes_tool_preview'
-        publishLocation: 'Container'
-
-  - job: pack_tool
-    displayName: Pack Certes.Tool
-    pool:
-      vmImage: 'windows-latest'
-    
-    steps:
-
-    - task: DotNetCoreCLI@2
-      displayName: Pack certes.tool
-      inputs:
-        command: 'pack'
-        packagesToPack: 'src/Certes.Cli/Certes.Cli.csproj'
-        includesymbols: true
-        versioningScheme: 'off'
-
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'certes_tool'
-        publishLocation: 'Container'
+  - template: scripts/pack.yml
+    parameters:
+      name: 'pack_tool'
+      displayName: 'Pack Certes.Tool'
+      projectName: 'Certes.Cli'
+      previewPackage: 'false'
