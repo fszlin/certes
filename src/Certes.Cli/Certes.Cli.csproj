@@ -15,16 +15,20 @@
     <Description>Dotnet tool for Automated Certificate Management Environment (ACME) protocol, powered by Certes.</Description>
     <PackageType>DotnetTool</PackageType>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate;dotnettool</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
     <PackageId>dotnet-certes</PackageId>
-    <PackageIconUrl>https://raw.githubusercontent.com/fszlin/certes/master/misc/logo.png</PackageIconUrl>
+    <PackageIcon>logo.png</PackageIcon>
     <PackAsTool Condition="'$(CertesVersion)' != ''">true</PackAsTool>
     <ToolCommandName>certes</ToolCommandName>
     <AssemblyName>dotnet-certes</AssemblyName>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\misc\logo.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <PropertyGroup>
     <OutputType Condition="'$(CliOutputType)' != ''">$(CliOutputType)</OutputType>
