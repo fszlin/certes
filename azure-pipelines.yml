@@ -40,7 +40,7 @@ jobs:
       vmImage: 'windows-latest'
 
 - job: pack_preview
-  displayName: Pack certes preview
+  displayName: Pack Certes preview
   pool:
     vmImage: 'windows-latest'
   dependsOn:
@@ -52,7 +52,7 @@ jobs:
   steps:
 
   - task: DotNetCoreCLI@2
-    displayName: Pack Certes preview
+    displayName: Pack certes preview
     inputs:
       command: 'pack'
       packagesToPack: 'src/Certes/Certes.csproj'
