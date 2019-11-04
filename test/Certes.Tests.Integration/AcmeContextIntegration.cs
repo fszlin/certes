@@ -24,7 +24,8 @@ namespace Certes
             DomainSuffix =
                 bool.TrueString.Equals(Environment.GetEnvironmentVariable("APPVEYOR"), StringComparison.OrdinalIgnoreCase) ? "appveyor" :
                 bool.TrueString.Equals(Environment.GetEnvironmentVariable("TRAVIS"), StringComparison.OrdinalIgnoreCase) ? "travis" :
-                !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AGENT_PHASENAME")) ? Environment.GetEnvironmentVariable("AGENT_PHASENAME").ToLowerInvariant() :
+                !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AGENT_JOBNAME")) ?
+                    new string(Environment.GetEnvironmentVariable("AGENT_JOBNAME").Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLowerInvariant() :
                 "dev";
         }
 
