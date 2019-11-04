@@ -20,16 +20,16 @@ jobs:
       custom: 'pack'
       arguments: 'src/${{ parameters.projectName }}/*.csproj -p:CertesPreview=${{ parameters.project }} --include-symbols -c Release'
 
-    - task: CopyFiles@2
-      displayName: Copy nupkg
-      inputs:
-        Contents: 'src/${{ parameters.projectName }}/bin/**/*.nupkg'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
-        flattenFolders: true
+  - task: CopyFiles@2
+    displayName: Copy nupkg
+    inputs:
+      Contents: 'src/${{ parameters.projectName }}/bin/**/*.nupkg'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      flattenFolders: true
 
-    - task: PublishBuildArtifacts@1
-      displayName: Publish nupkg
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: '${{ parameters.name }}'
-        publishLocation: 'Container'
+  - task: PublishBuildArtifacts@1
+    displayName: Publish nupkg
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: '${{ parameters.name }}'
+      publishLocation: 'Container'
