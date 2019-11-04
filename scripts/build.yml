@@ -13,10 +13,10 @@ jobs:
 
   steps:
       
-  - task: CmdLine@2
-    displayName: 'Check dotnet'
+  - task: UseDotNet@2
     inputs:
-      script: 'dotnet --version'
+      packageType: 'sdk'
+      version: '3.x'
       
   - task: DotNetCoreCLI@2
     displayName: 'Restore dotnet tool'
