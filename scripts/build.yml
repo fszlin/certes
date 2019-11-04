@@ -13,6 +13,18 @@ jobs:
 
   steps:
       
+  - task: CmdLine@2
+    displayName: 'Check dotnet'
+    inputs:
+      script: 'dotnet --version'
+      
+  - task: DotNetCoreCLI@2
+    displayName: 'Restore dotnet tool'
+    inputs:
+      command: 'custom'
+      custom: tool
+      arguments: 'restore'
+      
   - task: DotNetCoreCLI@2
     displayName: 'Restore dotnet tool'
     inputs:
@@ -39,7 +51,7 @@ jobs:
     inputs:
       command: 'custom'
       custom: codecov
-      arguments: '-f test/Certes.Tests/coverage.opencover.xml --flag unittests'
+      arguments: '-f test/Certes.Tests/coverage.opencover.xml --flag unittests -t $(CODECOV_TOKEN)'
       
   - task: DotNetCoreCLI@2
     displayName: 'Build integration tests'
@@ -62,4 +74,4 @@ jobs:
     inputs:
       command: 'custom'
       custom: codecov
-      arguments: '-f test/Certes.Integration/coverage.opencover.xml --flag integration'
+      arguments: '-f test/Certes.Integration/coverage.opencover.xml --flag integration -t $(CODECOV_TOKEN)'
