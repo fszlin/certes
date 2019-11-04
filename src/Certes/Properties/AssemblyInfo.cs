@@ -2,4 +2,9 @@
 using System.Runtime.InteropServices;
 
 [assembly: Guid("5f6267a0-a6c5-4d1e-b7ff-f8f8d09d8588")]
+
+#if SKIP_SIGNING
+[assembly: InternalsVisibleTo("Certes.Tests")]
+#else
 [assembly: InternalsVisibleTo("Certes.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100ed78c4ef36b48a0fd40e7e01b3ff23c1f63c15cbee51999c1835941c444f4a0a67b32525f4eef7cc458b30e1a4358123d5973372636c6f310c16d28cb72c8ede9e82ab44251faf3fff62f977200fa5de0307d445e6d35952b8adb5152cdf59a73c3cd0ace95a2f42e3844b74db1ff30ad98666739edbe7b809557eb179bae7b3")]
+#endif
