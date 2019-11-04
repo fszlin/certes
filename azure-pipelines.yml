@@ -1,9 +1,6 @@
 trigger:
 - master
 
-variables:
-  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
-
 jobs:
 
 - template: scripts/build.yml
@@ -42,6 +39,33 @@ jobs:
     pool:
       vmImage: 'windows-latest'
 
+- job: pack_preview
+  displayName: Pack certes preview
+  pool:
+    vmImage: 'windows-latest'
+  dependsOn:
+  - Linux_netstandard20
+  - macOS_netstandard20
+  - Windows_netstandard20
+  - Windows_net47
+  
+  steps:
+
+  - task: DotNetCoreCLI@2
+    displayName: Pack Certes preview
+    inputs:
+      command: 'pack'
+      packagesToPack: 'src/Certes/Certes.csproj'
+      arguments: '-p:CertesPreview=true'
+      includesymbols: true
+      versioningScheme: 'off'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'certes_preview'
+      publishLocation: 'Container'
+
 - job: pack
   displayName: Pack Certes
   pool:
@@ -66,6 +90,33 @@ jobs:
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: 'certes'
+      publishLocation: 'Container'
+
+- job: pack_tool_preview
+  displayName: Pack Certes.Tool preview
+  pool:
+    vmImage: 'windows-latest'
+  dependsOn:
+  - Linux_netstandard20
+  - macOS_netstandard20
+  - Windows_netstandard20
+  - Windows_net47
+  
+  steps:
+
+  - task: DotNetCoreCLI@2
+    displayName: Pack certes.tool preview
+    inputs:
+      command: 'pack'
+      packagesToPack: 'src/Certes.Cli/Certes.Cli.csproj'
+      arguments: '-p:CertesPreview=true'
+      includesymbols: true
+      versioningScheme: 'off'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'certes_tool_preview'
       publishLocation: 'Container'
 
 - job: pack_tool

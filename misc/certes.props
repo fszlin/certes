@@ -12,6 +12,11 @@
     <CertesInformationalVersionSuffix>-$(APPVEYOR_REPO_BRANCH)-$(APPVEYOR_BUILD_NUMBER)</CertesInformationalVersionSuffix>
     <CertesPackageVersionSuffix Condition="'$(APPVEYOR_REPO_BRANCH)' != 'release'">$(CertesInformationalVersionSuffix)</CertesPackageVersionSuffix>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(BUILD_SOURCEBRANCHNAME)' != '' AND '$(BUILD_BUILDNUMBER)' != ''">
+    <CertesFileVersionSuffix>.$(BUILD_BUILDNUMBER)</CertesFileVersionSuffix>
+    <CertesInformationalVersionSuffix>-$(BUILD_SOURCEBRANCHNAME)-$(BUILD_BUILDNUMBER)</CertesInformationalVersionSuffix>
+    <CertesPackageVersionSuffix Condition="'$(CertesPreview)' == 'true'">$(CertesInformationalVersionSuffix)</CertesPackageVersionSuffix>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(SkipSigning)' == 'true'">
     <SignAssembly>false</SignAssembly>
     <PublicSign>false</PublicSign>
