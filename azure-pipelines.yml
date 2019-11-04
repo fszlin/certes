@@ -43,7 +43,7 @@ jobs:
       vmImage: 'windows-latest'
 
 - job: pack
-  displayName: Pack nupkg
+  displayName: Pack Certes
   pool:
     vmImage: 'windows-latest'
   dependsOn:
@@ -62,6 +62,24 @@ jobs:
       includesymbols: true
       versioningScheme: 'off'
 
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'certes'
+      publishLocation: 'Container'
+
+- job: pack_tool
+  displayName: Pack Certes.Tool
+  pool:
+    vmImage: 'windows-latest'
+  dependsOn:
+  - Linux_netstandard20
+  - macOS_netstandard20
+  - Windows_netstandard20
+  - Windows_net47
+  
+  steps:
+
   - task: DotNetCoreCLI@2
     displayName: Pack certes.tool
     inputs:
@@ -69,3 +87,9 @@ jobs:
       packagesToPack: 'src/Certes.Cli/Certes.Cli.csproj'
       includesymbols: true
       versioningScheme: 'off'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'certes_tool'
+      publishLocation: 'Container'
