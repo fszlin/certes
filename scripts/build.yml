@@ -6,6 +6,9 @@ parameters:
   framework: ''
   appFramework: ''
 
+variables:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+
 jobs:
 - job: ${{ parameters.name }}
   displayName: ${{ parameters.displayName }}
