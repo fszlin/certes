@@ -14,16 +14,31 @@ jobs:
   steps:
       
   - task: DotNetCoreCLI@2
+    displayName: 'Build unit tests'
+    inputs:
+      command: 'build'
+      projects: 'test/Certes.Tests/Certes.Tests.csproj'
+      arguments: '-f ${{ parameters.appFramework }} -p:CliOutputType=Library -p:SkipSigning=true'
+      
+  - task: DotNetCoreCLI@2
     displayName: 'Run unit tests'
     inputs:
       command: 'test'
       projects: 'test/Certes.Tests/Certes.Tests.csproj'
-      arguments: '-f ${{ parameters.appFramework }} -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:SkipSigning=true -p:CliOutputType=Library'
+      arguments: '-f ${{ parameters.appFramework }} -p:CollectCoverage=true --no-build -p:CoverletOutputFormat=opencover'
       
+  - task: DotNetCoreCLI@2
+    displayName: 'Build integration tests'
+    inputs:
+      command: 'build'
+      projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
+      arguments: '-f ${{ parameters.appFramework }} -p:CliOutputType=Library -p:SkipSigning=true'
+      testRunTitle: 'Unit Tests'
+
   - task: DotNetCoreCLI@2
     displayName: 'Run integration tests'
     inputs:
       command: 'test'
       projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
-      arguments: '-f ${{ parameters.appFramework }} -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:SkipSigning=true -p:CliOutputType=Library'
+      arguments: '-f ${{ parameters.appFramework }} -p:CollectCoverage=true --no-build -p:CoverletOutputFormat=opencover'
       testRunTitle: 'Integration Tests'
