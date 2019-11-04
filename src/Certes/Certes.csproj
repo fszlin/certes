@@ -4,7 +4,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard1.3;net45;net47</TargetFrameworks>
     <AssemblyVersion>2.3.3</AssemblyVersion>
-    <AssemblyVersion Condition="$(CertesAssemblyVersion) != ''">$(CertesAssemblyVersion)</AssemblyVersion>
+    <AssemblyVersion Condition="$(CERTES_ASSEMBLYVERSION) != ''">$(CERTES_ASSEMBLYVERSION)</AssemblyVersion>
     <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
     <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
     <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
