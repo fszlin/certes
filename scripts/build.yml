@@ -74,4 +74,4 @@ jobs:
     inputs:
       command: 'custom'
       custom: codecov
-      arguments: '-f test/Certes.Integration/coverage.opencover.xml --flag integration -t $(CODECOV_TOKEN)'
+      arguments: '-f test/Certes.Tests.Integration/coverage.opencover.xml --flag integration -t $(CODECOV_TOKEN)'
