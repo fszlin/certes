@@ -52,18 +52,11 @@ jobs:
   steps:
 
   - task: DotNetCoreCLI@2
-    displayName: Build certes preview
-    inputs:
-      command: 'build'
-      projects: 'src/Certes/Certes.csproj'
-      arguments: '-p:CertesPreview=true'
-
-  - task: DotNetCoreCLI@2
     displayName: Pack certes preview
     inputs:
       command: 'pack'
       packagesToPack: 'src/Certes/Certes.csproj'
-      arguments: '--no-build'
+      arguments: '-p:CertesPreview=true'
       includesymbols: true
       versioningScheme: 'off'
 
@@ -112,18 +105,11 @@ jobs:
   steps:
 
   - task: DotNetCoreCLI@2
-    displayName: Build certes.tool preview
-    inputs:
-      command: 'build'
-      projects: 'src/Certes.Cli/Certes.Cli.csproj'
-      arguments: '-p:CertesPreview=true'
-
-  - task: DotNetCoreCLI@2
     displayName: Pack certes.tool preview
     inputs:
       command: 'pack'
       packagesToPack: 'src/Certes.Cli/Certes.Cli.csproj'
-      arguments: '--no-build'
+      arguments: '-p:CertesPreview=true'
       includesymbols: true
       versioningScheme: 'off'
 
