@@ -3,7 +3,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp1.0;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CERTES_TOOL_ASSEMBLYVERSION)' != ''">netcoreapp2.1</TargetFrameworks>
     <AssemblyVersion>1.0.4</AssemblyVersion>
     <AssemblyVersion Condition="$(CERTES_TOOL_ASSEMBLYVERSION) != ''">$(CERTES_TOOL_ASSEMBLYVERSION)</AssemblyVersion>
     <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
@@ -21,7 +22,7 @@
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
     <PackageId>dotnet-certes</PackageId>
     <PackageIcon>logo.png</PackageIcon>
-    <PackAsTool>true</PackAsTool>
+    <PackAsTool Condition="'$(CERTES_TOOL_ASSEMBLYVERSION)' != ''">true</PackAsTool>
     <ToolCommandName>certes</ToolCommandName>
     <AssemblyName>dotnet-certes</AssemblyName>
   </PropertyGroup>
