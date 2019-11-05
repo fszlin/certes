@@ -1,0 +1,77 @@
+
+parameters:
+  name: ''
+  displayName: ''
+  pool: ''
+  framework: ''
+  appFramework: ''
+
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName }}
+  pool: ${{ parameters.pool }}
+
+  steps:
+      
+  - task: UseDotNet@2
+    displayName: 'Add dotnet 3.x'
+    inputs:
+      packageType: 'sdk'
+      version: '3.x'
+      
+  - task: UseDotNet@2
+    displayName: 'Add dotnet 2.x'
+    inputs:
+      packageType: 'sdk'
+      version: '2.x'
+      
+  - task: DotNetCoreCLI@2
+    displayName: 'Restore dotnet tool'
+    inputs:
+      command: 'custom'
+      custom: tool
+      arguments: 'restore'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build unit tests'
+    inputs:
+      command: 'build'
+      projects: 'test/Certes.Tests/Certes.Tests.csproj'
+      arguments: '-f ${{ parameters.appFramework }} -p:CliOutputType=Library -p:SkipSigning=true'
+      
+  - task: DotNetCoreCLI@2
+    displayName: 'Run unit tests'
+    inputs:
+      command: 'test'
+      projects: 'test/Certes.Tests/Certes.Tests.csproj'
+      arguments: '-f ${{ parameters.appFramework }} -p:CollectCoverage=true --no-build -p:CoverletOutputFormat=opencover'
+ 
+  - task: DotNetCoreCLI@2
+    displayName: 'Upload unit tests code coverage'
+    inputs:
+      command: 'custom'
+      custom: codecov
+      arguments: '-f test/Certes.Tests/coverage.opencover.xml --flag unittests -t $(CODECOV_TOKEN)'
+      
+  - task: DotNetCoreCLI@2
+    displayName: 'Build integration tests'
+    inputs:
+      command: 'build'
+      projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
+      arguments: '-f ${{ parameters.appFramework }} -p:CliOutputType=Library -p:SkipSigning=true'
+      testRunTitle: 'Unit Tests'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Run integration tests'
+    inputs:
+      command: 'test'
+      projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
+      arguments: '-f ${{ parameters.appFramework }} -p:CollectCoverage=true --no-build -p:CoverletOutputFormat=opencover'
+      testRunTitle: 'Integration Tests'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Upload integration tests code coverage'
+    inputs:
+      command: 'custom'
+      custom: codecov
+      arguments: '-f test/Certes.Tests.Integration/coverage.opencover.xml --flag integration -t $(CODECOV_TOKEN)'

@@ -6,6 +6,7 @@
     <TargetFrameworks>netcoreapp1.0;netcoreapp2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(CertesVersion)' != ''">netcoreapp2.1</TargetFrameworks>
     <AssemblyVersion>1.0.4</AssemblyVersion>
+    <AssemblyVersion Condition="$(CERTES_TOOL_ASSEMBLYVERSION) != ''">$(CERTES_TOOL_ASSEMBLYVERSION)</AssemblyVersion>
     <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
     <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
     <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
@@ -15,15 +16,24 @@
     <Description>Dotnet tool for Automated Certificate Management Environment (ACME) protocol, powered by Certes.</Description>
     <PackageType>DotnetTool</PackageType>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate;dotnettool</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
     <PackageId>dotnet-certes</PackageId>
-    <PackageIconUrl>https://raw.githubusercontent.com/fszlin/certes/master/misc/logo.png</PackageIconUrl>
+    <PackageIcon>logo.png</PackageIcon>
     <PackAsTool Condition="'$(CertesVersion)' != ''">true</PackAsTool>
     <ToolCommandName>certes</ToolCommandName>
     <AssemblyName>dotnet-certes</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\misc\logo.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType Condition="'$(CliOutputType)' != ''">$(CliOutputType)</OutputType>
+    <TargetFrameworks Condition="'$(CliOutputType)' == 'Library'">netstandard1.6</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>

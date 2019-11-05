@@ -4,6 +4,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard1.3;net45;net47</TargetFrameworks>
     <AssemblyVersion>2.3.3</AssemblyVersion>
+    <AssemblyVersion Condition="$(CERTES_ASSEMBLYVERSION) != ''">$(CERTES_ASSEMBLYVERSION)</AssemblyVersion>
     <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
     <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
     <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
@@ -14,12 +15,16 @@
     <Description>A client implementation for the Automated Certificate Management Environment (ACME) protocol.</Description>
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate;dotnettool</PackageTags>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Certes.xml</DocumentationFile>
-    <PackageIconUrl>https://raw.githubusercontent.com/fszlin/certes/master/misc/logo.png</PackageIconUrl>
+    <PackageIcon>logo.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\misc\logo.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
   
   <ItemGroup>
     <None Remove="Resources\Certificates\dst-root-ca-x3.pem" />
