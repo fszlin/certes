@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +18,7 @@ namespace Certes.Acme
         {
             private readonly JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
 
-            public bool SendNonce { get;set; } = true;
+            public bool SendNonce { get; set; } = true;
 
             protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
@@ -61,5 +63,21 @@ namespace Certes.Acme
             }
         }
 
+        [Fact]
+        public void SetsUserAgent()
+        {
+            bool IsCertes(ProductInfoHeaderValue header)
+            {
+                return header.Product.Name == "Certes" 
+                    && header.Product.Version == typeof(AcmeHttpClient).GetTypeInfo().Assembly.GetName().Version.ToString();
+            }
+
+            Assert.Contains(AcmeHttpClient.CreateHttpClient().DefaultRequestHeaders.UserAgent, IsCertes);
+
+            var httpClient = new HttpClient();
+            var acmeClient = new AcmeHttpClient(new Uri("https://acme.d/directory"), httpClient);
+
+            Assert.Contains(httpClient.DefaultRequestHeaders.UserAgent, IsCertes);
+        }
     }
 }
