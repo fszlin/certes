@@ -96,7 +96,10 @@ can fullfill any one of them.
 ### Setup for Challenges
 
 Certes CLI provides commands for generating necessary data to fullfill
-the challenges. To get the `TXT` record value for `DNS` challenge:
+the challenges.
+
+#### DNS challenge
+ To get the `TXT` record value for `DNS` challenge:
 
 ```Powershell
 certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 *.example.com dns
@@ -112,8 +115,23 @@ The output will contain the `TXT` record value.
 }
 ```
 
+#### HTTP-01 challenge
+ To get token and thumbprint value for `HTTP-01` challenge:
+
+ ```Powershell
+certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 api.example.com http
+```
+The output will contain the `TXT` record value.
+
+```json
+{
+  "...": "...",
+  "dnsTxt": "Uil-TOCuvR9qnC7H3V65ossmqPgDERDg_9ahr6ZYBd0",
+  "resource": "..."
+}
+
 <!--
-TODO: HTTP-01 and TLS-ALPN-01
+TODO: TLS-ALPN-01
 -->
 
 ### Configure DNS challenge on Azure DNS
