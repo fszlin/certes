@@ -129,7 +129,7 @@ The output will contain the `TXT` record value.
   "dnsTxt": "Uil-TOCuvR9qnC7H3V65ossmqPgDERDg_9ahr6ZYBd0",
   "resource": "..."
 }
-
+```
 <!--
 TODO: TLS-ALPN-01
 -->
