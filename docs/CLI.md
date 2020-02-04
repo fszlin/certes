@@ -42,7 +42,7 @@ The result should look similar to this:
       "mailto:email@example.com"
     ]
   }
-}
+
 ```
 
 ## Ordering SSL Certificates
@@ -121,15 +121,22 @@ The output will contain the `TXT` record value.
  ```Powershell
 certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 api.example.com http
 ```
-The output will contain the `TXT` record value.
+The output will contain the two value fields we need to use for order validation.
 
 ```json
 {
-  "...": "...",
-  "dnsTxt": "Uil-TOCuvR9qnC7H3V65ossmqPgDERDg_9ahr6ZYBd0",
-  "resource": "..."
+  "location": ...,
+  "resource": {
+    "type": "http-01",
+    "url": "https://acme-v02.api.letsencrypt.org/acme/chall-v3/2645311522/sample",
+    "status": "Pending",
+    "token": "iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest"
+  },
+  "keyAuthz": "iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest.Qed9-4Ek4ot3idslj89tmCMGEYlfY5I463X37hCd9i4"
 }
 ```
+
+On your application server you need to create file which will be available under *http://api.example.com/.well-known/acme-challenge/iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest* (resource.token value for last url segment). File content needs to be set as *iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest.Qed9-4Ek4ot3idslj89tmCMGEYlfY5I463X37hCd9i4* (keyAuthz value).
 <!--
 TODO: TLS-ALPN-01
 -->
