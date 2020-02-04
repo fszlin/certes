@@ -125,7 +125,7 @@ The output will contain the two value fields we need to use for order validation
 
 ```json
 {
-  "location": ...,
+  "location": "...",
   "resource": {
     "type": "http-01",
     "url": "https://acme-v02.api.letsencrypt.org/acme/chall-v3/2645311522/sample",
