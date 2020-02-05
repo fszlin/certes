@@ -10,7 +10,6 @@
 
 namespace Certes.Cli {
     using System;
-    using System.Reflection;
     
     
     /// <summary>
@@ -20,7 +19,7 @@ namespace Certes.Cli {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Strings {
@@ -40,7 +39,7 @@ namespace Certes.Cli {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Certes.Cli.Strings", typeof(Strings).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Certes.Cli.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -103,6 +102,15 @@ namespace Certes.Cli {
         internal static string ErrorInvalidChallengeType {
             get {
                 return ResourceManager.GetString("ErrorInvalidChallengeType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is invalid key algorithm..
+        /// </summary>
+        internal static string ErrorInvalidkeyAlgorithm {
+            get {
+                return ResourceManager.GetString("ErrorInvalidkeyAlgorithm", resourceCulture);
             }
         }
         
@@ -472,6 +480,15 @@ namespace Certes.Cli {
         internal static string HelpKey {
             get {
                 return ResourceManager.GetString("HelpKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The algorithm to the private key for the certificate. Supported values are RS256, ES256, ES384 and ES512..
+        /// </summary>
+        internal static string HelpKeyAlgorithm {
+            get {
+                return ResourceManager.GetString("HelpKeyAlgorithm", resourceCulture);
             }
         }
         
