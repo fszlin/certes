@@ -17,9 +17,9 @@ namespace Certes
 
         private static Uri[] StagingServersV1 = new[]
         {
-            new Uri("https://lo0.in:4430/directory"),
+            //new Uri("https://lo0.in:4430/directory"),
             new Uri("https://boulder-certes-ci.dymetis.com:4430/directory"),
-            WellKnownServers.LetsEncryptStaging,
+            //WellKnownServers.LetsEncryptStaging,
         };
 
         public static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() =>
@@ -96,9 +96,9 @@ namespace Certes
             }
 
             var servers = new[] {
-                new Uri("https://lo0.in:4431/directory"),
+                //new Uri("https://lo0.in:4431/directory"),
                 new Uri("https://boulder-certes-ci.dymetis.com:4431/directory"),
-                WellKnownServers.LetsEncryptStagingV2,
+                //WellKnownServers.LetsEncryptStagingV2,
             };
 
             var exceptions = new List<Exception>();
