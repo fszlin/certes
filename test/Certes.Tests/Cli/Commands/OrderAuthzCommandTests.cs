@@ -88,6 +88,8 @@ namespace Certes.Cli.Commands
                 JsonConvert.SerializeObject(new
                 {
                     location = challenge1Loc,
+                    challengeFile = $".well-known/acme-challenge/{authz.Challenges[0].Token}",
+                    challengeTxt = $"{authz.Challenges[0].Token}.{GetKeyV2().Thumbprint()}",
                     resource = authz.Challenges[0],
                     keyAuthz = http01KeyAuthzThumbprint
                 }),
