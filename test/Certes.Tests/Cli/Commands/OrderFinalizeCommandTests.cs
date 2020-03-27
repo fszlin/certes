@@ -102,7 +102,7 @@ namespace Certes.Cli.Commands
         [Fact]
         public void CanDefineCommand()
         {
-            var args = $"finalize http://a.com/o/1 --dn CN=www.m.com --out ./p.pem --server {LetsEncryptStagingV2}";
+            var args = $"finalize http://a.com/o/1 --dn CN=www.m.com --out ./p.pem --server {LetsEncryptStagingV2} --key-algorithm RS256";
             var syntax = DefineCommand(args);
 
             Assert.Equal("finalize", syntax.ActiveCommand.Value);
@@ -110,6 +110,7 @@ namespace Certes.Cli.Commands
             ValidateOption(syntax, "dn", "CN=www.m.com");
             ValidateOption(syntax, "out", "./p.pem");
             ValidateParameter(syntax, "order-id", new Uri("http://a.com/o/1"));
+            ValidateOption(syntax, "key-algorithm", "RS256");
 
             syntax = DefineCommand("noop");
             Assert.NotEqual("finalize", syntax.ActiveCommand.Value);

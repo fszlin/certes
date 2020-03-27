@@ -273,4 +273,10 @@
   <data name="HelpFriendlyName" xml:space="preserve">
     <value>Friendly name for the certificate.</value>
   </data>
+  <data name="HelpKeyAlgorithm" xml:space="preserve">
+    <value>The algorithm to the private key for the certificate. Supported values are RS256, ES256, ES384 and ES512.</value>
+  </data>
+  <data name="ErrorInvalidkeyAlgorithm" xml:space="preserve">
+    <value>'{0}' is invalid key algorithm.</value>
+  </data>
 </root>

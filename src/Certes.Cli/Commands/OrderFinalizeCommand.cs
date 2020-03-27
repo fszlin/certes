@@ -13,6 +13,7 @@ namespace Certes.Cli.Commands
         private const string OutOption = "out";
         private const string DnOption = "dn";
         private const string PrivateKeyOption = "private-key";
+        private const string KeyAlgorithmOption = "key-algorithm";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderFinalizeCommand));
         private readonly IEnvironmentVariables environment;
 
@@ -38,6 +39,7 @@ namespace Certes.Cli.Commands
                 .DefineOption(DnOption, help: Strings.HelpDn)
                 .DefineOption(OutOption, help: Strings.HelpKeyOut)
                 .DefineOption(PrivateKeyOption, help: Strings.HelpPrivateKey)
+                .DefineOption(KeyAlgorithmOption, help: Strings.HelpKeyAlgorithm)
                 .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId);
 
             return cmd;
@@ -49,9 +51,16 @@ namespace Certes.Cli.Commands
             var orderUri = syntax.GetParameter<Uri>(OrderIdParam, true);
             var distinguishedName = syntax.GetOption<string>(DnOption);
             var outPath = syntax.GetOption<string>(OutOption);
+            var keyAlgorithmStr = syntax.GetOption<string>(KeyAlgorithmOption);
+
+            var keyAlgorithm = 
+                keyAlgorithmStr == null ? KeyAlgorithm.ES256 :
+                Enum.TryParse<KeyAlgorithm>(keyAlgorithmStr, out var alg) ? alg :
+                    throw new ArgumentSyntaxException(string.Format(Strings.ErrorInvalidkeyAlgorithm, keyAlgorithmStr));
+
 
             var providedKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment);
-            var privKey = providedKey ?? KeyFactory.NewKey(KeyAlgorithm.ES256);
+            var privKey = providedKey ?? KeyFactory.NewKey(keyAlgorithm);
 
             logger.Debug("Finalizing order from '{0}'.", serverUri);
 
