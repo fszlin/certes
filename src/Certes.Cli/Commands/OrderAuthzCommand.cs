@@ -77,7 +77,10 @@ namespace Certes.Cli.Commands
             return new
             {
                 location = challengeCtx.Location,
+                challengeFile = $".well-known/acme-challenge/{challenge.Token}",
+                challengeTxt = $"{challenge.Token}.{key.Thumbprint()}",
                 resource = challenge,
+                keyAuthz = challengeCtx.KeyAuthz
             };
         }
     }
