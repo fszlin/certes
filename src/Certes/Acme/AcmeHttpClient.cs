@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace Certes.Acme
         private const string MimeJoseJson = "application/jose+json";
 
         private readonly static JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
-        private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(() => new HttpClient());
+        private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(CreateHttpClient);
         private readonly Lazy<HttpClient> http;
 
         private Uri newNonceUri;
@@ -35,6 +36,36 @@ namespace Certes.Acme
         /// </value>
         private HttpClient Http { get => http.Value; }
 
+        /// <summary>
+        /// Creates an instance of HttpClient configured with default settings.
+        /// </summary>
+        internal static HttpClient CreateHttpClient()
+        {
+            var client = new HttpClient();
+            ConfigureDefaultUserAgentHeader(client);
+            return client;
+        }
+
+        /// <remarks>
+        /// ACME clients MUST send a User-Agent header field, in accordance with
+        /// [RFC7231]. This header field SHOULD include the name and version of
+        /// the ACME software in addition to the name and version of the
+        /// underlying HTTP client software.
+        /// </remarks>
+        private static void ConfigureDefaultUserAgentHeader(HttpClient client)
+        {
+            var certesVersion = typeof(AcmeHttpClient).GetTypeInfo().Assembly.GetName().Version;
+            var netVersion
+#if NETSTANDARD1_3
+                = "1.3";
+#else
+                = Environment.Version;
+#endif
+            lock (client)
+            {
+                client.DefaultRequestHeaders.UserAgent.ParseAdd($"Certes/{certesVersion} .NET/{netVersion}");
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeHttpClient" /> class.
@@ -45,6 +76,12 @@ namespace Certes.Acme
         public AcmeHttpClient(Uri directoryUri, HttpClient http = null)
         {
             this.directoryUri = directoryUri;
+
+            if (http != null)
+            {
+                ConfigureDefaultUserAgentHeader(http);
+            }
+
             this.http = http == null ? SharedHttp : new Lazy<HttpClient>(() => http);
         }
 
