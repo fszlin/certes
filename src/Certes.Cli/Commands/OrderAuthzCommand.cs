@@ -78,6 +78,7 @@ namespace Certes.Cli.Commands
             {
                 location = challengeCtx.Location,
                 resource = challenge,
+                keyAuthz = challengeCtx.KeyAuthz
             };
         }
     }
