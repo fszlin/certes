@@ -177,7 +177,7 @@ namespace Certes.Pkcs
 
             LoadKeyPair();
             var signatureFactory = new Asn1SignatureFactory(pkcsObjectId, keyPair.Private);
-            return new Pkcs10CertificationRequest(signatureFactory, x509, keyPair.Public, new DerSet(attribute), keyPair.Private);
+            return new Pkcs10CertificationRequest(signatureFactory, x509, keyPair.Public, new DerSet(attribute));
         }
 
         private void LoadKeyPair()

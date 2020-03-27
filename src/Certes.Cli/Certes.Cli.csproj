@@ -3,8 +3,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp1.0;netcoreapp2.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(CERTES_TOOL_ASSEMBLYVERSION)' != ''">netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <AssemblyVersion>1.0.4</AssemblyVersion>
     <AssemblyVersion Condition="$(CERTES_TOOL_ASSEMBLYVERSION) != ''">$(CERTES_TOOL_ASSEMBLYVERSION)</AssemblyVersion>
     <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
@@ -33,7 +32,6 @@
 
   <PropertyGroup>
     <OutputType Condition="'$(CliOutputType)' != ''">$(CliOutputType)</OutputType>
-    <TargetFrameworks Condition="'$(CliOutputType)' == 'Library'">netstandard1.6</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>

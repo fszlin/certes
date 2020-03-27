@@ -1,4 +1,5 @@
 // based on https://github.com/jefferai/golang-alpn-example/blob/master/alpnexample.go
+// nohup sudo go run tls-alpn-responder.go > /dev/null 2>&1
 
 package main
 
