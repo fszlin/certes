@@ -24,7 +24,7 @@ namespace Certes
 
         public static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() =>
         {
-#if NETCOREAPP2_0
+#if NETCOREAPP3_1
             var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
 #elif NETCOREAPP1_0
             var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (msg, cert, chains, errors) => true };

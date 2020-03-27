@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-dotnet: 2.2
+dotnet: 3.1
 env:
   matrix:
     - CLI_VERSION=Latest
@@ -15,5 +15,5 @@ branches:
     - vnext
 script:
   - dotnet restore
-  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp2.0
-  - dotnet test ./test/Certes.Tests.Integration/Certes.Tests.Integration.csproj --framework netcoreapp2.0
+  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp3.1
+  - dotnet test ./test/Certes.Tests.Integration/Certes.Tests.Integration.csproj --framework netcoreapp3.1
