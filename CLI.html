@@ -98,7 +98,7 @@ have one already, you can register a new account:</p>
       &quot;mailto:email@example.com&quot;
     ]
   }
-}
+
 </code></pre>
 <h2 id="ordering-ssl-certificates">Ordering SSL Certificates</h2>
 <p>With an <code>valid</code> ACME account, we can start generating SSL certificates now.</p>
@@ -143,7 +143,9 @@ can fullfill any one of them.</p>
 </blockquote>
 <h3 id="setup-for-challenges">Setup for Challenges</h3>
 <p>Certes CLI provides commands for generating necessary data to fullfill
-the challenges. To get the <code>TXT</code> record value for <code>DNS</code> challenge:</p>
+the challenges.</p>
+<h4 id="dns-challenge">DNS challenge</h4>
+<p>To get the <code>TXT</code> record value for <code>DNS</code> challenge:</p>
 <pre><code class="lang-Powershell">certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 *.example.com dns
 </code></pre>
 <p>The output will contain the <code>TXT</code> record value.</p>
@@ -153,8 +155,25 @@ the challenges. To get the <code>TXT</code> record value for <code>DNS</code> ch
   &quot;resource&quot;: &quot;...&quot;
 }
 </code></pre>
+<h4 id="http-01-challenge">HTTP-01 challenge</h4>
+<p>To get token and thumbprint value for <code>HTTP-01</code> challenge:</p>
+<pre><code class="lang-Powershell">certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 api.example.com http
+</code></pre>
+<p>The output will contain the two value fields we need to use for order validation.</p>
+<pre><code class="lang-json">{
+  &quot;location&quot;: &quot;...&quot;,
+  &quot;resource&quot;: {
+    &quot;type&quot;: &quot;http-01&quot;,
+    &quot;url&quot;: &quot;https://acme-v02.api.letsencrypt.org/acme/chall-v3/2645311522/sample&quot;,
+    &quot;status&quot;: &quot;Pending&quot;,
+    &quot;token&quot;: &quot;iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest&quot;
+  },
+  &quot;keyAuthz&quot;: &quot;iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest.Qed9-4Ek4ot3idslj89tmCMGEYlfY5I463X37hCd9i4&quot;
+}
+</code></pre>
+<p>On your application server you need to create file which will be available under <em><a href="http://api.example.com/.well-known/acme-challenge/iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest">http://api.example.com/.well-known/acme-challenge/iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest</a></em> (resource.token value for last url segment). File content needs to be set as <em>iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest.Qed9-4Ek4ot3idslj89tmCMGEYlfY5I463X37hCd9i4</em> (keyAuthz value).</p>
 <!--
-TODO: HTTP-01 and TLS-ALPN-01
+TODO: TLS-ALPN-01
 -->
 <h3 id="configure-dns-challenge-on-azure-dns">Configure DNS challenge on Azure DNS</h3>
 <p>If you are using <a href="https://azure.microsoft.com/en-ca/services/dns">Azure DNS</a> service,
