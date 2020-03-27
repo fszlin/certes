@@ -12,7 +12,7 @@ stages:
       name: Linux_netstandard20
       displayName: Linux - netstandard2.0
       framework: netstandard2.0
-      appFramework: netcoreapp2.0
+      appFramework: netcoreapp3.1
       pool:
         vmImage: 'ubuntu-latest'
 
@@ -21,7 +21,7 @@ stages:
       name: macOS_netstandard20
       displayName: macOS - netstandard2.0
       framework: netstandard2.0
-      appFramework: netcoreapp2.0
+      appFramework: netcoreapp3.1
       pool:
         vmImage: 'macOS-latest'
 
@@ -30,7 +30,7 @@ stages:
       name: Windows_netstandard20
       displayName: Windows - netstandard2.0
       framework: netstandard2.0
-      appFramework: netcoreapp2.0
+      appFramework: netcoreapp3.1
       pool:
         vmImage: 'windows-latest'
 

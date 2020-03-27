@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- Removed support for `netstanard1.3`
+- [CLI] Upgrade to `netcoreapp3.1`
 
 ## [2.3.3] - 2018-12-16
 ### Changed

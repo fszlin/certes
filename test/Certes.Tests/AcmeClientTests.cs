@@ -71,7 +71,7 @@ namespace Certes
                     Assert.Equal(tos, account.GetTermsOfServiceUri());
                 }
 
-                mock.Protected().Verify("Dispose", Times.Never(), true);
+                mock.As<IDisposable>().Verify(x => x.Dispose(), Times.Never());
             }
         }
 
@@ -125,7 +125,7 @@ namespace Certes
                     await client.DeleteRegistration(account);
                 }
 
-                mock.Protected().Verify("Dispose", Times.Never(), true);
+                mock.As<IDisposable>().Verify(x => x.Dispose(), Times.Never());
             }
         }
 
@@ -183,7 +183,7 @@ namespace Certes
                     Assert.Equal(regLocation, account.Location);
                 }
 
-                mock.Protected().Verify("Dispose", Times.Never(), true);
+                mock.As<IDisposable>().Verify(x => x.Dispose(), Times.Never());
             }
         }
 
@@ -250,7 +250,7 @@ namespace Certes
                     Assert.Equal(authzLoc, authz.Location);
                 }
 
-                mock.Protected().Verify("Dispose", Times.Never(), true);
+                mock.As<IDisposable>().Verify(x => x.Dispose(), Times.Never());
             }
         }
 
@@ -294,7 +294,7 @@ namespace Certes
                     Assert.Equal(regLocation, result.Location);
                 }
 
-                mock.Protected().Verify("Dispose", Times.Never(), true);
+                mock.As<IDisposable>().Verify(x => x.Dispose(), Times.Never());
             }
         }
 
@@ -381,7 +381,7 @@ namespace Certes
                     }
                 });
 
-            mock.Protected().Setup("Dispose", true);
+            mock.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
 
             return mock;
         }
