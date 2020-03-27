@@ -47,8 +47,9 @@ namespace Certes.Cli.Commands
                         Token = "dns-token",
                         Type = ChallengeTypes.Dns01,
                     }
-                }
+                }                
             };
+            var http01KeyAuthzThumbprint = "keyAuthz";
 
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
             settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(LetsEncryptV2);
@@ -57,6 +58,7 @@ namespace Certes.Cli.Commands
             var challengeMock1 = new Mock<IChallengeContext>(MockBehavior.Strict);
             challengeMock1.SetupGet(m => m.Location).Returns(challenge1Loc);
             challengeMock1.SetupGet(m => m.Type).Returns(ChallengeTypes.Http01);
+            challengeMock1.SetupGet(m => m.KeyAuthz).Returns(http01KeyAuthzThumbprint);
             challengeMock1.Setup(m => m.Resource()).ReturnsAsync(authz.Challenges[0]);
             var challengeMock2 = new Mock<IChallengeContext>(MockBehavior.Strict);
             challengeMock2.SetupGet(m => m.Location).Returns(challenge2Loc);
@@ -89,6 +91,7 @@ namespace Certes.Cli.Commands
                     challengeFile = $".well-known/acme-challenge/{authz.Challenges[0].Token}",
                     challengeTxt = $"{authz.Challenges[0].Token}.{GetKeyV2().Thumbprint()}",
                     resource = authz.Challenges[0],
+                    keyAuthz = http01KeyAuthzThumbprint
                 }),
                 JsonConvert.SerializeObject(ret));
 

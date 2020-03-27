@@ -80,6 +80,7 @@ namespace Certes.Cli.Commands
                 challengeFile = $".well-known/acme-challenge/{challenge.Token}",
                 challengeTxt = $"{challenge.Token}.{key.Thumbprint()}",
                 resource = challenge,
+                keyAuthz = challengeCtx.KeyAuthz
             };
         }
     }
