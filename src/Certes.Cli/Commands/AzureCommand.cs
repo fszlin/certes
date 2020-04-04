@@ -47,15 +47,7 @@ namespace Certes.Cli.Commands
                 ClientSecret = secret,
             };
 
-            var credentials = new AzureCredentials(
-                loginInfo, tenantId, AzureEnvironment.AzureGlobalCloud)
-                .WithDefaultSubscription(subscriptionId);
-
-            var builder = RestClient.Configure();
-            var resClient = builder.WithEnvironment(AzureEnvironment.AzureGlobalCloud)
-                .WithCredentials(credentials)
-                .Build();
-            return resClient;
+            return CreateRestClient(tenantId, subscriptionId, loginInfo);
         }
 
         protected static ArgumentSyntax DefineAzureOptions(ArgumentSyntax syntax)
@@ -68,6 +60,19 @@ namespace Certes.Cli.Commands
                 .DefineOption(AzureSecretOption, help: Strings.HelpAzureSecret)
                 .DefineOption(AzureSubscriptionIdOption, help: Strings.HelpAzureSubscriptionId)
                 .DefineOption(AzureResourceGroupOption, help: Strings.HelpAzureResourceGroup);
+        }
+
+        private static RestClient CreateRestClient(string tenantId, string subscriptionId, ServicePrincipalLoginInformation loginInfo)
+        {
+            var credentials = new AzureCredentials(
+                loginInfo, tenantId, AzureEnvironment.AzureGlobalCloud)
+                .WithDefaultSubscription(subscriptionId);
+
+            var builder = RestClient.Configure();
+            var resClient = builder.WithEnvironment(AzureEnvironment.AzureGlobalCloud)
+                .WithCredentials(credentials)
+                .Build();
+            return resClient;
         }
 
         private void ValidateOption(string value, string optionName)
