@@ -2,8 +2,14 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [2.3.4] - 2020-03-27
+### Changed
+- Add user-agent header to HTTP requests
 - Removed support for `netstanard1.3`
 - [CLI] Upgrade to `netcoreapp3.1`
+### Added
+- [CLI] Add options for algorithm in order finalize method
 
 ## [2.3.3] - 2018-12-16
 ### Changed
