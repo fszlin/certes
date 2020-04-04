@@ -1,9 +1,9 @@
-﻿using System;
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 
 namespace Certes.Cli.Commands
 {
@@ -24,7 +24,7 @@ namespace Certes.Cli.Commands
         {
         }
 
-        protected async Task<AzureCredentials> ReadAzureCredentials(ArgumentSyntax syntax)
+        protected async Task<RestClient> CreateAzureRestClient(ArgumentSyntax syntax)
         {
             var azSettings = await UserSettings.GetAzureSettings();
             var tenantId = syntax.GetOption<string>(AzureTenantIdOption)
@@ -47,11 +47,7 @@ namespace Certes.Cli.Commands
                 ClientSecret = secret,
             };
 
-            var credentials = new AzureCredentials(
-                loginInfo, tenantId, AzureEnvironment.AzureGlobalCloud)
-                .WithDefaultSubscription(subscriptionId);
-
-            return credentials;
+            return CreateRestClient(tenantId, subscriptionId, loginInfo);
         }
 
         protected static ArgumentSyntax DefineAzureOptions(ArgumentSyntax syntax)
@@ -64,6 +60,19 @@ namespace Certes.Cli.Commands
                 .DefineOption(AzureSecretOption, help: Strings.HelpAzureSecret)
                 .DefineOption(AzureSubscriptionIdOption, help: Strings.HelpAzureSubscriptionId)
                 .DefineOption(AzureResourceGroupOption, help: Strings.HelpAzureResourceGroup);
+        }
+
+        private static RestClient CreateRestClient(string tenantId, string subscriptionId, ServicePrincipalLoginInformation loginInfo)
+        {
+            var credentials = new AzureCredentials(
+                loginInfo, tenantId, AzureEnvironment.AzureGlobalCloud)
+                .WithDefaultSubscription(subscriptionId);
+
+            var builder = RestClient.Configure();
+            var resClient = builder.WithEnvironment(AzureEnvironment.AzureGlobalCloud)
+                .WithCredentials(credentials)
+                .Build();
+            return resClient;
         }
 
         private void ValidateOption(string value, string optionName)

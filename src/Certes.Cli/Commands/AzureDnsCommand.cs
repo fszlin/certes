@@ -48,7 +48,7 @@ namespace Certes.Cli.Commands
             var (serverUri, key) = await ReadAccountKey(syntax, true, false);
             var orderUri = syntax.GetParameter<Uri>(OrderIdParam, true);
             var domain = syntax.GetParameter<string>(DomainParam, true);
-            var azureCredentials = await ReadAzureCredentials(syntax);
+            var azureCredentials = await CreateAzureRestClient(syntax);
             var resourceGroup = syntax.GetOption<string>(AzureResourceGroupOption, true);
 
             var acme = ContextFactory.Invoke(serverUri, key);
@@ -62,7 +62,6 @@ namespace Certes.Cli.Commands
             var dnsValue = acme.AccountKey.DnsTxt(challengeCtx.Token);
             using (var client = clientFactory.Invoke(azureCredentials))
             {
-                client.SubscriptionId = azureCredentials.DefaultSubscriptionId;
                 var idValue = authz.Identifier.Value;
                 var zone = await FindDnsZone(client, idValue);
                 

@@ -56,7 +56,7 @@ namespace Certes.Cli.Commands
             var orderUri = syntax.GetParameter<Uri>(OrderIdParam, true);
             var domain = syntax.GetParameter<string>(DomainParam, true);
 
-            var azureCredentials = await ReadAzureCredentials(syntax);
+            var azureCredentials = await CreateAzureRestClient(syntax);
             var resourceGroup = syntax.GetOption<string>(AzureResourceGroupOption, true);
             var appName = syntax.GetParameter<string>(AppNameParam, true);
             var appSlot = syntax.GetOption<string>(SlotOption, false);
@@ -78,8 +78,6 @@ namespace Certes.Cli.Commands
 
             using (var client = clientFactory.Invoke(azureCredentials))
             {
-                client.SubscriptionId = azureCredentials.DefaultSubscriptionId;
-
                 var certUploaded = await FindCertificate(client, resourceGroup, thumbprint);
                 if (certUploaded == null)
                 {
