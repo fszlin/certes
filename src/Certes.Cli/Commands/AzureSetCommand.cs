@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
-using NLog;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 using static Certes.Cli.Commands.AzureCommand;
 
 namespace Certes.Cli.Commands
@@ -42,8 +42,12 @@ namespace Certes.Cli.Commands
                 loginInfo, tenantId, AzureEnvironment.AzureGlobalCloud)
                 .WithDefaultSubscription(subscriptionId);
 
-            var resourceGroups = await LoadResourceGroups(credentials);
+            var builder = RestClient.Configure();
+            var resClient = builder.WithEnvironment(AzureEnvironment.AzureGlobalCloud)
+                .WithCredentials(credentials)
+                .Build();
 
+            var resourceGroups = await LoadResourceGroups(resClient);
             var azSettings = new AzureSettings
             {
                 ClientId = clientId,
@@ -72,9 +76,9 @@ namespace Certes.Cli.Commands
             return cmd;
         }
 
-        private async Task<IList<(string Location, string Name)>> LoadResourceGroups(AzureCredentials credentials)
+        private async Task<IList<(string Location, string Name)>> LoadResourceGroups(RestClient restClient)
         {
-            using (var client = clientFactory.Invoke(credentials))
+            using (var client = clientFactory.Invoke(restClient))
             {
                 var resourceGroups = await client.ResourceGroups.ListAsync();
                 return resourceGroups.Select(g => (g.Location, g.Name)).ToArray();

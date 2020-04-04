@@ -1,9 +1,9 @@
-﻿using System;
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 
 namespace Certes.Cli.Commands
 {
@@ -24,7 +24,7 @@ namespace Certes.Cli.Commands
         {
         }
 
-        protected async Task<AzureCredentials> ReadAzureCredentials(ArgumentSyntax syntax)
+        protected async Task<RestClient> CreateAzureRestClient(ArgumentSyntax syntax)
         {
             var azSettings = await UserSettings.GetAzureSettings();
             var tenantId = syntax.GetOption<string>(AzureTenantIdOption)
@@ -51,7 +51,11 @@ namespace Certes.Cli.Commands
                 loginInfo, tenantId, AzureEnvironment.AzureGlobalCloud)
                 .WithDefaultSubscription(subscriptionId);
 
-            return credentials;
+            var builder = RestClient.Configure();
+            var resClient = builder.WithEnvironment(AzureEnvironment.AzureGlobalCloud)
+                .WithCredentials(credentials)
+                .Build();
+            return resClient;
         }
 
         protected static ArgumentSyntax DefineAzureOptions(ArgumentSyntax syntax)
