@@ -80,6 +80,7 @@ namespace Certes.Cli.Commands
         {
             using (var client = clientFactory.Invoke(restClient))
             {
+                client.SubscriptionId = restClient.Credentials.DefaultSubscriptionId;
                 var resourceGroups = await client.ResourceGroups.ListAsync();
                 return resourceGroups.Select(g => (g.Location, g.Name)).ToArray();
             }
