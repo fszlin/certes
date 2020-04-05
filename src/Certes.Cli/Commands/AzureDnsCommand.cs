@@ -62,6 +62,7 @@ namespace Certes.Cli.Commands
             var dnsValue = acme.AccountKey.DnsTxt(challengeCtx.Token);
             using (var client = clientFactory.Invoke(azureCredentials))
             {
+                client.SubscriptionId = azureCredentials.Credentials.DefaultSubscriptionId;
                 var idValue = authz.Identifier.Value;
                 var zone = await FindDnsZone(client, idValue);
                 

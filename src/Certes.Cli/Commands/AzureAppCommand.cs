@@ -78,6 +78,7 @@ namespace Certes.Cli.Commands
 
             using (var client = clientFactory.Invoke(azureCredentials))
             {
+                client.SubscriptionId = azureCredentials.Credentials.DefaultSubscriptionId;
                 var certUploaded = await FindCertificate(client, resourceGroup, thumbprint);
                 if (certUploaded == null)
                 {
