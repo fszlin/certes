@@ -152,13 +152,7 @@ namespace Certes.Pkcs
             };
         }
 
-        /// <summary>
-        /// Generates the CSR.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Pkcs10CertificationRequest"/>.
-        /// </returns>
-        public Pkcs10CertificationRequest GeneratePkcs10()
+        private Pkcs10CertificationRequest GeneratePkcs10()
         {
             var x509 = new X509Name(attributes.Select(p => p.Id).ToArray(), attributes.Select(p => p.Value).ToArray());
 
