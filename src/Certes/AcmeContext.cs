@@ -108,7 +108,7 @@ namespace Certes
         /// <returns>
         /// The account created.
         /// </returns>
-        public async Task<IAccountContext> NewAccount(IList<string> contact, bool termsOfServiceAgreed)
+        public async Task<IAccountContext> NewAccount(IList<string> contact, bool termsOfServiceAgreed, string eabKeyId = null, string eabKey = null, string eabKeyAlg = null)
         {
             var body = new Account
             {
@@ -116,7 +116,7 @@ namespace Certes
                 TermsOfServiceAgreed = termsOfServiceAgreed
             };
 
-            var resp = await AccountContext.NewAccount(this, body, true);
+            var resp = await AccountContext.NewAccount(this, body, true, eabKeyId, eabKey, eabKeyAlg);
             return accountContext = new AccountContext(this, resp.Location);
         }
 
