@@ -28,8 +28,16 @@ namespace Certes.Crypto
             using (var reader = new StringReader(pem))
             {
                 var pemReader = new PemReader(reader);
-                var pemKey = pemReader.ReadObject() as AsymmetricCipherKeyPair;
-                return ReadKey(pemKey.Private);
+                var untyped = pemReader.ReadObject();
+                switch(untyped)
+                {
+                    case AsymmetricCipherKeyPair keyPair:
+                        return ReadKey(keyPair.Private);
+                    case AsymmetricKeyParameter keyParam:
+                        return ReadKey(keyParam);
+                    default:
+                        throw new NotSupportedException();
+                }
             }
         }
 
