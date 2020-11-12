@@ -41,6 +41,7 @@ namespace Certes.Cli.Commands
                 .DefineOption(PrivateKeyOption, help: Strings.HelpPrivateKey)
                 .DefineOption(FriendlyNameOption, help: Strings.HelpFriendlyName)
                 .DefineOption(IssuerOption, help: Strings.HelpCertificateIssuer)
+                .DefineOption(PreferredChainOption, help: Strings.HelpPreferredChain)
                 .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId)
                 .DefineParameter(PasswordParam, help: Strings.HelpPfxPassword);
 

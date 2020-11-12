@@ -141,6 +141,9 @@
   <data name="HelpCertificateOut" xml:space="preserve">
     <value>Path to save the certificate.</value>
   </data>
+  <data name="HelpPreferredChain" xml:space="preserve">
+    <value>Preferred root certificate.</value>
+  </data>
   <data name="HelpChallengeType" xml:space="preserve">
     <value>The challenge type, http or dns.</value>
   </data>

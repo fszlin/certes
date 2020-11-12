@@ -11,6 +11,7 @@ namespace Certes.Cli.Commands
     internal abstract class CertificateCommand : CommandBase
     {
         protected const string OrderIdParam = "order-id";
+        protected const string PreferredChainOption ="preferred-chain";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(CertificateCommand));
 
         public CommandGroup Group { get; } = CommandGroup.Certificate;
@@ -27,6 +28,7 @@ namespace Certes.Cli.Commands
         {
             var (serverUri, key) = await ReadAccountKey(syntax, true, true);
             var orderUri = syntax.GetParameter<Uri>(OrderIdParam, true);
+            var preferredChain = syntax.GetOption<string>(PreferredChainOption);
 
             logger.Debug("Downloading certificate from '{0}'.", serverUri);
 
@@ -39,7 +41,7 @@ namespace Certes.Cli.Commands
                     string.Format(Strings.ErrorExportInvalidOrder, order.Status));
             }
 
-            return (order.Certificate, await orderCtx.Download());
+            return (order.Certificate, await orderCtx.Download(preferredChain));
         }
     }
 }
