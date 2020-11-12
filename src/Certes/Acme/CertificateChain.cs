@@ -46,6 +46,7 @@ namespace Certes.Acme
         /// Checks if the certificate chain is signed by a preferred issuer.
         /// </summary>
         /// <param name="preferredChain">The name of the preferred issuer</param>
+        /// <returns>true if a certificate in the chain is issued by preferredChain or preferredChain is empty</returns>
         public bool CheckIssuer(string preferredChain)
         {
             if (string.IsNullOrEmpty(preferredChain))
