@@ -96,7 +96,7 @@ namespace Certes.Acme
             {
                 var header = new
                 {
-                    alg = eabKeyAlg ?? "HS256",
+                    alg = eabKeyAlg?.ToUpper() ?? "HS256",
                     kid = eabKeyId,
                     url = endpoint
                 };
@@ -112,11 +112,22 @@ namespace Certes.Acme
 
                 var signingBytes = System.Text.Encoding.ASCII.GetBytes($"{protectedHeaderBase64}.{accountKeyBase64}");
 
-                // eab signature is the HS256 hash of the header and account key, using the eab key
-                var signatureHash =
-                    new HMACSHA256(JwsConvert.FromBase64String(eabKey))
-                    .ComputeHash(signingBytes);
+                // eab signature is the hash of the header and account key, using the eab key
+                byte[] signatureHash;
 
+                switch (header.alg)
+                {
+                    case "HS512":
+                        signatureHash = new HMACSHA512(JwsConvert.FromBase64String(eabKey)).ComputeHash(signingBytes);
+                        break;
+                    case "HS384":
+                        signatureHash = new HMACSHA384(JwsConvert.FromBase64String(eabKey)).ComputeHash(signingBytes);
+                        break;
+                    default:
+                        signatureHash = new HMACSHA256(JwsConvert.FromBase64String(eabKey)).ComputeHash(signingBytes);
+                        break;   
+                }
+                    
                 var signatureBase64 = JwsConvert.ToBase64String(signatureHash);
 
                 body.ExternalAccountBinding = new

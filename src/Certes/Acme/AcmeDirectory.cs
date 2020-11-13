@@ -101,10 +101,10 @@ namespace Certes.Acme
             public IList<string> CaaIdentities { get; set; }
 
             /// <summary>
-            /// Indicate if caa requires external account binding (optional, https://tools.ietf.org/html/rfc8555#section-7.1.1)
+            /// Indicate if ACME accounts requires external account binding (optional, https://tools.ietf.org/html/rfc8555#section-7.1.1)
             /// </summary>
             /// <value>
-            /// If true, caa requires external account binding
+            /// If true, requires external account binding
             /// </value>
             [JsonProperty("externalAccountRequired")]
             public bool? ExternalAccountRequired { get; set; }

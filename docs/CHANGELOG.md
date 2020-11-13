@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Added
+- Implement external account binding support (library). ([#231][i231])
 
 ## [2.3.4] - 2020-03-27
 ### Changed
