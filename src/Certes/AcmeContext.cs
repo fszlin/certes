@@ -95,8 +95,9 @@ namespace Certes
             var jws = new JwsSigner(newKey);
             var body = jws.Sign(keyChange, url: endpoint);
 
-            var payload = await Sign(body, endpoint);
-            var resp = await HttpClient.Post<Account>(endpoint, payload, true);
+            //var payload = await Sign(body, endpoint);
+            //var resp = await HttpClient.Post<Account>(endpoint, payload, true);
+            var resp = await HttpClient.Post<Account>(this, endpoint, body, true);
 
             AccountKey = newKey;
             return resp.Resource;
@@ -157,18 +158,21 @@ namespace Certes
             };
 
 
-            JwsPayload payload;
+            //JwsPayload payload;
             if (certificatePrivateKey != null)
             {
                 var jws = new JwsSigner(certificatePrivateKey);
-                payload = jws.Sign(body, url: endpoint, nonce: await HttpClient.ConsumeNonce());
+                // payload = jws.Sign(body, url: endpoint, nonce: await HttpClient.ConsumeNonce());
+                await HttpClient.Post<string>(jws, endpoint, body, true);
             }
             else
             {
-                payload = await Sign(body, endpoint);
+                // payload = await Sign(body, endpoint);
+                await HttpClient.Post<string>(this, endpoint, body, true);
+
             }
 
-            await HttpClient.Post<string>(endpoint, payload, true);
+            //await HttpClient.Post<string>(endpoint, payload, true);
         }
 
         /// <summary>
@@ -193,8 +197,9 @@ namespace Certes
                 NotAfter = notAfter,
             };
 
-            var payload = await Sign(body, endpoint);
-            var order = await HttpClient.Post<Order>(endpoint, payload, true);
+            // var payload = await Sign(body, endpoint);
+            // var order = await HttpClient.Post<Order>(endpoint, payload, true);
+            var order = await HttpClient.Post<Order>(this, endpoint, body, true);
             return new OrderContext(this, order.Location);
         }
 
