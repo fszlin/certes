@@ -79,8 +79,7 @@ namespace Certes
             
             while (order.Status == OrderStatus.Processing && retryCount-- > 0)
             {
-                var delay = Math.Max(context.RetryAfter, 1) * 1000;
-                await Task.Delay(delay);
+                await Task.Delay(TimeSpan.FromSeconds(Math.Max(context.RetryAfter, 1)));
                 order = await context.Resource();
             }
 

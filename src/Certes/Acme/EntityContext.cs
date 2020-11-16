@@ -29,7 +29,7 @@ namespace Certes.Acme
         /// <summary>
         /// The timespan after which to retry the request
         /// </summary>
-        public int RetryAfter { get; private set; }
+        public int RetryAfter { get; protected set; }
 
 
         /// <summary>
