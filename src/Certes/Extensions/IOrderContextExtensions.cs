@@ -62,11 +62,11 @@ namespace Certes
         /// <param name="context">The order context.</param>
         /// <param name="csr">The CSR.</param>
         /// <param name="key">The private key for the certificate.</param>
-        /// <param name="retryCount">Number of retries when the Order is in 'processing' state.</param>
+        /// <param name="retryCount">Number of retries when the Order is in 'processing' state. (default = 1)</param>
         /// <returns>
         /// The certificate generated.
         /// </returns>
-        public static async Task<CertificateChain> Generate(this IOrderContext context, CsrInfo csr, IKey key, int retryCount = 0)
+        public static async Task<CertificateChain> Generate(this IOrderContext context, CsrInfo csr, IKey key, int retryCount = 1)
         {
             var order = await context.Resource();
             if (order.Status != OrderStatus.Ready && // draft-11
