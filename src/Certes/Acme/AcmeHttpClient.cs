@@ -136,34 +136,25 @@ namespace Certes.Acme
             return nonce;
         }
 
-        private async Task<AcmeHttpResponse<T>> ProcessResponse<T>(HttpResponseMessage response)
+
+        private double ExtractRetryAfterHeaderFromResponse(HttpResponseMessage response)
         {
-            var location = response.Headers.Location;
-            var resource = default(T);
+            if (response.Headers.RetryAfter != null)
+            {
+                var date = response.Headers.RetryAfter.Date;
+                var delta = response.Headers.RetryAfter.Delta;
+                if (date.HasValue)
+                    return Math.Abs((date.Value - DateTime.UtcNow).TotalSeconds);
+                else if (delta.HasValue)
+                    return delta.Value.TotalSeconds;
+            }
+
+            return 0;
+        }
+
+        private ILookup<string, Uri> ExtractLinksFromResponse(HttpResponseMessage response)
+        {
             var links = default(ILookup<string, Uri>);
-            var error = default(AcmeError);
-            var retryafter = 0;
-
-            if (response.Headers.Contains("Retry-After"))
-            {
-                try
-                {
-                    int seconds; DateTime datetime;
-                    if (int.TryParse(response.Headers.GetValues("Retry-After").Single(), out seconds))
-                        retryafter = seconds;
-                    else if (DateTime.TryParse(response.Headers.GetValues("Retry-After").Single(), out datetime))
-                        retryafter = (int)Math.Abs((datetime - DateTime.UtcNow).TotalSeconds);
-                }
-                catch {
-                    retryafter = 0;
-                }
-            }
-
-            if (response.Headers.Contains("Replay-Nonce"))
-            {
-                nonce = response.Headers.GetValues("Replay-Nonce").Single();
-            }
-
             if (response.Headers.Contains("Link"))
             {
                 links = response.Headers.GetValues("Link")?
@@ -187,6 +178,21 @@ namespace Certes.Acme
                         );
                     })
                     .ToLookup(l => l.Rel, l => l.Uri);
+            }
+            return links;
+        }
+
+        private async Task<AcmeHttpResponse<T>> ProcessResponse<T>(HttpResponseMessage response)
+        {
+            var location = response.Headers.Location;
+            var resource = default(T);
+            var error = default(AcmeError);
+            var retryafter = (int)ExtractRetryAfterHeaderFromResponse(response);
+            var links = ExtractLinksFromResponse(response);
+
+            if (response.Headers.Contains("Replay-Nonce"))
+            {
+                nonce = response.Headers.GetValues("Replay-Nonce").Single();
             }
 
             if (response.IsSuccessStatusCode)
