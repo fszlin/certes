@@ -142,6 +142,22 @@ namespace Certes.Acme
             var resource = default(T);
             var links = default(ILookup<string, Uri>);
             var error = default(AcmeError);
+            var retryafter = 0;
+
+            if (response.Headers.Contains("Retry-After"))
+            {
+                try
+                {
+                    int seconds; DateTime datetime;
+                    if (int.TryParse(response.Headers.GetValues("Retry-After").Single(), out seconds))
+                        retryafter = seconds;
+                    else if (DateTime.TryParse(response.Headers.GetValues("Retry-After").Single(), out datetime))
+                        retryafter = (int)Math.Abs((datetime - DateTime.UtcNow).TotalSeconds);
+                }
+                catch {
+                    retryafter = 0;
+                }
+            }
 
             if (response.Headers.Contains("Replay-Nonce"))
             {
@@ -195,7 +211,7 @@ namespace Certes.Acme
                 }
             }
 
-            return new AcmeHttpResponse<T>(location, resource, links, error);
+            return new AcmeHttpResponse<T>(location, resource, links, error, retryafter);
         }
 
         private async Task FetchNonce()

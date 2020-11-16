@@ -16,12 +16,14 @@ namespace Certes.Acme
         /// <param name="resource">The resource.</param>
         /// <param name="links">The links.</param>
         /// <param name="error">The error.</param>
-        public AcmeHttpResponse(Uri location, T resource, ILookup<string, Uri> links, AcmeError error)
+        /// <param name="retryAfter">The error.</param>
+        public AcmeHttpResponse(Uri location, T resource, ILookup<string, Uri> links, AcmeError error, int retryAfter = 0)
         {
             Location = location;
             Resource = resource;
             Links = links;
             Error = error;
+            RetryAfter = retryAfter;
         }
 
         /// <summary>
@@ -55,6 +57,15 @@ namespace Certes.Acme
         /// The error.
         /// </value>
         public AcmeError Error { get; }
+
+
+        /// <summary>
+        /// Gets the error.
+        /// </summary>
+        /// <value>
+        /// The error.
+        /// </value>
+        public int RetryAfter { get; }
     }
 
 }
