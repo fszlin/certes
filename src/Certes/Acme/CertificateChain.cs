@@ -53,7 +53,9 @@ namespace Certes.Acme
                 return true;
 
             var certParser = new X509CertificateParser();
-            foreach (var pem in Issuers.Select(x => x.ToPem()))
+            var allcerts = Issuers.Select(x => x.ToPem()).ToList();
+            allcerts.Insert(0, Certificate.ToPem());
+            foreach (var pem in allcerts)
             {
                 var cert = certParser.ReadCertificate(Encoding.UTF8.GetBytes(pem));
                 if (cert.IssuerDN.GetValueList().Contains(preferredChain))

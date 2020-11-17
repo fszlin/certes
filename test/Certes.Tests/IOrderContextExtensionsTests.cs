@@ -99,6 +99,101 @@ namespace Certes
         }
 
         [Fact]
+        public async Task CanGenerateWithAlternateLink()
+        {
+            var defaultpem = File.ReadAllText("./Data/defaultLeaf.pem");
+            var alternatepem = File.ReadAllText("./Data/alternateLeaf.pem");
+
+            var accountLoc = new System.Uri("http://acme.d/account/101");
+            var orderLoc = new System.Uri("http://acme.d/order/101");
+            var finalizeLoc = new System.Uri("http://acme.d/order/101/finalize");
+            var certDefaultLoc = new System.Uri("http://acme.d/order/101/cert/1234");
+            var certAlternateLoc = new System.Uri("http://acme.d/order/101/cert/1234/1");
+
+            var alternates = new [] {
+                new {key = "alternate", value = certDefaultLoc},
+                new {key = "alternate", value = certAlternateLoc},
+            }.ToLookup(x => x.key, x => x.value);
+
+            var httpClientMock = new Mock<IAcmeHttpClient>();
+
+            httpClientMock.Setup(m => m.Post<string>(certDefaultLoc, It.IsAny<object>()))
+                .ReturnsAsync(new AcmeHttpResponse<string>(
+                    accountLoc, 
+                    defaultpem,
+                    alternates, 
+                    null));
+
+            httpClientMock.Setup(m => m.Post<string>(certAlternateLoc, It.IsAny<object>()))
+                .ReturnsAsync(new AcmeHttpResponse<string>(
+                    accountLoc, 
+                    alternatepem,
+                    alternates, 
+                    null));
+
+            httpClientMock.Setup(m => m.Post<Order>(finalizeLoc, It.IsAny<object>()))
+                .ReturnsAsync(new AcmeHttpResponse<Order>(
+                    accountLoc, 
+                    new Order
+                    {
+                        Identifiers = new[] {
+                            new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns },
+                        },
+                        Status = OrderStatus.Valid,
+                    },
+                    null, 
+                    null));
+
+
+            var acmeContextMock = new Mock<IAcmeContext>();
+            acmeContextMock.SetupGet(x => x.HttpClient)
+                .Returns(httpClientMock.Object);
+
+            var orderCtxMock = new Mock<OrderContext>(acmeContextMock.Object, orderLoc);
+            orderCtxMock.Setup(m => m.Resource()).ReturnsAsync(new Order
+            {
+                Identifiers = new[] {
+                    new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns },
+                },
+                Certificate = certDefaultLoc,
+                Finalize = finalizeLoc,
+                Status = OrderStatus.Pending,
+            });
+            
+            var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+            var certInfoDefaultRoot = await orderCtxMock.Object.Generate(new CsrInfo
+            {
+                CountryName = "C",
+                CommonName = "www.certes.com",
+            }, key, null);
+
+            Assert.Equal(
+                defaultpem.Where(c => !char.IsWhiteSpace(c)),
+                certInfoDefaultRoot.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
+
+            var certInfoAlternateRoot = await orderCtxMock.Object.Generate(new CsrInfo
+            {
+                CountryName = "C",
+                CommonName = "www.certes.com",
+            }, key, "AlternateRoot");
+
+            Assert.Equal(
+                alternatepem.Where(c => !char.IsWhiteSpace(c)),
+                certInfoAlternateRoot.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
+
+            var certInfoUnknownRoot = await orderCtxMock.Object.Generate(new CsrInfo
+            {
+                CountryName = "C",
+                CommonName = "www.certes.com",
+            }, key, "UnknownRoot");
+
+            Assert.Equal(
+                alternatepem.Where(c => !char.IsWhiteSpace(c)),
+                certInfoAlternateRoot.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
+
+        }
+
+        [Fact]
         public async Task ThrowWhenOrderNotReady()
         {
             var orderCtxMock = new Mock<IOrderContext>();
@@ -151,6 +246,8 @@ namespace Certes
                     CommonName = "www.certes.com",
                 }, key, null));
         }
+
+
     }
 
 }
