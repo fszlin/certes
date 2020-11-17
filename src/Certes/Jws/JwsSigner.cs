@@ -12,17 +12,17 @@ namespace Certes.Jws
     {
         private readonly IKey keyPair;
 
-        private readonly Uri keyId;
+        private readonly Uri defaultKeyId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JwsSigner"/> class.
         /// </summary>
         /// <param name="keyPair">The keyPair.</param>
-        /// <param name="keyId">The keyId.</param>
-        public JwsSigner(IKey keyPair, Uri keyId = null)
+        /// <param name="defaultKeyId">The default keyId.</param>
+        public JwsSigner(IKey keyPair, Uri defaultKeyId = null)
         {
             this.keyPair = keyPair;
-            this.keyId = keyId;
+            this.defaultKeyId = defaultKeyId;
         }
 
         /// <summary>
@@ -49,8 +49,7 @@ namespace Certes.Jws
             string nonce = null)
         {
             var jsonSettings = JsonUtil.CreateSettings();
-            if (keyId == null) keyId = this.keyId;
-            var protectedHeader = keyId == null ?
+            var protectedHeader = (keyId ?? defaultKeyId) == null ?
                 (object)new
                 {
                     alg = keyPair.Algorithm.ToJwsAlgorithm(),
@@ -61,7 +60,7 @@ namespace Certes.Jws
                 new
                 {
                     alg = keyPair.Algorithm.ToJwsAlgorithm(),
-                    kid = keyId,
+                    kid = keyId ?? defaultKeyId,
                     nonce,
                     url,
                 };
