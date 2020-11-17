@@ -64,8 +64,25 @@ namespace Certes.Acme
             bool ensureSuccessStatusCode,
             int retryCount = 1) 
         {
-            var jwsSigner = new JwsSigner(context.AccountKey, await context.Account().Location());
-            return await Post<T>(client, jwsSigner, location, entity, ensureSuccessStatusCode, retryCount);
+            var payload = await context.Sign(entity, location);
+            var response = await client.Post<T>(location, payload);
+
+            while (response.Error?.Status == System.Net.HttpStatusCode.BadRequest &&
+                response.Error.Type?.CompareTo("urn:ietf:params:acme:error:badNonce") == 0 &&
+                retryCount-- > 0)
+            {
+                payload = await context.Sign(entity, location);
+                response = await client.Post<T>(location, payload);
+            }
+
+            if (ensureSuccessStatusCode && response.Error != null)
+            {
+                throw new AcmeRequestException(
+                    string.Format(Strings.ErrorFetchResource, location),
+                    response.Error);
+            }
+
+            return response;
         }
 
         /// <summary>
