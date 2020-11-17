@@ -188,8 +188,8 @@ namespace Certes
             }, key, "UnknownRoot");
 
             Assert.Equal(
-                alternatepem.Where(c => !char.IsWhiteSpace(c)),
-                certInfoAlternateRoot.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
+                defaultpem.Where(c => !char.IsWhiteSpace(c)),
+                certInfoUnknownRoot.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
 
         }
 
