@@ -47,8 +47,6 @@ namespace Certes.Acme
         /// </returns>
         public async Task<Authorization> Deactivate()
         {
-            // var payload = await Context.Sign(new Authorization { Status = AuthorizationStatus.Deactivated }, Location);
-            // var resp = await Context.HttpClient.Post<Authorization>(Location, payload, true);
             var payload = new Authorization { Status = AuthorizationStatus.Deactivated };
             var resp = await Context.HttpClient.Post<Authorization>(Context, Location, payload, true);
             return resp.Resource;

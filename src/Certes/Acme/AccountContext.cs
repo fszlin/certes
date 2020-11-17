@@ -30,8 +30,6 @@ namespace Certes.Acme
         /// </returns>
         public async Task<Account> Deactivate()
         {
-            // var payload = await Context.Sign(new Account { Status = AccountStatus.Deactivated }, Location);
-            // var resp = await Context.HttpClient.Post<Account>(Location, payload, true);
             var payload = new Account { Status = AccountStatus.Deactivated };
             var resp = await Context.HttpClient.Post<Account>(Context, Location, payload, true);
             return resp.Resource;
@@ -70,8 +68,6 @@ namespace Certes.Acme
                 account.TermsOfServiceAgreed = true;
             }
 
-            // var payload = await Context.Sign(account, location);
-            // var response = await Context.HttpClient.Post<Account>(location, payload, true);
             var response = await Context.HttpClient.Post<Account>(Context, location, account, true);
             return response.Resource;
         }
@@ -88,7 +84,6 @@ namespace Certes.Acme
         {
             var endpoint = await context.GetResourceUri(d => d.NewAccount);
             var jws = new JwsSigner(context.AccountKey);
-            //var payload = jws.Sign(body, url: endpoint, nonce: await context.HttpClient.ConsumeNonce());
             return await context.HttpClient.Post<Account>(jws, endpoint, body, ensureSuccessStatusCode);
         }
     }
