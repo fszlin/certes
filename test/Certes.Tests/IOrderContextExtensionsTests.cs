@@ -157,9 +157,6 @@ namespace Certes
                 })
 ;
             orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>()))
-                .Callback((object o) => {
-
-                })
                 .ReturnsAsync(new Order
                 {
                     Identifiers = new[] {
@@ -285,9 +282,6 @@ namespace Certes
                 });
 
             orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>()))
-                .Callback((object o) => {
-
-                })
                 .ReturnsAsync(new Order
                 {
                     Identifiers = new[] {
