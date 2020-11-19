@@ -50,7 +50,6 @@ namespace Certes.Acme
         /// <param name="location">The URI.</param>
         /// <param name="entity">The payload.</param>
         /// <param name="ensureSuccessStatusCode">if set to <c>true</c>, throw exception if the request failed.</param>
-        /// <param name="retryCount">Number of retries for badNonce errors (default = 1)</param>
         /// <returns>
         /// The response from ACME server.
         /// </returns>
@@ -61,12 +60,12 @@ namespace Certes.Acme
             IAcmeContext context, 
             Uri location, 
             object entity, 
-            bool ensureSuccessStatusCode,
-            int retryCount = 1) 
+            bool ensureSuccessStatusCode) 
         {
+
             var payload = await context.Sign(entity, location);
             var response = await client.Post<T>(location, payload);
-
+            var retryCount = context.BadNonceRetryCount;
             while (response.Error?.Status == System.Net.HttpStatusCode.BadRequest &&
                 response.Error.Type?.CompareTo("urn:ietf:params:acme:error:badNonce") == 0 &&
                 retryCount-- > 0)

@@ -38,6 +38,9 @@ namespace Certes.Acme
             contextMock
                 .SetupGet(c => c.AccountKey)
                 .Returns(Helper.GetKeyV2());
+            contextMock
+                .SetupGet(c => c.BadNonceRetryCount)
+                .Returns(1);
             contextMock.SetupGet(c => c.HttpClient).Returns(httpClientMock.Object);
             contextMock
                 .Setup(c => c.Sign(It.IsAny<object>(), It.IsAny<Uri>()))

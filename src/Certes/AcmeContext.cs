@@ -21,6 +21,14 @@ namespace Certes
         private IAccountContext accountContext = null;
 
         /// <summary>
+        /// Gets the number of retries on a badNonce error.
+        /// </summary>
+        /// <value>
+        /// The number of retries.
+        /// </value>
+        public int BadNonceRetryCount { get; }
+
+        /// <summary>
         /// Gets the ACME HTTP client.
         /// </summary>
         /// <value>
@@ -50,14 +58,16 @@ namespace Certes
         /// <param name="directoryUri">The directory URI.</param>
         /// <param name="accountKey">The account key.</param>
         /// <param name="http">The HTTP client.</param>
+        /// <param name="badNonceRetryCount">The number of retries on a bad nonce.</param>
         /// <exception cref="ArgumentNullException">
         /// If <paramref name="directoryUri"/> is <c>null</c>.
         /// </exception>
-        public AcmeContext(Uri directoryUri, IKey accountKey = null, IAcmeHttpClient http = null)
+        public AcmeContext(Uri directoryUri, IKey accountKey = null, IAcmeHttpClient http = null, int badNonceRetryCount = 1)
         {
             DirectoryUri = directoryUri ?? throw new ArgumentNullException(nameof(directoryUri));
             AccountKey = accountKey ?? KeyFactory.NewKey(defaultKeyType);
             HttpClient = http ?? new AcmeHttpClient(directoryUri);
+            BadNonceRetryCount = badNonceRetryCount;
         }
 
         /// <summary>

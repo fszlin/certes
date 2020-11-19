@@ -48,6 +48,9 @@ namespace Certes.Acme
                 .SetupGet(c => c.AccountKey)
                 .Returns(Helper.GetKeyV2());
             contextMock
+                .SetupGet(c => c.BadNonceRetryCount)
+                .Returns(1);
+            contextMock
                 .Setup(c => c.Sign(It.IsAny<object>(), location))
                 .Callback((object payload, Uri loc) =>
                 {

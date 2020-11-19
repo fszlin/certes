@@ -12,6 +12,15 @@ namespace Certes
     /// </summary>
     public interface IAcmeContext
     {
+
+        /// <summary>
+        /// Gets the number of retries on a badNonce error.
+        /// </summary>
+        /// <value>
+        /// The number of retries.
+        /// </value>
+        int BadNonceRetryCount { get; }
+
         /// <summary>
         /// Gets the directory URI.
         /// </summary>
