@@ -118,13 +118,13 @@ namespace Certes.Acme
                 switch (header.alg)
                 {
                     case "HS512":
-                        signatureHash = new HMACSHA512(JwsConvert.FromBase64String(eabKey)).ComputeHash(signingBytes);
+                        using(var hs512 = new HMACSHA512(JwsConvert.FromBase64String(eabKey))) signatureHash = hs512.ComputeHash(signingBytes);
                         break;
                     case "HS384":
-                        signatureHash = new HMACSHA384(JwsConvert.FromBase64String(eabKey)).ComputeHash(signingBytes);
+                        using (var hs384 = new HMACSHA384(JwsConvert.FromBase64String(eabKey))) signatureHash = hs384.ComputeHash(signingBytes);
                         break;
                     default:
-                        signatureHash = new HMACSHA256(JwsConvert.FromBase64String(eabKey)).ComputeHash(signingBytes);
+                        using (var hs256 = new HMACSHA384(JwsConvert.FromBase64String(eabKey))) signatureHash = hs256.ComputeHash(signingBytes);
                         break;   
                 }
                     
