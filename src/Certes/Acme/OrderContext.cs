@@ -67,8 +67,7 @@ namespace Certes.Acme
             var alternateLinks = resp.Links["alternate"].ToList();
             foreach (var alternate in alternateLinks)
             {
-                var payload = await Context.Sign(null, alternate);
-                resp = await Context.HttpClient.Post<string>(alternate, payload);
+                await Context.HttpClient.Post<string>(Context, alternate, null, false);
                 var chain = new CertificateChain(resp.Resource);
 
                 if (chain.MatchesPreferredChain(preferredChain))
