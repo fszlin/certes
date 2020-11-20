@@ -21,6 +21,14 @@ namespace Certes
         private IAccountContext accountContext = null;
 
         /// <summary>
+        /// Gets the number of retries on a badNonce error.
+        /// </summary>
+        /// <value>
+        /// The number of retries.
+        /// </value>
+        public int BadNonceRetryCount { get; }
+
+        /// <summary>
         /// Gets the ACME HTTP client.
         /// </summary>
         /// <value>
@@ -50,14 +58,16 @@ namespace Certes
         /// <param name="directoryUri">The directory URI.</param>
         /// <param name="accountKey">The account key.</param>
         /// <param name="http">The HTTP client.</param>
+        /// <param name="badNonceRetryCount">The number of retries on a bad nonce.</param>
         /// <exception cref="ArgumentNullException">
         /// If <paramref name="directoryUri"/> is <c>null</c>.
         /// </exception>
-        public AcmeContext(Uri directoryUri, IKey accountKey = null, IAcmeHttpClient http = null)
+        public AcmeContext(Uri directoryUri, IKey accountKey = null, IAcmeHttpClient http = null, int badNonceRetryCount = 1)
         {
             DirectoryUri = directoryUri ?? throw new ArgumentNullException(nameof(directoryUri));
             AccountKey = accountKey ?? KeyFactory.NewKey(defaultKeyType);
             HttpClient = http ?? new AcmeHttpClient(directoryUri);
+            BadNonceRetryCount = badNonceRetryCount;
         }
 
         /// <summary>
@@ -95,8 +105,7 @@ namespace Certes
             var jws = new JwsSigner(newKey);
             var body = jws.Sign(keyChange, url: endpoint);
 
-            var payload = await Sign(body, endpoint);
-            var resp = await HttpClient.Post<Account>(endpoint, payload, true);
+            var resp = await HttpClient.Post<Account>(this, endpoint, body, true);
 
             AccountKey = newKey;
             return resp.Resource;
@@ -156,19 +165,16 @@ namespace Certes
                 Reason = reason
             };
 
-
-            JwsPayload payload;
             if (certificatePrivateKey != null)
             {
                 var jws = new JwsSigner(certificatePrivateKey);
-                payload = jws.Sign(body, url: endpoint, nonce: await HttpClient.ConsumeNonce());
+                await HttpClient.Post<string>(jws, endpoint, body, true);
             }
             else
             {
-                payload = await Sign(body, endpoint);
-            }
+                await HttpClient.Post<string>(this, endpoint, body, true);
 
-            await HttpClient.Post<string>(endpoint, payload, true);
+            }
         }
 
         /// <summary>
@@ -193,8 +199,7 @@ namespace Certes
                 NotAfter = notAfter,
             };
 
-            var payload = await Sign(body, endpoint);
-            var order = await HttpClient.Post<Order>(endpoint, payload, true);
+            var order = await HttpClient.Post<Order>(this, endpoint, body, true);
             return new OrderContext(this, order.Location);
         }
 
