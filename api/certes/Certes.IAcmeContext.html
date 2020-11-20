@@ -222,7 +222,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_IAcmeContext_Authorization_System_Uri_.md&amp;value=---%0Auid%3A%20Certes.IAcmeContext.Authorization(System.Uri)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L112">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L115">View Source</a>
   </span>
   <a id="Certes_IAcmeContext_Authorization_" data-uid="Certes.IAcmeContext.Authorization*"></a>
   <h4 id="Certes_IAcmeContext_Authorization_System_Uri_" data-uid="Certes.IAcmeContext.Authorization(System.Uri)">Authorization(Uri)</h4>
@@ -272,7 +272,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_IAcmeContext_ChangeKey_Certes_IKey_.md&amp;value=---%0Auid%3A%20Certes.IAcmeContext.ChangeKey(Certes.IKey)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L79">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L82">View Source</a>
   </span>
   <a id="Certes_IAcmeContext_ChangeKey_" data-uid="Certes.IAcmeContext.ChangeKey*"></a>
   <h4 id="Certes_IAcmeContext_ChangeKey_Certes_IKey_" data-uid="Certes.IAcmeContext.ChangeKey(Certes.IKey)">ChangeKey(IKey)</h4>
@@ -351,19 +351,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_IAcmeContext_NewAccount_System_Collections_Generic_IList_System_String__System_Boolean_.md&amp;value=---%0Auid%3A%20Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList%7BSystem.String%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_IAcmeContext_NewAccount_System_Collections_Generic_IList_System_String__System_Boolean_System_String_System_String_System_String_.md&amp;value=---%0Auid%3A%20Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList%7BSystem.String%7D%2CSystem.Boolean%2CSystem.String%2CSystem.String%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L61">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L64">View Source</a>
   </span>
   <a id="Certes_IAcmeContext_NewAccount_" data-uid="Certes.IAcmeContext.NewAccount*"></a>
-  <h4 id="Certes_IAcmeContext_NewAccount_System_Collections_Generic_IList_System_String__System_Boolean_" data-uid="Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean)">NewAccount(IList&lt;String&gt;, Boolean)</h4>
+  <h4 id="Certes_IAcmeContext_NewAccount_System_Collections_Generic_IList_System_String__System_Boolean_System_String_System_String_System_String_" data-uid="Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean,System.String,System.String,System.String)">NewAccount(IList&lt;String&gt;, Boolean, String, String, String)</h4>
   <div class="markdown level1 summary"><p>Creates an account.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="text-muted font-weight-light font-italic decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task&lt;IAccountContext&gt; NewAccount(IList&lt;string&gt; contact, bool termsOfServiceAgreed = false)</code></pre>
+    <pre><code class="lang-csharp hljs">Task&lt;IAccountContext&gt; NewAccount(IList&lt;string&gt; contact, bool termsOfServiceAgreed = false, string eabKeyId = null, string eabKey = null, string eabKeyAlg = null)</code></pre>
   </div>
   <h5 class="text-muted font-weight-light font-italic parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -385,6 +385,24 @@
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">termsOfServiceAgreed</span></td>
         <td><p>Set to <code>true</code> to accept the terms of service.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">eabKeyId</span></td>
+        <td><p>Optional key identifier, if using external account binding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">eabKey</span></td>
+        <td><p>Optional EAB key, if using external account binding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">eabKeyAlg</span></td>
+        <td><p>Optional EAB key algorithm, if using external account binding, defaults to HS256 if not specified</p>
 </td>
       </tr>
     </tbody>
@@ -410,7 +428,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_IAcmeContext_NewOrder_System_Collections_Generic_IList_System_String__System_Nullable_System_DateTimeOffset__System_Nullable_System_DateTimeOffset__.md&amp;value=---%0Auid%3A%20Certes.IAcmeContext.NewOrder(System.Collections.Generic.IList%7BSystem.String%7D%2CSystem.Nullable%7BSystem.DateTimeOffset%7D%2CSystem.Nullable%7BSystem.DateTimeOffset%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L90">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L93">View Source</a>
   </span>
   <a id="Certes_IAcmeContext_NewOrder_" data-uid="Certes.IAcmeContext.NewOrder*"></a>
   <h4 id="Certes_IAcmeContext_NewOrder_System_Collections_Generic_IList_System_String__System_Nullable_System_DateTimeOffset__System_Nullable_System_DateTimeOffset__" data-uid="Certes.IAcmeContext.NewOrder(System.Collections.Generic.IList{System.String},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset})">NewOrder(IList&lt;String&gt;, Nullable&lt;DateTimeOffset&gt;, Nullable&lt;DateTimeOffset&gt;)</h4>
@@ -472,7 +490,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_IAcmeContext_Order_System_Uri_.md&amp;value=---%0Auid%3A%20Certes.IAcmeContext.Order(System.Uri)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L105">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L108">View Source</a>
   </span>
   <a id="Certes_IAcmeContext_Order_" data-uid="Certes.IAcmeContext.Order*"></a>
   <h4 id="Certes_IAcmeContext_Order_System_Uri_" data-uid="Certes.IAcmeContext.Order(System.Uri)">Order(Uri)</h4>
@@ -522,7 +540,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_IAcmeContext_RevokeCertificate_System_Byte___Certes_Acme_Resource_RevocationReason_Certes_IKey_.md&amp;value=---%0Auid%3A%20Certes.IAcmeContext.RevokeCertificate(System.Byte%5B%5D%2CCertes.Acme.Resource.RevocationReason%2CCertes.IKey)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L72">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L75">View Source</a>
   </span>
   <a id="Certes_IAcmeContext_RevokeCertificate_" data-uid="Certes.IAcmeContext.RevokeCertificate*"></a>
   <h4 id="Certes_IAcmeContext_RevokeCertificate_System_Byte___Certes_Acme_Resource_RevocationReason_Certes_IKey_" data-uid="Certes.IAcmeContext.RevokeCertificate(System.Byte[],Certes.Acme.Resource.RevocationReason,Certes.IKey)">RevokeCertificate(Byte[], RevocationReason, IKey)</h4>
@@ -584,7 +602,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_IAcmeContext_Sign_System_Object_System_Uri_.md&amp;value=---%0Auid%3A%20Certes.IAcmeContext.Sign(System.Object%2CSystem.Uri)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L98">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/IAcmeContext.cs/#L101">View Source</a>
   </span>
   <a id="Certes_IAcmeContext_Sign_" data-uid="Certes.IAcmeContext.Sign*"></a>
   <h4 id="Certes_IAcmeContext_Sign_System_Object_System_Uri_" data-uid="Certes.IAcmeContext.Sign(System.Object,System.Uri)">Sign(Object, Uri)</h4>
@@ -637,7 +655,7 @@
   </table>
   <h3 id="extensionmethods" class="text-muted font-weight-light font-italic">Extension Methods</h3>
   <div>
-      <a class="xref" href="Certes.IAcmeContextExtensions.html#Certes_IAcmeContextExtensions_NewAccount_Certes_IAcmeContext_System_String_System_Boolean_">IAcmeContextExtensions.NewAccount(IAcmeContext, String, Boolean)</a>
+      <a class="xref" href="Certes.IAcmeContextExtensions.html#Certes_IAcmeContextExtensions_NewAccount_Certes_IAcmeContext_System_String_System_Boolean_System_String_System_String_System_String_">IAcmeContextExtensions.NewAccount(IAcmeContext, String, Boolean, String, String, String)</a>
   </div>
   <div>
       <a class="xref" href="Certes.IAcmeContextExtensions.html#Certes_IAcmeContextExtensions_TermsOfService_Certes_IAcmeContext_">IAcmeContextExtensions.TermsOfService(IAcmeContext)</a>

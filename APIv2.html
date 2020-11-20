@@ -94,6 +94,10 @@ var der = context.AccountKey.ToDer();
 <pre><code class="lang-C#">var account = await context.NewAccount(
     new [] { &quot;mailto:admin@example.com&quot;, &quot;mailto:it@example.com&quot; }, true);
 var account = await context.NewAccount(&quot;admin@example.com&quot;, true);
+
+// external account binding
+var account = await context.NewAccount(&quot;admin@example.com&quot;, true, &quot;(EAB Key Identifier)&quot;,&quot;(EAB Key)&quot;);
+var account = await context.NewAccount(&quot;admin@example.com&quot;, true, &quot;(EAB Key Identifier)&quot;,&quot;(EAB Key)&quot;,&quot;(EAB Key Algorithm e.g.HS256)&quot;);
 </code></pre>
 <p>Fetch existing account from server.</p>
 <pre><code class="lang-C#">var account = await context.Account();

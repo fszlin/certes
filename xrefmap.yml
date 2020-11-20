@@ -95,6 +95,19 @@ references:
   isSpec: "True"
   fullName: Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.CaaIdentities
   nameWithType: AcmeDirectory.AcmeDirectoryMeta.CaaIdentities
+- uid: Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.ExternalAccountRequired
+  name: ExternalAccountRequired
+  href: api/certes/Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.html#Certes_Acme_AcmeDirectory_AcmeDirectoryMeta_ExternalAccountRequired
+  commentId: P:Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.ExternalAccountRequired
+  fullName: Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.ExternalAccountRequired
+  nameWithType: AcmeDirectory.AcmeDirectoryMeta.ExternalAccountRequired
+- uid: Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.ExternalAccountRequired*
+  name: ExternalAccountRequired
+  href: api/certes/Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.html#Certes_Acme_AcmeDirectory_AcmeDirectoryMeta_ExternalAccountRequired_
+  commentId: Overload:Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.ExternalAccountRequired
+  isSpec: "True"
+  fullName: Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.ExternalAccountRequired
+  nameWithType: AcmeDirectory.AcmeDirectoryMeta.ExternalAccountRequired
 - uid: Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.TermsOfService
   name: TermsOfService
   href: api/certes/Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.html#Certes_Acme_AcmeDirectory_AcmeDirectoryMeta_TermsOfService
@@ -1797,6 +1810,19 @@ references:
   isSpec: "True"
   fullName: Certes.Acme.Resource.Account.Contact
   nameWithType: Account.Contact
+- uid: Certes.Acme.Resource.Account.ExternalAccountBinding
+  name: ExternalAccountBinding
+  href: api/certes/Certes.Acme.Resource.Account.html#Certes_Acme_Resource_Account_ExternalAccountBinding
+  commentId: P:Certes.Acme.Resource.Account.ExternalAccountBinding
+  fullName: Certes.Acme.Resource.Account.ExternalAccountBinding
+  nameWithType: Account.ExternalAccountBinding
+- uid: Certes.Acme.Resource.Account.ExternalAccountBinding*
+  name: ExternalAccountBinding
+  href: api/certes/Certes.Acme.Resource.Account.html#Certes_Acme_Resource_Account_ExternalAccountBinding_
+  commentId: Overload:Certes.Acme.Resource.Account.ExternalAccountBinding
+  isSpec: "True"
+  fullName: Certes.Acme.Resource.Account.ExternalAccountBinding
+  nameWithType: Account.ExternalAccountBinding
 - uid: Certes.Acme.Resource.Account.Orders
   name: Orders
   href: api/certes/Certes.Acme.Resource.Account.html#Certes_Acme_Resource_Account_Orders
@@ -3130,15 +3156,15 @@ references:
   isSpec: "True"
   fullName: Certes.AcmeContext.HttpClient
   nameWithType: AcmeContext.HttpClient
-- uid: Certes.AcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean)
-  name: NewAccount(IList<String>, Boolean)
-  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_NewAccount_System_Collections_Generic_IList_System_String__System_Boolean_
-  commentId: M:Certes.AcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean)
-  name.vb: NewAccount(IList(Of String), Boolean)
-  fullName: Certes.AcmeContext.NewAccount(System.Collections.Generic.IList<System.String>, System.Boolean)
-  fullName.vb: Certes.AcmeContext.NewAccount(System.Collections.Generic.IList(Of System.String), System.Boolean)
-  nameWithType: AcmeContext.NewAccount(IList<String>, Boolean)
-  nameWithType.vb: AcmeContext.NewAccount(IList(Of String), Boolean)
+- uid: Certes.AcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean,System.String,System.String,System.String)
+  name: NewAccount(IList<String>, Boolean, String, String, String)
+  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_NewAccount_System_Collections_Generic_IList_System_String__System_Boolean_System_String_System_String_System_String_
+  commentId: M:Certes.AcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean,System.String,System.String,System.String)
+  name.vb: NewAccount(IList(Of String), Boolean, String, String, String)
+  fullName: Certes.AcmeContext.NewAccount(System.Collections.Generic.IList<System.String>, System.Boolean, System.String, System.String, System.String)
+  fullName.vb: Certes.AcmeContext.NewAccount(System.Collections.Generic.IList(Of System.String), System.Boolean, System.String, System.String, System.String)
+  nameWithType: AcmeContext.NewAccount(IList<String>, Boolean, String, String, String)
+  nameWithType.vb: AcmeContext.NewAccount(IList(Of String), Boolean, String, String, String)
 - uid: Certes.AcmeContext.NewAccount*
   name: NewAccount
   href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_NewAccount_
@@ -3761,15 +3787,15 @@ references:
   isSpec: "True"
   fullName: Certes.IAcmeContext.HttpClient
   nameWithType: IAcmeContext.HttpClient
-- uid: Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean)
-  name: NewAccount(IList<String>, Boolean)
-  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_NewAccount_System_Collections_Generic_IList_System_String__System_Boolean_
-  commentId: M:Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean)
-  name.vb: NewAccount(IList(Of String), Boolean)
-  fullName: Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList<System.String>, System.Boolean)
-  fullName.vb: Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList(Of System.String), System.Boolean)
-  nameWithType: IAcmeContext.NewAccount(IList<String>, Boolean)
-  nameWithType.vb: IAcmeContext.NewAccount(IList(Of String), Boolean)
+- uid: Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean,System.String,System.String,System.String)
+  name: NewAccount(IList<String>, Boolean, String, String, String)
+  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_NewAccount_System_Collections_Generic_IList_System_String__System_Boolean_System_String_System_String_System_String_
+  commentId: M:Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean,System.String,System.String,System.String)
+  name.vb: NewAccount(IList(Of String), Boolean, String, String, String)
+  fullName: Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList<System.String>, System.Boolean, System.String, System.String, System.String)
+  fullName.vb: Certes.IAcmeContext.NewAccount(System.Collections.Generic.IList(Of System.String), System.Boolean, System.String, System.String, System.String)
+  nameWithType: IAcmeContext.NewAccount(IList<String>, Boolean, String, String, String)
+  nameWithType.vb: IAcmeContext.NewAccount(IList(Of String), Boolean, String, String, String)
 - uid: Certes.IAcmeContext.NewAccount*
   name: NewAccount
   href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_NewAccount_
@@ -3841,12 +3867,12 @@ references:
   commentId: T:Certes.IAcmeContextExtensions
   fullName: Certes.IAcmeContextExtensions
   nameWithType: IAcmeContextExtensions
-- uid: Certes.IAcmeContextExtensions.NewAccount(Certes.IAcmeContext,System.String,System.Boolean)
-  name: NewAccount(IAcmeContext, String, Boolean)
-  href: api/certes/Certes.IAcmeContextExtensions.html#Certes_IAcmeContextExtensions_NewAccount_Certes_IAcmeContext_System_String_System_Boolean_
-  commentId: M:Certes.IAcmeContextExtensions.NewAccount(Certes.IAcmeContext,System.String,System.Boolean)
-  fullName: Certes.IAcmeContextExtensions.NewAccount(Certes.IAcmeContext, System.String, System.Boolean)
-  nameWithType: IAcmeContextExtensions.NewAccount(IAcmeContext, String, Boolean)
+- uid: Certes.IAcmeContextExtensions.NewAccount(Certes.IAcmeContext,System.String,System.Boolean,System.String,System.String,System.String)
+  name: NewAccount(IAcmeContext, String, Boolean, String, String, String)
+  href: api/certes/Certes.IAcmeContextExtensions.html#Certes_IAcmeContextExtensions_NewAccount_Certes_IAcmeContext_System_String_System_Boolean_System_String_System_String_System_String_
+  commentId: M:Certes.IAcmeContextExtensions.NewAccount(Certes.IAcmeContext,System.String,System.Boolean,System.String,System.String,System.String)
+  fullName: Certes.IAcmeContextExtensions.NewAccount(Certes.IAcmeContext, System.String, System.Boolean, System.String, System.String, System.String)
+  nameWithType: IAcmeContextExtensions.NewAccount(IAcmeContext, String, Boolean, String, String, String)
 - uid: Certes.IAcmeContextExtensions.NewAccount*
   name: NewAccount
   href: api/certes/Certes.IAcmeContextExtensions.html#Certes_IAcmeContextExtensions_NewAccount_
