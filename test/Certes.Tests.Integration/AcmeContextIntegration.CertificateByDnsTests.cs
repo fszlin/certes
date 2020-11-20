@@ -42,7 +42,7 @@ namespace Certes
                 var der = csr.Generate();
 
                 var finalizedOrder = await orderCtx.Finalize(der);
-                var certificate = await orderCtx.Download();
+                var certificate = await orderCtx.Download(null);
 
                 await ClearAuthorizations(orderCtx);
             }

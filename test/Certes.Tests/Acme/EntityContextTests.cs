@@ -22,6 +22,9 @@ namespace Certes.Acme
             var ctxMock = new Mock<IAcmeContext>();
             ctxMock.SetupGet(m => m.HttpClient).Returns(httpMock.Object);
             ctxMock
+                .SetupGet(c => c.BadNonceRetryCount)
+                .Returns(1);
+            ctxMock
                 .Setup(c => c.Sign(It.IsAny<object>(),  It.IsAny<Uri>()))
                 .Callback((object payload, Uri loc) =>
                 {

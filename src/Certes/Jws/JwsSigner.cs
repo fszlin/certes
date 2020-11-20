@@ -45,8 +45,7 @@ namespace Certes.Jws
             string nonce = null)
         {
             var jsonSettings = JsonUtil.CreateSettings();
-
-            var protectedHeader = keyId == null ?
+            var protectedHeader = (keyId) == null ?
                 (object)new
                 {
                     alg = keyPair.Algorithm.ToJwsAlgorithm(),

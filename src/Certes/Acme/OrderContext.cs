@@ -45,22 +45,36 @@ namespace Certes.Acme
         public async Task<Order> Finalize(byte[] csr)
         {
             var order = await Resource();
-            var payload = await Context.Sign(new Order.Payload { Csr = JwsConvert.ToBase64String(csr) }, order.Finalize);
-            var resp = await Context.HttpClient.Post<Order>(order.Finalize, payload, true);
+            var payload = new Order.Payload { Csr = JwsConvert.ToBase64String(csr) };
+            var resp = await Context.HttpClient.Post<Order>(Context, order.Finalize, payload, true);
             return resp.Resource;
         }
 
         /// <summary>
         /// Downloads the certificate chain in PEM.
+        /// <param name="preferredChain">The preferred Root Certificate</param>
         /// </summary>
         /// <returns>The certificate chain in PEM.</returns>
-        public async Task<CertificateChain> Download()
+        public async Task<CertificateChain> Download(string preferredChain = null)
         {
             var order = await Resource();
-            var payload = await Context.Sign(null, order.Certificate);
-            var resp = await Context.HttpClient.Post<string>(order.Certificate, payload);
+            var resp = await Context.HttpClient.Post<string>(Context, order.Certificate, null, false);
 
-            return new CertificateChain(resp.Resource);
+            var defaultchain = new CertificateChain(resp.Resource);
+            if (defaultchain.MatchesPreferredChain(preferredChain) || !resp.Links.Contains("alternate"))
+                return defaultchain;
+
+            var alternateLinks = resp.Links["alternate"].ToList();
+            foreach (var alternate in alternateLinks)
+            {
+                resp = await Context.HttpClient.Post<string>(Context, alternate, null, false);
+                var chain = new CertificateChain(resp.Resource);
+
+                if (chain.MatchesPreferredChain(preferredChain))
+                    return chain;
+            }
+            return defaultchain;
         }
+
     }
 }

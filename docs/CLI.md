@@ -198,11 +198,13 @@ certes order finalize https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
 
 > The `--private-key` option can be used to specify the private key for the certificate.
 
+> The `--preferred-chain` option can be used to specify the preferred root certificate. 
+
 To export the certificate in `PEM`:
 
 ```PowerShell
 certes cert pem https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
-  --out my-cert.pem
+  --out my-cert.pem --preferred-chain "ISRG X1 Root"
 ```
 
 Or pack the certificate and private key in `PFX`:
