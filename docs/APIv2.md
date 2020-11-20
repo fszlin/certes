@@ -128,6 +128,12 @@ Download the certificate PEM.
 var certChain = await order.Download();
 ```
 
+Download the certificate PEM signed with a specific root certificate
+
+```C#
+var certChain = await order.Download("ISRG X1 Root");
+```
+
 Finalize and download the certificate.
 
 ```C#
@@ -141,7 +147,22 @@ var cert = await order.Generate(
         Organization = "Dept",
     }, certKey);
 ```
- 
+
+Finalize and download the certificate signed with a specific root certificate.
+
+```C#
+var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
+var cert = await order.Generate(
+    new CsrInfo
+    {
+        CountryName = "CA",
+        State = "State",
+        Locality = "City",
+        Organization = "Dept",
+    }, certKey, "ISRG X1 Root");
+```
+
+
 ## Authorizations
  
 Retrieve authorizations of the order.

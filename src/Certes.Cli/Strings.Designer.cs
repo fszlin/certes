@@ -223,6 +223,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Preferred root certificate..
+        /// </summary>
+        internal static string HelpPreferredChain {
+            get {
+                return ResourceManager.GetString("HelpPreferredChain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The challenge type, http or dns..
         /// </summary>
         internal static string HelpChallengeType {

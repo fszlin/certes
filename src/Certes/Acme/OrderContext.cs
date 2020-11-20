@@ -52,14 +52,30 @@ namespace Certes.Acme
 
         /// <summary>
         /// Downloads the certificate chain in PEM.
+        /// <param name="preferredChain">The preferred Root Certificate</param>
         /// </summary>
         /// <returns>The certificate chain in PEM.</returns>
-        public async Task<CertificateChain> Download()
+        public async Task<CertificateChain> Download(string preferredChain = null)
         {
             var order = await Resource();
             var resp = await Context.HttpClient.Post<string>(Context, order.Certificate, null, false);
 
-            return new CertificateChain(resp.Resource);
+            var defaultchain = new CertificateChain(resp.Resource);
+            if (defaultchain.MatchesPreferredChain(preferredChain) || !resp.Links.Contains("alternate"))
+                return defaultchain;
+
+            var alternateLinks = resp.Links["alternate"].ToList();
+            foreach (var alternate in alternateLinks)
+            {
+                payload = await Context.Sign(null, alternate);
+                resp = await Context.HttpClient.Post<string>(alternate, payload);
+                var chain = new CertificateChain(resp.Resource);
+
+                if (chain.MatchesPreferredChain(preferredChain))
+                    return chain;
+            }
+            return defaultchain;
         }
+
     }
 }

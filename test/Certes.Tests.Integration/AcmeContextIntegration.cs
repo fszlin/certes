@@ -46,7 +46,7 @@ namespace Certes
                 OrganizationUnit = "Dev",
                 CommonName = hosts[0],
             }, certKey);
-            var cert = await orderCtx.Download();
+            var cert = await orderCtx.Download(null);
 
             var x509 = new X509Certificate2(cert.Certificate.ToDer());
             Assert.Contains(hosts[0], x509.Subject);
