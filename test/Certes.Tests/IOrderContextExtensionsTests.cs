@@ -104,7 +104,7 @@ namespace Certes
             var pem = File.ReadAllText("./Data/cert-es256.pem");
 
             var orderCtxMock = new Mock<IOrderContext>();
-            orderCtxMock.Setup(m => m.Download()).ReturnsAsync(new CertificateChain(pem));
+            orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
             orderCtxMock.SetupSequence(m => m.Resource())
                 .ReturnsAsync(new Order
                 {
@@ -169,7 +169,7 @@ namespace Certes
             {
                 CountryName = "C",
                 CommonName = "www.certes.com",
-            }, key, 5);
+            }, key, null, 5);
 
             Assert.Equal(
                 pem.Where(c => !char.IsWhiteSpace(c)),
@@ -343,7 +343,7 @@ namespace Certes
             var pem = File.ReadAllText("./Data/cert-es256.pem");
 
             var orderCtxMock = new Mock<IOrderContext>();
-            orderCtxMock.Setup(m => m.Download()).ReturnsAsync(new CertificateChain(pem));
+            orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
             orderCtxMock.SetupSequence(m => m.Resource())
                 .ReturnsAsync(new Order
                 {
