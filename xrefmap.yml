@@ -3052,12 +3052,12 @@ references:
   commentId: T:Certes.AcmeContext
   fullName: Certes.AcmeContext
   nameWithType: AcmeContext
-- uid: Certes.AcmeContext.#ctor(System.Uri,Certes.IKey,Certes.Acme.IAcmeHttpClient)
-  name: AcmeContext(Uri, IKey, IAcmeHttpClient)
-  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext__ctor_System_Uri_Certes_IKey_Certes_Acme_IAcmeHttpClient_
-  commentId: M:Certes.AcmeContext.#ctor(System.Uri,Certes.IKey,Certes.Acme.IAcmeHttpClient)
-  fullName: Certes.AcmeContext.AcmeContext(System.Uri, Certes.IKey, Certes.Acme.IAcmeHttpClient)
-  nameWithType: AcmeContext.AcmeContext(Uri, IKey, IAcmeHttpClient)
+- uid: Certes.AcmeContext.#ctor(System.Uri,Certes.IKey,Certes.Acme.IAcmeHttpClient,System.Int32)
+  name: AcmeContext(Uri, IKey, IAcmeHttpClient, Int32)
+  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext__ctor_System_Uri_Certes_IKey_Certes_Acme_IAcmeHttpClient_System_Int32_
+  commentId: M:Certes.AcmeContext.#ctor(System.Uri,Certes.IKey,Certes.Acme.IAcmeHttpClient,System.Int32)
+  fullName: Certes.AcmeContext.AcmeContext(System.Uri, Certes.IKey, Certes.Acme.IAcmeHttpClient, System.Int32)
+  nameWithType: AcmeContext.AcmeContext(Uri, IKey, IAcmeHttpClient, Int32)
 - uid: Certes.AcmeContext.#ctor*
   name: AcmeContext
   href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext__ctor_
@@ -3104,6 +3104,19 @@ references:
   isSpec: "True"
   fullName: Certes.AcmeContext.Authorization
   nameWithType: AcmeContext.Authorization
+- uid: Certes.AcmeContext.BadNonceRetryCount
+  name: BadNonceRetryCount
+  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_BadNonceRetryCount
+  commentId: P:Certes.AcmeContext.BadNonceRetryCount
+  fullName: Certes.AcmeContext.BadNonceRetryCount
+  nameWithType: AcmeContext.BadNonceRetryCount
+- uid: Certes.AcmeContext.BadNonceRetryCount*
+  name: BadNonceRetryCount
+  href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_BadNonceRetryCount_
+  commentId: Overload:Certes.AcmeContext.BadNonceRetryCount
+  isSpec: "True"
+  fullName: Certes.AcmeContext.BadNonceRetryCount
+  nameWithType: AcmeContext.BadNonceRetryCount
 - uid: Certes.AcmeContext.ChangeKey(Certes.IKey)
   name: ChangeKey(IKey)
   href: api/certes/Certes.AcmeContext.html#Certes_AcmeContext_ChangeKey_Certes_IKey_
@@ -3735,6 +3748,19 @@ references:
   isSpec: "True"
   fullName: Certes.IAcmeContext.Authorization
   nameWithType: IAcmeContext.Authorization
+- uid: Certes.IAcmeContext.BadNonceRetryCount
+  name: BadNonceRetryCount
+  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_BadNonceRetryCount
+  commentId: P:Certes.IAcmeContext.BadNonceRetryCount
+  fullName: Certes.IAcmeContext.BadNonceRetryCount
+  nameWithType: IAcmeContext.BadNonceRetryCount
+- uid: Certes.IAcmeContext.BadNonceRetryCount*
+  name: BadNonceRetryCount
+  href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_BadNonceRetryCount_
+  commentId: Overload:Certes.IAcmeContext.BadNonceRetryCount
+  isSpec: "True"
+  fullName: Certes.IAcmeContext.BadNonceRetryCount
+  nameWithType: IAcmeContext.BadNonceRetryCount
 - uid: Certes.IAcmeContext.ChangeKey(Certes.IKey)
   name: ChangeKey(IKey)
   href: api/certes/Certes.IAcmeContext.html#Certes_IAcmeContext_ChangeKey_Certes_IKey_

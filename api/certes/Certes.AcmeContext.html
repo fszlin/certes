@@ -136,19 +136,19 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext__ctor_System_Uri_Certes_IKey_Certes_Acme_IAcmeHttpClient_.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.%23ctor(System.Uri%2CCertes.IKey%2CCertes.Acme.IAcmeHttpClient)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext__ctor_System_Uri_Certes_IKey_Certes_Acme_IAcmeHttpClient_System_Int32_.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.%23ctor(System.Uri%2CCertes.IKey%2CCertes.Acme.IAcmeHttpClient%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L56">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L65">View Source</a>
   </span>
   <a id="Certes_AcmeContext__ctor_" data-uid="Certes.AcmeContext.#ctor*"></a>
-  <h4 id="Certes_AcmeContext__ctor_System_Uri_Certes_IKey_Certes_Acme_IAcmeHttpClient_" data-uid="Certes.AcmeContext.#ctor(System.Uri,Certes.IKey,Certes.Acme.IAcmeHttpClient)">AcmeContext(Uri, IKey, IAcmeHttpClient)</h4>
+  <h4 id="Certes_AcmeContext__ctor_System_Uri_Certes_IKey_Certes_Acme_IAcmeHttpClient_System_Int32_" data-uid="Certes.AcmeContext.#ctor(System.Uri,Certes.IKey,Certes.Acme.IAcmeHttpClient,System.Int32)">AcmeContext(Uri, IKey, IAcmeHttpClient, Int32)</h4>
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Certes.AcmeContext.html">AcmeContext</a> class.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="text-muted font-weight-light font-italic decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AcmeContext(Uri directoryUri, IKey accountKey = null, IAcmeHttpClient http = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public AcmeContext(Uri directoryUri, IKey accountKey = null, IAcmeHttpClient http = null, int badNonceRetryCount = 1)</code></pre>
   </div>
   <h5 class="text-muted font-weight-light font-italic parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -178,6 +178,12 @@
         <td><p>The HTTP client.</p>
 </td>
       </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">badNonceRetryCount</span></td>
+        <td><p>The number of retries on a bad nonce.</p>
+</td>
+      </tr>
     </tbody>
   </table>
   <h5 class="text-muted font-weight-light font-italic exceptions">Exceptions</h5>
@@ -203,7 +209,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext_AccountKey.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.AccountKey%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L45">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L53">View Source</a>
   </span>
   <a id="Certes_AcmeContext_AccountKey_" data-uid="Certes.AcmeContext.AccountKey*"></a>
   <h4 id="Certes_AcmeContext_AccountKey" data-uid="Certes.AcmeContext.AccountKey">AccountKey</h4>
@@ -232,10 +238,42 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext_BadNonceRetryCount.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.BadNonceRetryCount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L29">View Source</a>
+  </span>
+  <a id="Certes_AcmeContext_BadNonceRetryCount_" data-uid="Certes.AcmeContext.BadNonceRetryCount*"></a>
+  <h4 id="Certes_AcmeContext_BadNonceRetryCount" data-uid="Certes.AcmeContext.BadNonceRetryCount">BadNonceRetryCount</h4>
+  <div class="markdown level1 summary"><p>Gets the number of retries on a badNonce error.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="text-muted font-weight-light font-italic decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int BadNonceRetryCount { get; }</code></pre>
+  </div>
+  <h5 class="text-muted font-weight-light font-italic propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The number of retries.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext_DirectoryUri.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.DirectoryUri%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L37">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L45">View Source</a>
   </span>
   <a id="Certes_AcmeContext_DirectoryUri_" data-uid="Certes.AcmeContext.DirectoryUri*"></a>
   <h4 id="Certes_AcmeContext_DirectoryUri" data-uid="Certes.AcmeContext.DirectoryUri">DirectoryUri</h4>
@@ -267,7 +305,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext_HttpClient.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.HttpClient%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L29">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L37">View Source</a>
   </span>
   <a id="Certes_AcmeContext_HttpClient_" data-uid="Certes.AcmeContext.HttpClient*"></a>
   <h4 id="Certes_AcmeContext_HttpClient" data-uid="Certes.AcmeContext.HttpClient">HttpClient</h4>
@@ -301,7 +339,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext_Account.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.Account%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L67">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L77">View Source</a>
   </span>
   <a id="Certes_AcmeContext_Account_" data-uid="Certes.AcmeContext.Account*"></a>
   <h4 id="Certes_AcmeContext_Account" data-uid="Certes.AcmeContext.Account">Account()</h4>
@@ -333,7 +371,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext_Authorization_System_Uri_.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.Authorization(System.Uri)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L232">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L237">View Source</a>
   </span>
   <a id="Certes_AcmeContext_Authorization_" data-uid="Certes.AcmeContext.Authorization*"></a>
   <h4 id="Certes_AcmeContext_Authorization_System_Uri_" data-uid="Certes.AcmeContext.Authorization(System.Uri)">Authorization(Uri)</h4>
@@ -383,7 +421,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext_ChangeKey_Certes_IKey_.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.ChangeKey(Certes.IKey)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L83">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L93">View Source</a>
   </span>
   <a id="Certes_AcmeContext_ChangeKey_" data-uid="Certes.AcmeContext.ChangeKey*"></a>
   <h4 id="Certes_AcmeContext_ChangeKey_Certes_IKey_" data-uid="Certes.AcmeContext.ChangeKey(Certes.IKey)">ChangeKey(IKey)</h4>
@@ -433,7 +471,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext_GetDirectory.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.GetDirectory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L129">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L138">View Source</a>
   </span>
   <a id="Certes_AcmeContext_GetDirectory_" data-uid="Certes.AcmeContext.GetDirectory*"></a>
   <h4 id="Certes_AcmeContext_GetDirectory" data-uid="Certes.AcmeContext.GetDirectory">GetDirectory()</h4>
@@ -465,7 +503,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext_NewAccount_System_Collections_Generic_IList_System_String__System_Boolean_System_String_System_String_System_String_.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.NewAccount(System.Collections.Generic.IList%7BSystem.String%7D%2CSystem.Boolean%2CSystem.String%2CSystem.String%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L111">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L120">View Source</a>
   </span>
   <a id="Certes_AcmeContext_NewAccount_" data-uid="Certes.AcmeContext.NewAccount*"></a>
   <h4 id="Certes_AcmeContext_NewAccount_System_Collections_Generic_IList_System_String__System_Boolean_System_String_System_String_System_String_" data-uid="Certes.AcmeContext.NewAccount(System.Collections.Generic.IList{System.String},System.Boolean,System.String,System.String,System.String)">NewAccount(IList&lt;String&gt;, Boolean, String, String, String)</h4>
@@ -534,7 +572,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext_NewOrder_System_Collections_Generic_IList_System_String__System_Nullable_System_DateTimeOffset__System_Nullable_System_DateTimeOffset__.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.NewOrder(System.Collections.Generic.IList%7BSystem.String%7D%2CSystem.Nullable%7BSystem.DateTimeOffset%7D%2CSystem.Nullable%7BSystem.DateTimeOffset%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L183">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L189">View Source</a>
   </span>
   <a id="Certes_AcmeContext_NewOrder_" data-uid="Certes.AcmeContext.NewOrder*"></a>
   <h4 id="Certes_AcmeContext_NewOrder_System_Collections_Generic_IList_System_String__System_Nullable_System_DateTimeOffset__System_Nullable_System_DateTimeOffset__" data-uid="Certes.AcmeContext.NewOrder(System.Collections.Generic.IList{System.String},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset})">NewOrder(IList&lt;String&gt;, Nullable&lt;DateTimeOffset&gt;, Nullable&lt;DateTimeOffset&gt;)</h4>
@@ -596,7 +634,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext_Order_System_Uri_.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.Order(System.Uri)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L222">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L227">View Source</a>
   </span>
   <a id="Certes_AcmeContext_Order_" data-uid="Certes.AcmeContext.Order*"></a>
   <h4 id="Certes_AcmeContext_Order_System_Uri_" data-uid="Certes.AcmeContext.Order(System.Uri)">Order(Uri)</h4>
@@ -646,7 +684,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext_RevokeCertificate_System_Byte___Certes_Acme_Resource_RevocationReason_Certes_IKey_.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.RevokeCertificate(System.Byte%5B%5D%2CCertes.Acme.Resource.RevocationReason%2CCertes.IKey)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L149">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L158">View Source</a>
   </span>
   <a id="Certes_AcmeContext_RevokeCertificate_" data-uid="Certes.AcmeContext.RevokeCertificate*"></a>
   <h4 id="Certes_AcmeContext_RevokeCertificate_System_Byte___Certes_Acme_Resource_RevocationReason_Certes_IKey_" data-uid="Certes.AcmeContext.RevokeCertificate(System.Byte[],Certes.Acme.Resource.RevocationReason,Certes.IKey)">RevokeCertificate(Byte[], RevocationReason, IKey)</h4>
@@ -708,7 +746,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_AcmeContext_Sign_System_Object_System_Uri_.md&amp;value=---%0Auid%3A%20Certes.AcmeContext.Sign(System.Object%2CSystem.Uri)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L207">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/AcmeContext.cs/#L212">View Source</a>
   </span>
   <a id="Certes_AcmeContext_Sign_" data-uid="Certes.AcmeContext.Sign*"></a>
   <h4 id="Certes_AcmeContext_Sign_System_Object_System_Uri_" data-uid="Certes.AcmeContext.Sign(System.Object,System.Uri)">Sign(Object, Uri)</h4>
