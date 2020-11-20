@@ -14,6 +14,7 @@ namespace Certes.Cli.Commands
     {
         private const string CommandText = "app";
         private const string OrderIdParam = "order-id";
+        private const string PreferredChainOption = "preferred-chain";
         private const string AppNameParam = "app";
         private const string SlotOption = "slot";
         private const string PrivateKeyOption = "private-key";
@@ -43,6 +44,7 @@ namespace Certes.Cli.Commands
             DefineAzureOptions(syntax)
                 .DefineOption(SlotOption, help: Strings.HelpSlot)
                 .DefineOption(PrivateKeyOption, help: Strings.HelpPrivateKey)
+                .DefineOption(PreferredChainOption, help: Strings.HelpPreferredChain)
                 .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId)
                 .DefineParameter(DomainParam, help: Strings.HelpDomain)
                 .DefineParameter(AppNameParam, help: Strings.HelpAppName);
@@ -60,6 +62,7 @@ namespace Certes.Cli.Commands
             var resourceGroup = syntax.GetOption<string>(AzureResourceGroupOption, true);
             var appName = syntax.GetParameter<string>(AppNameParam, true);
             var appSlot = syntax.GetOption<string>(SlotOption, false);
+            var preferredChain = syntax.GetOption<string>(PreferredChainOption);
 
             var privKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment, true);
 
@@ -72,7 +75,7 @@ namespace Certes.Cli.Commands
                 throw new CertesCliException(string.Format(Strings.ErrorOrderIncompleted, orderCtx.Location));
             }
 
-            var cert = await orderCtx.Download();
+            var cert = await orderCtx.Download(preferredChain);
             var x509Cert = new X509Certificate2(cert.Certificate.ToDer());
             var thumbprint = x509Cert.Thumbprint;
 

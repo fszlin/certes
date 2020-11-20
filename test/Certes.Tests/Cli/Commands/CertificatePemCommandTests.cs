@@ -45,7 +45,7 @@ namespace Certes.Cli.Commands
 
             var orderMock = new Mock<IOrderContext>(MockBehavior.Strict);
             orderMock.Setup(m => m.Resource()).ReturnsAsync(order);
-            orderMock.Setup(m => m.Download()).ReturnsAsync(certChain);
+            orderMock.Setup(m => m.Download(null)).ReturnsAsync(certChain);
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
@@ -70,7 +70,7 @@ namespace Certes.Cli.Commands
                 }),
                 JsonConvert.SerializeObject(ret));
 
-            orderMock.Verify(m => m.Download(), Times.Once);
+            orderMock.Verify(m => m.Download(null), Times.Once);
 
             var outPath = "./cert.pem";
             string saved = null;
