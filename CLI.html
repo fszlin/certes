@@ -219,9 +219,12 @@ private key:</p>
 <blockquote>
 <p>The <code>--private-key</code> option can be used to specify the private key for the certificate.</p>
 </blockquote>
+<blockquote>
+<p>The <code>--preferred-chain</code> option can be used to specify the preferred root certificate.</p>
+</blockquote>
 <p>To export the certificate in <code>PEM</code>:</p>
 <pre><code class="lang-PowerShell">certes cert pem https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
-  --out my-cert.pem
+  --out my-cert.pem --preferred-chain &quot;ISRG X1 Root&quot;
 </code></pre>
 <p>Or pack the certificate and private key in <code>PFX</code>:</p>
 <pre><code class="lang-PowerShell">certes cert pfx https://acme-v02.api.letsencrypt.org/acme/order/2/3 pfx-password `

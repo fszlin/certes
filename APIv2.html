@@ -149,6 +149,9 @@ await orderCtx.Finalize(csr.Generate());
 <p>Download the certificate PEM.</p>
 <pre><code class="lang-C#">var certChain = await order.Download();
 </code></pre>
+<p>Download the certificate PEM signed with a specific root certificate</p>
+<pre><code class="lang-C#">var certChain = await order.Download(&quot;ISRG X1 Root&quot;);
+</code></pre>
 <p>Finalize and download the certificate.</p>
 <pre><code class="lang-C#">var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
 var cert = await order.Generate(
@@ -159,6 +162,17 @@ var cert = await order.Generate(
         Locality = &quot;City&quot;,
         Organization = &quot;Dept&quot;,
     }, certKey);
+</code></pre>
+<p>Finalize and download the certificate signed with a specific root certificate.</p>
+<pre><code class="lang-C#">var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
+var cert = await order.Generate(
+    new CsrInfo
+    {
+        CountryName = &quot;CA&quot;,
+        State = &quot;State&quot;,
+        Locality = &quot;City&quot;,
+        Organization = &quot;Dept&quot;,
+    }, certKey, &quot;ISRG X1 Root&quot;);
 </code></pre>
 <h2 id="authorizations">Authorizations</h2>
 <p>Retrieve authorizations of the order.</p>

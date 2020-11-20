@@ -935,6 +935,19 @@ references:
   isSpec: "True"
   fullName: Certes.Acme.CertificateChain.Issuers
   nameWithType: CertificateChain.Issuers
+- uid: Certes.Acme.CertificateChain.MatchesPreferredChain(System.String)
+  name: MatchesPreferredChain(String)
+  href: api/certes/Certes.Acme.CertificateChain.html#Certes_Acme_CertificateChain_MatchesPreferredChain_System_String_
+  commentId: M:Certes.Acme.CertificateChain.MatchesPreferredChain(System.String)
+  fullName: Certes.Acme.CertificateChain.MatchesPreferredChain(System.String)
+  nameWithType: CertificateChain.MatchesPreferredChain(String)
+- uid: Certes.Acme.CertificateChain.MatchesPreferredChain*
+  name: MatchesPreferredChain
+  href: api/certes/Certes.Acme.CertificateChain.html#Certes_Acme_CertificateChain_MatchesPreferredChain_
+  commentId: Overload:Certes.Acme.CertificateChain.MatchesPreferredChain
+  isSpec: "True"
+  fullName: Certes.Acme.CertificateChain.MatchesPreferredChain
+  nameWithType: CertificateChain.MatchesPreferredChain
 - uid: Certes.Acme.CertificateEntity
   name: CertificateEntity
   href: api/certes/Certes.Acme.CertificateEntity.html
@@ -1526,12 +1539,12 @@ references:
   isSpec: "True"
   fullName: Certes.Acme.IOrderContext.Authorizations
   nameWithType: IOrderContext.Authorizations
-- uid: Certes.Acme.IOrderContext.Download
-  name: Download()
-  href: api/certes/Certes.Acme.IOrderContext.html#Certes_Acme_IOrderContext_Download
-  commentId: M:Certes.Acme.IOrderContext.Download
-  fullName: Certes.Acme.IOrderContext.Download()
-  nameWithType: IOrderContext.Download()
+- uid: Certes.Acme.IOrderContext.Download(System.String)
+  name: Download(String)
+  href: api/certes/Certes.Acme.IOrderContext.html#Certes_Acme_IOrderContext_Download_System_String_
+  commentId: M:Certes.Acme.IOrderContext.Download(System.String)
+  fullName: Certes.Acme.IOrderContext.Download(System.String)
+  nameWithType: IOrderContext.Download(String)
 - uid: Certes.Acme.IOrderContext.Download*
   name: Download
   href: api/certes/Certes.Acme.IOrderContext.html#Certes_Acme_IOrderContext_Download_
@@ -4021,12 +4034,12 @@ references:
   isSpec: "True"
   fullName: Certes.IOrderContextExtensions.Finalize
   nameWithType: IOrderContextExtensions.Finalize
-- uid: Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext,Certes.CsrInfo,Certes.IKey)
-  name: Generate(IOrderContext, CsrInfo, IKey)
-  href: api/certes/Certes.IOrderContextExtensions.html#Certes_IOrderContextExtensions_Generate_Certes_Acme_IOrderContext_Certes_CsrInfo_Certes_IKey_
-  commentId: M:Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext,Certes.CsrInfo,Certes.IKey)
-  fullName: Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext, Certes.CsrInfo, Certes.IKey)
-  nameWithType: IOrderContextExtensions.Generate(IOrderContext, CsrInfo, IKey)
+- uid: Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext,Certes.CsrInfo,Certes.IKey,System.String)
+  name: Generate(IOrderContext, CsrInfo, IKey, String)
+  href: api/certes/Certes.IOrderContextExtensions.html#Certes_IOrderContextExtensions_Generate_Certes_Acme_IOrderContext_Certes_CsrInfo_Certes_IKey_System_String_
+  commentId: M:Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext,Certes.CsrInfo,Certes.IKey,System.String)
+  fullName: Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext, Certes.CsrInfo, Certes.IKey, System.String)
+  nameWithType: IOrderContextExtensions.Generate(IOrderContext, CsrInfo, IKey, String)
 - uid: Certes.IOrderContextExtensions.Generate*
   name: Generate
   href: api/certes/Certes.IOrderContextExtensions.html#Certes_IOrderContextExtensions_Generate_

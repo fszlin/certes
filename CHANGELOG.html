@@ -64,6 +64,11 @@
 
 <p>All notable changes to this project will be documented in this file.</p>
 <h2 id="unreleased"><a href="https://github.com/fszlin/certes/compare/v2.3.3...HEAD">Unreleased</a></h2>
+<h3 id="added">Added</h3>
+<ul>
+<li>Support alternate link relations</li>
+<li>[CLI] Add option for alternate link relation</li>
+</ul>
 <h2 id="234---2020-03-27">[2.3.4] - 2020-03-27</h2>
 <h3 id="changed">Changed</h3>
 <ul>
@@ -71,7 +76,7 @@
 <li>Removed support for <code>netstanard1.3</code></li>
 <li>[CLI] Upgrade to <code>netcoreapp3.1</code></li>
 </ul>
-<h3 id="added">Added</h3>
+<h3 id="added-1">Added</h3>
 <ul>
 <li>[CLI] Add options for algorithm in order finalize method</li>
 </ul>
@@ -95,13 +100,13 @@
 <ul>
 <li>Remove package reference to <code>System.Net.Http</code> (<a href="https://github.com/fszlin/certes/issues/158">#158</a>)</li>
 </ul>
-<h3 id="added-1">Added</h3>
+<h3 id="added-2">Added</h3>
 <ul>
 <li>[CLI] Add <code>--friendly-name</code> option to <code>cert pfx</code> command (<a href="https://github.com/fszlin/certes/issues/145">#145</a>)</li>
 <li>[CLI] Add <code>--issuer</code> option to <code>cert pfx</code> command (<a href="https://github.com/fszlin/certes/issues/142">#142</a>)</li>
 </ul>
 <h2 id="230---2018-06-15"><a href="https://github.com/fszlin/certes/compare/v2.2.2...v2.3.0">2.3.0</a> - 2018-06-15</h2>
-<h3 id="added-2">Added</h3>
+<h3 id="added-3">Added</h3>
 <ul>
 <li>Support <code>tls-alpn-01</code> challenge (<a href="https://github.com/fszlin/certes/issues/125">#125</a>)</li>
 <li>Add <code>ACME</code> error details to exception messages (<a href="https://github.com/fszlin/certes/issues/109">#109</a>)</li>
@@ -112,12 +117,12 @@
 <li>Revert <code>Newtonsoft.Json</code> to <code>v10.0.3</code> for <code>PowerShell Core</code> (<a href="https://github.com/fszlin/certes/issues/112">#112</a>)</li>
 </ul>
 <h2 id="221---2018-05-15"><a href="https://github.com/fszlin/certes/compare/v2.2.0...v2.2.1">2.2.1</a> - 2018-05-15</h2>
-<h3 id="added-3">Added</h3>
+<h3 id="added-4">Added</h3>
 <ul>
 <li>Strong name signing (<a href="https://github.com/fszlin/certes/issues/106">#106</a>)</li>
 </ul>
 <h2 id="220---2018-05-05"><a href="https://github.com/fszlin/certes/compare/v2.1.0...v2.2.0">2.2.0</a> - 2018-05-05</h2>
-<h3 id="added-4">Added</h3>
+<h3 id="added-5">Added</h3>
 <ul>
 <li>Add <code>Challenge.Error</code> for challenge valdidation error (<a href="https://github.com/fszlin/certes/issues/99">#99</a>)</li>
 </ul>
@@ -126,7 +131,7 @@
 <li>Fix certificate chain for PFX (<a href="https://github.com/fszlin/certes/issues/100">#100</a>)</li>
 </ul>
 <h2 id="210---2018-04-27"><a href="https://github.com/fszlin/certes/compare/v2.0.1...v2.1.0">2.1.0</a> - 2018-04-27</h2>
-<h3 id="added-5">Added</h3>
+<h3 id="added-6">Added</h3>
 <ul>
 <li>Export full chain certification in PEM (<a href="https://github.com/fszlin/certes/issues/87">#87</a>)</li>
 <li>Support custom <code>HttpClient</code> (<a href="https://github.com/fszlin/certes/issues/95">#95</a>)</li>
@@ -137,7 +142,7 @@
 <li>[CLI] Change argument <del>talent-id</del> to <code>tenant-id</code> (<a href="https://github.com/fszlin/certes/issues/86">#86</a>)</li>
 </ul>
 <h2 id="201---2018-03-17"><a href="https://github.com/fszlin/certes/compare/v2.0.0...v2.0.1">2.0.1</a> - 2018-03-17</h2>
-<h3 id="added-6">Added</h3>
+<h3 id="added-7">Added</h3>
 <ul>
 <li>Add <code>Processing</code> status for challenges.</li>
 </ul>
@@ -146,7 +151,7 @@
 <li>Fix <code>Content-Type</code> header for POST requests (<a href="https://github.com/fszlin/certes/issues/76">#76</a>)</li>
 </ul>
 <h2 id="200---2018-03-13"><a href="https://github.com/fszlin/certes/compare/v1.1.4...v2.0.0">2.0.0</a> - 2018-03-13</h2>
-<h3 id="added-7">Added</h3>
+<h3 id="added-8">Added</h3>
 <ul>
 <li><a href="APIv2.html">ACME v2</a> support</li>
 <li>Add support for JSON web signature using ECDSA key</li>
@@ -168,12 +173,12 @@
 <li>Fix CLI script error</li>
 </ul>
 <h2 id="111---2017-09-26"><a href="https://github.com/fszlin/certes/compare/v1.1.0...v1.1.1">1.1.1</a> - 2017-09-26</h2>
-<h3 id="added-8">Added</h3>
+<h3 id="added-9">Added</h3>
 <ul>
 <li>Add build target for net47</li>
 </ul>
 <h2 id="110---2017-08-17"><a href="https://github.com/fszlin/certes/compare/v1.0.7...v1.1.0">1.1.0</a> - 2017-08-17</h2>
-<h3 id="added-9">Added</h3>
+<h3 id="added-10">Added</h3>
 <ul>
 <li>Add <code>Directory</code> to replace <code>AcmeDirectory</code></li>
 <li>Add support for deleting registration</li>

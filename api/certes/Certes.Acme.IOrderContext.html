@@ -136,20 +136,38 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_Acme_IOrderContext_Download.md&amp;value=---%0Auid%3A%20Certes.Acme.IOrderContext.Download%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_Acme_IOrderContext_Download_System_String_.md&amp;value=---%0Auid%3A%20Certes.Acme.IOrderContext.Download(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/IOrderContext.cs/#L31">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/IOrderContext.cs/#L32">View Source</a>
   </span>
   <a id="Certes_Acme_IOrderContext_Download_" data-uid="Certes.Acme.IOrderContext.Download*"></a>
-  <h4 id="Certes_Acme_IOrderContext_Download" data-uid="Certes.Acme.IOrderContext.Download">Download()</h4>
+  <h4 id="Certes_Acme_IOrderContext_Download_System_String_" data-uid="Certes.Acme.IOrderContext.Download(System.String)">Download(String)</h4>
   <div class="markdown level1 summary"><p>Downloads the certificate chain in PEM.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="text-muted font-weight-light font-italic decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task&lt;CertificateChain&gt; Download()</code></pre>
+    <pre><code class="lang-csharp hljs">Task&lt;CertificateChain&gt; Download(string preferredChain = null)</code></pre>
   </div>
+  <h5 class="text-muted font-weight-light font-italic parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">preferredChain</span></td>
+        <td><p>The preferred Root Certificate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h5 class="text-muted font-weight-light font-italic returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
@@ -224,7 +242,7 @@
       <a class="xref" href="Certes.IOrderContextExtensions.html#Certes_IOrderContextExtensions_CreateCsr_Certes_Acme_IOrderContext_Certes_IKey_">IOrderContextExtensions.CreateCsr(IOrderContext, IKey)</a>
   </div>
   <div>
-      <a class="xref" href="Certes.IOrderContextExtensions.html#Certes_IOrderContextExtensions_Generate_Certes_Acme_IOrderContext_Certes_CsrInfo_Certes_IKey_">IOrderContextExtensions.Generate(IOrderContext, CsrInfo, IKey)</a>
+      <a class="xref" href="Certes.IOrderContextExtensions.html#Certes_IOrderContextExtensions_Generate_Certes_Acme_IOrderContext_Certes_CsrInfo_Certes_IKey_System_String_">IOrderContextExtensions.Generate(IOrderContext, CsrInfo, IKey, String)</a>
   </div>
   <div>
       <a class="xref" href="Certes.IOrderContextExtensions.html#Certes_IOrderContextExtensions_Authorization_Certes_Acme_IOrderContext_System_String_Certes_Acme_Resource_IdentifierType_">IOrderContextExtensions.Authorization(IOrderContext, String, IdentifierType)</a>
