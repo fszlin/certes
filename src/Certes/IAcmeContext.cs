@@ -64,10 +64,13 @@ namespace Certes
         /// </summary>
         /// <param name="contact">The contact.</param>
         /// <param name="termsOfServiceAgreed">Set to <c>true</c> to accept the terms of service.</param>
+        /// <param name="eabKeyId">Optional key identifier, if using external account binding.</param>
+        /// <param name="eabKey">Optional EAB key, if using external account binding.</param>
+        /// <param name="eabKeyAlg">Optional EAB key algorithm, if using external account binding, defaults to HS256 if not specified</param>
         /// <returns>
         /// The account created.
         /// </returns>
-        Task<IAccountContext> NewAccount(IList<string> contact, bool termsOfServiceAgreed = false);
+        Task<IAccountContext> NewAccount(IList<string> contact, bool termsOfServiceAgreed = false, string eabKeyId = null, string eabKey = null, string eabKeyAlg = null);
 
         /// <summary>
         /// Revokes the certificate.

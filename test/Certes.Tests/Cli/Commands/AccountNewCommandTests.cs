@@ -39,9 +39,9 @@ namespace Certes.Cli.Commands
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
-            ctxMock.Setup(m => m.NewAccount(It.IsAny<IList<string>>(), true))
+            ctxMock.Setup(m => m.NewAccount(It.IsAny<IList<string>>(), true, null, null, null))
                 .ReturnsAsync(acctCtxMock.Object);
-
+           
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
             fileMock.Setup(m => m.WriteAllText(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.CompletedTask);
