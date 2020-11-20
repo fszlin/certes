@@ -41,6 +41,10 @@ Create new account.
 var account = await context.NewAccount(
     new [] { "mailto:admin@example.com", "mailto:it@example.com" }, true);
 var account = await context.NewAccount("admin@example.com", true);
+
+// external account binding
+var account = await context.NewAccount("admin@example.com", true, "(EAB Key Identifier)","(EAB Key)");
+var account = await context.NewAccount("admin@example.com", true, "(EAB Key Identifier)","(EAB Key)","(EAB Key Algorithm e.g.HS256)");
 ```
  
 Fetch existing account from server.
