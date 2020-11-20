@@ -45,9 +45,8 @@ namespace Certes.Acme
         public async Task<Order> Finalize(byte[] csr)
         {
             var order = await Resource();
-            var payload = await Context.Sign(new Order.Payload { Csr = JwsConvert.ToBase64String(csr) }, order.Finalize);
-            var resp = await Context.HttpClient.Post<Order>(order.Finalize, payload, true);
-            RetryAfter = resp.RetryAfter;
+            var payload = new Order.Payload { Csr = JwsConvert.ToBase64String(csr) };
+            var resp = await Context.HttpClient.Post<Order>(Context, order.Finalize, payload, true);
             return resp.Resource;
         }
 
@@ -59,8 +58,7 @@ namespace Certes.Acme
         public async Task<CertificateChain> Download(string preferredChain = null)
         {
             var order = await Resource();
-            var payload = await Context.Sign(null, order.Certificate);
-            var resp = await Context.HttpClient.Post<string>(order.Certificate, payload);
+            var resp = await Context.HttpClient.Post<string>(Context, order.Certificate, null, false);
 
             var defaultchain = new CertificateChain(resp.Resource);
             if (defaultchain.MatchesPreferredChain(preferredChain) || !resp.Links.Contains("alternate"))
@@ -69,8 +67,7 @@ namespace Certes.Acme
             var alternateLinks = resp.Links["alternate"].ToList();
             foreach (var alternate in alternateLinks)
             {
-                payload = await Context.Sign(null, alternate);
-                resp = await Context.HttpClient.Post<string>(alternate, payload);
+                resp = await Context.HttpClient.Post<string>(Context, alternate, null, false);
                 var chain = new CertificateChain(resp.Resource);
 
                 if (chain.MatchesPreferredChain(preferredChain))
