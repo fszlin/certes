@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
+using Certes.Json;
 using Certes.Jws;
 
 namespace Certes.Acme
@@ -79,12 +81,63 @@ namespace Certes.Acme
         /// <param name="context">The ACME context.</param>
         /// <param name="body">The payload.</param>
         /// <param name="ensureSuccessStatusCode">if set to <c>true</c>, throw exception if the request failed.</param>
+        /// <param name="eabKeyId">Optional key identifier, if using external account binding.</param>
+        /// <param name="eabKey">Optional EAB key, if using external account binding.</param>
+        /// <param name="eabKeyAlg">Optional EAB key algorithm, if using external account binding, defaults to HS256 if not specified</param>
         /// <returns>The ACME response.</returns>
         internal static async Task<AcmeHttpResponse<Account>> NewAccount(
-            IAcmeContext context, Account body, bool ensureSuccessStatusCode)
+            IAcmeContext context, Account body, bool ensureSuccessStatusCode,
+            string eabKeyId = null, string eabKey = null, string eabKeyAlg = null)
         {
             var endpoint = await context.GetResourceUri(d => d.NewAccount);
             var jws = new JwsSigner(context.AccountKey);
+
+            if (eabKeyId != null && eabKey != null)
+            {
+                var header = new
+                {
+                    alg = eabKeyAlg?.ToUpper() ?? "HS256",
+                    kid = eabKeyId,
+                    url = endpoint
+                };
+
+                var headerJson = Newtonsoft.Json.JsonConvert.SerializeObject(header, Newtonsoft.Json.Formatting.None, JsonUtil.CreateSettings());
+                var protectedHeaderBase64 = JwsConvert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(headerJson));
+
+                var accountKeyBase64 = JwsConvert.ToBase64String(
+                    System.Text.Encoding.UTF8.GetBytes(
+                        Newtonsoft.Json.JsonConvert.SerializeObject(context.AccountKey.JsonWebKey, Newtonsoft.Json.Formatting.None)
+                        )
+                    );
+
+                var signingBytes = System.Text.Encoding.ASCII.GetBytes($"{protectedHeaderBase64}.{accountKeyBase64}");
+
+                // eab signature is the hash of the header and account key, using the eab key
+                byte[] signatureHash;
+
+                switch (header.alg)
+                {
+                    case "HS512":
+                        using(var hs512 = new HMACSHA512(JwsConvert.FromBase64String(eabKey))) signatureHash = hs512.ComputeHash(signingBytes);
+                        break;
+                    case "HS384":
+                        using (var hs384 = new HMACSHA384(JwsConvert.FromBase64String(eabKey))) signatureHash = hs384.ComputeHash(signingBytes);
+                        break;
+                    default:
+                        using (var hs256 = new HMACSHA384(JwsConvert.FromBase64String(eabKey))) signatureHash = hs256.ComputeHash(signingBytes);
+                        break;   
+                }
+                    
+                var signatureBase64 = JwsConvert.ToBase64String(signatureHash);
+
+                body.ExternalAccountBinding = new
+                {
+                    Protected = protectedHeaderBase64,
+                    Payload = accountKeyBase64,
+                    Signature = signatureBase64
+                };
+            }
+
             var payload = jws.Sign(body, url: endpoint, nonce: await context.HttpClient.ConsumeNonce());
             return await context.HttpClient.Post<Account>(endpoint, payload, ensureSuccessStatusCode);
         }

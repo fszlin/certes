@@ -39,6 +39,16 @@ namespace Certes.Acme.Resource
         [JsonProperty("termsOfServiceAgreed")]
         public bool? TermsOfServiceAgreed { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets an external account binding
+        /// </summary>
+        /// <value>
+        ///  
+        /// </value>
+        [JsonProperty("externalAccountBinding")]
+        public object ExternalAccountBinding { get; set; }
+
         /// <summary>
         /// Gets or sets the orders.
         /// </summary>

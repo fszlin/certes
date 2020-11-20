@@ -36,7 +36,7 @@ namespace Certes
                     OrganizationUnit = "Dev",
                     CommonName = hosts[0],
                 }, certKey);
-                var certChain = await orderCtx.Download();
+                var certChain = await orderCtx.Download(null);
 
                 var pfxBuilder = certChain.ToPfx(certKey);
                 pfxBuilder.AddIssuers(IntegrationHelper.TestCertificates);

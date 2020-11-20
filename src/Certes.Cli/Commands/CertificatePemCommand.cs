@@ -29,6 +29,7 @@ namespace Certes.Cli.Commands
                 .DefineServerOption()
                 .DefineKeyOption()
                 .DefineOption(OutOption, help: Strings.HelpCertificateOut)
+                .DefineOption(PreferredChainOption, help: Strings.HelpPreferredChain)
                 .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId);
 
             return cmd;

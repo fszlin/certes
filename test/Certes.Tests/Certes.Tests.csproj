@@ -44,6 +44,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Data\defaultLeaf.pem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\alternateLeaf.pem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Data\cert-es256.pem">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
