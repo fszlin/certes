@@ -27,6 +27,12 @@ namespace Certes.Acme
         public Uri Location { get; }
 
         /// <summary>
+        /// The timespan after which to retry the request
+        /// </summary>
+        public int RetryAfter { get; protected set; }
+
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="EntityContext{T}"/> class.
         /// </summary>
         /// <param name="context">The context.</param>

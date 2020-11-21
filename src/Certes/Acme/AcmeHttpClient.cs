@@ -136,18 +136,25 @@ namespace Certes.Acme
             return nonce;
         }
 
-        private async Task<AcmeHttpResponse<T>> ProcessResponse<T>(HttpResponseMessage response)
-        {
-            var location = response.Headers.Location;
-            var resource = default(T);
-            var links = default(ILookup<string, Uri>);
-            var error = default(AcmeError);
 
-            if (response.Headers.Contains("Replay-Nonce"))
+        private double ExtractRetryAfterHeaderFromResponse(HttpResponseMessage response)
+        {
+            if (response.Headers.RetryAfter != null)
             {
-                nonce = response.Headers.GetValues("Replay-Nonce").Single();
+                var date = response.Headers.RetryAfter.Date;
+                var delta = response.Headers.RetryAfter.Delta;
+                if (date.HasValue)
+                    return Math.Abs((date.Value - DateTime.UtcNow).TotalSeconds);
+                else if (delta.HasValue)
+                    return delta.Value.TotalSeconds;
             }
 
+            return 0;
+        }
+
+        private ILookup<string, Uri> ExtractLinksFromResponse(HttpResponseMessage response)
+        {
+            var links = default(ILookup<string, Uri>);
             if (response.Headers.Contains("Link"))
             {
                 links = response.Headers.GetValues("Link")?
@@ -172,6 +179,21 @@ namespace Certes.Acme
                     })
                     .ToLookup(l => l.Rel, l => l.Uri);
             }
+            return links;
+        }
+
+        private async Task<AcmeHttpResponse<T>> ProcessResponse<T>(HttpResponseMessage response)
+        {
+            var location = response.Headers.Location;
+            var resource = default(T);
+            var error = default(AcmeError);
+            var retryafter = (int)ExtractRetryAfterHeaderFromResponse(response);
+            var links = ExtractLinksFromResponse(response);
+
+            if (response.Headers.Contains("Replay-Nonce"))
+            {
+                nonce = response.Headers.GetValues("Replay-Nonce").Single();
+            }
 
             if (response.IsSuccessStatusCode)
             {
@@ -195,7 +217,7 @@ namespace Certes.Acme
                 }
             }
 
-            return new AcmeHttpResponse<T>(location, resource, links, error);
+            return new AcmeHttpResponse<T>(location, resource, links, error, retryafter);
         }
 
         private async Task FetchNonce()
