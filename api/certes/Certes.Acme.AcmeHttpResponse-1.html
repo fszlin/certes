@@ -140,19 +140,19 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_Acme_AcmeHttpResponse_1__ctor_System_Uri__0_System_Linq_ILookup_System_String_System_Uri__Certes_Acme_AcmeError_.md&amp;value=---%0Auid%3A%20Certes.Acme.AcmeHttpResponse%601.%23ctor(System.Uri%2C%600%2CSystem.Linq.ILookup%7BSystem.String%2CSystem.Uri%7D%2CCertes.Acme.AcmeError)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_Acme_AcmeHttpResponse_1__ctor_System_Uri__0_System_Linq_ILookup_System_String_System_Uri__Certes_Acme_AcmeError_System_Int32_.md&amp;value=---%0Auid%3A%20Certes.Acme.AcmeHttpResponse%601.%23ctor(System.Uri%2C%600%2CSystem.Linq.ILookup%7BSystem.String%2CSystem.Uri%7D%2CCertes.Acme.AcmeError%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpResponse.cs/#L19">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpResponse.cs/#L20">View Source</a>
   </span>
   <a id="Certes_Acme_AcmeHttpResponse_1__ctor_" data-uid="Certes.Acme.AcmeHttpResponse`1.#ctor*"></a>
-  <h4 id="Certes_Acme_AcmeHttpResponse_1__ctor_System_Uri__0_System_Linq_ILookup_System_String_System_Uri__Certes_Acme_AcmeError_" data-uid="Certes.Acme.AcmeHttpResponse`1.#ctor(System.Uri,`0,System.Linq.ILookup{System.String,System.Uri},Certes.Acme.AcmeError)">AcmeHttpResponse(Uri, T, ILookup&lt;String, Uri&gt;, AcmeError)</h4>
+  <h4 id="Certes_Acme_AcmeHttpResponse_1__ctor_System_Uri__0_System_Linq_ILookup_System_String_System_Uri__Certes_Acme_AcmeError_System_Int32_" data-uid="Certes.Acme.AcmeHttpResponse`1.#ctor(System.Uri,`0,System.Linq.ILookup{System.String,System.Uri},Certes.Acme.AcmeError,System.Int32)">AcmeHttpResponse(Uri, T, ILookup&lt;String, Uri&gt;, AcmeError, Int32)</h4>
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Certes.Acme.AcmeHttpResponse-1.html">AcmeHttpResponse&lt;T&gt;</a> class.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="text-muted font-weight-light font-italic decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AcmeHttpResponse(Uri location, T resource, ILookup&lt;string, Uri&gt; links, AcmeError error)</code></pre>
+    <pre><code class="lang-csharp hljs">public AcmeHttpResponse(Uri location, T resource, ILookup&lt;string, Uri&gt; links, AcmeError error, int retryAfter = 0)</code></pre>
   </div>
   <h5 class="text-muted font-weight-light font-italic parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -188,6 +188,12 @@
         <td><p>The error.</p>
 </td>
       </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">retryAfter</span></td>
+        <td><p>The retryAfter delay.</p>
+</td>
+      </tr>
     </tbody>
   </table>
   <h3 id="properties">Properties
@@ -197,7 +203,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_Acme_AcmeHttpResponse_1_Error.md&amp;value=---%0Auid%3A%20Certes.Acme.AcmeHttpResponse%601.Error%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpResponse.cs/#L57">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpResponse.cs/#L59">View Source</a>
   </span>
   <a id="Certes_Acme_AcmeHttpResponse_1_Error_" data-uid="Certes.Acme.AcmeHttpResponse`1.Error*"></a>
   <h4 id="Certes_Acme_AcmeHttpResponse_1_Error" data-uid="Certes.Acme.AcmeHttpResponse`1.Error">Error</h4>
@@ -229,7 +235,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_Acme_AcmeHttpResponse_1_Links.md&amp;value=---%0Auid%3A%20Certes.Acme.AcmeHttpResponse%601.Links%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpResponse.cs/#L49">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpResponse.cs/#L51">View Source</a>
   </span>
   <a id="Certes_Acme_AcmeHttpResponse_1_Links_" data-uid="Certes.Acme.AcmeHttpResponse`1.Links*"></a>
   <h4 id="Certes_Acme_AcmeHttpResponse_1_Links" data-uid="Certes.Acme.AcmeHttpResponse`1.Links">Links</h4>
@@ -261,7 +267,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_Acme_AcmeHttpResponse_1_Location.md&amp;value=---%0Auid%3A%20Certes.Acme.AcmeHttpResponse%601.Location%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpResponse.cs/#L33">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpResponse.cs/#L35">View Source</a>
   </span>
   <a id="Certes_Acme_AcmeHttpResponse_1_Location_" data-uid="Certes.Acme.AcmeHttpResponse`1.Location*"></a>
   <h4 id="Certes_Acme_AcmeHttpResponse_1_Location" data-uid="Certes.Acme.AcmeHttpResponse`1.Location">Location</h4>
@@ -293,7 +299,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_Acme_AcmeHttpResponse_1_Resource.md&amp;value=---%0Auid%3A%20Certes.Acme.AcmeHttpResponse%601.Resource%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpResponse.cs/#L41">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpResponse.cs/#L43">View Source</a>
   </span>
   <a id="Certes_Acme_AcmeHttpResponse_1_Resource_" data-uid="Certes.Acme.AcmeHttpResponse`1.Resource*"></a>
   <h4 id="Certes_Acme_AcmeHttpResponse_1_Resource" data-uid="Certes.Acme.AcmeHttpResponse`1.Resource">Resource</h4>
@@ -316,6 +322,38 @@
       <tr>
         <td><span class="xref">T</span></td>
         <td><p>The resource.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_Acme_AcmeHttpResponse_1_RetryAfter.md&amp;value=---%0Auid%3A%20Certes.Acme.AcmeHttpResponse%601.RetryAfter%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Acme/AcmeHttpResponse.cs/#L68">View Source</a>
+  </span>
+  <a id="Certes_Acme_AcmeHttpResponse_1_RetryAfter_" data-uid="Certes.Acme.AcmeHttpResponse`1.RetryAfter*"></a>
+  <h4 id="Certes_Acme_AcmeHttpResponse_1_RetryAfter" data-uid="Certes.Acme.AcmeHttpResponse`1.RetryAfter">RetryAfter</h4>
+  <div class="markdown level1 summary"><p>Gets the retry after delay.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="text-muted font-weight-light font-italic decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int RetryAfter { get; }</code></pre>
+  </div>
+  <h5 class="text-muted font-weight-light font-italic propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The retry after delay.</p>
 </td>
       </tr>
     </tbody>

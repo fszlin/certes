@@ -129,7 +129,7 @@
     <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_IOrderContextExtensions_Authorization_Certes_Acme_IOrderContext_System_String_Certes_Acme_Resource_IdentifierType_.md&amp;value=---%0Auid%3A%20Certes.IOrderContextExtensions.Authorization(Certes.Acme.IOrderContext%2CSystem.String%2CCertes.Acme.Resource.IdentifierType)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Extensions/IOrderContextExtensions.cs/#L95">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Extensions/IOrderContextExtensions.cs/#L102">View Source</a>
   </span>
   <a id="Certes_IOrderContextExtensions_Authorization_" data-uid="Certes.IOrderContextExtensions.Authorization*"></a>
   <h4 id="Certes_IOrderContextExtensions_Authorization_Certes_Acme_IOrderContext_System_String_Certes_Acme_Resource_IdentifierType_" data-uid="Certes.IOrderContextExtensions.Authorization(Certes.Acme.IOrderContext,System.String,Certes.Acme.Resource.IdentifierType)">Authorization(IOrderContext, String, IdentifierType)</h4>
@@ -306,19 +306,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_IOrderContextExtensions_Generate_Certes_Acme_IOrderContext_Certes_CsrInfo_Certes_IKey_System_String_.md&amp;value=---%0Auid%3A%20Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext%2CCertes.CsrInfo%2CCertes.IKey%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/master/docs/api/spec/new?filename=Certes_IOrderContextExtensions_Generate_Certes_Acme_IOrderContext_Certes_CsrInfo_Certes_IKey_System_String_System_Int32_.md&amp;value=---%0Auid%3A%20Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext%2CCertes.CsrInfo%2CCertes.IKey%2CSystem.String%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Extensions/IOrderContextExtensions.cs/#L69">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/master/src/Certes/Extensions/IOrderContextExtensions.cs/#L70">View Source</a>
   </span>
   <a id="Certes_IOrderContextExtensions_Generate_" data-uid="Certes.IOrderContextExtensions.Generate*"></a>
-  <h4 id="Certes_IOrderContextExtensions_Generate_Certes_Acme_IOrderContext_Certes_CsrInfo_Certes_IKey_System_String_" data-uid="Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext,Certes.CsrInfo,Certes.IKey,System.String)">Generate(IOrderContext, CsrInfo, IKey, String)</h4>
+  <h4 id="Certes_IOrderContextExtensions_Generate_Certes_Acme_IOrderContext_Certes_CsrInfo_Certes_IKey_System_String_System_Int32_" data-uid="Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext,Certes.CsrInfo,Certes.IKey,System.String,System.Int32)">Generate(IOrderContext, CsrInfo, IKey, String, Int32)</h4>
   <div class="markdown level1 summary"><p>Finalizes and download the certifcate for the order.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="text-muted font-weight-light font-italic decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;CertificateChain&gt; Generate(this IOrderContext context, CsrInfo csr, IKey key, string preferredChain = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task&lt;CertificateChain&gt; Generate(this IOrderContext context, CsrInfo csr, IKey key, string preferredChain = null, int retryCount = 1)</code></pre>
   </div>
   <h5 class="text-muted font-weight-light font-italic parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -352,6 +352,12 @@
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">preferredChain</span></td>
         <td><p>The preferred Root Certificate.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">retryCount</span></td>
+        <td><p>Number of retries when the Order is in 'processing' state. (default = 1)</p>
 </td>
       </tr>
     </tbody>

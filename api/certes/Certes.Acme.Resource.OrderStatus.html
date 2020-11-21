@@ -101,27 +101,31 @@ public enum OrderStatus</code></pre>
     <tbody>
       <tr>
         <td id="Certes_Acme_Resource_OrderStatus_Invalid">Invalid</td>
-        <td><p>The invalid status.</p>
+        <td><p>The certificate will not be issued.  Consider this order process abandoned.</p>
 </td>
       </tr>
       <tr>
         <td id="Certes_Acme_Resource_OrderStatus_Pending">Pending</td>
-        <td><p>The pending status.</p>
+        <td><p>The server does not believe that the client has fulfilled the requirements.
+Check the &quot;authorizations&quot; array for entries that are still pending.</p>
 </td>
       </tr>
       <tr>
         <td id="Certes_Acme_Resource_OrderStatus_Processing">Processing</td>
-        <td><p>The processing status.</p>
+        <td><p>The certificate is being issued.  Send a POST-as-GET request after the time given in the
+Retry-After header field of the response, if any.</p>
 </td>
       </tr>
       <tr>
         <td id="Certes_Acme_Resource_OrderStatus_Ready">Ready</td>
-        <td><p>The ready status.</p>
+        <td><p>The server agrees that the requirements have been fulfilled, and is awaiting finalization.
+Submit a finalization request.</p>
 </td>
       </tr>
       <tr>
         <td id="Certes_Acme_Resource_OrderStatus_Valid">Valid</td>
-        <td><p>The valid status.</p>
+        <td><p>The server has issued the certificate and provisioned its URL to the &quot;certificate&quot; field of the order.
+Download the certificate.</p>
 </td>
       </tr>
     </tbody>

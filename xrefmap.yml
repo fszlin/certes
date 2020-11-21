@@ -464,15 +464,15 @@ references:
   fullName.vb: Certes.Acme.AcmeHttpResponse(Of T)
   nameWithType: AcmeHttpResponse<T>
   nameWithType.vb: AcmeHttpResponse(Of T)
-- uid: Certes.Acme.AcmeHttpResponse`1.#ctor(System.Uri,`0,System.Linq.ILookup{System.String,System.Uri},Certes.Acme.AcmeError)
-  name: AcmeHttpResponse(Uri, T, ILookup<String, Uri>, AcmeError)
-  href: api/certes/Certes.Acme.AcmeHttpResponse-1.html#Certes_Acme_AcmeHttpResponse_1__ctor_System_Uri__0_System_Linq_ILookup_System_String_System_Uri__Certes_Acme_AcmeError_
-  commentId: M:Certes.Acme.AcmeHttpResponse`1.#ctor(System.Uri,`0,System.Linq.ILookup{System.String,System.Uri},Certes.Acme.AcmeError)
-  name.vb: AcmeHttpResponse(Uri, T, ILookup(Of String, Uri), AcmeError)
-  fullName: Certes.Acme.AcmeHttpResponse<T>.AcmeHttpResponse(System.Uri, T, System.Linq.ILookup<System.String, System.Uri>, Certes.Acme.AcmeError)
-  fullName.vb: Certes.Acme.AcmeHttpResponse(Of T).AcmeHttpResponse(System.Uri, T, System.Linq.ILookup(Of System.String, System.Uri), Certes.Acme.AcmeError)
-  nameWithType: AcmeHttpResponse<T>.AcmeHttpResponse(Uri, T, ILookup<String, Uri>, AcmeError)
-  nameWithType.vb: AcmeHttpResponse(Of T).AcmeHttpResponse(Uri, T, ILookup(Of String, Uri), AcmeError)
+- uid: Certes.Acme.AcmeHttpResponse`1.#ctor(System.Uri,`0,System.Linq.ILookup{System.String,System.Uri},Certes.Acme.AcmeError,System.Int32)
+  name: AcmeHttpResponse(Uri, T, ILookup<String, Uri>, AcmeError, Int32)
+  href: api/certes/Certes.Acme.AcmeHttpResponse-1.html#Certes_Acme_AcmeHttpResponse_1__ctor_System_Uri__0_System_Linq_ILookup_System_String_System_Uri__Certes_Acme_AcmeError_System_Int32_
+  commentId: M:Certes.Acme.AcmeHttpResponse`1.#ctor(System.Uri,`0,System.Linq.ILookup{System.String,System.Uri},Certes.Acme.AcmeError,System.Int32)
+  name.vb: AcmeHttpResponse(Uri, T, ILookup(Of String, Uri), AcmeError, Int32)
+  fullName: Certes.Acme.AcmeHttpResponse<T>.AcmeHttpResponse(System.Uri, T, System.Linq.ILookup<System.String, System.Uri>, Certes.Acme.AcmeError, System.Int32)
+  fullName.vb: Certes.Acme.AcmeHttpResponse(Of T).AcmeHttpResponse(System.Uri, T, System.Linq.ILookup(Of System.String, System.Uri), Certes.Acme.AcmeError, System.Int32)
+  nameWithType: AcmeHttpResponse<T>.AcmeHttpResponse(Uri, T, ILookup<String, Uri>, AcmeError, Int32)
+  nameWithType.vb: AcmeHttpResponse(Of T).AcmeHttpResponse(Uri, T, ILookup(Of String, Uri), AcmeError, Int32)
 - uid: Certes.Acme.AcmeHttpResponse`1.#ctor*
   name: AcmeHttpResponse
   href: api/certes/Certes.Acme.AcmeHttpResponse-1.html#Certes_Acme_AcmeHttpResponse_1__ctor_
@@ -550,6 +550,23 @@ references:
   fullName.vb: Certes.Acme.AcmeHttpResponse(Of T).Resource
   nameWithType: AcmeHttpResponse<T>.Resource
   nameWithType.vb: AcmeHttpResponse(Of T).Resource
+- uid: Certes.Acme.AcmeHttpResponse`1.RetryAfter
+  name: RetryAfter
+  href: api/certes/Certes.Acme.AcmeHttpResponse-1.html#Certes_Acme_AcmeHttpResponse_1_RetryAfter
+  commentId: P:Certes.Acme.AcmeHttpResponse`1.RetryAfter
+  fullName: Certes.Acme.AcmeHttpResponse<T>.RetryAfter
+  fullName.vb: Certes.Acme.AcmeHttpResponse(Of T).RetryAfter
+  nameWithType: AcmeHttpResponse<T>.RetryAfter
+  nameWithType.vb: AcmeHttpResponse(Of T).RetryAfter
+- uid: Certes.Acme.AcmeHttpResponse`1.RetryAfter*
+  name: RetryAfter
+  href: api/certes/Certes.Acme.AcmeHttpResponse-1.html#Certes_Acme_AcmeHttpResponse_1_RetryAfter_
+  commentId: Overload:Certes.Acme.AcmeHttpResponse`1.RetryAfter
+  isSpec: "True"
+  fullName: Certes.Acme.AcmeHttpResponse<T>.RetryAfter
+  fullName.vb: Certes.Acme.AcmeHttpResponse(Of T).RetryAfter
+  nameWithType: AcmeHttpResponse<T>.RetryAfter
+  nameWithType.vb: AcmeHttpResponse(Of T).RetryAfter
 - uid: Certes.Acme.AcmeResponse`1
   name: AcmeResponse<T>
   href: api/certes/Certes.Acme.AcmeResponse-1.html
@@ -1643,6 +1660,23 @@ references:
   fullName.vb: Certes.Acme.IResourceContext(Of T).Resource
   nameWithType: IResourceContext<T>.Resource
   nameWithType.vb: IResourceContext(Of T).Resource
+- uid: Certes.Acme.IResourceContext`1.RetryAfter
+  name: RetryAfter
+  href: api/certes/Certes.Acme.IResourceContext-1.html#Certes_Acme_IResourceContext_1_RetryAfter
+  commentId: P:Certes.Acme.IResourceContext`1.RetryAfter
+  fullName: Certes.Acme.IResourceContext<T>.RetryAfter
+  fullName.vb: Certes.Acme.IResourceContext(Of T).RetryAfter
+  nameWithType: IResourceContext<T>.RetryAfter
+  nameWithType.vb: IResourceContext(Of T).RetryAfter
+- uid: Certes.Acme.IResourceContext`1.RetryAfter*
+  name: RetryAfter
+  href: api/certes/Certes.Acme.IResourceContext-1.html#Certes_Acme_IResourceContext_1_RetryAfter_
+  commentId: Overload:Certes.Acme.IResourceContext`1.RetryAfter
+  isSpec: "True"
+  fullName: Certes.Acme.IResourceContext<T>.RetryAfter
+  fullName.vb: Certes.Acme.IResourceContext(Of T).RetryAfter
+  nameWithType: IResourceContext<T>.RetryAfter
+  nameWithType.vb: IResourceContext(Of T).RetryAfter
 - uid: Certes.Acme.KeyedAcmeResult`1
   name: KeyedAcmeResult<T>
   href: api/certes/Certes.Acme.KeyedAcmeResult-1.html
@@ -4086,12 +4120,12 @@ references:
   isSpec: "True"
   fullName: Certes.IOrderContextExtensions.Finalize
   nameWithType: IOrderContextExtensions.Finalize
-- uid: Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext,Certes.CsrInfo,Certes.IKey,System.String)
-  name: Generate(IOrderContext, CsrInfo, IKey, String)
-  href: api/certes/Certes.IOrderContextExtensions.html#Certes_IOrderContextExtensions_Generate_Certes_Acme_IOrderContext_Certes_CsrInfo_Certes_IKey_System_String_
-  commentId: M:Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext,Certes.CsrInfo,Certes.IKey,System.String)
-  fullName: Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext, Certes.CsrInfo, Certes.IKey, System.String)
-  nameWithType: IOrderContextExtensions.Generate(IOrderContext, CsrInfo, IKey, String)
+- uid: Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext,Certes.CsrInfo,Certes.IKey,System.String,System.Int32)
+  name: Generate(IOrderContext, CsrInfo, IKey, String, Int32)
+  href: api/certes/Certes.IOrderContextExtensions.html#Certes_IOrderContextExtensions_Generate_Certes_Acme_IOrderContext_Certes_CsrInfo_Certes_IKey_System_String_System_Int32_
+  commentId: M:Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext,Certes.CsrInfo,Certes.IKey,System.String,System.Int32)
+  fullName: Certes.IOrderContextExtensions.Generate(Certes.Acme.IOrderContext, Certes.CsrInfo, Certes.IKey, System.String, System.Int32)
+  nameWithType: IOrderContextExtensions.Generate(IOrderContext, CsrInfo, IKey, String, Int32)
 - uid: Certes.IOrderContextExtensions.Generate*
   name: Generate
   href: api/certes/Certes.IOrderContextExtensions.html#Certes_IOrderContextExtensions_Generate_
