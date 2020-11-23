@@ -55,12 +55,7 @@ namespace Certes.Acme
         private static void ConfigureDefaultUserAgentHeader(HttpClient client)
         {
             var certesVersion = typeof(AcmeHttpClient).GetTypeInfo().Assembly.GetName().Version;
-            var netVersion
-#if NETSTANDARD1_3
-                = "1.3";
-#else
-                = Environment.Version;
-#endif
+            var netVersion = Environment.Version;
             lock (client)
             {
                 client.DefaultRequestHeaders.UserAgent.ParseAdd($"Certes/{certesVersion} .NET/{netVersion}");

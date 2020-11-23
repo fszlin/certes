@@ -1,7 +1,7 @@
 # Certes
 
 Certes is an [ACME](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment)
-client runs on .NET 4.5+ and .NET Standard 1.3+, supports ACME v2 and wildcard certificates.
+client runs on .NET 4.5+ and .NET Standard 2.0+, supports ACME v2 and wildcard certificates.
 It is aimed to provide an easy to use API for managing certificates during deployment processes.
 
 ## Usage
