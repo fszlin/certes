@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - Add user-agent header to HTTP requests
 - Removed support for `netstandard1.3`
 - [CLI] Upgrade to `netcoreapp3.1`
+
 ### Added
 - [CLI] Add options for algorithm in order finalize method
 
