@@ -18,6 +18,11 @@ namespace Certes.Acme
         Uri Location { get; }
 
         /// <summary>
+        /// The timespan after which to retry the request
+        /// </summary>
+        int RetryAfter { get; }
+
+        /// <summary>
         /// Gets the ACME resource.
         /// </summary>
         /// <returns>The resource entity.</returns>
