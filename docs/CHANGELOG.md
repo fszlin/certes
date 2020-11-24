@@ -3,9 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
-- Support alternate link relations ([#232][https://github.com/fszlin/certes/issues/232])
+- Support alternate link relations [#232](https://github.com/fszlin/certes/issues/232)
 - [CLI] Add option for alternate link relation
-- Implement external account binding support (library). ([#231][https://github.com/fszlin/certes/issues/231])
+- Implement external account binding support (library).  [#231](https://github.com/fszlin/certes/issues/231)
 
 ## [2.3.4] - 2020-03-27
 ### Changed
