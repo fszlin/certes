@@ -123,7 +123,7 @@ namespace Certes.Acme
                         using (var hs384 = new HMACSHA384(JwsConvert.FromBase64String(eabKey))) signatureHash = hs384.ComputeHash(signingBytes);
                         break;
                     default:
-                        using (var hs256 = new HMACSHA384(JwsConvert.FromBase64String(eabKey))) signatureHash = hs256.ComputeHash(signingBytes);
+                        using (var hs256 = new HMACSHA256(JwsConvert.FromBase64String(eabKey))) signatureHash = hs256.ComputeHash(signingBytes);
                         break;   
                 }
                     
