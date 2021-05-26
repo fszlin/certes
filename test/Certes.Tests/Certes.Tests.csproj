@@ -2,10 +2,10 @@
   <Import Project="../../misc/certes.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net452;net47</TargetFrameworks>
+    <TargetFrameworks>net5.0;netcoreapp3.1;netcoreapp2.1;net452</TargetFrameworks>
     <RootNamespace>Certes</RootNamespace>
     <NoWarn>1701;1702;1705;0618</NoWarn>
-    <IncludeCli>$(TargetFramework.StartsWith('netcoreapp'))</IncludeCli>
+    <IncludeCli>False</IncludeCli>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(IncludeCli)' != 'True'">
