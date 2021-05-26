@@ -3,8 +3,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
-    <AssemblyVersion>1.0.5</AssemblyVersion>
+    <TargetFrameworks>net5.0</TargetFrameworks>
     <AssemblyVersion Condition="$(CERTES_TOOL_ASSEMBLYVERSION) != ''">$(CERTES_TOOL_ASSEMBLYVERSION)</AssemblyVersion>
     <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
     <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
@@ -39,11 +38,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="5.1.2" />
-    <PackageReference Include="NLog" Version="4.7.0" />
-    <PackageReference Include="System.CommandLine" Version="0.1.0-*" />
-    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.32.0" />
-    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.32.0" />
+    <PackageReference Include="Autofac" Version="6.2.0" />
+    <PackageReference Include="NLog" Version="4.7.10" />
+    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.37.1" />
+    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.37.1" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.21216.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -282,4 +282,7 @@
   <data name="ErrorInvalidkeyAlgorithm" xml:space="preserve">
     <value>'{0}' is invalid key algorithm.</value>
   </data>
+  <data name="HelpNewServer" xml:space="preserve">
+    <value>The dictionary URI to the new ACME server.</value>
+  </data>
 </root>

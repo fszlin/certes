@@ -223,15 +223,6 @@ namespace Certes.Cli {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Preferred root certificate..
-        /// </summary>
-        internal static string HelpPreferredChain {
-            get {
-                return ResourceManager.GetString("HelpPreferredChain", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The challenge type, http or dns..
         /// </summary>
         internal static string HelpChallengeType {
@@ -511,6 +502,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The dictionary URI to the new ACME server..
+        /// </summary>
+        internal static string HelpNewServer {
+            get {
+                return ResourceManager.GetString("HelpNewServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The URI of the certificate order..
         /// </summary>
         internal static string HelpOrderId {
@@ -525,6 +525,15 @@ namespace Certes.Cli {
         internal static string HelpPfxPassword {
             get {
                 return ResourceManager.GetString("HelpPfxPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preferred root certificate..
+        /// </summary>
+        internal static string HelpPreferredChain {
+            get {
+                return ResourceManager.GetString("HelpPreferredChain", resourceCulture);
             }
         }
         
