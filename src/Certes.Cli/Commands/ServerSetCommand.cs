@@ -22,15 +22,9 @@ namespace Certes.Cli.Commands
 
         public Command Define()
         {
-            var newServerOption = new Option<Uri>("--new-server", Strings.HelpNewServer);
-
-            // For backward compatibility 
-            newServerOption.AddAlias("--server-uri");
-            newServerOption.IsRequired = true;
-
             var cmd = new Command("set", Strings.HelpCommandServerSet)
             {
-                newServerOption,
+                new Argument<Uri>("new-server", Strings.HelpNewServer),
             };
 
             cmd.Handler = CommandHandler.Create(async (Uri newServer, IConsole console) =>

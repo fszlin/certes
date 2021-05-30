@@ -5,7 +5,6 @@ using Certes.Cli.Settings;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
-using static Certes.Acme.WellKnownServers;
 using static Certes.Cli.CliTestHelper;
 using static Certes.Helper;
 
@@ -24,45 +23,28 @@ namespace Certes.Cli.Commands
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
 
-            var cmd = new ServerSetCommand(settingsMock.Object, (u, k) => ctxMock.Object);
-            var syntax = DefineCommand($"set {serverUri}");
+            var (console, stdOutput, errOutput) = MockConsole();
 
-            var ret = await cmd.Execute(syntax);
+            var cmd = new ServerSetCommand(
+                settingsMock.Object, (u, k) => ctxMock.Object);
+            var command = cmd.Define();
+
+            await command.InvokeAsync($"set {serverUri}", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            var ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
-                JsonConvert.SerializeObject(ret),
+                JsonConvert.SerializeObject(ret, JsonSettings),
                 JsonConvert.SerializeObject(new
                 {
                     location = serverUri,
                     resource = MockDirectoryV2
-                }));
+                }, JsonSettings));
 
-            syntax = DefineCommand($"set");
-            await Assert.ThrowsAsync<ArgumentSyntaxException>(() => cmd.Execute(syntax));
-        }
+            errOutput.Clear();
+            stdOutput.Clear();
 
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"set {LetsEncryptStagingV2}";
-            var syntax = DefineCommand(args);
-
-            Assert.Equal("set", syntax.ActiveCommand.Value);
-            ValidateParameter(syntax, "server-uri", LetsEncryptStagingV2);
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("set", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new ServerSetCommand(NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object);
-            Assert.Equal(CommandGroup.Server.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
+            await command.InvokeAsync($"set", console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
         }
     }
 }

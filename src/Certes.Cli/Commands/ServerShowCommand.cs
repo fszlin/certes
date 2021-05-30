@@ -24,7 +24,7 @@ namespace Certes.Cli.Commands
         {
             var cmd = new Command("show", Strings.HelpCommandServerShow)
             {
-                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
             };
 
             cmd.Handler = CommandHandler.Create(async (Uri server, IConsole console) =>
