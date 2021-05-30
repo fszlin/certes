@@ -44,14 +44,14 @@ jobs:
     inputs:
       command: 'test'
       projects: 'test/Certes.Tests/Certes.Tests.csproj'
-      arguments: '-f ${{ parameters.appFramework }} -p:CollectCoverage=true --no-build -p:CoverletOutputFormat=opencover'
+      arguments: '-f ${{ parameters.appFramework }} --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
  
   - task: DotNetCoreCLI@2
     displayName: 'Upload unit tests code coverage'
     inputs:
       command: 'custom'
       custom: codecov
-      arguments: '-f test/Certes.Tests/coverage.opencover.xml --flag unittests -t $(CODECOV_TOKEN)'
+      arguments: '-f test/Certes.Tests/**/coverage.opencover.xml --flag unittests -t $(CODECOV_TOKEN)'
       
   - task: DotNetCoreCLI@2
     displayName: 'Build integration tests'
@@ -66,7 +66,7 @@ jobs:
     inputs:
       command: 'test'
       projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
-      arguments: '-f ${{ parameters.appFramework }} -p:CollectCoverage=true --no-build -p:CoverletOutputFormat=opencover'
+      arguments: '-f ${{ parameters.appFramework }} --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
       testRunTitle: 'Integration Tests'
 
   - task: DotNetCoreCLI@2
@@ -74,4 +74,4 @@ jobs:
     inputs:
       command: 'custom'
       custom: codecov
-      arguments: '-f test/Certes.Tests.Integration/coverage.opencover.xml --flag integration -t $(CODECOV_TOKEN)'
+      arguments: '-f test/Certes.Tests.Integration/**/coverage.opencover.xml --flag integration -t $(CODECOV_TOKEN)'
