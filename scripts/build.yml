@@ -44,7 +44,7 @@ jobs:
     inputs:
       command: 'test'
       projects: 'test/Certes.Tests/Certes.Tests.csproj'
-      arguments: '-f ${{ parameters.appFramework }} --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
+      arguments: '-f ${{ parameters.appFramework }} --no-build --collect:"XPlat Code Coverage" -r TestResults -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
  
   - task: DotNetCoreCLI@2
     displayName: 'Upload unit tests code coverage'
@@ -58,7 +58,7 @@ jobs:
     inputs:
       command: 'build'
       projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
-      arguments: '-f ${{ parameters.appFramework }}'
+      arguments: '-f ${{ parameters.appFramework }} -p:SkipSigning=true'
       testRunTitle: 'Unit Tests'
 
   - task: DotNetCoreCLI@2
@@ -66,7 +66,7 @@ jobs:
     inputs:
       command: 'test'
       projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
-      arguments: '-f ${{ parameters.appFramework }} --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
+      arguments: '-f ${{ parameters.appFramework }} --no-build --collect:"XPlat Code Coverage" -r TestResults -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
       testRunTitle: 'Integration Tests'
 
   - task: DotNetCoreCLI@2
