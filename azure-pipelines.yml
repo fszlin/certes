@@ -38,7 +38,7 @@ stages:
     parameters:
       name: Windows_net47
       displayName: Windows - net47
-      framework: net47
+      framework: net452
       appFramework: net47
       pool:
         vmImage: 'windows-latest'
