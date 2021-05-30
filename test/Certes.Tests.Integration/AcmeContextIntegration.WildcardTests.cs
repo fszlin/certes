@@ -44,7 +44,7 @@ namespace Certes
                     builder.AddIssuer(issuer.ToDer());
                 }
 
-                builder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
+                builder.AddTestCerts();
 
                 var pfx = builder.Build("ci", "abcd1234");
                 Assert.NotNull(pfx);

@@ -50,7 +50,7 @@ namespace Certes
             }, privateKey, null);
 
             var pfxBuilder = cert.ToPfx(privateKey);
-            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
+            pfxBuilder.AddTestCerts();
             var pfx = pfxBuilder.Build("my-cert", "abcd1234");
         }
     }

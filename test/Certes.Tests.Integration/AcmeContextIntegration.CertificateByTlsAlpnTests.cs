@@ -83,7 +83,7 @@ namespace Certes
                 var certChain = await orderCtx.Download(null);
 
                 var pfxBuilder = certChain.ToPfx(certKey);
-                pfxBuilder.AddIssuers(TestCertificates);
+                pfxBuilder.AddTestCerts();
 
                 var pfx = pfxBuilder.Build("my-pfx", "abcd1234");
 

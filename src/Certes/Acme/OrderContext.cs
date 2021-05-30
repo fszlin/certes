@@ -60,9 +60,9 @@ namespace Certes.Acme
             var order = await Resource();
             var resp = await Context.HttpClient.Post<string>(Context, order.Certificate, null, false);
 
-            var defaultchain = new CertificateChain(resp.Resource);
-            if (defaultchain.MatchesPreferredChain(preferredChain) || !resp.Links.Contains("alternate"))
-                return defaultchain;
+            var defaultChain = new CertificateChain(resp.Resource);
+            if (defaultChain.MatchesPreferredChain(preferredChain) || !resp.Links.Contains("alternate"))
+                return defaultChain;
 
             var alternateLinks = resp.Links["alternate"].ToList();
             foreach (var alternate in alternateLinks)
@@ -73,7 +73,8 @@ namespace Certes.Acme
                 if (chain.MatchesPreferredChain(preferredChain))
                     return chain;
             }
-            return defaultchain;
+
+            return defaultChain;
         }
 
     }

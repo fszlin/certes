@@ -12,8 +12,12 @@ namespace Certes
 {
     public static class IntegrationHelper
     {
-        public static readonly byte[] TestCertificates =
-            File.ReadAllBytes("./Data/test-root.pem");
+        public static readonly byte[][] TestCertificates =
+            new[] {
+                File.ReadAllBytes("./Data/test-root.pem"),
+                File.ReadAllBytes("./Data/root-cert-ecdsa.pem"),
+                File.ReadAllBytes("./Data/root-cert-rsa.pem"),
+            };
 
         private static Uri[] StagingServersV1 = new[]
         {
@@ -24,9 +28,9 @@ namespace Certes
 
         public static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() =>
         {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
             var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
-#elif NETCOREAPP1_0
+#elif NETCOREAPP1_0_OR_GREATER
             var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (msg, cert, chains, errors) => true };
 #else
             System.Net.ServicePointManager.ServerCertificateValidationCallback = (msg, cert, chains, errors) => true;
@@ -136,6 +140,12 @@ namespace Certes
             using (await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens)))) { }
         }
 
-        public static void AddTestCert(this PfxBuilder pfx) => pfx.AddIssuers(TestCertificates);
+        public static void AddTestCerts(this PfxBuilder pfx)
+        {
+            foreach (var cert in TestCertificates)
+            {
+                pfx.AddIssuers(cert);
+            }
+        }
     }
 }

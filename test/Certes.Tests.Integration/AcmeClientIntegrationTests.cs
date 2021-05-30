@@ -65,7 +65,7 @@ namespace Certes
                 var cert = await client.NewCertificate(csr);
                 var pfx = cert.ToPfx();
 
-                pfx.AddTestCert();
+                pfx.AddTestCerts();
 
                 pfx.Build("my.pfx", "abcd1234");
                 await client.RevokeCertificate(cert);
