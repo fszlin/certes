@@ -108,54 +108,74 @@ namespace Certes.Cli.Commands
                     Body = expectedRecordSet.data
                 });
 
+            var (console, stdOutput, errOutput) = MockConsole();
+
             var cmd = new AzureDnsCommand(
                 settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object, _ => dnsMock.Object);
+            var command = cmd.Define();
 
-            var syntax = DefineCommand(
+            var args =
                 $"dns {orderLoc} {domain}" +
                 $" --tenant-id tenantId --client-id clientId --client-secret abcd1234" +
-                $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
-            dynamic ret = await cmd.Execute(syntax);
-            Assert.Equal(expectedRecordSetId, ret.data.Id);
+                $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
+            await command.InvokeAsync(args, console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            dynamic ret = JsonConvert.DeserializeObject(stdOutput.ToString());
+            Assert.Equal(expectedRecordSetId, $"{ret.data.id}");
             recordSetsOpMock.Verify(m => m.CreateOrUpdateWithHttpMessagesAsync(resourceGroup, "certes.com", "_acme-challenge.www", RecordType.TXT, It.IsAny<RecordSetInner>(), default, default, default, default), Times.Once);
 
             // azure credentials from settings
             recordSetsOpMock.ResetCalls();
-            syntax = DefineCommand(
+            errOutput.Clear();
+            stdOutput.Clear();
+
+            args =
                 $"dns {orderLoc} {domain}" +
-                $" --resource-group {resourceGroup}");
-            ret = await cmd.Execute(syntax);
-            Assert.Equal(expectedRecordSetId, ret.data.Id);
+                $" --resource-group {resourceGroup}";
+            await command.InvokeAsync(args, console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            ret = JsonConvert.DeserializeObject(stdOutput.ToString());
+            Assert.Equal(expectedRecordSetId, $"{ret.data.id}");
             recordSetsOpMock.Verify(m => m.CreateOrUpdateWithHttpMessagesAsync(resourceGroup, "certes.com", "_acme-challenge.www", RecordType.TXT, It.IsAny<RecordSetInner>(), default, default, default, default), Times.Once);
 
             // wildcard
             recordSetsOpMock.ResetCalls();
+            errOutput.Clear();
+            stdOutput.Clear();
             authz.Wildcard = true;
-            syntax = DefineCommand(
+            args =
                 $"dns {orderLoc} *.{domain}" +
                 $" --tenant-id tenantId --client-id clientId --client-secret abcd1234" +
-                $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
-            ret = await cmd.Execute(syntax);
-            Assert.Equal(expectedRecordSetId, ret.data.Id);
+                $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
+            await command.InvokeAsync(args, console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            ret = JsonConvert.DeserializeObject(stdOutput.ToString());
+            Assert.Equal(expectedRecordSetId, $"{ret.data.id}");
             recordSetsOpMock.Verify(m => m.CreateOrUpdateWithHttpMessagesAsync(resourceGroup, "certes.com", "_acme-challenge.www", RecordType.TXT, It.IsAny<RecordSetInner>(), default, default, default, default), Times.Once);
             authz.Wildcard = null;
 
             // authz not exists
+            errOutput.Clear();
+            stdOutput.Clear();
             orderMock.Setup(m => m.Authorizations()).ReturnsAsync(new IAuthorizationContext[0]);
-            syntax = DefineCommand(
+            args =
                 $"dns {orderLoc} {domain}" +
                 $" --tenant-id tenantId --client-id clientId --client-secret abcd1234" +
-                $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
-            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
+                $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
+            await command.InvokeAsync(args, console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
             orderMock.Setup(m => m.Authorizations()).ReturnsAsync(new[] { authzMock.Object });
 
             // challenge not exists
+            errOutput.Clear();
+            stdOutput.Clear();
             challengeMock.SetupGet(m => m.Type).Returns(ChallengeTypes.Http01);
-            syntax = DefineCommand(
+            args =
                 $"dns {orderLoc} {domain}" +
                 $" --tenant-id tenantId --client-id clientId --client-secret abcd1234" +
-                $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
-            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
+                $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
+            await command.InvokeAsync(args, console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
             challengeMock.SetupGet(m => m.Type).Returns(ChallengeTypes.Dns01);
 
             // zone not exists
@@ -169,11 +189,12 @@ namespace Certes.Cli.Commands
                         })
                     )
                 });
-            syntax = DefineCommand(
+            args =
                 $"dns {orderLoc} {domain}" +
                 $" --tenant-id tenantId --client-id clientId --client-secret abcd1234" +
-                $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}");
-            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
+                $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
+            await command.InvokeAsync(args, console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
         }
 
         [Fact]
@@ -217,48 +238,17 @@ namespace Certes.Cli.Commands
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
             var dnsMock = new Mock<IDnsManagementClient>(MockBehavior.Strict);
 
+            var (console, stdOutput, errOutput) = MockConsole();
+
             var cmd = new AzureDnsCommand(
                 settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object, _ => dnsMock.Object);
+            var command = cmd.Define();
 
-            var syntax = DefineCommand(
+            var args =
                 $"dns {orderLoc} {domain}" +
-                $" --resource-group {resourceGroup}");
-            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
-        }
-
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"dns http://acme.com/o/1 www.abc.com --server {LetsEncryptStagingV2}"
-                + " --tenant-id tenantId --client-id clientId --client-secret abcd1234"
-                + " --subscription-id subscriptionId --resource-group resGroup";
-            var syntax = DefineCommand(args);
-
-            Assert.Equal("dns", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "server", LetsEncryptStagingV2);
-            ValidateParameter(syntax, "order-id", new Uri("http://acme.com/o/1"));
-            ValidateParameter(syntax, "domain", "www.abc.com");
-            ValidateOption(syntax, "tenant-id", "tenantId");
-            ValidateOption(syntax, "client-id", "clientId");
-            ValidateOption(syntax, "client-secret", "abcd1234");
-            ValidateOption(syntax, "subscription-id", "subscriptionId");
-            ValidateOption(syntax, "resource-group", "resGroup");
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("dns", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new AzureDnsCommand(
-                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil(), null);
-            Assert.Equal(CommandGroup.Azure.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
+                $" --resource-group {resourceGroup}";
+            await command.InvokeAsync(args, console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
         }
     }
 }

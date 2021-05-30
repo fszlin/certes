@@ -1,4 +1,5 @@
-﻿using System.CommandLine;
+﻿using System;
+using System.CommandLine;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
@@ -49,13 +50,13 @@ namespace Certes.Cli.Commands
 
         protected static Command AddCommonOptions(Command command)
         {
-            command.AddOption(new Option(new[] { "--server", "-s" }, Strings.HelpServer));
-            command.AddOption(new Option(new[] { "--key-path", "--key", "-k" }, Strings.HelpKey));
-            command.AddOption(new Option(AzureTenantIdOption, Strings.HelpAzureTenantId));
-            command.AddOption(new Option(AzureClientIdOption, Strings.HelpAzureClientId));
-            command.AddOption(new Option(AzureSecretOption, Strings.HelpAzureSecret));
-            command.AddOption(new Option(AzureSubscriptionIdOption, Strings.HelpAzureSubscriptionId));
-            command.AddOption(new Option(AzureResourceGroupOption, Strings.HelpAzureResourceGroup));
+            command.AddOption(new Option<Uri>(new[] { "--server", "-s" }, Strings.HelpServer));
+            command.AddOption(new Option<string>(new[] { "--key-path", "--key", "-k" }, Strings.HelpKey));
+            command.AddOption(new Option<string>(AzureTenantIdOption, Strings.HelpAzureTenantId));
+            command.AddOption(new Option<string>(AzureClientIdOption, Strings.HelpAzureClientId));
+            command.AddOption(new Option<string>(AzureSecretOption, Strings.HelpAzureSecret));
+            command.AddOption(new Option<string>(AzureSubscriptionIdOption, Strings.HelpAzureSubscriptionId));
+            command.AddOption(new Option<string>(AzureResourceGroupOption, Strings.HelpAzureResourceGroup));
 
             return command;
         }

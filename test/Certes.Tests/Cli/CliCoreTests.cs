@@ -41,7 +41,7 @@ namespace Certes.Cli
                 new ServerSetCommand(settingsMock.Object, (u, k) => ctxMock.Object)
             });
 
-            Assert.False(await cli.Run(new[] { "-h" }));
+            Assert.True(await cli.Run(new[] { "-h" }));
         }
 
         [Fact]
@@ -57,8 +57,8 @@ namespace Certes.Cli
                 new ServerSetCommand(settingsMock.Object, (u, k) => ctxMock.Object)
             });
 
-            Assert.False(await cli.Run(new[] { "server", "-h" }));
-            Assert.False(await cli.Run(new[] { "server", "set", "-h" }));
+            Assert.True(await cli.Run(new[] { "server", "-h" }));
+            Assert.True(await cli.Run(new[] { "server", "set", "-h" }));
         }
 
         [Fact]

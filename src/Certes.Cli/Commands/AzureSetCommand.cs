@@ -31,10 +31,10 @@ namespace Certes.Cli.Commands
         {
             var cmd = new Command(CommandText, Strings.HelpCommandAzureSet)
             {
-                new Option(AzureTenantIdOption, Strings.HelpAzureTenantId),
-                new Option(AzureClientIdOption, Strings.HelpAzureClientId),
-                new Option(AzureSecretOption, Strings.HelpAzureSecret),
-                new Option(AzureSubscriptionIdOption, Strings.HelpAzureSubscriptionId),
+                new Option<string>(AzureTenantIdOption, Strings.HelpAzureTenantId),
+                new Option<string>(AzureClientIdOption, Strings.HelpAzureClientId),
+                new Option<string>(AzureSecretOption, Strings.HelpAzureSecret),
+                new Option<string>(AzureSubscriptionIdOption, Strings.HelpAzureSubscriptionId),
             };
 
             cmd.Handler = CommandHandler.Create(async (

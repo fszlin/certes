@@ -37,8 +37,7 @@ namespace Certes.Cli
         {
             try
             {
-                await rootCommand.InvokeAsync(args);
-                return true;
+                return await rootCommand.InvokeAsync(args) == 0;
             }
             catch (Exception ex)
             {

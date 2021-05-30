@@ -42,9 +42,9 @@ namespace Certes.Cli.Commands
         {
             var cmd = new Command(CommandText, Strings.HelpCommandAzureApp)
             {
-                new Option(SlotOption, Strings.HelpSlot),
-                new Option(PrivateKeyOption, Strings.HelpPrivateKey),
-                new Option(PreferredChainOption, Strings.HelpPreferredChain),
+                new Option<string>(SlotOption, Strings.HelpSlot),
+                new Option<string>(PrivateKeyOption, Strings.HelpPrivateKey),
+                new Option<string>(PreferredChainOption, Strings.HelpPreferredChain),
                 new Argument<Uri>(OrderIdParam, Strings.HelpOrderId),
                 new Argument<string>(DomainParam, Strings.HelpDomain),
                 new Argument<string>(AppNameParam, Strings.HelpAppName),
