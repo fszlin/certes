@@ -51,7 +51,7 @@ jobs:
     inputs:
       command: 'custom'
       custom: codecov
-      arguments: '-f test/Certes.Tests/**/coverage.opencover.xml --flag unittests -t $(CODECOV_TOKEN)'
+      arguments: '-f test/Certes.Tests/TestResults/**/*.xml --flag unittests -t $(CODECOV_TOKEN)'
       
   - task: DotNetCoreCLI@2
     displayName: 'Build integration tests'
@@ -74,4 +74,4 @@ jobs:
     inputs:
       command: 'custom'
       custom: codecov
-      arguments: '-f test/Certes.Tests.Integration/**/coverage.opencover.xml --flag integration -t $(CODECOV_TOKEN)'
+      arguments: '-f test/Certes.Tests.Integration/TestResults/**/*.xml --flag integration -t $(CODECOV_TOKEN)'
