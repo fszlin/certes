@@ -26,8 +26,8 @@ namespace Certes.Cli.Commands
         {
             var cmd = new Command(CommandText, Strings.HelpCommandOrderList)
             {
-                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
-                new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
             };
 
             cmd.Handler = CommandHandler.Create(async (

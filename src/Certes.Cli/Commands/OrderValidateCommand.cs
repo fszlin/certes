@@ -12,9 +12,9 @@ namespace Certes.Cli.Commands
     internal class OrderValidateCommand : CommandBase, ICliCommand
     {
         private const string CommandText = "validate";
-        private const string OrderIdParam = "--order-id";
-        private const string DomainParam = "--domain";
-        private const string ChallengeTypeParam = "--challenge-type";
+        private const string OrderIdParam = "order-id";
+        private const string DomainParam = "domain";
+        private const string ChallengeTypeParam = "challenge-type";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderValidateCommand));
 
         public CommandGroup Group { get; } = CommandGroup.Order;
@@ -31,11 +31,11 @@ namespace Certes.Cli.Commands
         {
             var cmd = new Command(CommandText, Strings.HelpCommandOrderValidate)
             {
-                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
-                new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
-                new Option<Uri>(OrderIdParam, Strings.HelpOrderId) { IsRequired = true },
-                new Option(DomainParam, Strings.HelpDomain) { IsRequired = true },
-                new Option(ChallengeTypeParam, Strings.HelpChallengeType) { IsRequired = true },
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Argument<Uri>(OrderIdParam, Strings.HelpOrderId),
+                new Argument<string>(DomainParam, Strings.HelpDomain),
+                new Argument<string>(ChallengeTypeParam, Strings.HelpChallengeType),
             };
 
             cmd.Handler = CommandHandler.Create(

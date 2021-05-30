@@ -22,11 +22,11 @@ namespace Certes.Cli.Commands
         {
             var cmd = new Command("authz", Strings.HelpCommandOrderAuthz)
             {
-                new Option<Uri>("--order-id", Strings.HelpOrderId) { IsRequired = true },
-                new Option("--domain", Strings.HelpDomain) { IsRequired = true },
-                new Option("--challenge-type", Strings.HelpChallengeType) { IsRequired = true },
-                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
-                new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Argument<Uri>("order-id", Strings.HelpOrderId),
+                new Argument<string>("domain", Strings.HelpDomain),
+                new Argument<string>("challenge-type", Strings.HelpChallengeType),
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
             };
 
             cmd.Handler = CommandHandler.Create(async (Uri orderId, string domain, string challengeType, Uri server, string keyPath, IConsole console) =>

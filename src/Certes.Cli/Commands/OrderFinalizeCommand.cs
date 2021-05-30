@@ -32,13 +32,13 @@ namespace Certes.Cli.Commands
         {
             var cmd = new Command(CommandText, Strings.HelpCommandOrderFinalize)
             {
-                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
-                new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Argument<Uri>(OrderIdParam, Strings.HelpOrderId),
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
                 new Option<string>(DnOption, Strings.HelpDn),
                 new Option<string>(new [] { "--out-path", "--out" }, Strings.HelpKeyOut),
                 new Option<string>(PrivateKeyOption, Strings.HelpPrivateKey),
                 new Option<KeyAlgorithm>(KeyAlgorithmOption, () => KeyAlgorithm.ES256, Strings.HelpKeyAlgorithm),
-                new Option<Uri>(OrderIdParam, Strings.HelpOrderId) { IsRequired = true },
             };
 
             cmd.Handler = CommandHandler.Create(async (

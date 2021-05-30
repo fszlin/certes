@@ -9,7 +9,7 @@ namespace Certes.Cli.Commands
     internal class OrderShowCommand : CommandBase, ICliCommand
     {
         private const string CommandText = "show";
-        private const string OrderIdParam = "--order-id";
+        private const string OrderIdParam = "order-id";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderShowCommand));
 
         public CommandGroup Group { get; } = CommandGroup.Order;
@@ -26,9 +26,9 @@ namespace Certes.Cli.Commands
         {
             var cmd = new Command(CommandText, Strings.HelpCommandOrderShow)
             {
-                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
-                new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
-                new Option(OrderIdParam, Strings.HelpOrderId) { IsRequired = true },
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Argument<Uri>(OrderIdParam, Strings.HelpOrderId),
             };
 
             cmd.Handler = CommandHandler.Create(async (
