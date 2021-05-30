@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.Linq;
 using System.Threading.Tasks;
 using Certes.Cli.Commands;
 using Certes.Json;
@@ -16,12 +17,19 @@ namespace Certes.Cli
 
         private readonly RootCommand rootCommand;
 
-        public CliCore(IEnumerable<ICliCommandFactory> commands)
+        public CliCore(IEnumerable<ICliCommand> commands)
         {
             rootCommand = new RootCommand();
-            foreach (var cmd in commands)
+
+            foreach (var commandGroup in commands.GroupBy(c => c.Group))
             {
-                rootCommand.Add(cmd.Create());
+                var groupCmd = new Command(commandGroup.Key.Command, commandGroup.Key.Help);
+                foreach (var cmd in commandGroup)
+                {
+                    groupCmd.AddCommand(cmd.Define());
+                }
+
+                rootCommand.Add(groupCmd);
             }
         }
 

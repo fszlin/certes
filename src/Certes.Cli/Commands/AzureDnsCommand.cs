@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using Microsoft.Azure.Management.Dns.Fluent;
@@ -10,7 +11,7 @@ using NLog;
 
 namespace Certes.Cli.Commands
 {
-    internal class AzureDnsCommand : AzureCommand, ICliCommand
+    internal class AzureDnsCommand : AzureCommandBase, ICliCommand
     {
         private const string CommandText = "dns";
         private const string OrderIdParam = "order-id";
@@ -32,40 +33,44 @@ namespace Certes.Cli.Commands
             this.clientFactory = clientFactory;
         }
 
-        public ArgumentCommand<string> Define(ArgumentSyntax syntax)
+        public Command Define()
         {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandAzureDns);
-
-            DefineAzureOptions(syntax)
-                .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId)
-                .DefineParameter(DomainParam, help: Strings.HelpDomain);
-
-            return cmd;
-        }
-
-        public async Task<object> Execute(ArgumentSyntax syntax)
-        {
-            var (serverUri, key) = await ReadAccountKey(syntax, true, false);
-            var orderUri = syntax.GetParameter<Uri>(OrderIdParam, true);
-            var domain = syntax.GetParameter<string>(DomainParam, true);
-            var azureCredentials = await CreateAzureRestClient(syntax);
-            var resourceGroup = syntax.GetOption<string>(AzureResourceGroupOption, true);
-
-            var acme = ContextFactory.Invoke(serverUri, key);
-            var orderCtx = acme.Order(orderUri);
-            var authzCtx = await orderCtx.Authorization(domain)
-                ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
-            var challengeCtx = await authzCtx.Dns()
-                ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, "dns"));
-
-            var authz = await authzCtx.Resource();
-            var dnsValue = acme.AccountKey.DnsTxt(challengeCtx.Token);
-            using (var client = clientFactory.Invoke(azureCredentials))
+            var cmd = new Command(CommandText, Strings.HelpCommandAzureDns)
             {
+                new Argument<Uri>(OrderIdParam, Strings.HelpOrderId),
+                new Argument<string>(DomainParam, Strings.HelpDomain),
+            };
+
+            cmd = AddCommonOptions(cmd);
+
+            cmd.Handler = CommandHandler.Create(async (
+                Uri orderId,
+                string domain,
+                Uri server,
+                string keyPath,
+                AzureOptions azureOptions,
+                IConsole console) =>
+            {
+                var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
+                logger.Debug("Updating account on '{0}'.", serverUri);
+                var azureCredentials = await CreateAzureRestClient(azureOptions);
+                var resourceGroup = azureOptions.ResourceGroup;
+
+                var acme = ContextFactory.Invoke(serverUri, key);
+                var orderCtx = acme.Order(orderId);
+                var authzCtx = await orderCtx.Authorization(domain)
+                    ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
+                var challengeCtx = await authzCtx.Dns()
+                    ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, "dns"));
+
+                var authz = await authzCtx.Resource();
+                var dnsValue = acme.AccountKey.DnsTxt(challengeCtx.Token);
+                using var client = clientFactory.Invoke(azureCredentials);
+
                 client.SubscriptionId = azureCredentials.Credentials.DefaultSubscriptionId;
                 var idValue = authz.Identifier.Value;
                 var zone = await FindDnsZone(client, idValue);
-                
+
                 var name = zone.Name.Length == idValue.Length ?
                     "_acme-challenge" :
                     "_acme-challenge." + idValue.Substring(0, idValue.Length - zone.Name.Length - 1);
@@ -81,11 +86,15 @@ namespace Certes.Cli.Commands
                         tTL: 300,
                         txtRecords: new[] { new TxtRecord(new[] { dnsValue }) }));
 
-                return new
+                var output = new
                 {
                     data = recordSet
                 };
-            }
+
+                console.WriteAsJson(output);
+            });
+
+            return cmd;
         }
 
         private static async Task<ZoneInner> FindDnsZone(IDnsManagementClient client, string identifier)
@@ -98,14 +107,14 @@ namespace Certes.Cli.Commands
                     if (identifier.EndsWith($".{zone.Name}", StringComparison.OrdinalIgnoreCase) ||
                         identifier.Equals(zone.Name, StringComparison.OrdinalIgnoreCase))
                     {
-                        logger.Debug(() => 
+                        logger.Debug(() =>
                             string.Format("DNS zone:\n{0}", JsonConvert.SerializeObject(zone, Formatting.Indented)));
                         return zone;
                     }
                 }
 
-                zones = string.IsNullOrWhiteSpace(zones.NextPageLink) ? 
-                    null : 
+                zones = string.IsNullOrWhiteSpace(zones.NextPageLink) ?
+                    null :
                     await client.Zones.ListNextAsync(zones.NextPageLink);
             }
 

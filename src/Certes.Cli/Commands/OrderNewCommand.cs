@@ -1,6 +1,7 @@
-﻿using System.CommandLine;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.Invocation;
 using Certes.Cli.Settings;
 using NLog;
 
@@ -21,40 +22,37 @@ namespace Certes.Cli.Commands
         {
         }
 
-        public ArgumentCommand<string> Define(ArgumentSyntax syntax)
+        public Command Define()
         {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandOrderNew);
+            var cmd = new Command(CommandText, Strings.HelpCommandOrderNew)
+            {
+                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Option<IList<string>>(new [] { "--domains", "-d" }, Strings.HelpDomains) { IsRequired = true },
+            };
 
-            syntax
-                .DefineServerOption()
-                .DefineKeyOption();
+            cmd.Handler = CommandHandler.Create(async (
+                IList<string> domains,
+                Uri server,
+                string keyPath,
+                IConsole console) =>
+            {
+                var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
+                logger.Debug("Creating order from '{0}'.", serverUri);
 
-            var domainsParam = syntax.DefineParameterList("domains", new string[0]);
-            domainsParam.Help = Strings.HelpDomains;
+                var acme = ContextFactory.Invoke(serverUri, key);
+                var orderCtx = await acme.NewOrder(domains);
+
+                var output = new
+                {
+                    location = orderCtx.Location,
+                    resource = await orderCtx.Resource(),
+                };
+
+                console.WriteAsJson(output);
+            });
 
             return cmd;
-        }
-
-        public async Task<object> Execute(ArgumentSyntax syntax)
-        {
-            var (serverUri, key) = await ReadAccountKey(syntax, true, true);
-
-            var domains = syntax.GetActiveArguments()
-                .Where(a => a.Name == "domains")
-                .OfType<ArgumentList<string>>()
-                .Select(a => a.Value)
-                .FirstOrDefault();
-
-            logger.Debug("Creating order from '{0}'.", serverUri);
-
-            var acme = ContextFactory.Invoke(serverUri, key);
-            var orderCtx = await acme.NewOrder(domains.ToArray());
-
-            return new
-            {
-                location = orderCtx.Location,
-                resource = await orderCtx.Resource(),
-            };
         }
     }
 }

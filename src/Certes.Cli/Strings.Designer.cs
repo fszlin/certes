@@ -124,6 +124,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No prrivate key found..
+        /// </summary>
+        internal static string ErrorNoPrivateKey {
+            get {
+                return ResourceManager.GetString("ErrorNoPrivateKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Option &apos;--{0}&apos; is required..
         /// </summary>
         internal static string ErrorOptionMissing {

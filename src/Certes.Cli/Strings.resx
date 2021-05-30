@@ -285,4 +285,7 @@
   <data name="HelpNewServer" xml:space="preserve">
     <value>The dictionary URI to the new ACME server.</value>
   </data>
+  <data name="ErrorNoPrivateKey" xml:space="preserve">
+    <value>No prrivate key found.</value>
+  </data>
 </root>
