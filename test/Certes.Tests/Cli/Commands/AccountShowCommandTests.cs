@@ -44,61 +44,49 @@ namespace Certes.Cli.Commands
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>()))
                 .ReturnsAsync(KeyAlgorithm.ES256.GetTestKey());
 
+            var (console, stdOutput, errOutput) = MockConsole();
+
             var cmd = new AccountShowCommand(
                 settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object);
+            var command = cmd.Define();
 
-            var syntax = DefineCommand($"show");
-            var ret = await cmd.Execute(syntax);
+            await command.InvokeAsync($"show", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            var ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
                     location = acctLoc,
                     resource = acct
-                }),
+                }, JsonSettings),
                 JsonConvert.SerializeObject(ret));
 
             fileMock.ResetCalls();
 
-            syntax = DefineCommand($"show --key {keyPath} --server {serverUri}");
-            ret = await cmd.Execute(syntax);
+            errOutput.Clear();
+            stdOutput.Clear();
+
+            await command.InvokeAsync($"show --key {keyPath} --server {serverUri}", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
                     location = acctLoc,
                     resource = acct
-                }),
+                }, JsonSettings),
                 JsonConvert.SerializeObject(ret));
             fileMock.Verify(m => m.ReadAllText(keyPath), Times.Once);
 
+            errOutput.Clear();
+            stdOutput.Clear();
             settingsMock.Setup(m => m.GetAccountKey(serverUri)).ReturnsAsync((IKey)null);
-            syntax = DefineCommand($"show");
-            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
-        }
 
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"show --server {LetsEncryptStagingV2}";
-            var syntax = DefineCommand(args);
+            await command.InvokeAsync($"show", console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
 
-            Assert.Equal("show", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "server", LetsEncryptStagingV2);
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("show", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new AccountShowCommand(
-                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil());
-            Assert.Equal(CommandGroup.Account.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
+            errOutput.Clear();
+            stdOutput.Clear();
         }
     }
 }

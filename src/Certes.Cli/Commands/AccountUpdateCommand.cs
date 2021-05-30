@@ -21,8 +21,8 @@ namespace Certes.Cli.Commands
         {
             var cmd = new Command("update", Strings.HelpCommandAccountUpdate)
             {
-                new Option("--email", Strings.HelpEmail) { IsRequired = true },
-                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Argument<string>("email", Strings.HelpEmail),
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
                 new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
             };
 
