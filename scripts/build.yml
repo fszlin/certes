@@ -51,14 +51,14 @@ jobs:
     inputs:
       command: 'custom'
       custom: codecov
-      arguments: '-f test/Certes.Tests/TestResults/**/*.xml --flag unittests -t $(CODECOV_TOKEN)'
+      arguments: '-f $(Build.SourcesDirectory)/test/Certes.Tests/TestResults/**/*.xml --flag unittests -t $(CODECOV_TOKEN)'
       
   - task: DotNetCoreCLI@2
     displayName: 'Build integration tests'
     inputs:
       command: 'build'
       projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
-      arguments: '-f ${{ parameters.appFramework }} -p:SkipSigning=true'
+      arguments: '-f ${{ parameters.appFramework }}'
       testRunTitle: 'Unit Tests'
 
   - task: DotNetCoreCLI@2
@@ -74,4 +74,4 @@ jobs:
     inputs:
       command: 'custom'
       custom: codecov
-      arguments: '-f test/Certes.Tests.Integration/TestResults/**/*.xml --flag integration -t $(CODECOV_TOKEN)'
+      arguments: '-f $(Build.SourcesDirectory)/test/Certes.Tests.Integration/TestResults/**/*.xml --flag integration -t $(CODECOV_TOKEN)'
