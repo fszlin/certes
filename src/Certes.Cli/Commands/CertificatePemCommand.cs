@@ -1,68 +1,71 @@
-﻿using System.CommandLine;
+﻿using System;
+using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using NLog;
 
 namespace Certes.Cli.Commands
 {
-    internal class CertificatePemCommand : CertificateCommand, ICliCommand
+    internal class CertificatePemCommand : CertificateCommandBase, ICliCommand
     {
-        private const string CommandText = "pem";
-        private const string OutOption = "out";
-        private static readonly ILogger logger = LogManager.GetLogger(nameof(CertificatePemCommand));
+        private readonly ILogger logger = LogManager.GetLogger(nameof(CertificatePemCommand));
 
-        public CertificatePemCommand(
-            IUserSettings userSettings,
-            AcmeContextFactory contextFactory,
-            IFileUtil fileUtil)
+        public CertificatePemCommand(IUserSettings userSettings, AcmeContextFactory contextFactory, IFileUtil fileUtil)
             : base(userSettings, contextFactory, fileUtil)
         {
         }
 
-        public ArgumentCommand<string> Define(ArgumentSyntax syntax)
+        public override Command Define()
         {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandCertificatePem);
+            var cmd = new Command("pem", Strings.HelpCommandCertificatePem)
+            {
+                new Option<Uri>(OrderIdOption, Strings.HelpOrderId) { IsRequired = true },
+                new Option(PreferredChainOption, Strings.HelpPreferredChain),
+                new Option(new [] { "--out-path", "--out" }, Strings.HelpKeyOut),
+                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+            };
 
-            syntax
-                .DefineServerOption()
-                .DefineKeyOption()
-                .DefineOption(OutOption, help: Strings.HelpCertificateOut)
-                .DefineOption(PreferredChainOption, help: Strings.HelpPreferredChain)
-                .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId);
+            cmd.Handler = CommandHandler.Create(async (
+                Uri orderId,
+                string preferredChain,
+                string outPath,
+                Uri server,
+                string keyPath,
+                IConsole console) =>
+            {
+                var (location, cert) = await DownloadCertificate(orderId, preferredChain, server, keyPath);
+
+                if (string.IsNullOrWhiteSpace(outPath))
+                {
+                    var output = new
+                    {
+                        location,
+                        resource = new
+                        {
+                            certificate = cert.Certificate.ToDer(),
+                            issuers = cert.Issuers.Select(i => i.ToDer()).ToArray(),
+                        },
+                    };
+
+                    console.WriteAsJson(output);
+                }
+                else
+                {
+                    logger.Debug("Saving certificate to '{0}'.", outPath);
+                    await File.WriteAllText(outPath, cert.ToPem());
+
+                    var output = new
+                    {
+                        location,
+                    };
+
+                    console.WriteAsJson(output);
+                }
+            });
 
             return cmd;
-        }
-
-        public async Task<object> Execute(ArgumentSyntax syntax)
-        {
-            var (location, cert) = await DownloadCertificate(syntax);
-
-            var outPath = syntax.GetOption<string>(OutOption);
-            if (string.IsNullOrWhiteSpace(outPath))
-            {
-                return new
-                {
-                    location,
-                    resource = new
-                    {
-                        certificate = cert.Certificate.ToDer(),
-                        issuers = cert.Issuers.Select(i => i.ToDer()).ToArray(),
-                    },
-                };
-            }
-            else
-            {
-                logger.Debug("Saving certificate to '{0}'.", outPath);
-                await File.WriteAllText(outPath, cert.ToPem());
-
-                return new
-                {
-                    location,
-                };
-
-            }
         }
     }
 }

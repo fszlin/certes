@@ -1,6 +1,6 @@
 ﻿using System;
 using System.CommandLine;
-using System.Threading.Tasks;
+using System.CommandLine.Invocation;
 using Certes.Cli.Settings;
 using NLog;
 
@@ -12,9 +12,9 @@ namespace Certes.Cli.Commands
     internal class OrderValidateCommand : CommandBase, ICliCommand
     {
         private const string CommandText = "validate";
-        private const string OrderIdParam = "order-id";
-        private const string DomainParam = "domain";
-        private const string ChallengeTypeParam = "challenge-type";
+        private const string OrderIdParam = "--order-id";
+        private const string DomainParam = "--domain";
+        private const string ChallengeTypeParam = "--challenge-type";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderValidateCommand));
 
         public CommandGroup Group { get; } = CommandGroup.Order;
@@ -27,49 +27,49 @@ namespace Certes.Cli.Commands
         {
         }
 
-        public ArgumentCommand<string> Define(ArgumentSyntax syntax)
+        public Command Define()
         {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandOrderValidate);
+            var cmd = new Command(CommandText, Strings.HelpCommandOrderValidate)
+            {
+                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Option<Uri>(OrderIdParam, Strings.HelpOrderId) { IsRequired = true },
+                new Option(DomainParam, Strings.HelpDomain) { IsRequired = true },
+                new Option(ChallengeTypeParam, Strings.HelpChallengeType) { IsRequired = true },
+            };
 
-            syntax
-                .DefineServerOption()
-                .DefineKeyOption()
-                .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId)
-                .DefineParameter(DomainParam, help: Strings.HelpDomain)
-                .DefineParameter(ChallengeTypeParam, help: Strings.HelpChallengeType);
+            cmd.Handler = CommandHandler.Create(
+                async (Uri orderId, string domain, string challengeType, Uri server, string keyPath, IConsole console) =>
+            {
+                var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
+
+                var type =
+                    string.Equals(challengeType, "dns", OrdinalIgnoreCase) ? Dns01 :
+                    string.Equals(challengeType, "http", OrdinalIgnoreCase) ? Http01 :
+                    throw new CertesCliException(string.Format(Strings.ErrorInvalidChallengeType, challengeType));
+
+                logger.Debug("Validating authz on '{0}'.", serverUri);
+
+                var acme = ContextFactory.Invoke(serverUri, key);
+                var orderCtx = acme.Order(orderId);
+                var authzCtx = await orderCtx.Authorization(domain)
+                    ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
+                var challengeCtx = await authzCtx.Challenge(type)
+                    ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, challengeType));
+
+                logger.Debug("Validating challenge '{0}'.", challengeCtx.Location);
+                var challenge = await challengeCtx.Validate();
+
+                var output = new
+                {
+                    location = challengeCtx.Location,
+                    resource = challenge,
+                };
+
+                console.WriteAsJson(output);
+            });
 
             return cmd;
-        }
-
-        public async Task<object> Execute(ArgumentSyntax syntax)
-        {
-            var (serverUri, key) = await ReadAccountKey(syntax, true, false);
-            var orderUri = syntax.GetParameter<Uri>(OrderIdParam, true);
-            var domain = syntax.GetParameter<string>(DomainParam, true);
-            var typeStr = syntax.GetParameter<string>(ChallengeTypeParam, true);
-
-            var type =
-                string.Equals(typeStr, "dns", OrdinalIgnoreCase) ? Dns01 :
-                string.Equals(typeStr, "http", OrdinalIgnoreCase) ? Http01 :
-                throw new ArgumentSyntaxException(string.Format(Strings.ErrorInvalidChallengeType, typeStr));
-
-            logger.Debug("Validating authz on '{0}'.", serverUri);
-
-            var acme = ContextFactory.Invoke(serverUri, key);
-            var orderCtx = acme.Order(orderUri);
-            var authzCtx = await orderCtx.Authorization(domain)
-                ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
-            var challengeCtx = await authzCtx.Challenge(type)
-                ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, typeStr));
-
-            logger.Debug("Validating challenge '{0}'.", challengeCtx.Location);
-            var challenge = await challengeCtx.Validate();
-
-            return new
-            {
-                location = challengeCtx.Location,
-                resource = challenge,
-            };
         }
     }
 }

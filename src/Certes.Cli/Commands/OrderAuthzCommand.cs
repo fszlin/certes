@@ -7,30 +7,18 @@ using NLog;
 
 namespace Certes.Cli.Commands
 {
-    internal class OrderCommands: CommandsBase, ICliCommandFactory
+    internal class OrderAuthzCommand: CommandBase, ICliCommand
     {
-        private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountCommands));
+        private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderAuthzCommand));
 
-        public OrderCommands(IUserSettings userSettings, AcmeContextFactory contextFactory, IFileUtil fileUtil)
+        public CommandGroup Group => CommandGroup.Order;
+
+        public OrderAuthzCommand(IUserSettings userSettings, AcmeContextFactory contextFactory, IFileUtil fileUtil)
             : base(userSettings, contextFactory, fileUtil)
         {
         }
 
-        public Command Create()
-        {
-            var cmd = new Command(CommandGroup.Account.Command, CommandGroup.Account.Help);
-
-            cmd.AddCommand(CreateAuthzCommand());
-            cmd.AddCommand(CreateFinalizeCommand());
-            cmd.AddCommand(CreateListCommand());
-            cmd.AddCommand(CreateNewCommand());
-            cmd.AddCommand(CreateShowCommand());
-            cmd.AddCommand(CreateValidateCommand());
-
-            return cmd;
-        }
-
-        private Command CreateAuthzCommand()
+        public Command Define()
         {
             var cmd = new Command("authz", Strings.HelpCommandOrderAuthz)
             {
@@ -88,31 +76,6 @@ namespace Certes.Cli.Commands
             });
 
             return cmd;
-        }
-
-        private Command CreateShowCommand()
-        {
-            throw new NotImplementedException();
-        }
-
-        private Command CreateNewCommand()
-        {
-            throw new NotImplementedException();
-        }
-
-        private Command CreateListCommand()
-        {
-            throw new NotImplementedException();
-        }
-
-        private Command CreateFinalizeCommand()
-        {
-            throw new NotImplementedException();
-        }
-
-        private Command CreateValidateCommand()
-        {
-            throw new NotImplementedException();
         }
     }
 }
