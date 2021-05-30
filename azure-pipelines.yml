@@ -36,10 +36,10 @@ stages:
 
   - template: scripts/build.yml
     parameters:
-      name: Windows_net47
-      displayName: Windows - net47
+      name: Windows_net452
+      displayName: Windows - net452
       framework: net452
-      appFramework: net47
+      appFramework: net452
       pool:
         vmImage: 'windows-latest'
 
