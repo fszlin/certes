@@ -45,48 +45,25 @@ namespace Certes.Cli.Commands
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>()))
                 .ReturnsAsync(KeyAlgorithm.ES256.GetTestKey());
 
+            var (console, stdOutput, errOutput) = MockConsole();
+
             var cmd = new AccountSetCommand(
                 settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object);
+            var command = cmd.Define();
 
-            var syntax = DefineCommand($"set {keyPath} --server {serverUri}");
-            var ret = await cmd.Execute(syntax);
+            await command.InvokeAsync($"set {keyPath} --server {serverUri}", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            var ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
                     location = acctLoc,
                     resource = acct
-                }),
+                }, JsonSettings),
                 JsonConvert.SerializeObject(ret));
 
             fileMock.Verify(m => m.ReadAllText(keyPath), Times.Once);
             settingsMock.Verify(m => m.SetAccountKey(serverUri, It.IsAny<IKey>()), Times.Once);
-        }
-
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"set ./acct-key.pem --server {LetsEncryptStagingV2}";
-            var syntax = DefineCommand(args);
-
-            Assert.Equal("set", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "server", LetsEncryptStagingV2);
-            ValidateParameter(syntax, "key", "./acct-key.pem");
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("new", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new AccountSetCommand(
-                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil());
-            Assert.Equal(CommandGroup.Account.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
         }
     }
 }

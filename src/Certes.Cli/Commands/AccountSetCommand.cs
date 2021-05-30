@@ -21,8 +21,8 @@ namespace Certes.Cli.Commands
         {
             var cmd = new Command("set", Strings.HelpCommandAccountSet)
             {
-                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
-                new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Argument<string>("key-path", Strings.HelpKey),
             };
 
             cmd.Handler = CommandHandler.Create(async (Uri server, string keyPath, IConsole console) =>

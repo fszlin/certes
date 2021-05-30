@@ -21,10 +21,10 @@ namespace Certes.Cli.Commands
         {
             var cmd = new Command("new", Strings.HelpCommandAccountNew)
             {
-                new Option("--email", Strings.HelpEmail) { IsRequired = true },
-                new Option(new [] { "--out-path", "--out" }, Strings.HelpKeyOut),
-                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
-                new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Argument<string>("email", Strings.HelpEmail),
+                new Option<string>(new [] { "--out-path", "--out" }, Strings.HelpKeyOut),
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
             };
 
             cmd.Handler = CommandHandler.Create(async (string email, string outPath, Uri server, string keyPath, IConsole console) =>
