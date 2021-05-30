@@ -19,8 +19,8 @@
     <CertesPackageVersionSuffix Condition="'$(CertesPreview)' == 'true'">$(CertesInformationalVersionSuffix)</CertesPackageVersionSuffix>
   </PropertyGroup>
   <PropertyGroup Condition="'$(SkipSigning)' == 'true'">
-    <SignAssembly>false</SignAssembly>
-    <PublicSign>false</PublicSign>
+    <SignAssembly>False</SignAssembly>
+    <PublicSign>False</PublicSign>
     <DefineConstants>$(DefineConstants);SKIP_SIGNING</DefineConstants>
   </PropertyGroup>
 </Project>

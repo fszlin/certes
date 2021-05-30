@@ -5,7 +5,7 @@
     <TargetFrameworks>net5.0;netcoreapp3.1;netcoreapp2.1;net452</TargetFrameworks>
     <RootNamespace>Certes</RootNamespace>
     <NoWarn>1701;1702;1705;0618</NoWarn>
-    <PublicSign>True</PublicSign>
+    <PublicSign>False</PublicSign>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

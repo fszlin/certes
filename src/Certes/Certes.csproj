@@ -19,7 +19,6 @@
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Certes.xml</DocumentationFile>
     <PackageIcon>logo.png</PackageIcon>
-    <PublicSign>True</PublicSign>
   </PropertyGroup>
 
   <ItemGroup>
