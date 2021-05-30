@@ -9,28 +9,28 @@ stages:
 
   - template: scripts/build.yml
     parameters:
-      name: Linux_netstandard20
-      displayName: Linux - netstandard2.0
-      framework: netstandard2.0
-      appFramework: netcoreapp3.1
+      name: Linux_net50
+      displayName: Linux - net5.0
+      framework: net5.0
+      appFramework: net5.0
       pool:
         vmImage: 'ubuntu-latest'
 
   - template: scripts/build.yml
     parameters:
-      name: macOS_netstandard20
-      displayName: macOS - netstandard2.0
-      framework: netstandard2.0
-      appFramework: netcoreapp3.1
+      name: macOS_net50
+      displayName: macOS - net5.0
+      framework: net5.0
+      appFramework: net5.0
       pool:
         vmImage: 'macOS-latest'
 
   - template: scripts/build.yml
     parameters:
-      name: Windows_netstandard20
-      displayName: Windows - netstandard2.0
-      framework: netstandard2.0
-      appFramework: netcoreapp3.1
+      name: Windows_net50
+      displayName: Windows - net5.0
+      framework: net5.0
+      appFramework: net5.0
       pool:
         vmImage: 'windows-latest'
 

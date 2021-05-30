@@ -14,16 +14,16 @@ jobs:
   steps:
       
   - task: UseDotNet@2
-    displayName: 'Add dotnet 2.x'
-    inputs:
-      packageType: 'sdk'
-      version: '2.x'
-      
-  - task: UseDotNet@2
     displayName: 'Add dotnet 3.x'
     inputs:
       packageType: 'sdk'
       version: '3.x'
+      
+  - task: UseDotNet@2
+    displayName: 'Add dotnet 5.x'
+    inputs:
+      packageType: 'sdk'
+      version: '5.x'
       
   - task: DotNetCoreCLI@2
     displayName: 'Restore dotnet tool'
