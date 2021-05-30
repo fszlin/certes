@@ -34,15 +34,15 @@ namespace Certes.Cli.Commands
         {
             var cmd = new Command(CommandText, Strings.HelpCommandCertificatePem)
             {
-                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
-                new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
-                new Option(new [] { "--out-path", "--out" }, Strings.HelpCertificateOut),
-                new Option(PrivateKeyOption, Strings.HelpPrivateKey),
-                new Option(FriendlyNameOption, Strings.HelpFriendlyName),
-                new Option(IssuerOption, Strings.HelpCertificateIssuer),
-                new Option(PreferredChainOption, Strings.HelpPreferredChain),
-                new Option<Uri>(OrderIdOption, Strings.HelpOrderId) { IsRequired = true },
-                new Option<Uri>(PasswordParam, Strings.HelpPfxPassword) { IsRequired = true },
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Option<string>(new [] { "--out-path", "--out" }, Strings.HelpCertificateOut),
+                new Option<string>(PrivateKeyOption, Strings.HelpPrivateKey),
+                new Option<string>(FriendlyNameOption, Strings.HelpFriendlyName),
+                new Option<string>(IssuerOption, Strings.HelpCertificateIssuer),
+                new Option<string>(PreferredChainOption, Strings.HelpPreferredChain),
+                new Argument<Uri>(OrderIdOption, Strings.HelpOrderId),
+                new Argument<string>(PasswordParam, Strings.HelpPfxPassword),
             };
 
             cmd.Handler = CommandHandler.Create(async (

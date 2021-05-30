@@ -20,11 +20,11 @@ namespace Certes.Cli.Commands
         {
             var cmd = new Command("pem", Strings.HelpCommandCertificatePem)
             {
-                new Option<Uri>(OrderIdOption, Strings.HelpOrderId) { IsRequired = true },
-                new Option(PreferredChainOption, Strings.HelpPreferredChain),
-                new Option(new [] { "--out-path", "--out" }, Strings.HelpKeyOut),
-                new Option(new[]{ "--server", "-s" }, Strings.HelpServer),
-                new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Argument<Uri>(OrderIdOption, Strings.HelpOrderId),
+                new Option<string>(PreferredChainOption, Strings.HelpPreferredChain),
+                new Option<string>(new [] { "--out-path", "--out" }, Strings.HelpKeyOut),
+                new Option<string>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
             };
 
             cmd.Handler = CommandHandler.Create(async (
