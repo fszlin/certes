@@ -32,7 +32,14 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy nupkg
     inputs:
-      Contents: 'src/${{ parameters.projectName }}/bin/**/*.nupkg;src/${{ parameters.projectName }}/bin/**/*.snupkg'
+      Contents: 'src/${{ parameters.projectName }}/bin/**/*.nupkg'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    displayName: Copy snupkg
+    inputs:
+      Contents: 'src/${{ parameters.projectName }}/bin/**/*.snupkg'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
       flattenFolders: true
 
