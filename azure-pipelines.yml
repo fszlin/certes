@@ -69,7 +69,6 @@ stages:
   displayName: Pack
   dependsOn:
   - ver
-  - test
   jobs:
 
   - template: scripts/pack.yml

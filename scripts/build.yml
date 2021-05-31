@@ -45,7 +45,7 @@ jobs:
     env:
       CERTES_ASSEMBLY_VERSION: $(assemblyVersion)
       CERTES_FILE_VERSION: $(fileVersion)
-      CERTES_INFORMATIONAL_ASSEMBLYVERSION: $(informationalVersion)
+      CERTES_INFORMATIONAL_VERSION: $(informationalVersion)
       
   - task: DotNetCoreCLI@2
     displayName: 'Run unit tests'
@@ -72,7 +72,7 @@ jobs:
     env:
       CERTES_ASSEMBLY_VERSION: $(assemblyVersion)
       CERTES_FILE_VERSION: $(fileVersion)
-      CERTES_INFORMATIONAL_ASSEMBLYVERSION: $(informationalVersion)
+      CERTES_INFORMATIONAL_VERSION: $(informationalVersion)
 
   - task: DotNetCoreCLI@2
     displayName: 'Run integration tests'
