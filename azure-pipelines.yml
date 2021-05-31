@@ -11,17 +11,17 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
 
-    - task: gitversion/setup@0
-      displayName: Install GitVersion
-      inputs:
-        versionSpec: '5.x'
+      - task: gitversion/setup@0
+        displayName: Install GitVersion
+        inputs:
+          versionSpec: '5.x'
 
-    - task: gitversion/execute@0
-      displayName: Determine Version
-      inputs:
-        useConfigFile: true
-        configFilePath: 'GitVersion.yml'
-      name: version
+      - task: gitversion/execute@0
+        displayName: Determine Version
+        inputs:
+          useConfigFile: true
+          configFilePath: 'GitVersion.yml'
+        name: version
 
 - stage: test
   displayName: Test
