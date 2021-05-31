@@ -21,7 +21,7 @@
   <!-- Overwrite versions if specified via env -->
   <PropertyGroup>
     <AssemblyVersion Condition="$(CERTES_ASSEMBLY_VERSION) != ''">$(CERTES_ASSEMBLY_VERSION)</AssemblyVersion>
-    <Version Condition="$(CERTES_ASSEMBLY_VERSION) != ''">$(CERTES_ASSEMBLY_VERSION)</Version>
+    <Version Condition="$(CERTES_PACKAGE_VERSION) != ''">$(CERTES_PACKAGE_VERSION)</Version>
     <FileVersion Condition="$(CERTES_FILE_VERSION) != ''">$(CERTES_FILE_VERSION)</FileVersion>
     <InformationalVersion Condition="$(CERTES_INFORMATIONAL_VERSION) != ''">$(CERTES_INFORMATIONAL_VERSION)</InformationalVersion>
   </PropertyGroup>
