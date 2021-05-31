@@ -8,6 +8,8 @@ namespace Certes.Cli.Commands
 {
     internal class AccountNewCommand : CommandBase, ICliCommand
     {
+        public record Args(string Email, string OutPath, Uri Server, string KeyPath);
+
         private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountNewCommand));
 
         public AccountNewCommand(IUserSettings userSettings, AcmeContextFactory contextFactory, IFileUtil fileUtil)
@@ -27,8 +29,10 @@ namespace Certes.Cli.Commands
                 new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
             };
 
-            cmd.Handler = CommandHandler.Create(async (string email, string outPath, Uri server, string keyPath, IConsole console) =>
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
             {
+                var (email, outPath, server, keyPath) = args;
+
                 var acct = await ReadAccountKey(server, keyPath);
 
                 logger.Debug("Creating new account on '{0}'.", acct.Server);

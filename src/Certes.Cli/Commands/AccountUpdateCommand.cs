@@ -8,6 +8,8 @@ namespace Certes.Cli.Commands
 {
     internal class AccountUpdateCommand : CommandBase, ICliCommand
     {
+        public record Args(string Email, Uri Server, string KeyPath);
+
         private readonly ILogger logger = LogManager.GetLogger(nameof(AccountUpdateCommand));
 
         public AccountUpdateCommand(IUserSettings userSettings, AcmeContextFactory contextFactory, IFileUtil fileUtil)
@@ -26,8 +28,9 @@ namespace Certes.Cli.Commands
                 new Option(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
             };
 
-            cmd.Handler = CommandHandler.Create(async (string email, Uri server, string keyPath, IConsole console) =>
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
             {
+                var (email, server, keyPath) = args;
                 var (serverUri, key) = await ReadAccountKey(server, keyPath, true, true);
                 logger.Debug("Updating account on '{0}'.", serverUri);
 

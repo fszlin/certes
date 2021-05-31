@@ -8,6 +8,8 @@ namespace Certes.Cli.Commands
 {
     internal class AccountShowCommand : CommandBase, ICliCommand
     {
+        public record Args(Uri Server, string KeyPath);
+
         private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountShowCommand));
 
         public AccountShowCommand(IUserSettings userSettings, AcmeContextFactory contextFactory, IFileUtil fileUtil)
@@ -25,8 +27,9 @@ namespace Certes.Cli.Commands
                 new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
             };
 
-            cmd.Handler = CommandHandler.Create(async (Uri server, string keyPath, IConsole console) =>
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
             {
+                var (server, keyPath) = args;
                 var (serverUri, key) = await ReadAccountKey(server, keyPath, true, true);
 
                 logger.Debug("Loading account from '{0}'.", serverUri);

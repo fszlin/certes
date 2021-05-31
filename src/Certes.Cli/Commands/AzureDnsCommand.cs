@@ -13,6 +13,13 @@ namespace Certes.Cli.Commands
 {
     internal class AzureDnsCommand : AzureCommandBase, ICliCommand
     {
+        public record Args(
+            Uri OrderId,
+            string Domain,
+            Uri Server,
+            string KeyPath,
+            AzureOptions AzureOptions);
+
         private const string CommandText = "dns";
         private const string OrderIdParam = "order-id";
         private const string DomainParam = "domain";
@@ -44,14 +51,14 @@ namespace Certes.Cli.Commands
             cmd = AddCommonOptions(cmd);
 
             cmd.Handler = CommandHandler.Create(
-                (Uri orderId, string domain, Uri server, string keyPath, AzureOptions azureOptions, IConsole console) =>
-                Execute(orderId, domain, server, keyPath, azureOptions, console));
+                (Args args, IConsole console) => Execute(args, console));
 
             return cmd;
         }
 
-        private async Task Execute(Uri orderId, string domain, Uri server, string keyPath, AzureOptions azureOptions, IConsole console)
+        private async Task Execute(Args args, IConsole console)
         {
+            var (orderId, domain, server, keyPath, azureOptions) = args;
             var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
             logger.Debug("Updating account on '{0}'.", serverUri);
             var azureCredentials = await CreateAzureRestClient(azureOptions);

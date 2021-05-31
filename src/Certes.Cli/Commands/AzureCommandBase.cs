@@ -8,7 +8,6 @@ using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 
 namespace Certes.Cli.Commands
 {
-
     internal abstract class AzureCommandBase : CommandBase
     {
         protected const string AzureResourceGroupOption = "--resource-group";

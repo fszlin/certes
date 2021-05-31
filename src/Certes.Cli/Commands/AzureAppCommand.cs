@@ -13,6 +13,17 @@ namespace Certes.Cli.Commands
 {
     class AzureAppCommand : AzureCommandBase, ICliCommand
     {
+        public record Args(
+            Uri OrderId,
+            string Domain,
+            string App,
+            string Slot,
+            string PreferredChain,
+            string PrivateKey,
+            Uri Server,
+            string KeyPath,
+            AzureOptions AzureOptions);
+
         private const string CommandText = "app";
         private const string OrderIdParam = "order-id";
         private const string PreferredChainOption = "--preferred-chain";
@@ -52,19 +63,9 @@ namespace Certes.Cli.Commands
 
             AddCommonOptions(cmd);
 
-            cmd.Handler = CommandHandler.Create(async (
-                Uri orderId,
-                string domain,
-                string app,
-                string slot,
-                string preferredChain,
-                string privateKey,
-
-                Uri server,
-                string keyPath,
-                AzureOptions azureOptions,
-                IConsole console) =>
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
             {
+                var (orderId, domain, app, slot, preferredChain, privateKey, server, keyPath, azureOptions) = args;
                 var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
                 var azureCredentials = await CreateAzureRestClient(azureOptions);
 

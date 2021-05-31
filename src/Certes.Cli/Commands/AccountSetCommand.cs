@@ -8,6 +8,8 @@ namespace Certes.Cli.Commands
 {
     internal class AccountSetCommand : CommandBase, ICliCommand
     {
+        public record Args(Uri Server, string KeyPath);
+
         private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountSetCommand));
 
         public AccountSetCommand(IUserSettings userSettings, AcmeContextFactory contextFactory, IFileUtil fileUtil)
@@ -25,8 +27,9 @@ namespace Certes.Cli.Commands
                 new Argument<string>("key-path", Strings.HelpKey),
             };
 
-            cmd.Handler = CommandHandler.Create(async (Uri server, string keyPath, IConsole console) =>
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
             {
+                var (server, keyPath) = args;
                 var (serverUri, key) = await ReadAccountKey(server, keyPath, false);
 
                 logger.Debug("Setting account for '{0}'.", serverUri);
