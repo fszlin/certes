@@ -5,7 +5,7 @@ stages:
 
 - stage: ver
   displayName: Determine Version
-  jobs:
+  steps:
 
   - task: gitversion/setup@0
     displayName: Install GitVersion
