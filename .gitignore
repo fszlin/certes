@@ -251,3 +251,4 @@ launchSettings.json
 local.settings.json
 .vscode/
 .DS_Store
+*.arm.json

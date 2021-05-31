@@ -35,7 +35,7 @@ namespace Certes.Tests.CI
             }
 
             var response = req.CreateResponse(HttpStatusCode.OK);
-            await response.WriteAsJsonAsync(certificateData);
+            await response.WriteStringAsync(certificateData);
             return response;
         }
 
@@ -61,7 +61,7 @@ namespace Certes.Tests.CI
             }
 
             var response = req.CreateResponse(HttpStatusCode.OK);
-            await response.WriteAsJsonAsync(certificateKey);
+            await response.WriteStringAsync(certificateKey);
             return response;
         }
     }
