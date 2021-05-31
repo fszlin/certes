@@ -3,13 +3,14 @@ parameters:
   name: ''
   displayName: ''
   projectName: ''
-  assemblyVersion: ''
-  fileVersion: ''
-  informationalVersion: ''
 
 jobs:
 - job: ${{ parameters.name }}
   displayName: ${{ parameters.displayName }}
+  variables:
+    assemblyVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemVer'] ]
+    fileVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
+    informationalVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.InformationalVersion'] ]
   pool:
     vmImage: 'windows-latest'
 
@@ -22,9 +23,9 @@ jobs:
       custom: 'pack'
       arguments: 'src/${{ parameters.projectName }}/${{ parameters.projectName }}.csproj --include-symbols -c Release'
     env:
-      CERTES_ASSEMBLY_VERSION: ${{ parameters.assemblyVersion }}
-      CERTES_FILE_VERSION: ${{ parameters.fileVersion }}
-      CERTES_INFORMATIONAL_ASSEMBLYVERSION: ${{ parameters.informationalVersion }}
+      CERTES_ASSEMBLY_VERSION: $(assemblyVersion)
+      CERTES_FILE_VERSION: $(fileVersion)
+      CERTES_INFORMATIONAL_ASSEMBLYVERSION: $(informationalVersion)
 
   - task: CopyFiles@2
     displayName: Copy nupkg

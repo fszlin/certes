@@ -37,9 +37,6 @@ stages:
       appFramework: net5.0
       pool:
         vmImage: 'ubuntu-latest'
-      assemblyVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemVer'] ]
-      fileVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
-      informationalVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.InformationalVersion'] ]
 
   - template: scripts/build.yml
     parameters:
@@ -49,9 +46,6 @@ stages:
       appFramework: net5.0
       pool:
         vmImage: 'macOS-latest'
-      assemblyVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemVer'] ]
-      fileVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
-      informationalVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.InformationalVersion'] ]
 
   - template: scripts/build.yml
     parameters:
@@ -61,9 +55,6 @@ stages:
       appFramework: net5.0
       pool:
         vmImage: 'windows-latest'
-      assemblyVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemVer'] ]
-      fileVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
-      informationalVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.InformationalVersion'] ]
 
   - template: scripts/build.yml
     parameters:
@@ -73,14 +64,11 @@ stages:
       appFramework: net452
       pool:
         vmImage: 'windows-latest'
-      assemblyVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemVer'] ]
-      fileVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
-      informationalVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.InformationalVersion'] ]
 
 - stage: pack
   displayName: Pack
   dependsOn:
-  - var
+  - ver
   - test
   jobs:
 
@@ -89,15 +77,9 @@ stages:
       name: 'pack'
       displayName: 'Pack Certes'
       projectName: 'Certes'
-      assemblyVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemVer'] ]
-      fileVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
-      informationalVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.InformationalVersion'] ]
 
   - template: scripts/pack.yml
     parameters:
       name: 'pack_tool'
       displayName: 'Pack Certes.Tool'
       projectName: 'Certes.Cli'
-      assemblyVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemVer'] ]
-      fileVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
-      informationalVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.InformationalVersion'] ]

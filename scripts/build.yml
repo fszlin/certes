@@ -5,13 +5,14 @@ parameters:
   pool: ''
   framework: ''
   appFramework: ''
-  assemblyVersion: ''
-  fileVersion: ''
-  informationalVersion: ''
 
 jobs:
 - job: ${{ parameters.name }}
   displayName: ${{ parameters.displayName }}
+  variables:
+    assemblyVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemVer'] ]
+    fileVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
+    informationalVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.InformationalVersion'] ]
   pool: ${{ parameters.pool }}
 
   steps:
@@ -42,9 +43,9 @@ jobs:
       projects: 'test/Certes.Tests/Certes.Tests.csproj'
       arguments: '-f ${{ parameters.appFramework }} -p:SkipSigning=true'
     env:
-      CERTES_ASSEMBLY_VERSION: ${{ parameters.assemblyVersion }}
-      CERTES_FILE_VERSION: ${{ parameters.fileVersion }}
-      CERTES_INFORMATIONAL_ASSEMBLYVERSION: ${{ parameters.informationalVersion }}
+      CERTES_ASSEMBLY_VERSION: $(assemblyVersion)
+      CERTES_FILE_VERSION: $(fileVersion)
+      CERTES_INFORMATIONAL_ASSEMBLYVERSION: $(informationalVersion)
       
   - task: DotNetCoreCLI@2
     displayName: 'Run unit tests'
@@ -69,9 +70,9 @@ jobs:
       projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
       arguments: '-f ${{ parameters.appFramework }} -p:SkipSigning=true'
     env:
-      CERTES_ASSEMBLY_VERSION: ${{ parameters.assemblyVersion }}
-      CERTES_FILE_VERSION: ${{ parameters.fileVersion }}
-      CERTES_INFORMATIONAL_ASSEMBLYVERSION: ${{ parameters.informationalVersion }}
+      CERTES_ASSEMBLY_VERSION: $(assemblyVersion)
+      CERTES_FILE_VERSION: $(fileVersion)
+      CERTES_INFORMATIONAL_ASSEMBLYVERSION: $(informationalVersion)
 
   - task: DotNetCoreCLI@2
     displayName: 'Run integration tests'
