@@ -7,10 +7,6 @@
     <PublicSign Condition="'$(TargetFramework)' != 'net45' AND '$(TargetFramework)' != 'net452' AND '$(TargetFramework)' != 'net47'">True</PublicSign>
     <AssemblyOriginatorKeyFile>../../misc/certes.snk</AssemblyOriginatorKeyFile>
     <AssemblyVersion>2.4.0</AssemblyVersion>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <PropertyGroup Condition="'$(APPVEYOR)' != ''">
     <CertesFileVersionSuffix>.$(APPVEYOR_BUILD_NUMBER)</CertesFileVersionSuffix>
@@ -28,6 +24,14 @@
     <Version Condition="$(CERTES_PACKAGE_VERSION) != ''">$(CERTES_PACKAGE_VERSION)</Version>
     <FileVersion Condition="$(CERTES_FILE_VERSION) != ''">$(CERTES_FILE_VERSION)</FileVersion>
     <InformationalVersion Condition="$(CERTES_INFORMATIONAL_VERSION) != ''">$(CERTES_INFORMATIONAL_VERSION)</InformationalVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <PropertyGroup Condition="'$(SkipSigning)' == 'true'">
     <SignAssembly>False</SignAssembly>
