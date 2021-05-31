@@ -21,6 +21,7 @@ jobs:
     displayName: Determine Version
     inputs:
       useConfigFile: true
+      configFilePath: 'GitVersion.yml'
 
   - script: |
       echo Major: $(GitVersion.Major)
