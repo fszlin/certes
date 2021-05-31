@@ -1,0 +1,11 @@
+next-version: 2.5
+mode: ContinuousDelivery
+branches:
+  main:
+    regex: ^master$|^main$
+    tag: beta
+  release:
+    regex: ^releases?[/-]
+    is-release-branch: true
+  pull-request:
+    tag: pr
