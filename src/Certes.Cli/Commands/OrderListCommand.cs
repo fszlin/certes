@@ -9,6 +9,8 @@ namespace Certes.Cli.Commands
 {
     internal class OrderListCommand : CommandBase, ICliCommand
     {
+        public record Args(Uri Server, string KeyPath);
+
         private const string CommandText = "list";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderListCommand));
 
@@ -30,11 +32,9 @@ namespace Certes.Cli.Commands
                 new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
             };
 
-            cmd.Handler = CommandHandler.Create(async (
-                Uri server,
-                string keyPath,
-                IConsole console) =>
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
             {
+                var (server, keyPath) = args;
                 var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
                 logger.Debug("Loading orders from '{0}'.", serverUri);
 

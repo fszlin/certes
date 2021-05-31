@@ -9,6 +9,8 @@ namespace Certes.Cli.Commands
 {
     internal class OrderNewCommand : CommandBase, ICliCommand
     {
+        public record Args(IList<string> domains, Uri Server, string KeyPath);
+
         private const string CommandText = "new";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderNewCommand));
 
@@ -31,12 +33,9 @@ namespace Certes.Cli.Commands
                 new Argument<IList<string>>("domains", Strings.HelpDomains),
             };
 
-            cmd.Handler = CommandHandler.Create(async (
-                IList<string> domains,
-                Uri server,
-                string keyPath,
-                IConsole console) =>
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
             {
+                var (domains, server, keyPath) = args;
                 var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
                 logger.Debug("Creating order from '{0}'.", serverUri);
 

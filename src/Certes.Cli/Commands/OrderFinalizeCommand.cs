@@ -9,16 +9,7 @@ namespace Certes.Cli.Commands
 {
     internal class OrderFinalizeCommand : CommandBase, ICliCommand
     {
-        public record Args
-        {
-            public Uri OrderId { get; init; }
-            public KeyAlgorithm KeyAlgorithm { get; init; }
-            public string PrivateKey { get; init; }
-            public string OutPath { get; init; }
-            public string Dn { get; init; }
-            public Uri Server { get; init; }
-            public string KeyPath { get; init; }
-        }
+        public record Args(Uri OrderId, KeyAlgorithm KeyAlgorithm, string PrivateKey, string OutPath, string Dn, Uri Server, string KeyPath);
 
         private const string CommandText = "finalize";
         private const string OrderIdParam = "--order-id";
@@ -62,25 +53,26 @@ namespace Certes.Cli.Commands
 
         private async Task Execute(Args args, IConsole console)
         {
-            var (serverUri, key) = await ReadAccountKey(args.Server, args.KeyPath, true, false);
-            var providedKey = await ReadKey(args.PrivateKey, "CERTES_CERT_KEY", File, environment);
-            var privKey = providedKey ?? KeyFactory.NewKey(args.KeyAlgorithm);
+            var (orderId, keyAlgorithm, privateKey, outPath, dn, server, keyPath) = args;
+            var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
+            var providedKey = await ReadKey(privateKey, "CERTES_CERT_KEY", File, environment);
+            var privKey = providedKey ?? KeyFactory.NewKey(keyAlgorithm);
 
             logger.Debug("Finalizing order from '{0}'.", serverUri);
 
             var acme = ContextFactory.Invoke(serverUri, key);
-            var orderCtx = acme.Order(args.OrderId);
+            var orderCtx = acme.Order(orderId);
 
             var csr = await orderCtx.CreateCsr(privKey);
-            if (!string.IsNullOrWhiteSpace(args.Dn))
+            if (!string.IsNullOrWhiteSpace(dn))
             {
-                csr.AddName(args.Dn);
+                csr.AddName(dn);
             }
 
             var order = await orderCtx.Finalize(csr.Generate());
 
             // output private key only if it is generated and not being saved
-            if (string.IsNullOrWhiteSpace(args.OutPath) && providedKey == null)
+            if (string.IsNullOrWhiteSpace(outPath) && providedKey == null)
             {
                 var output = new
                 {
@@ -95,7 +87,7 @@ namespace Certes.Cli.Commands
             {
                 if (providedKey == null)
                 {
-                    await File.WriteAllText(args.OutPath, privKey.ToPem());
+                    await File.WriteAllText(outPath, privKey.ToPem());
                 }
 
                 var output = new

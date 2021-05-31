@@ -11,6 +11,8 @@ namespace Certes.Cli.Commands
 {
     internal class OrderValidateCommand : CommandBase, ICliCommand
     {
+        public record Args(Uri OrderId, string Domain, string ChallengeType, Uri Server, string KeyPath);
+
         private const string CommandText = "validate";
         private const string OrderIdParam = "order-id";
         private const string DomainParam = "domain";
@@ -38,9 +40,9 @@ namespace Certes.Cli.Commands
                 new Argument<string>(ChallengeTypeParam, Strings.HelpChallengeType),
             };
 
-            cmd.Handler = CommandHandler.Create(
-                async (Uri orderId, string domain, string challengeType, Uri server, string keyPath, IConsole console) =>
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
             {
+                var (orderId, domain, challengeType, server, keyPath) = args;
                 var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
 
                 var type =

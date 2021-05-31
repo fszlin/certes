@@ -8,6 +8,8 @@ namespace Certes.Cli.Commands
 {
     internal class OrderShowCommand : CommandBase, ICliCommand
     {
+        public record Args(Uri OrderId, Uri Server, string KeyPath);
+
         private const string CommandText = "show";
         private const string OrderIdParam = "order-id";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderShowCommand));
@@ -31,12 +33,9 @@ namespace Certes.Cli.Commands
                 new Argument<Uri>(OrderIdParam, Strings.HelpOrderId),
             };
 
-            cmd.Handler = CommandHandler.Create(async (
-                Uri orderId,
-                Uri server,
-                string keyPath,
-                IConsole console) =>
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
             {
+                var (orderId, server, keyPath) = args;
                 var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
                 logger.Debug("Loading order from '{0}'.", serverUri);
 

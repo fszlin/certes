@@ -7,8 +7,15 @@ using NLog;
 
 namespace Certes.Cli.Commands
 {
-    internal class OrderAuthzCommand: CommandBase, ICliCommand
+    internal class OrderAuthzCommand : CommandBase, ICliCommand
     {
+        public record Args(
+            Uri OrderId,
+            string Domain,
+            string ChallengeType,
+            Uri Server,
+            string KeyPath);
+
         private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderAuthzCommand));
 
         public CommandGroup Group => CommandGroup.Order;
@@ -29,8 +36,9 @@ namespace Certes.Cli.Commands
                 new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
             };
 
-            cmd.Handler = CommandHandler.Create(async (Uri orderId, string domain, string challengeType, Uri server, string keyPath, IConsole console) =>
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
             {
+                var (orderId, domain, challengeType, server, keyPath) = args;
                 var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
 
                 var type =
