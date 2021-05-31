@@ -3,7 +3,6 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Globalization;
 using System.Text;
-using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using NLog;
 
@@ -11,6 +10,17 @@ namespace Certes.Cli.Commands
 {
     internal class CertificatePfxCommand : CertificateCommandBase, ICliCommand
     {
+        public record Args(
+            Uri OrderId,
+            string PrivateKey,
+            string FriendlyName,
+            string Issuer,
+            string Password,
+            string PreferredChain,
+            string OutPath,
+            Uri Server,
+            string KeyPath);
+
         private const string CommandText = "pfx";
         private const string FriendlyNameOption = "--friendly-name";
         private const string PasswordParam = "--password";
@@ -22,7 +32,7 @@ namespace Certes.Cli.Commands
 
         public CertificatePfxCommand(
             IUserSettings userSettings,
-            AcmeContextFactory contextFactory, 
+            AcmeContextFactory contextFactory,
             IFileUtil fileUtil,
             IEnvironmentVariables environment)
             : base(userSettings, contextFactory, fileUtil)
@@ -46,17 +56,10 @@ namespace Certes.Cli.Commands
             };
 
             cmd.Handler = CommandHandler.Create(async (
-                Uri orderId,
-                string privateKey,
-                string friendlyName,
-                string issuer,
-                string password,
-                string preferredChain,
-                string outPath,
-                Uri server,
-                string keyPath,
+                Args args,
                 IConsole console) =>
             {
+                var (orderId, privateKey, friendlyName, issuer, password, preferredChain, outPath, server, keyPath) = args;
                 var (location, cert) = await DownloadCertificate(orderId, preferredChain, server, keyPath);
 
                 var privKey = await ReadKey(privateKey, "CERTES_CERT_KEY", File, environment);

@@ -10,6 +10,13 @@ namespace Certes.Cli.Commands
 {
     internal class CertificatePemCommand : CertificateCommandBase, ICliCommand
     {
+        public record Args(
+            Uri OrderId,
+            string PreferredChain, 
+            string OutPath,
+            Uri Server,
+            string KeyPath);
+
         private readonly ILogger logger = LogManager.GetLogger(nameof(CertificatePemCommand));
 
         public CertificatePemCommand(IUserSettings userSettings, AcmeContextFactory contextFactory, IFileUtil fileUtil)
@@ -29,14 +36,15 @@ namespace Certes.Cli.Commands
             };
 
             cmd.Handler = CommandHandler.Create(
-                (Uri orderId, string preferredChain, string outPath, Uri server, string keyPath, IConsole console) =>
-                Execute(orderId, preferredChain, outPath, server, keyPath, console));
+                (Args args, IConsole console) =>
+                Execute(args, console));
 
             return cmd;
         }
 
-        private async Task Execute(Uri orderId, string preferredChain, string outPath, Uri server, string keyPath, IConsole console)
+        private async Task Execute(Args args, IConsole console)
         {
+            var (orderId, preferredChain, outPath, server, keyPath) = args;
             var (location, cert) = await DownloadCertificate(orderId, preferredChain, server, keyPath);
 
             if (string.IsNullOrWhiteSpace(outPath))

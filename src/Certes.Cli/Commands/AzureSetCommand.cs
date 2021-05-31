@@ -73,12 +73,10 @@ namespace Certes.Cli.Commands
 
         private async Task<IList<(string Location, string Name)>> LoadResourceGroups(RestClient restClient)
         {
-            using (var client = clientFactory.Invoke(restClient))
-            {
-                client.SubscriptionId = restClient.Credentials.DefaultSubscriptionId;
-                var resourceGroups = await client.ResourceGroups.ListAsync();
-                return resourceGroups.Select(g => (g.Location, g.Name)).ToArray();
-            }
+            using var client = clientFactory.Invoke(restClient);
+            client.SubscriptionId = restClient.Credentials.DefaultSubscriptionId;
+            var resourceGroups = await client.ResourceGroups.ListAsync();
+            return resourceGroups.Select(g => (g.Location, g.Name)).ToArray();
         }
     }
 }
