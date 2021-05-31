@@ -34,7 +34,7 @@ namespace Certes.Jws
         {
             var key = new AccountKey();
             var keyAuthz = key.KeyAuthorization("t0001");
-            Assert.Equal(keyAuthz + "." + key.GenerateThumbprint(), keyAuthz);
+            Assert.Equal(keyAuthz + "." + key.Thumbprint(), keyAuthz);
         }
 
         [Fact]
