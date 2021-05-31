@@ -80,7 +80,7 @@ stages:
 - stage: pack
   displayName: Pack
   dependsOn:
-  - var
+  - ver
   - test
   jobs:
 
