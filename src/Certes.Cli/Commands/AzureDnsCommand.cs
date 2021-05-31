@@ -43,58 +43,56 @@ namespace Certes.Cli.Commands
 
             cmd = AddCommonOptions(cmd);
 
-            cmd.Handler = CommandHandler.Create(async (
-                Uri orderId,
-                string domain,
-                Uri server,
-                string keyPath,
-                AzureOptions azureOptions,
-                IConsole console) =>
-            {
-                var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
-                logger.Debug("Updating account on '{0}'.", serverUri);
-                var azureCredentials = await CreateAzureRestClient(azureOptions);
-                var resourceGroup = azureOptions.ResourceGroup;
-
-                var acme = ContextFactory.Invoke(serverUri, key);
-                var orderCtx = acme.Order(orderId);
-                var authzCtx = await orderCtx.Authorization(domain)
-                    ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
-                var challengeCtx = await authzCtx.Dns()
-                    ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, "dns"));
-
-                var authz = await authzCtx.Resource();
-                var dnsValue = acme.AccountKey.DnsTxt(challengeCtx.Token);
-                using var client = clientFactory.Invoke(azureCredentials);
-
-                client.SubscriptionId = azureCredentials.Credentials.DefaultSubscriptionId;
-                var idValue = authz.Identifier.Value;
-                var zone = await FindDnsZone(client, idValue);
-
-                var name = zone.Name.Length == idValue.Length ?
-                    "_acme-challenge" :
-                    "_acme-challenge." + idValue.Substring(0, idValue.Length - zone.Name.Length - 1);
-                logger.Debug("Adding TXT record '{0}' for '{1}' in '{2}' zone.", dnsValue, name, zone.Name);
-
-                var recordSet = await client.RecordSets.CreateOrUpdateAsync(
-                    resourceGroup,
-                    zone.Name,
-                    name,
-                    RecordType.TXT,
-                    new RecordSetInner(
-                        name: name,
-                        tTL: 300,
-                        txtRecords: new[] { new TxtRecord(new[] { dnsValue }) }));
-
-                var output = new
-                {
-                    data = recordSet
-                };
-
-                console.WriteAsJson(output);
-            });
+            cmd.Handler = CommandHandler.Create(
+                (Uri orderId, string domain, Uri server, string keyPath, AzureOptions azureOptions, IConsole console) =>
+                Execute(orderId, domain, server, keyPath, azureOptions, console));
 
             return cmd;
+        }
+
+        private async Task Execute(Uri orderId, string domain, Uri server, string keyPath, AzureOptions azureOptions, IConsole console)
+        {
+            var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
+            logger.Debug("Updating account on '{0}'.", serverUri);
+            var azureCredentials = await CreateAzureRestClient(azureOptions);
+            var resourceGroup = azureOptions.ResourceGroup;
+
+            var acme = ContextFactory.Invoke(serverUri, key);
+            var orderCtx = acme.Order(orderId);
+            var authzCtx = await orderCtx.Authorization(domain)
+                ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
+            var challengeCtx = await authzCtx.Dns()
+                ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, "dns"));
+
+            var authz = await authzCtx.Resource();
+            var dnsValue = acme.AccountKey.DnsTxt(challengeCtx.Token);
+            using var client = clientFactory.Invoke(azureCredentials);
+
+            client.SubscriptionId = azureCredentials.Credentials.DefaultSubscriptionId;
+            var idValue = authz.Identifier.Value;
+            var zone = await FindDnsZone(client, idValue);
+
+            var name = zone.Name.Length == idValue.Length ?
+                "_acme-challenge" :
+                "_acme-challenge." + idValue.Substring(0, idValue.Length - zone.Name.Length - 1);
+            logger.Debug("Adding TXT record '{0}' for '{1}' in '{2}' zone.", dnsValue, name, zone.Name);
+
+            var recordSet = await client.RecordSets.CreateOrUpdateAsync(
+                resourceGroup,
+                zone.Name,
+                name,
+                RecordType.TXT,
+                new RecordSetInner(
+                    name: name,
+                    tTL: 300,
+                    txtRecords: new[] { new TxtRecord(new[] { dnsValue }) }));
+
+            var output = new
+            {
+                data = recordSet
+            };
+
+            console.WriteAsJson(output);
         }
 
         private static async Task<ZoneInner> FindDnsZone(IDnsManagementClient client, string identifier)

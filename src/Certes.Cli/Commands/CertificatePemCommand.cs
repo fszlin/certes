@@ -2,6 +2,7 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Linq;
+using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using NLog;
 
@@ -27,45 +28,43 @@ namespace Certes.Cli.Commands
                 new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
             };
 
-            cmd.Handler = CommandHandler.Create(async (
-                Uri orderId,
-                string preferredChain,
-                string outPath,
-                Uri server,
-                string keyPath,
-                IConsole console) =>
-            {
-                var (location, cert) = await DownloadCertificate(orderId, preferredChain, server, keyPath);
-
-                if (string.IsNullOrWhiteSpace(outPath))
-                {
-                    var output = new
-                    {
-                        location,
-                        resource = new
-                        {
-                            certificate = cert.Certificate.ToDer(),
-                            issuers = cert.Issuers.Select(i => i.ToDer()).ToArray(),
-                        },
-                    };
-
-                    console.WriteAsJson(output);
-                }
-                else
-                {
-                    logger.Debug("Saving certificate to '{0}'.", outPath);
-                    await File.WriteAllText(outPath, cert.ToPem());
-
-                    var output = new
-                    {
-                        location,
-                    };
-
-                    console.WriteAsJson(output);
-                }
-            });
+            cmd.Handler = CommandHandler.Create(
+                (Uri orderId, string preferredChain, string outPath, Uri server, string keyPath, IConsole console) =>
+                Execute(orderId, preferredChain, outPath, server, keyPath, console));
 
             return cmd;
+        }
+
+        private async Task Execute(Uri orderId, string preferredChain, string outPath, Uri server, string keyPath, IConsole console)
+        {
+            var (location, cert) = await DownloadCertificate(orderId, preferredChain, server, keyPath);
+
+            if (string.IsNullOrWhiteSpace(outPath))
+            {
+                var output = new
+                {
+                    location,
+                    resource = new
+                    {
+                        certificate = cert.Certificate.ToDer(),
+                        issuers = cert.Issuers.Select(i => i.ToDer()).ToArray(),
+                    },
+                };
+
+                console.WriteAsJson(output);
+            }
+            else
+            {
+                logger.Debug("Saving certificate to '{0}'.", outPath);
+                await File.WriteAllText(outPath, cert.ToPem());
+
+                var output = new
+                {
+                    location,
+                };
+
+                console.WriteAsJson(output);
+            }
         }
     }
 }
