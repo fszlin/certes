@@ -9,6 +9,17 @@ namespace Certes.Cli.Commands
 {
     internal class OrderFinalizeCommand : CommandBase, ICliCommand
     {
+        public record Args
+        {
+            public Uri OrderId { get; init; }
+            public KeyAlgorithm KeyAlgorithm { get; init; }
+            public string PrivateKey { get; init; }
+            public string OutPath { get; init; }
+            public string Dn { get; init; }
+            public Uri Server { get; init; }
+            public string KeyPath { get; init; }
+        }
+
         private const string CommandText = "finalize";
         private const string OrderIdParam = "--order-id";
         private const string DnOption = "--dn";
@@ -43,33 +54,33 @@ namespace Certes.Cli.Commands
             };
 
             cmd.Handler = CommandHandler.Create(
-                (Uri orderId, KeyAlgorithm keyAlgorithm, string privateKey, string outPath, string dn, Uri server, string keyPath, IConsole console) =>
-                Execute(orderId, keyAlgorithm, privateKey, outPath, dn, server, keyPath, console));
+                (Args args, IConsole console) =>
+                Execute(args, console));
 
             return cmd;
         }
 
-        private async Task Execute(Uri orderId, KeyAlgorithm keyAlgorithm, string privateKey, string outPath, string dn, Uri server, string keyPath, IConsole console)
+        private async Task Execute(Args args, IConsole console)
         {
-            var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
-            var providedKey = await ReadKey(privateKey, "CERTES_CERT_KEY", File, environment);
-            var privKey = providedKey ?? KeyFactory.NewKey(keyAlgorithm);
+            var (serverUri, key) = await ReadAccountKey(args.Server, args.KeyPath, true, false);
+            var providedKey = await ReadKey(args.PrivateKey, "CERTES_CERT_KEY", File, environment);
+            var privKey = providedKey ?? KeyFactory.NewKey(args.KeyAlgorithm);
 
             logger.Debug("Finalizing order from '{0}'.", serverUri);
 
             var acme = ContextFactory.Invoke(serverUri, key);
-            var orderCtx = acme.Order(orderId);
+            var orderCtx = acme.Order(args.OrderId);
 
             var csr = await orderCtx.CreateCsr(privKey);
-            if (!string.IsNullOrWhiteSpace(dn))
+            if (!string.IsNullOrWhiteSpace(args.Dn))
             {
-                csr.AddName(dn);
+                csr.AddName(args.Dn);
             }
 
             var order = await orderCtx.Finalize(csr.Generate());
 
             // output private key only if it is generated and not being saved
-            if (string.IsNullOrWhiteSpace(outPath) && providedKey == null)
+            if (string.IsNullOrWhiteSpace(args.OutPath) && providedKey == null)
             {
                 var output = new
                 {
@@ -84,7 +95,7 @@ namespace Certes.Cli.Commands
             {
                 if (providedKey == null)
                 {
-                    await File.WriteAllText(outPath, privKey.ToPem());
+                    await File.WriteAllText(args.OutPath, privKey.ToPem());
                 }
 
                 var output = new
