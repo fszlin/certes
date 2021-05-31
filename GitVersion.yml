@@ -1,6 +1,6 @@
 next-version: 2.4
 mode: ContinuousDelivery
-assembly-file-versioning-format: '{Major}.{Minor}.{Patch}.{env:BUILD_BUILDNUMBER}'
+assembly-file-versioning-format: '{Major}.{Minor}.{Patch}.{env:BUILD_BUILDID}'
 branches:
   main:
     regex: ^master$|^main$
