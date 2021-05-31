@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Management.Dns.Fluent;
 using Microsoft.Azure.Management.Dns.Fluent.Models;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 using static Certes.Tests.CI.Helper;
@@ -20,14 +18,14 @@ namespace Certes.Tests.CI
 {
     public static class DnsChanllengeFunction
     {
-        [FunctionName("SetupDns")]
-        public static async Task<IActionResult> SetupDns(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "dns-01/{algo}")]HttpRequest request,
+        [Function("SetupDns")]
+        public static async Task<HttpResponseData> SetupDns(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "dns-01/{algo}")] HttpRequestData req,
             string algo,
-            ILogger log)
+            FunctionContext executionContext)
         {
             Dictionary<string, string> tokens;
-            using (var reader = new StreamReader(request.Body))
+            using (var reader = new StreamReader(req.Body))
             {
                 var json = await reader.ReadToEndAsync();
                 tokens = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
@@ -66,7 +64,8 @@ namespace Certes.Tests.CI
                 }
             }
 
-            return new OkResult();
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            return response;
         }
     }
 }

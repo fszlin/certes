@@ -1,29 +1,25 @@
-﻿using Certes.Jws;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
+﻿using System.Net;
+using System.Threading.Tasks;
+using Certes.Jws;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using static Certes.Tests.CI.Helper;
 
 namespace Certes.Tests.CI
 {
     public static class HttpChanllengeFunction
     {
-        [FunctionName("ResponseHttp")]
-        public static IActionResult ResponseHttp(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ".well-known/acme-challenge/{*token}")]HttpRequest request,
+        [Function("ResponseHttp")]
+        public static async Task<HttpResponseData> ResponseHttp(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ".well-known/acme-challenge/{*token}")] HttpRequestData req,
             string token,
-            ILogger log)
+            FunctionContext executionContext)
         {
-            var accountKey = GetTestKey(request);
+            var accountKey = GetTestKey(req);
 
-            return new ContentResult
-            {
-                Content = accountKey.KeyAuthorization(token),
-                ContentType = "plain/text",
-                StatusCode = 200,
-            };
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await response.WriteStringAsync(accountKey.KeyAuthorization(token));
+            return response;
         }
     }
 }

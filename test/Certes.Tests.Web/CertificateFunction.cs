@@ -1,11 +1,9 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Newtonsoft.Json.Linq;
 
 namespace Certes.Tests.CI
@@ -15,66 +13,56 @@ namespace Certes.Tests.CI
         private static string certificateData { get; set; }
         private static string certificateKey { get; set; }
 
-        [FunctionName("CertData")]
-        public static async Task<IActionResult> CertData(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "cert-data")]HttpRequest request,
-            ILogger log)
+        [Function("CertData")]
+        public static async Task<HttpResponseData> CertData(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "cert-data")] HttpRequestData req,
+            FunctionContext executionContext)
         {
             if (certificateData == null)
             {
-                using (var http = new HttpClient())
-                {
-                    http.DefaultRequestHeaders.UserAgent.ParseAdd("request");
-                    var json = await http.GetStringAsync("https://api.github.com/repos/fszlin/lo0.in/releases/latest");
-                    var metadata = JObject.Parse(json);
+                using var http = new HttpClient();
+                http.DefaultRequestHeaders.UserAgent.ParseAdd("request");
+                var json = await http.GetStringAsync("https://api.github.com/repos/fszlin/lo0.in/releases/latest");
+                var metadata = JObject.Parse(json);
 
-                    var certUrl = metadata["assets"]
-                        .AsJEnumerable()
-                        .Where(a => a["name"].Value<string>() == "cert.pem")
-                        .Select(a => a["browser_download_url"].Value<string>())
-                        .First();
+                var certUrl = metadata["assets"]
+                    .AsJEnumerable()
+                    .Where(a => a["name"].Value<string>() == "cert.pem")
+                    .Select(a => a["browser_download_url"].Value<string>())
+                    .First();
 
-                    certificateData = await http.GetStringAsync(certUrl);
-                }
+                certificateData = await http.GetStringAsync(certUrl);
             }
 
-            return new ContentResult
-            {
-                Content = certificateData,
-                ContentType = "application/x-pem-file",
-                StatusCode = 200,
-            };
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await response.WriteAsJsonAsync(certificateData);
+            return response;
         }
 
-        [FunctionName("CertKey")]
-        public static async Task<IActionResult> CertKey(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "cert-key")]HttpRequest request,
-            ILogger log)
+        [Function("CertKey")]
+        public static async Task<HttpResponseData> CertKey(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "cert-key")] HttpRequestData req,
+            FunctionContext executionContext)
         {
             if (certificateKey == null)
             {
-                using (var http = new HttpClient())
-                {
-                    http.DefaultRequestHeaders.UserAgent.ParseAdd("request");
-                    var json = await http.GetStringAsync("https://api.github.com/repos/fszlin/lo0.in/releases/latest");
-                    var metadata = JObject.Parse(json);
+                using var http = new HttpClient();
+                http.DefaultRequestHeaders.UserAgent.ParseAdd("request");
+                var json = await http.GetStringAsync("https://api.github.com/repos/fszlin/lo0.in/releases/latest");
+                var metadata = JObject.Parse(json);
 
-                    var certUrl = metadata["assets"]
-                        .AsJEnumerable()
-                        .Where(a => a["name"].Value<string>() == "key.pem")
-                        .Select(a => a["browser_download_url"].Value<string>())
-                        .First();
+                var certUrl = metadata["assets"]
+                    .AsJEnumerable()
+                    .Where(a => a["name"].Value<string>() == "key.pem")
+                    .Select(a => a["browser_download_url"].Value<string>())
+                    .First();
 
-                    certificateKey = await http.GetStringAsync(certUrl);
-                }
+                certificateKey = await http.GetStringAsync(certUrl);
             }
 
-            return new ContentResult
-            {
-                Content = certificateKey,
-                ContentType = "application/x-pem-file",
-                StatusCode = 200,
-            };
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await response.WriteAsJsonAsync(certificateKey);
+            return response;
         }
     }
 }
