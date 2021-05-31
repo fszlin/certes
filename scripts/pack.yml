@@ -3,27 +3,43 @@ parameters:
   name: ''
   displayName: ''
   projectName: ''
-  previewPackage: ''
 
 jobs:
 - job: ${{ parameters.name }}
   displayName: ${{ parameters.displayName }}
+  variables:
+    assemblyVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemVer'] ]
+    fileVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
+    informationalVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.InformationalVersion'] ]
+    packageVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.NuGetVersion'] ]
   pool:
     vmImage: 'windows-latest'
 
   steps:
-
+  
   - task: DotNetCoreCLI@2
     displayName: Pack
     inputs:
       command: 'custom'
       custom: 'pack'
-      arguments: 'src/${{ parameters.projectName }}/${{ parameters.projectName }}.csproj -p:CertesPreview=${{ parameters.previewPackage }} --include-symbols -c Release'
+      arguments: 'src/${{ parameters.projectName }}/${{ parameters.projectName }}.csproj --include-symbols -c Release'
+    env:
+      CERTES_ASSEMBLY_VERSION: $(assemblyVersion)
+      CERTES_FILE_VERSION: $(fileVersion)
+      CERTES_INFORMATIONAL_VERSION: $(informationalVersion)
+      CERTES_PACKAGE_VERSION: $(packageVersion)
 
   - task: CopyFiles@2
     displayName: Copy nupkg
     inputs:
       Contents: 'src/${{ parameters.projectName }}/bin/**/*.nupkg'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    displayName: Copy snupkg
+    inputs:
+      Contents: 'src/${{ parameters.projectName }}/bin/**/*.snupkg'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
       flattenFolders: true
 

@@ -3,75 +3,82 @@ trigger:
 
 stages:
 
+- stage: ver
+  displayName: Determine Version
+  jobs:
+  - job: ver
+    displayName: Determine Version
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - task: gitversion/setup@0
+      displayName: Install GitVersion
+      inputs:
+        versionSpec: '5.x'
+
+    - task: gitversion/execute@0
+      displayName: Determine Version
+      inputs:
+        useConfigFile: true
+        configFilePath: 'GitVersion.yml'
+      name: version
+
 - stage: test
   displayName: Test
+  dependsOn: ver
   jobs:
 
   - template: scripts/build.yml
     parameters:
-      name: Linux_netstandard20
-      displayName: Linux - netstandard2.0
-      framework: netstandard2.0
-      appFramework: netcoreapp3.1
+      name: Linux_net50
+      displayName: Linux - net5.0
+      framework: net5.0
+      appFramework: net5.0
       pool:
         vmImage: 'ubuntu-latest'
 
   - template: scripts/build.yml
     parameters:
-      name: macOS_netstandard20
-      displayName: macOS - netstandard2.0
-      framework: netstandard2.0
-      appFramework: netcoreapp3.1
+      name: macOS_net50
+      displayName: macOS - net5.0
+      framework: net5.0
+      appFramework: net5.0
       pool:
         vmImage: 'macOS-latest'
 
   - template: scripts/build.yml
     parameters:
-      name: Windows_netstandard20
-      displayName: Windows - netstandard2.0
-      framework: netstandard2.0
-      appFramework: netcoreapp3.1
+      name: Windows_net50
+      displayName: Windows - net5.0
+      framework: net5.0
+      appFramework: net5.0
       pool:
         vmImage: 'windows-latest'
 
   - template: scripts/build.yml
     parameters:
-      name: Windows_net47
-      displayName: Windows - net47
-      framework: net47
-      appFramework: net47
+      name: Windows_net452
+      displayName: Windows - net452
+      framework: net452
+      appFramework: net452
       pool:
         vmImage: 'windows-latest'
 
 - stage: pack
   displayName: Pack
-  dependsOn: test
+  dependsOn:
+  - ver
   jobs:
-
-  - template: scripts/pack.yml
-    parameters:
-      name: 'pack_preview'
-      displayName: 'Pack Certes preview'
-      projectName: 'Certes'
-      previewPackage: 'true'
 
   - template: scripts/pack.yml
     parameters:
       name: 'pack'
       displayName: 'Pack Certes'
       projectName: 'Certes'
-      previewPackage: 'false'
-
-  - template: scripts/pack.yml
-    parameters:
-      name: 'pack_tool_preview'
-      displayName: 'Pack Certes.Tool preview'
-      projectName: 'Certes.Cli'
-      previewPackage: 'true'
 
   - template: scripts/pack.yml
     parameters:
       name: 'pack_tool'
       displayName: 'Pack Certes.Tool'
       projectName: 'Certes.Cli'
-      previewPackage: 'false'

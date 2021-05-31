@@ -1,4 +1,5 @@
-﻿using System.CommandLine;
+﻿using System;
+using System.CommandLine;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
@@ -7,16 +8,16 @@ using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 
 namespace Certes.Cli.Commands
 {
-    internal abstract class AzureCommand : CommandBase
+    internal abstract class AzureCommandBase : CommandBase
     {
-        protected const string AzureResourceGroupOption = "resource-group";
+        protected const string AzureResourceGroupOption = "--resource-group";
 
-        public static string AzureTenantIdOption => "tenant-id";
-        public static string AzureClientIdOption => "client-id";
-        public static string AzureSecretOption => "client-secret";
-        public static string AzureSubscriptionIdOption => "subscription-id";
+        public static string AzureTenantIdOption => "--tenant-id";
+        public static string AzureClientIdOption => "--client-id";
+        public static string AzureSecretOption => "--client-secret";
+        public static string AzureSubscriptionIdOption => "--subscription-id";
 
-        protected AzureCommand(
+        protected AzureCommandBase(
             IUserSettings userSettings,
             AcmeContextFactory contextFactory,
             IFileUtil fileUtil)
@@ -24,17 +25,13 @@ namespace Certes.Cli.Commands
         {
         }
 
-        protected async Task<RestClient> CreateAzureRestClient(ArgumentSyntax syntax)
+        protected async Task<RestClient> CreateAzureRestClient(AzureSettings options)
         {
             var azSettings = await UserSettings.GetAzureSettings();
-            var tenantId = syntax.GetOption<string>(AzureTenantIdOption)
-                ?? azSettings.TenantId;
-            var clientId = syntax.GetOption<string>(AzureClientIdOption)
-                ?? azSettings.ClientId;
-            var secret = syntax.GetOption<string>(AzureSecretOption)
-                ?? azSettings.ClientSecret;
-            var subscriptionId = syntax.GetOption<string>(AzureSubscriptionIdOption)
-                ?? azSettings.SubscriptionId;
+            var tenantId = options.TenantId ?? azSettings.TenantId;
+            var clientId = options.ClientId ?? azSettings.ClientId;
+            var secret = options.ClientSecret ?? azSettings.ClientSecret;
+            var subscriptionId = options.SubscriptionId ?? azSettings.SubscriptionId;
 
             ValidateOption(tenantId, AzureTenantIdOption);
             ValidateOption(clientId, AzureClientIdOption);
@@ -50,16 +47,17 @@ namespace Certes.Cli.Commands
             return CreateRestClient(tenantId, subscriptionId, loginInfo);
         }
 
-        protected static ArgumentSyntax DefineAzureOptions(ArgumentSyntax syntax)
+        protected static Command AddCommonOptions(Command command)
         {
-            return syntax
-                .DefineServerOption()
-                .DefineKeyOption()
-                .DefineOption(AzureTenantIdOption, help: Strings.HelpAzureTenantId)
-                .DefineOption(AzureClientIdOption, help: Strings.HelpAzureClientId)
-                .DefineOption(AzureSecretOption, help: Strings.HelpAzureSecret)
-                .DefineOption(AzureSubscriptionIdOption, help: Strings.HelpAzureSubscriptionId)
-                .DefineOption(AzureResourceGroupOption, help: Strings.HelpAzureResourceGroup);
+            command.AddOption(new Option<Uri>(new[] { "--server", "-s" }, Strings.HelpServer));
+            command.AddOption(new Option<string>(new[] { "--key-path", "--key", "-k" }, Strings.HelpKey));
+            command.AddOption(new Option<string>(AzureTenantIdOption, Strings.HelpAzureTenantId));
+            command.AddOption(new Option<string>(AzureClientIdOption, Strings.HelpAzureClientId));
+            command.AddOption(new Option<string>(AzureSecretOption, Strings.HelpAzureSecret));
+            command.AddOption(new Option<string>(AzureSubscriptionIdOption, Strings.HelpAzureSubscriptionId));
+            command.AddOption(new Option<string>(AzureResourceGroupOption, Strings.HelpAzureResourceGroup));
+
+            return command;
         }
 
         private static RestClient CreateRestClient(string tenantId, string subscriptionId, ServicePrincipalLoginInformation loginInfo)

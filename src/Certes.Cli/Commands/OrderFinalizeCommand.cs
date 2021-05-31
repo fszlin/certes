@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using NLog;
@@ -8,12 +9,13 @@ namespace Certes.Cli.Commands
 {
     internal class OrderFinalizeCommand : CommandBase, ICliCommand
     {
+        public record Args(Uri OrderId, KeyAlgorithm KeyAlgorithm, string PrivateKey, string OutPath, string Dn, Uri Server, string KeyPath);
+
         private const string CommandText = "finalize";
-        private const string OrderIdParam = "order-id";
-        private const string OutOption = "out";
-        private const string DnOption = "dn";
-        private const string PrivateKeyOption = "private-key";
-        private const string KeyAlgorithmOption = "key-algorithm";
+        private const string OrderIdParam = "--order-id";
+        private const string DnOption = "--dn";
+        private const string PrivateKeyOption = "--private-key";
+        private const string KeyAlgorithmOption = "--key-algorithm";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderFinalizeCommand));
         private readonly IEnvironmentVariables environment;
 
@@ -29,48 +31,42 @@ namespace Certes.Cli.Commands
             this.environment = environment;
         }
 
-        public ArgumentCommand<string> Define(ArgumentSyntax syntax)
+        public Command Define()
         {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandOrderFinalize);
+            var cmd = new Command(CommandText, Strings.HelpCommandOrderFinalize)
+            {
+                new Argument<Uri>(OrderIdParam, Strings.HelpOrderId),
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Option<string>(DnOption, Strings.HelpDn),
+                new Option<string>(new [] { "--out-path", "--out" }, Strings.HelpKeyOut),
+                new Option<string>(PrivateKeyOption, Strings.HelpPrivateKey),
+                new Option<KeyAlgorithm>(KeyAlgorithmOption, () => KeyAlgorithm.ES256, Strings.HelpKeyAlgorithm),
+            };
 
-            syntax
-                .DefineServerOption()
-                .DefineKeyOption()
-                .DefineOption(DnOption, help: Strings.HelpDn)
-                .DefineOption(OutOption, help: Strings.HelpKeyOut)
-                .DefineOption(PrivateKeyOption, help: Strings.HelpPrivateKey)
-                .DefineOption(KeyAlgorithmOption, help: Strings.HelpKeyAlgorithm)
-                .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId);
+            cmd.Handler = CommandHandler.Create(
+                (Args args, IConsole console) =>
+                Execute(args, console));
 
             return cmd;
         }
 
-        public async Task<object> Execute(ArgumentSyntax syntax)
+        private async Task Execute(Args args, IConsole console)
         {
-            var (serverUri, key) = await ReadAccountKey(syntax, true, false);
-            var orderUri = syntax.GetParameter<Uri>(OrderIdParam, true);
-            var distinguishedName = syntax.GetOption<string>(DnOption);
-            var outPath = syntax.GetOption<string>(OutOption);
-            var keyAlgorithmStr = syntax.GetOption<string>(KeyAlgorithmOption);
-
-            var keyAlgorithm = 
-                keyAlgorithmStr == null ? KeyAlgorithm.ES256 :
-                Enum.TryParse<KeyAlgorithm>(keyAlgorithmStr, out var alg) ? alg :
-                    throw new ArgumentSyntaxException(string.Format(Strings.ErrorInvalidkeyAlgorithm, keyAlgorithmStr));
-
-
-            var providedKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment);
+            var (orderId, keyAlgorithm, privateKey, outPath, dn, server, keyPath) = args;
+            var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
+            var providedKey = await ReadKey(privateKey, "CERTES_CERT_KEY", File, environment);
             var privKey = providedKey ?? KeyFactory.NewKey(keyAlgorithm);
 
             logger.Debug("Finalizing order from '{0}'.", serverUri);
 
             var acme = ContextFactory.Invoke(serverUri, key);
-            var orderCtx = acme.Order(orderUri);
+            var orderCtx = acme.Order(orderId);
 
             var csr = await orderCtx.CreateCsr(privKey);
-            if (!string.IsNullOrWhiteSpace(distinguishedName))
+            if (!string.IsNullOrWhiteSpace(dn))
             {
-                csr.AddName(distinguishedName);
+                csr.AddName(dn);
             }
 
             var order = await orderCtx.Finalize(csr.Generate());
@@ -78,12 +74,14 @@ namespace Certes.Cli.Commands
             // output private key only if it is generated and not being saved
             if (string.IsNullOrWhiteSpace(outPath) && providedKey == null)
             {
-                return new
+                var output = new
                 {
                     location = orderCtx.Location,
                     privateKey = privKey.ToDer(),
                     resource = order,
                 };
+
+                console.WriteAsJson(output);
             }
             else
             {
@@ -92,11 +90,13 @@ namespace Certes.Cli.Commands
                     await File.WriteAllText(outPath, privKey.ToPem());
                 }
 
-                return new
+                var output = new
                 {
                     location = orderCtx.Location,
                     resource = order,
                 };
+
+                console.WriteAsJson(output);
             }
         }
     }

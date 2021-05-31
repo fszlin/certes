@@ -8,15 +8,13 @@ using NLog;
 
 namespace Certes.Cli.Commands
 {
-    internal abstract class CertificateCommand : CommandBase
+    internal abstract class CertificateCommandBase : CommandBase, ICliCommand
     {
-        protected const string OrderIdParam = "order-id";
-        protected const string PreferredChainOption ="preferred-chain";
-        private static readonly ILogger logger = LogManager.GetLogger(nameof(CertificateCommand));
+        protected const string OrderIdOption = "--order-id";
+        protected const string PreferredChainOption = "--preferred-chain";
+        private static readonly ILogger logger = LogManager.GetLogger(nameof(CertificateCommandBase));
 
-        public CommandGroup Group { get; } = CommandGroup.Certificate;
-
-        public CertificateCommand(
+        public CertificateCommandBase(
             IUserSettings userSettings,
             AcmeContextFactory contextFactory,
             IFileUtil fileUtil)
@@ -24,11 +22,13 @@ namespace Certes.Cli.Commands
         {
         }
 
-        protected async Task<(Uri Location, CertificateChain Cert)> DownloadCertificate(ArgumentSyntax syntax)
+        public CommandGroup Group => CommandGroup.Certificate;
+
+        public abstract Command Define();
+
+        protected async Task<(Uri Location, CertificateChain Cert)> DownloadCertificate(Uri orderUri, string preferredChain, Uri server, string keyPath)
         {
-            var (serverUri, key) = await ReadAccountKey(syntax, true, true);
-            var orderUri = syntax.GetParameter<Uri>(OrderIdParam, true);
-            var preferredChain = syntax.GetOption<string>(PreferredChainOption);
+            var (serverUri, key) = await ReadAccountKey(server, keyPath, true, true);
 
             logger.Debug("Downloading certificate from '{0}'.", serverUri);
 

@@ -3,12 +3,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
-    <AssemblyVersion>1.0.5</AssemblyVersion>
-    <AssemblyVersion Condition="$(CERTES_TOOL_ASSEMBLYVERSION) != ''">$(CERTES_TOOL_ASSEMBLYVERSION)</AssemblyVersion>
-    <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
-    <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
-    <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
+    <TargetFrameworks>net5.0</TargetFrameworks>
     <Authors>Certes Contributors</Authors>
     <Company />
     <Product>Certes ACME Client CLI</Product>
@@ -21,7 +16,7 @@
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
     <PackageId>dotnet-certes</PackageId>
     <PackageIcon>logo.png</PackageIcon>
-    <PackAsTool Condition="'$(CERTES_TOOL_ASSEMBLYVERSION)' != ''">true</PackAsTool>
+    <PackAsTool>true</PackAsTool>
     <ToolCommandName>certes</ToolCommandName>
     <AssemblyName>dotnet-certes</AssemblyName>
   </PropertyGroup>
@@ -39,11 +34,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="5.1.2" />
-    <PackageReference Include="NLog" Version="4.7.0" />
-    <PackageReference Include="System.CommandLine" Version="0.1.0-*" />
-    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.32.0" />
-    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.32.0" />
+    <PackageReference Include="Autofac" Version="6.2.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="NLog" Version="4.7.10" />
+    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.37.1" />
+    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.37.1" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.21216.1" />
   </ItemGroup>
 
   <ItemGroup>

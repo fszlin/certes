@@ -2,12 +2,7 @@
   <Import Project="../../misc/certes.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45;net47</TargetFrameworks>
-    <AssemblyVersion>2.3.3</AssemblyVersion>
-    <AssemblyVersion Condition="$(CERTES_ASSEMBLYVERSION) != ''">$(CERTES_ASSEMBLYVERSION)</AssemblyVersion>
-    <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
-    <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
-    <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
+    <TargetFrameworks>net5.0;netstandard2.0;net452;</TargetFrameworks>
     <Authors>Certes Contributors</Authors>
     <Company />
     <Product>Certes ACME Client</Product>
@@ -43,13 +38,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Net.Http" Condition="'$(TargetFramework)' == 'net45' Or '$(TargetFramework)' == 'net47'" />
+    <Reference Include="System.Net.Http" Condition="'$(TargetFramework)' == 'net452'" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Portable.BouncyCastle" Version="1.8.6" />
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" Condition="'$(TargetFramework)' == 'net45'" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.8.10" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" Condition="'$(TargetFramework)' == 'net452'" />
   </ItemGroup>
 
   <ItemGroup>

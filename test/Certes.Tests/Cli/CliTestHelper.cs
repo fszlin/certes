@@ -1,38 +1,43 @@
-﻿using System;
-using System.CommandLine;
-using System.Linq;
-using System.Net.Http;
-using Certes.Cli.Commands;
+﻿using System.CommandLine;
+using System.CommandLine.IO;
+using System.Text;
 using Certes.Cli.Settings;
-using Microsoft.Azure.Management.AppService.Fluent;
-using Microsoft.Azure.Management.Dns.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Moq;
-using Xunit;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Certes.Cli
 {
     internal static class CliTestHelper
     {
-        public static void ValidateParameter<T>(ArgumentSyntax syntax, string name, T value)
+        public static JsonSerializerSettings JsonSettings { get; } = new JsonSerializerSettings
         {
-            var arg = syntax.GetActiveArguments()
-                .Where(p => p.Names.Any(n => n == name))
-                .OfType<Argument<T>>()
-                .FirstOrDefault();
-            Assert.NotNull(arg);
-            Assert.Equal(value, arg.Value);
-        }
+            ContractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            },
+            NullValueHandling = NullValueHandling.Ignore,
+            MissingMemberHandling = MissingMemberHandling.Ignore
+        };
 
-        public static void ValidateOption<T>(ArgumentSyntax syntax, string name, T value)
+        public static (Mock<IConsole> Console, StringBuilder StdOut, StringBuilder ErrOut) MockConsole()
         {
-            var arg = syntax.GetActiveOptions()
-                .Where(p => p.Names.Any(n => n == name))
-                .OfType<Argument<T>>()
-                .FirstOrDefault();
-            Assert.NotNull(arg);
-            Assert.Equal(value, arg.Value);
+            var stdOutput = new StringBuilder();
+            var errOutput = new StringBuilder();
+
+            var stdOut = new Mock<IStandardStreamWriter>(MockBehavior.Strict);
+            stdOut.Setup(m => m.Write(It.IsAny<string>()))
+                .Callback((string value) => stdOutput.Append(value));
+
+            var errOut = new Mock<IStandardStreamWriter>(MockBehavior.Strict);
+            errOut.Setup(m => m.Write(It.IsAny<string>()))
+                .Callback((string value) => errOutput.Append(value));
+
+            var console = new Mock<IConsole>(MockBehavior.Strict);
+            console.SetupGet(c => c.Out).Returns(stdOut.Object);
+            console.SetupGet(c => c.Error).Returns(errOut.Object);
+
+            return (console, stdOutput, errOutput);
         }
 
         public static IUserSettings NoopSettings()

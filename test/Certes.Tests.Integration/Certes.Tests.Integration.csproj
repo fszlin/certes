@@ -2,37 +2,31 @@
   <Import Project="../../misc/certes.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net452;net47</TargetFrameworks>
+    <TargetFrameworks>net5.0;netcoreapp3.1;netcoreapp2.1;net452</TargetFrameworks>
     <RootNamespace>Certes</RootNamespace>
     <NoWarn>1701;1702;1705;0618</NoWarn>
-    <IncludeCli>$(TargetFramework.StartsWith('netcoreapp'))</IncludeCli>
+    <PublicSign>False</PublicSign>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;1705;0618</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(IncludeCli)' != 'True'">
-    <Compile Remove="Cli\**" />
-    <EmbeddedResource Remove="Cli\**" />
-    <None Remove="Cli\**" />
-  </ItemGroup>
-
   <ItemGroup>
     <Reference Include="System.Net.Http" Condition="'$(TargetFramework)' == 'net452' Or '$(TargetFramework)' == 'net47'" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.msbuild" Version="2.8.0">
-      <PrivateAssets>all</PrivateAssets>
+    <PackageReference Include="coverlet.collector" Version="3.0.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
-    <PackageReference Include="Moq" Version="4.13.1" />
-    <PackageReference Include="NLog" Version="4.7.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="NLog" Version="4.7.10" />
     <PackageReference Include="System.CommandLine" Version="0.1.0-*" Condition="'$(IncludeCli)' == 'True'" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using Microsoft.Azure.Management.Dns.Fluent;
@@ -10,8 +11,15 @@ using NLog;
 
 namespace Certes.Cli.Commands
 {
-    internal class AzureDnsCommand : AzureCommand, ICliCommand
+    internal class AzureDnsCommand : AzureCommandBase, ICliCommand
     {
+        public record Args(
+            Uri OrderId,
+            string Domain,
+            Uri Server,
+            string KeyPath,
+            AzureOptions AzureOptions);
+
         private const string CommandText = "dns";
         private const string OrderIdParam = "order-id";
         private const string DomainParam = "domain";
@@ -32,27 +40,32 @@ namespace Certes.Cli.Commands
             this.clientFactory = clientFactory;
         }
 
-        public ArgumentCommand<string> Define(ArgumentSyntax syntax)
+        public Command Define()
         {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandAzureDns);
+            var cmd = new Command(CommandText, Strings.HelpCommandAzureDns)
+            {
+                new Argument<Uri>(OrderIdParam, Strings.HelpOrderId),
+                new Argument<string>(DomainParam, Strings.HelpDomain),
+            };
 
-            DefineAzureOptions(syntax)
-                .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId)
-                .DefineParameter(DomainParam, help: Strings.HelpDomain);
+            cmd = AddCommonOptions(cmd);
+
+            cmd.Handler = CommandHandler.Create(
+                (Args args, IConsole console) => Execute(args, console));
 
             return cmd;
         }
 
-        public async Task<object> Execute(ArgumentSyntax syntax)
+        private async Task Execute(Args args, IConsole console)
         {
-            var (serverUri, key) = await ReadAccountKey(syntax, true, false);
-            var orderUri = syntax.GetParameter<Uri>(OrderIdParam, true);
-            var domain = syntax.GetParameter<string>(DomainParam, true);
-            var azureCredentials = await CreateAzureRestClient(syntax);
-            var resourceGroup = syntax.GetOption<string>(AzureResourceGroupOption, true);
+            var (orderId, domain, server, keyPath, azureOptions) = args;
+            var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
+            logger.Debug("Updating account on '{0}'.", serverUri);
+            var azureCredentials = await CreateAzureRestClient(azureOptions);
+            var resourceGroup = azureOptions.ResourceGroup;
 
             var acme = ContextFactory.Invoke(serverUri, key);
-            var orderCtx = acme.Order(orderUri);
+            var orderCtx = acme.Order(orderId);
             var authzCtx = await orderCtx.Authorization(domain)
                 ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
             var challengeCtx = await authzCtx.Dns()
@@ -60,32 +73,33 @@ namespace Certes.Cli.Commands
 
             var authz = await authzCtx.Resource();
             var dnsValue = acme.AccountKey.DnsTxt(challengeCtx.Token);
-            using (var client = clientFactory.Invoke(azureCredentials))
+            using var client = clientFactory.Invoke(azureCredentials);
+
+            client.SubscriptionId = azureCredentials.Credentials.DefaultSubscriptionId;
+            var idValue = authz.Identifier.Value;
+            var zone = await FindDnsZone(client, idValue);
+
+            var name = zone.Name.Length == idValue.Length ?
+                "_acme-challenge" :
+                "_acme-challenge." + idValue.Substring(0, idValue.Length - zone.Name.Length - 1);
+            logger.Debug("Adding TXT record '{0}' for '{1}' in '{2}' zone.", dnsValue, name, zone.Name);
+
+            var recordSet = await client.RecordSets.CreateOrUpdateAsync(
+                resourceGroup,
+                zone.Name,
+                name,
+                RecordType.TXT,
+                new RecordSetInner(
+                    name: name,
+                    tTL: 300,
+                    txtRecords: new[] { new TxtRecord(new[] { dnsValue }) }));
+
+            var output = new
             {
-                client.SubscriptionId = azureCredentials.Credentials.DefaultSubscriptionId;
-                var idValue = authz.Identifier.Value;
-                var zone = await FindDnsZone(client, idValue);
-                
-                var name = zone.Name.Length == idValue.Length ?
-                    "_acme-challenge" :
-                    "_acme-challenge." + idValue.Substring(0, idValue.Length - zone.Name.Length - 1);
-                logger.Debug("Adding TXT record '{0}' for '{1}' in '{2}' zone.", dnsValue, name, zone.Name);
+                data = recordSet
+            };
 
-                var recordSet = await client.RecordSets.CreateOrUpdateAsync(
-                    resourceGroup,
-                    zone.Name,
-                    name,
-                    RecordType.TXT,
-                    new RecordSetInner(
-                        name: name,
-                        tTL: 300,
-                        txtRecords: new[] { new TxtRecord(new[] { dnsValue }) }));
-
-                return new
-                {
-                    data = recordSet
-                };
-            }
+            console.WriteAsJson(output);
         }
 
         private static async Task<ZoneInner> FindDnsZone(IDnsManagementClient client, string identifier)
@@ -98,14 +112,14 @@ namespace Certes.Cli.Commands
                     if (identifier.EndsWith($".{zone.Name}", StringComparison.OrdinalIgnoreCase) ||
                         identifier.Equals(zone.Name, StringComparison.OrdinalIgnoreCase))
                     {
-                        logger.Debug(() => 
+                        logger.Debug(() =>
                             string.Format("DNS zone:\n{0}", JsonConvert.SerializeObject(zone, Formatting.Indented)));
                         return zone;
                     }
                 }
 
-                zones = string.IsNullOrWhiteSpace(zones.NextPageLink) ? 
-                    null : 
+                zones = string.IsNullOrWhiteSpace(zones.NextPageLink) ?
+                    null :
                     await client.Zones.ListNextAsync(zones.NextPageLink);
             }
 

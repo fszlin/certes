@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CommandLine;
+using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
@@ -45,24 +46,29 @@ namespace Certes.Cli.Commands
             var envMock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
             envMock.Setup(m => m.GetVar(It.IsAny<string>())).Returns((string)null);
 
+            var (console, stdOutput, errOutput) = MockConsole();
+
             var cmd = new OrderFinalizeCommand(
                 settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object, envMock.Object);
+            var command = cmd.Define();
 
-            var syntax = DefineCommand($"finalize {orderLoc}");
-            dynamic ret = await cmd.Execute(syntax);
-            var privateKey = KeyFactory.FromDer(ret.privateKey);
+            await command.InvokeAsync($"finalize {orderLoc}", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            dynamic ret = JsonConvert.DeserializeObject(stdOutput.ToString());
+            var privateKeyBytes = Convert.FromBase64String($"{ret.privateKey}");
+            var privateKey = KeyFactory.FromDer(privateKeyBytes);
             Assert.NotNull(privateKey);
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
                     location = orderLoc,
                     resource = order,
-                }),
+                }, JsonSettings),
                 JsonConvert.SerializeObject(new
                 {
                     ret.location,
                     ret.resource,
-                }));
+                }, JsonSettings));
 
             orderMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Once);
 
@@ -70,15 +76,19 @@ namespace Certes.Cli.Commands
             orderMock.ResetCalls();
             fileMock.Setup(m => m.WriteAllText(outPath, It.IsAny<string>())).Returns(Task.CompletedTask);
 
-            syntax = DefineCommand($"finalize {orderLoc} --dn CN=*.a.com --out {outPath}");
-            ret = await cmd.Execute(syntax);
+            errOutput.Clear();
+            stdOutput.Clear();
+
+            await command.InvokeAsync($"finalize {orderLoc} --dn CN=*.a.com --out {outPath}", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
                     location = orderLoc,
                     resource = order,
-                }),
-                JsonConvert.SerializeObject(ret));
+                }, JsonSettings),
+                JsonConvert.SerializeObject(ret, JsonSettings));
 
             fileMock.Verify(m => m.WriteAllText(outPath, It.IsAny<string>()), Times.Once);
             orderMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Once);
@@ -86,47 +96,21 @@ namespace Certes.Cli.Commands
             var keyPath = "./private-key.pem";
             orderMock.ResetCalls();
             fileMock.Setup(m => m.ReadAllText(keyPath)).ReturnsAsync(GetKeyV2().ToPem());
-            syntax = DefineCommand($"finalize {orderLoc} --dn CN=*.a.com --private-key {keyPath}");
-            ret = await cmd.Execute(syntax);
+            errOutput.Clear();
+            stdOutput.Clear();
+
+            await command.InvokeAsync($"finalize {orderLoc} --dn CN=*.a.com --private-key {keyPath}", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
                     location = orderLoc,
                     resource = order,
-                }),
-                JsonConvert.SerializeObject(ret));
+                }, JsonSettings),
+                JsonConvert.SerializeObject(ret, JsonSettings));
 
             orderMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Once);
-        }
-
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"finalize http://a.com/o/1 --dn CN=www.m.com --out ./p.pem --server {LetsEncryptStagingV2} --key-algorithm RS256";
-            var syntax = DefineCommand(args);
-
-            Assert.Equal("finalize", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "server", LetsEncryptStagingV2);
-            ValidateOption(syntax, "dn", "CN=www.m.com");
-            ValidateOption(syntax, "out", "./p.pem");
-            ValidateParameter(syntax, "order-id", new Uri("http://a.com/o/1"));
-            ValidateOption(syntax, "key-algorithm", "RS256");
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("finalize", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new OrderFinalizeCommand(
-                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil(), null);
-            Assert.Equal(CommandGroup.Order.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
         }
     }
 }

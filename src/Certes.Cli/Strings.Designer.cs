@@ -124,6 +124,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No prrivate key found..
+        /// </summary>
+        internal static string ErrorNoPrivateKey {
+            get {
+                return ResourceManager.GetString("ErrorNoPrivateKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Option &apos;--{0}&apos; is required..
         /// </summary>
         internal static string ErrorOptionMissing {
@@ -219,15 +228,6 @@ namespace Certes.Cli {
         internal static string HelpCertificateOut {
             get {
                 return ResourceManager.GetString("HelpCertificateOut", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Preferred root certificate..
-        /// </summary>
-        internal static string HelpPreferredChain {
-            get {
-                return ResourceManager.GetString("HelpPreferredChain", resourceCulture);
             }
         }
         
@@ -511,6 +511,15 @@ namespace Certes.Cli {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The dictionary URI to the new ACME server..
+        /// </summary>
+        internal static string HelpNewServer {
+            get {
+                return ResourceManager.GetString("HelpNewServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The URI of the certificate order..
         /// </summary>
         internal static string HelpOrderId {
@@ -525,6 +534,15 @@ namespace Certes.Cli {
         internal static string HelpPfxPassword {
             get {
                 return ResourceManager.GetString("HelpPfxPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preferred root certificate..
+        /// </summary>
+        internal static string HelpPreferredChain {
+            get {
+                return ResourceManager.GetString("HelpPreferredChain", resourceCulture);
             }
         }
         

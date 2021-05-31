@@ -42,7 +42,7 @@ namespace Certes.Cli.Commands
 
             var orderMock = new Mock<IOrderContext>(MockBehavior.Strict);
             orderMock.Setup(m => m.Resource()).ReturnsAsync(order);
-            orderMock.Setup(m => m.Download(null)).ReturnsAsync(certChain);
+            orderMock.Setup(m => m.Download(It.Is<string>(s => string.IsNullOrWhiteSpace(s)))).ReturnsAsync(certChain);
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
@@ -52,22 +52,28 @@ namespace Certes.Cli.Commands
             fileMock.Setup(m => m.ReadAllText(privateKeyPath)).ReturnsAsync(KeyAlgorithm.RS256.GetTestKey());
 
             var envMock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
+            var (console, stdOutput, errOutput) = MockConsole();
 
             var cmd = new CertificatePfxCommand(
                 settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object, envMock.Object);
+            var command = cmd.Define();
 
-            var syntax = DefineCommand($"pfx {orderLoc} --private-key {privateKeyPath} abcd1234");
-            dynamic ret = await cmd.Execute(syntax);
-            Assert.Equal(certLoc, ret.location);
+            await command.InvokeAsync($"pfx {orderLoc} --private-key {privateKeyPath} abcd1234", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            dynamic ret = JsonConvert.DeserializeObject(stdOutput.ToString());
+            Assert.Equal(certLoc.ToString(), $"{ret.location}");
             Assert.NotNull(ret.pfx);
 
-            orderMock.Verify(m => m.Download(null), Times.Once);
+            orderMock.Verify(m => m.Download(""), Times.Once);
+            errOutput.Clear();
+            stdOutput.Clear();
 
             var outPath = "./cert.pfx";
             fileMock.Setup(m => m.WriteAllBytes(outPath, It.IsAny<byte[]>()))
                 .Returns(Task.CompletedTask);
-            syntax = DefineCommand($"pfx {orderLoc} --private-key {privateKeyPath} abcd1234 --out {outPath}");
-            ret = await cmd.Execute(syntax);
+            await command.InvokeAsync($"pfx {orderLoc} --private-key {privateKeyPath} abcd1234 --out {outPath}", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
@@ -77,6 +83,8 @@ namespace Certes.Cli.Commands
 
             fileMock.Verify(m => m.WriteAllBytes(outPath, It.IsAny<byte[]>()), Times.Once);
             fileMock.ResetCalls();
+            errOutput.Clear();
+            stdOutput.Clear();
 
             // Export PFX with external issuers
             var leafCert = certChain.Certificate.ToPem();
@@ -85,40 +93,10 @@ namespace Certes.Cli.Commands
             var issuersPem = string.Join(Environment.NewLine, certChain.Issuers.Select(i => i.ToPem()));
             fileMock.Setup(m => m.ReadAllText("./issuers.pem")).ReturnsAsync(issuersPem);
 
-            syntax = DefineCommand($"pfx {orderLoc} --private-key {privateKeyPath} abcd1234 --out {outPath} --issuer ./issuers.pem --friendly-name friendly");
-            ret = await cmd.Execute(syntax);
+            await command.InvokeAsync($"pfx {orderLoc} --private-key {privateKeyPath} abcd1234 --out {outPath} --issuer ./issuers.pem --friendly-name friendly", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             fileMock.Verify(m => m.WriteAllBytes(outPath, It.IsAny<byte[]>()), Times.Once);
-        }
-
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"pfx http://acme.com/o/1 --private-key ./my-key.pem abcd1234 --server {LetsEncryptStagingV2} --issuer ./root-cert.pem --friendly-name friendly";
-            var syntax = DefineCommand(args);
-
-            Assert.Equal("pfx", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "server", LetsEncryptStagingV2);
-            ValidateOption(syntax, "issuer", "./root-cert.pem");
-            ValidateOption(syntax, "friendly-name", "friendly");
-            ValidateParameter(syntax, "order-id", new Uri("http://acme.com/o/1"));
-            ValidateParameter(syntax, "private-key", "./my-key.pem");
-            ValidateParameter(syntax, "password", "abcd1234");
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("pfx", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new CertificatePfxCommand(
-                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil(), null);
-            Assert.Equal(CommandGroup.Certificate.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
         }
     }
 }

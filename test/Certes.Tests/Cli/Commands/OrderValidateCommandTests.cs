@@ -63,60 +63,44 @@ namespace Certes.Cli.Commands
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
 
+            var (console, stdOutput, errOutput) = MockConsole();
+
             var cmd = new OrderValidateCommand(
                 settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object);
+            var command = cmd.Define();
 
-            var syntax = DefineCommand($"validate {orderLoc} {domain} dns");
-            var ret = await cmd.Execute(syntax);
+            await command.InvokeAsync($"validate {orderLoc} {domain} dns", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            var ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
                     location = challengeLoc,
                     resource = authz.Challenges[0],
-                }),
-                JsonConvert.SerializeObject(ret));
+                }, JsonSettings),
+                JsonConvert.SerializeObject(ret, JsonSettings));
 
             challengeMock.Verify(m => m.Validate(), Times.Once);
 
+            errOutput.Clear();
+            stdOutput.Clear();
+
             // challenge type not supported
-            syntax = DefineCommand($"validate {orderLoc} {domain} tls-sni");
-            await Assert.ThrowsAsync<ArgumentSyntaxException>(() => cmd.Execute(syntax));
+            await command.InvokeAsync($"validate {orderLoc} {domain} tls-sni", console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
+
+            errOutput.Clear();
+            stdOutput.Clear();
 
             // challenge not found
-            syntax = DefineCommand($"validate {orderLoc} {domain} http");
-            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
+            await command.InvokeAsync($"validate {orderLoc} {domain} http", console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
 
-            syntax = DefineCommand($"validate {orderLoc} www.some.com http");
-            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
-        }
+            errOutput.Clear();
+            stdOutput.Clear();
 
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"validate http://acme.com/o/1 www.abc.com http --server {LetsEncryptStagingV2}";
-            var syntax = DefineCommand(args);
-
-            Assert.Equal("validate", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "server", LetsEncryptStagingV2);
-            ValidateParameter(syntax, "order-id", new Uri("http://acme.com/o/1"));
-            ValidateParameter(syntax, "domain", "www.abc.com");
-            ValidateParameter(syntax, "challenge-type", "http");
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("validate", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new OrderValidateCommand(
-                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil());
-            Assert.Equal(CommandGroup.Order.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
+            await command.InvokeAsync($"validate {orderLoc} www.some.com http", console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
         }
     }
 }
