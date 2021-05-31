@@ -23,7 +23,7 @@
     <AssemblyVersion Condition="$(CERTES_ASSEMBLY_VERSION) != ''">$(CERTES_ASSEMBLY_VERSION)</AssemblyVersion>
     <Version Condition="$(CERTES_ASSEMBLY_VERSION) != ''">$(CERTES_ASSEMBLY_VERSION)</Version>
     <FileVersion Condition="$(CERTES_FILE_VERSION) != ''">$(CERTES_FILE_VERSION)</FileVersion>
-    <InformationalVersion Condition="$(CERTES_INFORMATIONAL_ASSEMBLYVERSION) != ''">$(CERTES_FILE_VERSION)</InformationalVersion>
+    <InformationalVersion Condition="$(CERTES_INFORMATIONAL_VERSION) != ''">$(CERTES_INFORMATIONAL_VERSION)</InformationalVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(SkipSigning)' == 'true'">
     <SignAssembly>False</SignAssembly>
