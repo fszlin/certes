@@ -35,6 +35,10 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="6.2.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="NLog" Version="4.7.10" />
     <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.37.1" />
     <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.37.1" />
