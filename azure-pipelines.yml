@@ -3,6 +3,22 @@ trigger:
 
 stages:
 
+- stage: ver
+  displayName: Determine Version
+  jobs:
+
+  - task: gitversion/setup@0
+    displayName: Install GitVersion
+    inputs:
+      versionSpec: '5.x'
+
+  - task: gitversion/execute@0
+    displayName: Determine Version
+    inputs:
+      useConfigFile: true
+      configFilePath: 'GitVersion.yml'
+    name: version
+
 - stage: test
   displayName: Test
   jobs:
@@ -15,6 +31,9 @@ stages:
       appFramework: net5.0
       pool:
         vmImage: 'ubuntu-latest'
+      assemblyVersion: $[ dependencies.ver.outputs['version.GitVersion.AssemblySemVer'] ]
+      fileVersion: $[ dependencies.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
+      informationalVersion: $[ dependencies.ver.outputs['version.GitVersion.InformationalVersion'] ]
 
   - template: scripts/build.yml
     parameters:
@@ -24,6 +43,9 @@ stages:
       appFramework: net5.0
       pool:
         vmImage: 'macOS-latest'
+      assemblyVersion: $[ dependencies.ver.outputs['version.GitVersion.AssemblySemVer'] ]
+      fileVersion: $[ dependencies.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
+      informationalVersion: $[ dependencies.ver.outputs['version.GitVersion.InformationalVersion'] ]
 
   - template: scripts/build.yml
     parameters:
@@ -33,6 +55,9 @@ stages:
       appFramework: net5.0
       pool:
         vmImage: 'windows-latest'
+      assemblyVersion: $[ dependencies.ver.outputs['version.GitVersion.AssemblySemVer'] ]
+      fileVersion: $[ dependencies.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
+      informationalVersion: $[ dependencies.ver.outputs['version.GitVersion.InformationalVersion'] ]
 
   - template: scripts/build.yml
     parameters:
@@ -42,6 +67,9 @@ stages:
       appFramework: net452
       pool:
         vmImage: 'windows-latest'
+      assemblyVersion: $[ dependencies.ver.outputs['version.GitVersion.AssemblySemVer'] ]
+      fileVersion: $[ dependencies.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
+      informationalVersion: $[ dependencies.ver.outputs['version.GitVersion.InformationalVersion'] ]
 
 - stage: pack
   displayName: Pack
@@ -50,28 +78,18 @@ stages:
 
   - template: scripts/pack.yml
     parameters:
-      name: 'pack_preview'
-      displayName: 'Pack Certes preview'
-      projectName: 'Certes'
-      previewPackage: 'true'
-
-  - template: scripts/pack.yml
-    parameters:
       name: 'pack'
       displayName: 'Pack Certes'
       projectName: 'Certes'
-      previewPackage: 'false'
-
-  - template: scripts/pack.yml
-    parameters:
-      name: 'pack_tool_preview'
-      displayName: 'Pack Certes.Tool preview'
-      projectName: 'Certes.Cli'
-      previewPackage: 'true'
+      assemblyVersion: $[ dependencies.ver.outputs['version.GitVersion.AssemblySemVer'] ]
+      fileVersion: $[ dependencies.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
+      informationalVersion: $[ dependencies.ver.outputs['version.GitVersion.InformationalVersion'] ]
 
   - template: scripts/pack.yml
     parameters:
       name: 'pack_tool'
       displayName: 'Pack Certes.Tool'
       projectName: 'Certes.Cli'
-      previewPackage: 'false'
+      assemblyVersion: $[ dependencies.ver.outputs['version.GitVersion.AssemblySemVer'] ]
+      fileVersion: $[ dependencies.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
+      informationalVersion: $[ dependencies.ver.outputs['version.GitVersion.InformationalVersion'] ]

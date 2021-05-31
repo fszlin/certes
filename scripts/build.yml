@@ -5,6 +5,9 @@ parameters:
   pool: ''
   framework: ''
   appFramework: ''
+  assemblyVersion: ''
+  fileVersion: ''
+  informationalVersion: ''
 
 jobs:
 - job: ${{ parameters.name }}
@@ -38,6 +41,10 @@ jobs:
       command: 'build'
       projects: 'test/Certes.Tests/Certes.Tests.csproj'
       arguments: '-f ${{ parameters.appFramework }} -p:SkipSigning=true'
+    env:
+      CERTES_ASSEMBLY_VERSION: ${{ parameters.assemblyVersion }}
+      CERTES_FILE_VERSION: ${{ parameters.fileVersion }}
+      CERTES_INFORMATIONAL_ASSEMBLYVERSION: ${{ parameters.informationalVersion }}
       
   - task: DotNetCoreCLI@2
     displayName: 'Run unit tests'
@@ -61,6 +68,10 @@ jobs:
       command: 'build'
       projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
       arguments: '-f ${{ parameters.appFramework }} -p:SkipSigning=true'
+    env:
+      CERTES_ASSEMBLY_VERSION: ${{ parameters.assemblyVersion }}
+      CERTES_FILE_VERSION: ${{ parameters.fileVersion }}
+      CERTES_INFORMATIONAL_ASSEMBLYVERSION: ${{ parameters.informationalVersion }}
 
   - task: DotNetCoreCLI@2
     displayName: 'Run integration tests'

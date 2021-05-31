@@ -3,7 +3,9 @@ parameters:
   name: ''
   displayName: ''
   projectName: ''
-  previewPackage: ''
+  assemblyVersion: ''
+  fileVersion: ''
+  informationalVersion: ''
 
 jobs:
 - job: ${{ parameters.name }}
@@ -12,57 +14,17 @@ jobs:
     vmImage: 'windows-latest'
 
   steps:
-  - task: gitversion/setup@0
-    displayName: Install GitVersion
-    inputs:
-      versionSpec: '5.x'
-
-  - task: gitversion/execute@0
-    displayName: Determine Version
-    inputs:
-      useConfigFile: true
-      configFilePath: 'GitVersion.yml'
-
-  - script: |
-      echo Major: $(GitVersion.Major)
-      echo Minor: $(GitVersion.Minor)
-      echo Patch: $(GitVersion.Patch)
-      echo PreReleaseTag: $(GitVersion.PreReleaseTag)
-      echo PreReleaseTagWithDash: $(GitVersion.PreReleaseTagWithDash)
-      echo PreReleaseLabel: $(GitVersion.PreReleaseLabel)
-      echo PreReleaseNumber: $(GitVersion.PreReleaseNumber)
-      echo WeightedPreReleaseNumber: $(GitVersion.WeightedPreReleaseNumber)
-      echo BuildMetaData: $(GitVersion.BuildMetaData)
-      echo BuildMetaDataPadded: $(GitVersion.BuildMetaDataPadded)
-      echo FullBuildMetaData: $(GitVersion.FullBuildMetaData)
-      echo MajorMinorPatch: $(GitVersion.MajorMinorPatch)
-      echo SemVer: $(GitVersion.SemVer)
-      echo LegacySemVer: $(GitVersion.LegacySemVer)
-      echo LegacySemVerPadded: $(GitVersion.LegacySemVerPadded)
-      echo AssemblySemVer: $(GitVersion.AssemblySemVer)
-      echo AssemblySemFileVer: $(GitVersion.AssemblySemFileVer)
-      echo FullSemVer: $(GitVersion.FullSemVer)
-      echo InformationalVersion: $(GitVersion.InformationalVersion)
-      echo BranchName: $(GitVersion.BranchName)
-      echo EscapedBranchName: $(GitVersion.EscapedBranchName)
-      echo Sha: $(GitVersion.Sha)
-      echo ShortSha: $(GitVersion.ShortSha)
-      echo NuGetVersionV2: $(GitVersion.NuGetVersionV2)
-      echo NuGetVersion: $(GitVersion.NuGetVersion)
-      echo NuGetPreReleaseTagV2: $(GitVersion.NuGetPreReleaseTagV2)
-      echo NuGetPreReleaseTag: $(GitVersion.NuGetPreReleaseTag)
-      echo VersionSourceSha: $(GitVersion.VersionSourceSha)
-      echo CommitsSinceVersionSource: $(GitVersion.CommitsSinceVersionSource)
-      echo CommitsSinceVersionSourcePadded: $(GitVersion.CommitsSinceVersionSourcePadded)
-      echo UncommittedChanges: $(GitVersion.UncommittedChanges)
-      echo CommitDate: $(GitVersion.CommitDate)
-
+  
   - task: DotNetCoreCLI@2
     displayName: Pack
     inputs:
       command: 'custom'
       custom: 'pack'
-      arguments: 'src/${{ parameters.projectName }}/${{ parameters.projectName }}.csproj -p:CertesPreview=${{ parameters.previewPackage }} --include-symbols -c Release'
+      arguments: 'src/${{ parameters.projectName }}/${{ parameters.projectName }}.csproj --include-symbols -c Release'
+    env:
+      CERTES_ASSEMBLY_VERSION: ${{ parameters.assemblyVersion }}
+      CERTES_FILE_VERSION: ${{ parameters.fileVersion }}
+      CERTES_INFORMATIONAL_ASSEMBLYVERSION: ${{ parameters.informationalVersion }}
 
   - task: CopyFiles@2
     displayName: Copy nupkg
