@@ -19,7 +19,7 @@ comment:
   behavior: default  # update if exists else create new
  
 codecov:
-  strict_yaml_branch: master  # only use the latest copy on master branch
+  strict_yaml_branch: main  # only use the latest copy on main branch
 
 ignore:
   - "test/**/*"

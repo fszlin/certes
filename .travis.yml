@@ -10,7 +10,7 @@ env:
 branches:
   only:
     - release
-    - master
+    - main
     - dev
     - vnext
 script:
