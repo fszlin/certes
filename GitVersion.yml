@@ -4,7 +4,7 @@ assembly-file-versioning-format: '{Major}.{Minor}.{Patch}.{WeightedPreReleaseNum
 
 branches:
   main:
-    tag: rc
+    tag: beta
     regex: ^master$|^main$
     increment: Patch
     is-release-branch: true
