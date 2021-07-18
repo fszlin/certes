@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -20,6 +19,8 @@ namespace Certes.Acme
     {
         private class MockHttpMessageHandler : HttpMessageHandler
         {
+            private readonly string productVersion = 
+                typeof(AcmeHttpClient).GetTypeInfo().Assembly.GetName().Version.ToString();
             private readonly JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
 
             public bool SendNonce { get; set; } = true;
@@ -27,6 +28,17 @@ namespace Certes.Acme
             protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
                 await Task.Yield();
+
+                var isCertes = false;
+                foreach (var header in request.Headers.UserAgent)
+                {
+                    if (header.Product.Name == "Certes" &&
+                        header.Product.Version == productVersion) {
+                        isCertes = true;
+                    }
+                }
+
+                Assert.True(isCertes, "No user-agent header");
 
                 if (request.RequestUri.AbsoluteUri.EndsWith("directory"))
                 {
@@ -136,24 +148,6 @@ namespace Certes.Acme
 
             await Assert.ThrowsAsync<AcmeRequestException>(() => ctx.NewAccount("", true));
             httpMock.Verify(m => m.Post<Account>(MockDirectoryV2.NewAccount, It.IsAny<object>()), Times.AtMost(2));
-        }
-
-
-        [Fact]
-        public void SetsUserAgent()
-        {
-            bool IsCertes(ProductInfoHeaderValue header)
-            {
-                return header.Product.Name == "Certes" 
-                    && header.Product.Version == typeof(AcmeHttpClient).GetTypeInfo().Assembly.GetName().Version.ToString();
-            }
-
-            Assert.Contains(AcmeHttpClient.CreateHttpClient().DefaultRequestHeaders.UserAgent, IsCertes);
-
-            var httpClient = new HttpClient();
-            var acmeClient = new AcmeHttpClient(new Uri("https://acme.d/directory"), httpClient);
-
-            Assert.Contains(httpClient.DefaultRequestHeaders.UserAgent, IsCertes);
         }
     }
 }
