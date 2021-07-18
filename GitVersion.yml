@@ -1,4 +1,4 @@
-next-version: 2.4
+next-version: 3.0
 mode: ContinuousDelivery
 assembly-file-versioning-format: '{Major}.{Minor}.{Patch}.{WeightedPreReleaseNumber}'
 branches:

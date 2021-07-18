@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -19,6 +21,18 @@ namespace Certes.Acme
     public class AcmeHttpClient : IAcmeHttpClient
     {
         private const string MimeJoseJson = "application/jose+json";
+
+        /// <remarks>
+        /// ACME clients MUST send a User-Agent header field, in accordance with
+        /// [RFC7231]. This header field SHOULD include the name and version of
+        /// the ACME software in addition to the name and version of the
+        /// underlying HTTP client software.
+        /// </remarks>
+        private readonly static IList<ProductInfoHeaderValue> userAgentHeaders = new[]
+        {
+            new ProductInfoHeaderValue("Certes", Assembly.GetExecutingAssembly().GetName().Version.ToString()),
+            new ProductInfoHeaderValue(".NET", Environment.Version.ToString()),
+        };
 
         private readonly static JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
         private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(CreateHttpClient);
@@ -42,24 +56,7 @@ namespace Certes.Acme
         internal static HttpClient CreateHttpClient()
         {
             var client = new HttpClient();
-            ConfigureDefaultUserAgentHeader(client);
             return client;
-        }
-
-        /// <remarks>
-        /// ACME clients MUST send a User-Agent header field, in accordance with
-        /// [RFC7231]. This header field SHOULD include the name and version of
-        /// the ACME software in addition to the name and version of the
-        /// underlying HTTP client software.
-        /// </remarks>
-        private static void ConfigureDefaultUserAgentHeader(HttpClient client)
-        {
-            var certesVersion = typeof(AcmeHttpClient).GetTypeInfo().Assembly.GetName().Version;
-            var netVersion = Environment.Version;
-            lock (client)
-            {
-                client.DefaultRequestHeaders.UserAgent.ParseAdd($"Certes/{certesVersion} .NET/{netVersion}");
-            }
         }
 
         /// <summary>
@@ -71,12 +68,6 @@ namespace Certes.Acme
         public AcmeHttpClient(Uri directoryUri, HttpClient http = null)
         {
             this.directoryUri = directoryUri;
-
-            if (http != null)
-            {
-                ConfigureDefaultUserAgentHeader(http);
-            }
-
             this.http = http == null ? SharedHttp : new Lazy<HttpClient>(() => http);
         }
 
@@ -88,10 +79,15 @@ namespace Certes.Acme
         /// <returns></returns>
         public async Task<AcmeHttpResponse<T>> Get<T>(Uri uri)
         {
-            using (var response = await Http.GetAsync(uri))
+            var msg = new HttpRequestMessage
             {
-                return await ProcessResponse<T>(response);
-            }
+                Method = HttpMethod.Get,
+                RequestUri = uri,
+            };
+
+            AddUserAgentHeader(msg);
+            using var response = await Http.SendAsync(msg);
+            return await ProcessResponse<T>(response);
         }
 
         /// <summary>
@@ -107,10 +103,17 @@ namespace Certes.Acme
             var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
             // boulder will reject the request if sending charset=utf-8
             content.Headers.ContentType.CharSet = null;
-            using (var response = await Http.PostAsync(uri, content))
+
+            var msg = new HttpRequestMessage
             {
-                return await ProcessResponse<T>(response);
-            }
+                Method = HttpMethod.Post,
+                RequestUri = uri,
+                Content = content,
+            };
+
+            AddUserAgentHeader(msg);
+            using var response = await Http.SendAsync(msg);
+            return await ProcessResponse<T>(response);
         }
 
         /// <summary>
@@ -218,11 +221,15 @@ namespace Certes.Acme
         private async Task FetchNonce()
         {
             newNonceUri = newNonceUri ?? (await Get<Directory>(directoryUri)).Resource.NewNonce;
-            var response = await Http.SendAsync(new HttpRequestMessage
+
+            var msg = new HttpRequestMessage
             {
                 RequestUri = newNonceUri,
                 Method = HttpMethod.Head,
-            });
+            };
+
+            AddUserAgentHeader(msg);
+            var response = await Http.SendAsync(msg);
 
             if (!response.Headers.TryGetValues("Replay-Nonce", out var values))
             {
@@ -243,6 +250,14 @@ namespace Certes.Acme
             }
 
             return false;
+        }
+
+        private static void AddUserAgentHeader(HttpRequestMessage requestMessage)
+        {
+            foreach (var header in userAgentHeaders)
+            {
+                requestMessage.Headers.UserAgent.Add(header);
+            }
         }
     }
 }
