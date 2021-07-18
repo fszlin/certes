@@ -11,19 +11,7 @@ namespace Certes
 {
     public static class IntegrationHelper
     {
-        public static readonly byte[][] TestCertificates =
-            new[] {
-                File.ReadAllBytes("./Data/test-root.pem"),
-                File.ReadAllBytes("./Data/root-cert-ecdsa.pem"),
-                File.ReadAllBytes("./Data/root-cert-rsa.pem"),
-            };
-
-        private static Uri[] StagingServersV1 = new[]
-        {
-            //new Uri("https://lo0.in:4430/directory"),
-            new Uri("https://boulder-certes-ci.dymetis.com:4430/directory"),
-            //WellKnownServers.LetsEncryptStaging,
-        };
+        public static readonly List<byte[]> TestCertificates = new();
 
         public static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() =>
         {
@@ -56,6 +44,8 @@ namespace Certes
                 //WellKnownServers.LetsEncryptStagingV2,
             };
 
+            var rootCerts = new[] { "root-cert-rsa.pem", "root-cert-ecdsa.pem" };
+
             var exceptions = new List<Exception>();
             foreach (var uri in servers)
             {
@@ -73,6 +63,20 @@ namespace Certes
                         catch
                         {
                         }
+                    }
+
+                    try
+                    {
+                        foreach (var rootCert in rootCerts)
+                        {
+                            var certUri = new Uri(uri, $"/certes/root-cert?file={rootCert}");
+                            var certData = await http.Value.GetByteArrayAsync(certUri);
+                            TestCertificates.Add(certData);
+
+                        }
+                    }
+                    catch
+                    {
                     }
 
                     return stagingServerV2 = uri;
