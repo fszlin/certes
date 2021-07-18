@@ -1,12 +1,23 @@
 next-version: 3.0
-mode: ContinuousDelivery
-assembly-file-versioning-format: '{Major}.{Minor}.{Patch}.{WeightedPreReleaseNumber}'
+mode: Mainline
+
 branches:
   main:
+    tag: rc
     regex: ^master$|^main$
-    tag: beta
-  release:
-    regex: ^release$
+    increment: Patch
     is-release-branch: true
   pull-request:
     tag: pr
+    increment: Patch
+  feature:
+    regex: .*/
+    tag: useBranchName
+    increment: Patch
+    source-branches: ['master', 'feature']
+    track-merge-target: true
+  release:
+    tag: ''
+    regex: releases?[/-]\d+\.\d+\.\d+
+    increment: Patch
+    is-release-branch: true
