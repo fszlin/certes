@@ -12,7 +12,7 @@
       "output": {
         ".html": {
           "relative_path": "APIv2.html",
-          "hash": "qOAtX9M+0KpFEUEk+PsQHEGwRwwayfqfH17HuvP+mZc="
+          "hash": "z0ux7QiWDUCVMUAFKZ31Fowh1l87KO1gQQHd1r8Jpxg="
         }
       },
       "is_incremental": false,
@@ -24,7 +24,7 @@
       "output": {
         ".html": {
           "relative_path": "CHANGELOG.html",
-          "hash": "0HM4cOu0ajL6KJ00CSTmUMFCJEuJCcc4tDiuJNAqSy0="
+          "hash": "0yvP/wo5lXsPn91QO31Q0Xwj0yg9xo2tc509Olarg5I="
         }
       },
       "is_incremental": false,
@@ -36,91 +36,22 @@
       "output": {
         ".html": {
           "relative_path": "CLI.html",
-          "hash": "1UMN67RxrlKr0gGBed2luco0JaM74funoC12MyKypQA="
+          "hash": "uG5ztyfUABnZMg8DowO7DTV5kpTbCDfxWaK/QRwclgc="
         }
       },
       "is_incremental": false,
       "version": ""
     },
     {
+      "log_codes": [
+        "InvalidFileLink"
+      ],
       "type": "Conceptual",
       "source_relative_path": "README.md",
       "output": {
         ".html": {
           "relative_path": "README.html",
-          "hash": "0ung9zy9jTr5ZAR6k2I2qwW48FjrV/DFQTtxNtHraJ4="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "README.v1.md",
-      "output": {
-        ".html": {
-          "relative_path": "README.v1.html",
-          "hash": "uh42xvIhaKqGfi24A6XgrFPv+1ovLKvXeMXL4KMBDLM="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.AcmeAccount.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.AcmeAccount.html",
-          "hash": "cCK/u2AVlme1uKacDMMEoAKOcFj1sqApkORAKXpsgoU="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.AcmeCertificate.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.AcmeCertificate.html",
-          "hash": "X4qf3Dz90l3W1j+wt0mfOTSwgawc0jpl8FO7shCpYNo="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.AcmeCertificateExtensions.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.AcmeCertificateExtensions.html",
-          "hash": "eIWnZAlmi5XN6mpWuVNvLpkuEg0wlxag1gfFNlWY4A8="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.AcmeDirectory.AcmeDirectoryMeta.html",
-          "hash": "BuwbLDn72AyfvUJxZ28uD+yZ4xy0tUY7RtGDpbX62/w="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.AcmeDirectory.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.AcmeDirectory.html",
-          "hash": "oBg1agEq3Kww4Fxt8KnwMHaxsDzxYP9d5OSSMF0G2hQ="
+          "hash": "quOEX9vjSILs3LtMHfuSo3UsPXwZJq33jZjrLM14fD0="
         }
       },
       "is_incremental": false,
@@ -132,7 +63,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.AcmeError.html",
-          "hash": "XRjgPtKvCtyxjH7uD22/9IwWJp/dnw6HpdBRpyrILhk="
+          "hash": "2GZxFKEiuSfEUAEHk+0ARN/fncb4nP+jEvz4br1Fm+E="
         }
       },
       "is_incremental": false,
@@ -144,19 +75,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.AcmeHttpClient.html",
-          "hash": "sdGESQDwzW0TZ4+MvQmmE2gR+0MMCTM9ahGnivGsS90="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.AcmeHttpHandler.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.AcmeHttpHandler.html",
-          "hash": "j4O3Up2ZHUzL/mGZbQIlrciCKa3qzHNe1xK/JOKqz2E="
+          "hash": "gzYIpTzwo2cyOaldRJERGAlMsow0od+yWn7TU868dLg="
         }
       },
       "is_incremental": false,
@@ -168,79 +87,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.AcmeHttpResponse-1.html",
-          "hash": "2sAzHxrqe8M5iduu3FUkt0YJx/Lb+Rm0JcDbi1I0ViY="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.AcmeResponse-1.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.AcmeResponse-1.html",
-          "hash": "kNVGs6qi7MOcQYOYVA5wzIEyCtJo3i9zBGK+ntGAIBE="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.AcmeResult-1.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.AcmeResult-1.html",
-          "hash": "NuQgnap4KtUxYAJJWWpQ+0LW3XMURdqmmND5+6gRPtA="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.AcmeResultExtensions.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.AcmeResultExtensions.html",
-          "hash": "Go5oWvVTyvIYhFgVooCpHG7LonhL/qj+L5OqOXAaOO4="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.AuthorizationEntity.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.AuthorizationEntity.html",
-          "hash": "OZHC9GBeBOkwxbG7+kbaFp02SxF/V+1c3It/n8wqWrM="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.AuthorizationIdentifier.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.AuthorizationIdentifier.html",
-          "hash": "Ods4ckydACn+B37HCc6uQw15UpEpAkzdgXIvccIdwU8="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.AuthorizationIdentifierTypes.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.AuthorizationIdentifierTypes.html",
-          "hash": "iztYZSGY1541NdhDKbgrpL8dyQq47XELjv+1Mz189v4="
+          "hash": "d9vSLcsaPHx4fBVd/o1Kn7140OqJryVbQi331ipj3pw="
         }
       },
       "is_incremental": false,
@@ -252,43 +99,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.CertificateChain.html",
-          "hash": "TneBrT3qL9eI3Xzs5e54+BiMPC0JwD+AcDBesmSU9go="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.CertificateEntity.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.CertificateEntity.html",
-          "hash": "o08RbeIpi4tYc5F5A+Ce+WnmLHXt7A5uw/V7s3IEHwg="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.ChallengeEntity.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.ChallengeEntity.html",
-          "hash": "s0ZgcG53DctMlbbPTmsmAX34GWzd0CcMNkOBeebWlDw="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.ChallengeExtensions.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.ChallengeExtensions.html",
-          "hash": "j4NNvpH0p+6s2eseTe21zGvxWikiDZYAXRWsjDtQnGg="
+          "hash": "wMq4bncYOidiaSntuZ3C2Thr3Mjda8X4ck2h2dr0K48="
         }
       },
       "is_incremental": false,
@@ -300,31 +111,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.ChallengeValidation.html",
-          "hash": "LWDcjAcORASNLxlx15fdH5fBZf0y2k74fY7CkDeEwx4="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.EntityBase.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.EntityBase.html",
-          "hash": "5EWqBda/pTRCN5cSmsmzuHFQyDsXGBduSmq2KstQPXM="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.EntityStatus.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.EntityStatus.html",
-          "hash": "fj095PFxWxefXgD0/0i7+hxOdpF98z0H2K3+thQ52ZE="
+          "hash": "lr4wU+OjI/kf8mffeOBU9S6cEP71kZ99LckCh6bLR+8="
         }
       },
       "is_incremental": false,
@@ -336,7 +123,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.IAccountContext.html",
-          "hash": "Hk9vmuDqPYN3PofYDtDidV/djnPVJiN2d8SU7SBh7t0="
+          "hash": "5Kt7a4O+JezldCGlmObCiDmnC7wAlr9q0OAcPUk+Jbs="
         }
       },
       "is_incremental": false,
@@ -348,19 +135,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.IAcmeHttpClient.html",
-          "hash": "Rda6sJMOp0fi22mUrEPczFSgoUP6AU/Gwk/1eDTjQq4="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.IAcmeHttpHandler.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.IAcmeHttpHandler.html",
-          "hash": "RGOR49iofLCL9yPCTnYqk3qB96rOST+F795qxPvNP24="
+          "hash": "m827Es6MoWcFfl9VhCE/TkxFeATAg/MALcQAQMBBdt8="
         }
       },
       "is_incremental": false,
@@ -372,7 +147,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.IAuthorizationContext.html",
-          "hash": "hlaGr2V637Q48Z3Q1edSDyMh/x3EJRbDKyNdbBbVmvg="
+          "hash": "rlFJ1OU+yQfugghYOMtucZnAfSXx+/1RoZeVI1QRZ+k="
         }
       },
       "is_incremental": false,
@@ -384,7 +159,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.IChallengeContext.html",
-          "hash": "6SEJHed25UGr71nBeY8gOCJHPTS+thKcnNNbTDLCJBk="
+          "hash": "xmp2w5wk6ODB6teQeXKBxNU8I9MI5eH9HCWbdD/MjSk="
         }
       },
       "is_incremental": false,
@@ -396,7 +171,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.IOrderContext.html",
-          "hash": "JnZqyZCTB90sj35hZAzCm+IpOIDvN/sMIwZPAaaAxJY="
+          "hash": "Jp9dv3jI0mjuYlweFJRdSAQ7eoisDZzDvcIpzSKu6xE="
         }
       },
       "is_incremental": false,
@@ -408,7 +183,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.IOrderListContext.html",
-          "hash": "+QxqgKWJF9ONVSl1l1MRD8Fc73yKCpkMeaVD7k9A7RA="
+          "hash": "bI6rJzhnobqIipcanQ5y2tZuwJnqh6nxnC5uNMHwK88="
         }
       },
       "is_incremental": false,
@@ -420,31 +195,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.IResourceContext-1.html",
-          "hash": "6aU089PpmG4BGgg0MR1weL1mjPaxDt8JfvclgIjB9g4="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.KeyedAcmeResult-1.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.KeyedAcmeResult-1.html",
-          "hash": "12r82LVy3Jop8RJtzo0nc45MruYGwB35iyxLJ2erLzM="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.RegistrationEntity.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.RegistrationEntity.html",
-          "hash": "GXm0U2Lp2/ibNAPu/4uYnf53f70t2kG1rR35VD1bmo0="
+          "hash": "cV7W/QN8cEov3bN2YwmkTWdZhRgCuvEp/L3XLNS8pIE="
         }
       },
       "is_incremental": false,
@@ -456,7 +207,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.RelLink.html",
-          "hash": "vEmo0HObt1a2ppvB/rZCWqV39BtoZ3iOyHFgEtyJmh8="
+          "hash": "CYhCGy/Vu/o2uypG/MwDMO7TTf8k4TkExqoRZqIayjk="
         }
       },
       "is_incremental": false,
@@ -468,7 +219,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.Account.html",
-          "hash": "pa4lTs6kDTwgLUimnClA4c3K3SNf222Er7m+7we/E+k="
+          "hash": "fGnp5UKeV76wHEiz4+ucDpIRhKYEHEVPWehEoTHbtw4="
         }
       },
       "is_incremental": false,
@@ -480,7 +231,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.AccountStatus.html",
-          "hash": "8/VCLykkFZJOYyqU8DH5YrfU6YmLqwnVWeBDCvkISnA="
+          "hash": "PYugp+RPu8lHDRKDY6kUxZtPz01egS7m9kAm/V9SxHs="
         }
       },
       "is_incremental": false,
@@ -492,7 +243,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.Authorization.html",
-          "hash": "ML371mGj825j4E3yFsig/vpM7XMTAhbyz8nPwV9MmP8="
+          "hash": "5RxxvPFzJ9Wk1c1ofsTdR0uQReevEYDNoz9AlwY0AsA="
         }
       },
       "is_incremental": false,
@@ -504,7 +255,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.AuthorizationStatus.html",
-          "hash": "19Z8l5nd5grJlYbiTgh6oC0/vxM0C1NllMi1J8uEx0M="
+          "hash": "uK9Q6hPSRDNhU12xI/Ks0sCekwabRdZAGSwzrMnQSv4="
         }
       },
       "is_incremental": false,
@@ -516,7 +267,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.Challenge.html",
-          "hash": "n+BiQwAOgg1mG9EBE5WbrpcuWYFV7n3itXRPJQ/A9yE="
+          "hash": "FRjwDFIWvvux1dTDhn0IpBbDeanx3RIi1KjyBDerfYc="
         }
       },
       "is_incremental": false,
@@ -528,7 +279,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.ChallengeStatus.html",
-          "hash": "3rI+MU83Qe8f9n2MlIhO8JLRH3RAkeZq6UUuS26w7YM="
+          "hash": "UCthUNcumWvjOWcyb7+5B2gnzh2u9S6bvGStCc+dfBc="
         }
       },
       "is_incremental": false,
@@ -540,7 +291,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.ChallengeTypes.html",
-          "hash": "2ichNKKlmOdJ580qVEbu/cG013E9WHxvsrUqgSBsOu8="
+          "hash": "KBDqxbf04esHp767ZGvWCYc6U0EHd0/MW2eLjtZSVl4="
         }
       },
       "is_incremental": false,
@@ -552,7 +303,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.Directory.html",
-          "hash": "j6V5Ef2cyFzGKfgpMdEkqZB7PTwIIeMIhukieJ9cZtI="
+          "hash": "ds2LTHGD8WdWdFWZLmnofQidJgZjOG5a7wOdIWASVI4="
         }
       },
       "is_incremental": false,
@@ -564,7 +315,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.DirectoryMeta.html",
-          "hash": "Pipkp3Ht1FPOzBIWIF6tyO+ErzBZ7ps+Wb6nYBKzXxs="
+          "hash": "bpYU8STnDxeUM1mrKjHTcEJLC3DSJ75bLioK6BqZp/A="
         }
       },
       "is_incremental": false,
@@ -576,7 +327,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.Identifier.html",
-          "hash": "pr20ZdfYmySz6CRiPgtLIlXv7BTYcO6w7fw3519FXzA="
+          "hash": "5MgVqcc4RlyeXMRJKHcl1u8C4nP+T1JMRRJdSS/iWXs="
         }
       },
       "is_incremental": false,
@@ -588,7 +339,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.IdentifierStatus.html",
-          "hash": "Vt8y3f4UaOmllHvq0OdDTR32WeBi5kg+wk7iuSqrfNw="
+          "hash": "bA2det7bSCZF6DAlyhCKEKqvbkexDT9VGTVe9Na3dXc="
         }
       },
       "is_incremental": false,
@@ -600,7 +351,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.IdentifierType.html",
-          "hash": "37Wf6crQIZqJXdafKQBtvDQmMSpQ/pZ8ZY7y3mzxxZo="
+          "hash": "wzQ+aTu5Vco7Kgjm0wwdoExAxL50AnbAGOnPnTAzihg="
         }
       },
       "is_incremental": false,
@@ -612,7 +363,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.Order.html",
-          "hash": "nm5IAt/7RABUgGhEyQhGMOBkF7unqlNj208mkLiRWHE="
+          "hash": "0zIFR5JbIDLJKKgCusPeRyfXIXzC871UPabYpxYitAg="
         }
       },
       "is_incremental": false,
@@ -624,7 +375,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.OrderList.html",
-          "hash": "CTuOQSEJXWBCEZjr/Xq7Iju/swlE54gGrUJ2Rgl7Oes="
+          "hash": "7qXoFRtC8paPIvnx/jsjA8KjXLx9hjZ7KYbRLYRBWi8="
         }
       },
       "is_incremental": false,
@@ -636,7 +387,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.OrderStatus.html",
-          "hash": "74eZRdUF1V+HJEJ+j9ikSZ2tU0xpzwEQ2QU5K2lh5t0="
+          "hash": "vjTrYGyHAJGDwqjVkeiNqipRL45bcag/7H6N3zpe+3U="
         }
       },
       "is_incremental": false,
@@ -648,7 +399,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.RevocationReason.html",
-          "hash": "UzcwlEsVVmarCk2H+4TsQoiTX3A17sUKnzyGIBkGyJQ="
+          "hash": "YZtP0mY7fglCwiazDnWdEKZ82bknNVS4rAqYBfuPMo4="
         }
       },
       "is_incremental": false,
@@ -660,7 +411,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.Resource.html",
-          "hash": "JkkTcz+8xhplQ+v6wL5jX+9wCp4+OGZuKmcqTfOXvdg="
+          "hash": "IaxusNiL0PMSTWsjOFocL5UIiLkMfRuIbdpHjBgfPZI="
         }
       },
       "is_incremental": false,
@@ -672,19 +423,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.ResourceTypes.html",
-          "hash": "GwOCHHJdfuiykDXmLTc2NavnDn9f13dXBW5fflfkzqw="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Acme.RevokeCertificateEntity.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Acme.RevokeCertificateEntity.html",
-          "hash": "kOUokv06aDoBlBoOqW3H5Y7Plc8tllYunFjbS4cWsZI="
+          "hash": "/PAqGxjQxADLdpm93CivXZc2KLQl4WSTaNAG3uUlefc="
         }
       },
       "is_incremental": false,
@@ -696,7 +435,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.WellKnownServers.html",
-          "hash": "ObAhWXf1D7UITRZl6wi5RYvOiu1tFoDtv+Y069pK0Vw="
+          "hash": "yjybs6QRF2I4eRr+x/j3TDSfnVtgVgG4LIEygjz7ZVk="
         }
       },
       "is_incremental": false,
@@ -708,19 +447,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Acme.html",
-          "hash": "9pXzZxcofJvZdGK1c8r+Qfl6/GfFbRo1Xg5V31HxNNE="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.AcmeClient.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.AcmeClient.html",
-          "hash": "8cwhR96bFnNESFgEQSWMBe/0QSfP3rN7HtMm6ZM0S6k="
+          "hash": "Gz4eJcnZdzjfO6QLufbZYMd+JR0X+ohyU7/Ke/+FHHM="
         }
       },
       "is_incremental": false,
@@ -732,7 +459,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.AcmeContext.html",
-          "hash": "qaShbU43YbH+HRtDyIZ3TeRpMWJGEQycnfLU6zL5s/I="
+          "hash": "4O5vTVO6xcfg+zRYQyNGD/PvMIE5cZuTi5sv+0EIhM0="
         }
       },
       "is_incremental": false,
@@ -744,7 +471,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.AcmeException.html",
-          "hash": "EIukkwWtxD3YAr0FKGi+dX6JeNhfuklMn5eR4ZKd2yU="
+          "hash": "6t9kCmfMB7ARpmy2/FxHWojqoAPVhoRArRzx07c/jPc="
         }
       },
       "is_incremental": false,
@@ -756,7 +483,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.AcmeRequestException.html",
-          "hash": "E/wzyLJu9Vm7pjeay7VKrlaBkOdivrkNaxoGM83Rh+Y="
+          "hash": "h0tHz+g53HYDPK/p6a7/L/5IIMlsjSoVldbCIVd/Bz4="
         }
       },
       "is_incremental": false,
@@ -768,7 +495,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.CertificateChainExtensions.html",
-          "hash": "yhnv7nNRc9SaldbcKly+pw3o2vfJxaeJfWK0ZKJDrYM="
+          "hash": "ewLiFktlcsUsI/0gyVtocMfTb9fJ1Azt/Jjijjp6ioM="
         }
       },
       "is_incremental": false,
@@ -780,7 +507,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.CsrInfo.html",
-          "hash": "ctlf/yiN0wwb/s/psexGrjkJf4MHl7VSCO4koByHg4s="
+          "hash": "MQXk0pV9OD9mDVT5UGXlu9UviOW8+ThCLWkW+y5as0E="
         }
       },
       "is_incremental": false,
@@ -792,19 +519,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.IAccountContextExtensions.html",
-          "hash": "thNVUn/Ihge9a7df1FfFmgIJQPi/Ft/7nMMNjhbfYDc="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.IAcmeClient.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.IAcmeClient.html",
-          "hash": "Ks3aKRf9ZdyPI3Mp+//gvR81S3A9Iw7VrM1HU9xeAII="
+          "hash": "V9VL7B0zswgBililu7OxcepkRLWEXXL42kjd8x9fzms="
         }
       },
       "is_incremental": false,
@@ -816,7 +531,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.IAcmeContext.html",
-          "hash": "YWwLsoFfOI6i0T1K18mGbzRpatGGeMiLg0q6vjicRv8="
+          "hash": "Tp4eX1OU2eHZ8gfgFd+a/BTefPSEmJphnwVLBWw8Rbs="
         }
       },
       "is_incremental": false,
@@ -828,7 +543,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.IAcmeContextExtensions.html",
-          "hash": "mUFmPQbRXhj2yxsUedOgC2/Erv/m8Lb7BdUBDex7aPg="
+          "hash": "otquo0MM503zTEYVcGeWjS2gwDU5Q525z2fvwFIDVL4="
         }
       },
       "is_incremental": false,
@@ -840,7 +555,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.IAuthorizationContextExtensions.html",
-          "hash": "NLl2klPXPhbpr4Ugfs0iNRcHcsFtLqMMpc5DSoSA3dI="
+          "hash": "jIWZGH7MyVg46mwVLEyV38mJ1qg5w0oboshckvWM/Wg="
         }
       },
       "is_incremental": false,
@@ -852,7 +567,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.IEncodable.html",
-          "hash": "VDPubwUTx1maQudiqLfznm/rmsYwURIlVx9K1830y6Y="
+          "hash": "M5djfaJyZEdLGmb+7TaGatFxATJ0SC0bsEGCsWBfUec="
         }
       },
       "is_incremental": false,
@@ -864,7 +579,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.IKey.html",
-          "hash": "coLu7Sx9Xtg07K+zojrpapzR0pO84GUu55n9ATzOZEA="
+          "hash": "bSfqNGQOriHO1epP+eB2A5Z//WRx5U5bKLgph6b1aZ4="
         }
       },
       "is_incremental": false,
@@ -876,7 +591,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.IOrderContextExtensions.html",
-          "hash": "YFUO0dfl4HAyJZH0eGozSOPtHq9P/rDqd+rPmsNW2XM="
+          "hash": "dZfZvNcloealheMvuSvlPcWJkgd5QBGAnS8a4UjwMK8="
         }
       },
       "is_incremental": false,
@@ -888,7 +603,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.ISignatureKeyExtensions.html",
-          "hash": "MvtAMjjeNj41SFAe07vvrvbxhThMNQ0H5MZkP8wfVRM="
+          "hash": "LzAk86Szorf1PRihpXPaRMBFLzN9rLjA840v6uAcpCA="
         }
       },
       "is_incremental": false,
@@ -900,7 +615,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Json.JsonUtil.html",
-          "hash": "cPXDmhvn+D0OVY/pvAFJ8nwlce8Q1Tl4uVCcxDXYP+o="
+          "hash": "mRWyp4x5eo9iBa8CpjOlEVLwBWR5VHT7GVpnOkquGdk="
         }
       },
       "is_incremental": false,
@@ -912,7 +627,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Json.html",
-          "hash": "EFtjFeU/UkFiY7Df6bEfuzI0W3wyKjiocnnicfUIjOQ="
+          "hash": "unuVEzTRFP/duxzT/ShNiui9RjpbK9l1/Jd8kJU2l7k="
         }
       },
       "is_incremental": false,
@@ -924,7 +639,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Jws.AccountKey.html",
-          "hash": "xyf1CZCPB5tvPk7kqln5162vMwKWpNqFVdEEnvVsdW0="
+          "hash": "IjS8E6PVQp1mmMmwwOd5VstGaZvy1Wi5evrAVApW7KQ="
         }
       },
       "is_incremental": false,
@@ -936,7 +651,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Jws.AccountKeyExtensions.html",
-          "hash": "yXItUK3berw9RKPSbifn1p1XAIbpJurDAM51JuLDVWc="
+          "hash": "eL8ru0M2MZEsGyrL2mCu++ms1sJQ1qkDmEPdGjbhSbY="
         }
       },
       "is_incremental": false,
@@ -948,7 +663,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Jws.IAccountKey.html",
-          "hash": "WuZAeJ4exsejn8tQaSEVnkKOsCv1MRju/zefiCYokqI="
+          "hash": "g8iuQUKcak69Kj5GR2d73dDno6x3zLXncSBxKg3pWWQ="
         }
       },
       "is_incremental": false,
@@ -960,7 +675,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Jws.JsonWebKey.html",
-          "hash": "q0qAzJ2xyuyiRn10ZNEW3xoStaRmPMcVAKpfn2t7mWg="
+          "hash": "J2fKtqhndhyi97LLQ0o+VEzBzdJGBUx45RLg3nGCAkA="
         }
       },
       "is_incremental": false,
@@ -972,7 +687,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Jws.JwsConvert.html",
-          "hash": "dYtt04ocFC1siXnutLbRWfK7Jhk7N2nJ2Lzg2iX2Msc="
+          "hash": "c+mtS3bybMfpjsvNTCUDgGN3YuCvkm+Kl+8IcNNxjLs="
         }
       },
       "is_incremental": false,
@@ -984,7 +699,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Jws.JwsPayload.html",
-          "hash": "Cl8XaMIzhOE9E08Y0fUUw0eHK3Nx+uQjXajMBAbsPWY="
+          "hash": "h7E1wx4VS+77GKzftSua3cN5Vk4rGRnd6jDC8n9rHEA="
         }
       },
       "is_incremental": false,
@@ -996,7 +711,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Jws.html",
-          "hash": "n4Xc5IJ4jepl1cBNKZvRytZYCGr4fUMlXk839ncmvpg="
+          "hash": "MzS9WTAZ+q6vCfbkM0DWrzYlTqTQTJ2V30uWiG4X98E="
         }
       },
       "is_incremental": false,
@@ -1008,7 +723,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.KeyAlgorithm.html",
-          "hash": "Z5OC192SUVwA2q0EUhvTQLobTyYuBMMMpvqdDbvC5w0="
+          "hash": "uGFdv02gAXiuD2FVTi1uxlZ34Axp5pN6MJoCr5u2OIE="
         }
       },
       "is_incremental": false,
@@ -1020,7 +735,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.KeyAlgorithmExtensions.html",
-          "hash": "lKI2hV7tS/+KqDYhD7t5SavnWSEyPhh8yMRlEqOp+TA="
+          "hash": "eGd9b59VvT+9CcTEgoiVVcJTp/6jZef675sKmEyQfYA="
         }
       },
       "is_incremental": false,
@@ -1032,7 +747,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.KeyFactory.html",
-          "hash": "ZC/uOWQ+cuKkXo4S0E5aTBxanVamDacY796UFBv7oQc="
+          "hash": "AVhkZbhGWPhHpbnQaoXiI9gVZoiN4KLJirswtKHOChk="
         }
       },
       "is_incremental": false,
@@ -1044,7 +759,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Pkcs.CertificateStore.html",
-          "hash": "NgV4UU92PNxKdfvpyqO9Me4urjhhMyJzyiR269NAKRs="
+          "hash": "BRRLr7aijkdIR2d6/XDkqLyA8+vXJaHNDwcfrHIIwm4="
         }
       },
       "is_incremental": false,
@@ -1056,7 +771,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Pkcs.CertificationRequestBuilder.html",
-          "hash": "Pj++kEZrvaqmszD11GUcc4pait4/9+kVy7IuYT89ZpA="
+          "hash": "y2I4HoW3LcDCUIuHdScBDDwgea3MOYa+0ynFFvkQoAA="
         }
       },
       "is_incremental": false,
@@ -1068,7 +783,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Pkcs.ICertificationRequestBuilder.html",
-          "hash": "dXQvEuoH39W7WDKnrgsTpeSRN3PEEnif3Sr1I2u1u20="
+          "hash": "tMuLDDraRMV1DCfqHDANgY4Lr7/rNbcIsxk6vpJSyMg="
         }
       },
       "is_incremental": false,
@@ -1080,7 +795,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Pkcs.KeyInfo.html",
-          "hash": "TRMj06j0oV97IGNuvqXOcF3x1w2Izo1GfPPDznMEX0o="
+          "hash": "XBm5gQ/g+ArdqGHbPYCmKkvi5xofaVnNF3po/cciXoY="
         }
       },
       "is_incremental": false,
@@ -1092,7 +807,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Pkcs.KeyInfoExtensions.html",
-          "hash": "NEgBf1ZjKMgLvRwhRhaiP110SzLFQTf6wr/1+2L+1Ik="
+          "hash": "H8odMn1rkFraPafXcUd7tIxFLGUkth4+3h99BHRw3ng="
         }
       },
       "is_incremental": false,
@@ -1104,19 +819,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Pkcs.PfxBuilder.html",
-          "hash": "M4ejxpMTQQ2Dq0esvDiabFVDpqYHhyuxu4aNUtOHCAA="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/certes/Certes.Pkcs.SignatureAlgorithm.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/certes/Certes.Pkcs.SignatureAlgorithm.html",
-          "hash": "6mYRZKUepWBQR+22/rYIl3ax4CfMdEVUQ6YCRXP7RO4="
+          "hash": "+EnFTSdgbObf8nVySgBdkweSA7978JV5t4ayqntnbdE="
         }
       },
       "is_incremental": false,
@@ -1128,7 +831,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.Pkcs.html",
-          "hash": "bhBSnQMLE0N6D5ABsyneipORsBy1occ0tdEZvBy8asI="
+          "hash": "7JuJiDA8e1eOAC6Tqtsn97aQMaKvn3/choe7LQEsPE0="
         }
       },
       "is_incremental": false,
@@ -1140,7 +843,7 @@
       "output": {
         ".html": {
           "relative_path": "api/certes/Certes.html",
-          "hash": "6hD35fClghouHSRamPMLChs+LHFIMWTgsOjtro6WzDE="
+          "hash": "1w6W+Ixva6TVig82C6bmjeoqU6/qc6s+MnCaZO/GFWk="
         }
       },
       "is_incremental": false,
@@ -1152,7 +855,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "BsM+bB4Go1dNgbSQB+KR7KXE/VFSJGjzhLXeMUipziA="
+          "hash": "x+ziDl6JhEZbimpO80F4aBbFwE3w1v2t4MhY0VRvjRE="
         }
       },
       "is_incremental": false,
@@ -1186,7 +889,7 @@
       "output": {
         ".html": {
           "relative_path": "implementation-status.html",
-          "hash": "esJX+A4XP7t+ACf+lFblldQBHNb9gcBtYOd0Xc8imdw="
+          "hash": "AvfVP051QCax3T4dWgIis7IhWCgXlOyjtgELKqQ5k+4="
         }
       },
       "is_incremental": false,
@@ -1198,7 +901,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "yxxtFf2n3qjGDE257LD76WjqtzeMs6+10jCgb46ilwc="
+          "hash": "B40A73oj5jAFwHEzCrojMqdmyIGJE9cOWTSXS/zLcqA="
         }
       },
       "is_incremental": false,
@@ -1231,13 +934,13 @@
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 7,
+          "total_file_count": 6,
           "skipped_file_count": 0
         },
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 90,
+          "total_file_count": 66,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
