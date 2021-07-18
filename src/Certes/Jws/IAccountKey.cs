@@ -41,15 +41,6 @@ namespace Certes.Jws
         /// <value>
         /// The JSON web key.
         /// </value>
-        [Obsolete("Use JsonWebKey instead.")]
-        object Jwk { get; }
-
-        /// <summary>
-        /// Gets the JSON web key.
-        /// </summary>
-        /// <value>
-        /// The JSON web key.
-        /// </value>
         JsonWebKey JsonWebKey { get; }
 
         /// <summary>

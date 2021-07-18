@@ -56,16 +56,6 @@ namespace Certes.Acme.Resource
         public AcmeError Error { get; set; }
 
         /// <summary>
-        /// Gets or sets the errors.
-        /// </summary>
-        /// <value>
-        /// The errors.
-        /// </value>
-        [JsonProperty("errors")]
-        [Obsolete("Use Challenge.Error instead.")]
-        public IList<object> Errors { get; set; }
-
-        /// <summary>
         /// Gets or sets the token.
         /// </summary>
         /// <value>
@@ -73,15 +63,5 @@ namespace Certes.Acme.Resource
         /// </value>
         [JsonProperty("token")]
         public string Token { get; set; }
-
-        /// <summary>
-        /// Gets or sets the key authorization.
-        /// </summary>
-        /// <value>
-        /// The key authorization.
-        /// </value>
-        [JsonProperty("keyAuthorization")]
-        [Obsolete("Removed from ACME server.")]
-        public string KeyAuthorization { get; set; }
     }
 }

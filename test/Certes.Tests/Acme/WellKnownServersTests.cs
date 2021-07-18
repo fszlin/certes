@@ -7,8 +7,8 @@ namespace Certes.Acme
         [Fact]
         public void CanGetValidUri()
         {
-            Assert.Equal("https://acme-v01.api.letsencrypt.org/directory", WellKnownServers.LetsEncrypt.OriginalString);
-            Assert.Equal("https://acme-staging.api.letsencrypt.org/directory", WellKnownServers.LetsEncryptStaging.OriginalString);
+            Assert.Equal("https://acme-v02.api.letsencrypt.org/directory", WellKnownServers.LetsEncryptV2.OriginalString);
+            Assert.Equal("https://acme-staging-v02.api.letsencrypt.org/directory", WellKnownServers.LetsEncryptStagingV2.OriginalString);
         }
     }
 }

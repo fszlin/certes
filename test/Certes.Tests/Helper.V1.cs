@@ -12,18 +12,6 @@ namespace Certes
 {
     public static partial class Helper
     {
-        public static AcmeDirectory MockDirectoryV1 = new AcmeDirectory
-        {
-            Meta = new AcmeDirectory.AcmeDirectoryMeta
-            {
-                TermsOfService = new Uri("http://example.com/tos.pdf")
-            },
-            NewAuthz = new Uri("http://example.com/new-authz"),
-            NewCert = new Uri("http://example.com/new-cert"),
-            NewReg = new Uri("http://example.com/new-reg"),
-            RevokeCert = new Uri("http://example.com/revoke-cert")
-        };
-
         private static string accountKeyV1;
 
         public static Task<AccountKey> LoadkeyV1()

@@ -64,15 +64,6 @@ namespace Certes.Jws
         /// <value>
         /// The JSON web key.
         /// </value>
-        [Obsolete]
-        public object Jwk => JsonWebKey;
-
-        /// <summary>
-        /// Gets the JSON web key.
-        /// </summary>
-        /// <value>
-        /// The JSON web key.
-        /// </value>
         public JsonWebKey JsonWebKey => jwk ?? (jwk = SignatureKey.JsonWebKey);
 
         /// <summary>

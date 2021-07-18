@@ -1,5 +1,5 @@
 trigger:
-- master
+- main
 
 stages:
 
@@ -58,10 +58,10 @@ stages:
 
   - template: scripts/build.yml
     parameters:
-      name: Windows_net452
-      displayName: Windows - net452
-      framework: net452
-      appFramework: net452
+      name: Windows_net461
+      displayName: Windows - net461
+      framework: net461
+      appFramework: net461
       pool:
         vmImage: 'windows-latest'
 
