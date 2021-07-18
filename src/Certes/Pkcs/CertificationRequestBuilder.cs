@@ -55,19 +55,6 @@ namespace Certes.Pkcs
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificationRequestBuilder"/> class.
         /// </summary>
-        /// <param name="keyInfo">The key information.</param>
-        /// <exception cref="System.NotSupportedException">
-        /// If the provided key is not one of the supported <seealso cref="KeyAlgorithm"/>.
-        /// </exception>
-        [Obsolete]
-        public CertificationRequestBuilder(KeyInfo keyInfo)
-            : this(KeyFactory.FromDer(keyInfo.PrivateKeyInfo))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CertificationRequestBuilder"/> class.
-        /// </summary>
         public CertificationRequestBuilder()
             : this(KeyFactory.NewKey(KeyAlgorithm.RS256))
         {
@@ -135,21 +122,6 @@ namespace Certes.Pkcs
         {
             var csr = GeneratePkcs10();
             return csr.GetDerEncoded();
-        }
-
-        /// <summary>
-        /// Exports the key used to generate the CSR.
-        /// </summary>
-        /// <returns>
-        /// The key data.
-        /// </returns>
-        [Obsolete]
-        public KeyInfo Export()
-        {
-            return new KeyInfo
-            {
-                PrivateKeyInfo = Key.ToDer()
-            };
         }
 
         private Pkcs10CertificationRequest GeneratePkcs10()

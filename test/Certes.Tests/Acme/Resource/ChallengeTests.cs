@@ -11,7 +11,6 @@ namespace Certes.Tests.Acme.Resource
         public void CanGetSetProperties()
         {
             var entity = new Challenge();
-            entity.VerifyGetterSetter(e => e.Errors, new object[0]);
             entity.VerifyGetterSetter(e => e.Error, new AcmeError());
             entity.VerifyGetterSetter(e => e.Status, ChallengeStatus.Invalid);
             entity.VerifyGetterSetter(e => e.Token, "certes");
