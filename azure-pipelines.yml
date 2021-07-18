@@ -1,5 +1,9 @@
 trigger:
 - main
+- release
+
+pr:
+- main
 
 stages:
 
