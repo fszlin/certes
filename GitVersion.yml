@@ -1,5 +1,6 @@
 next-version: 3.0
 mode: Mainline
+assembly-file-versioning-format: '{Major}.{Minor}.{Patch}.{WeightedPreReleaseNumber}'
 
 branches:
   main:

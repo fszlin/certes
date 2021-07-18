@@ -11,7 +11,7 @@ jobs:
     assemblyVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemVer'] ]
     fileVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
     informationalVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.InformationalVersion'] ]
-    packageVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.NuGetVersion'] ]
+    packageVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.NuGetVersionV2'] ]
   pool:
     vmImage: 'windows-latest'
 
