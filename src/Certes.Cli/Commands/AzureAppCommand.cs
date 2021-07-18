@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -10,13 +11,25 @@ using Microsoft.Azure.Management.AppService.Fluent.Models;
 
 namespace Certes.Cli.Commands
 {
-    class AzureAppCommand : AzureCommand, ICliCommand
+    class AzureAppCommand : AzureCommandBase, ICliCommand
     {
+        public record Args(
+            Uri OrderId,
+            string Domain,
+            string App,
+            string Slot,
+            string PreferredChain,
+            string PrivateKey,
+            Uri Server,
+            string KeyPath,
+            AzureOptions AzureOptions);
+
         private const string CommandText = "app";
         private const string OrderIdParam = "order-id";
+        private const string PreferredChainOption = "--preferred-chain";
         private const string AppNameParam = "app";
-        private const string SlotOption = "slot";
-        private const string PrivateKeyOption = "private-key";
+        private const string SlotOption = "--slot";
+        private const string PrivateKeyOption = "--private-key";
         private const string DomainParam = "domain";
 
         public CommandGroup Group => CommandGroup.Azure;
@@ -36,55 +49,52 @@ namespace Certes.Cli.Commands
             this.environment = environment;
         }
 
-        public ArgumentCommand<string> Define(ArgumentSyntax syntax)
+        public Command Define()
         {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandAzureApp);
-
-            DefineAzureOptions(syntax)
-                .DefineOption(SlotOption, help: Strings.HelpSlot)
-                .DefineOption(PrivateKeyOption, help: Strings.HelpPrivateKey)
-                .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId)
-                .DefineParameter(DomainParam, help: Strings.HelpDomain)
-                .DefineParameter(AppNameParam, help: Strings.HelpAppName);
-
-            return cmd;
-        }
-
-        public async Task<object> Execute(ArgumentSyntax syntax)
-        {
-            var (serverUri, key) = await ReadAccountKey(syntax, true, false);
-            var orderUri = syntax.GetParameter<Uri>(OrderIdParam, true);
-            var domain = syntax.GetParameter<string>(DomainParam, true);
-
-            var azureCredentials = await ReadAzureCredentials(syntax);
-            var resourceGroup = syntax.GetOption<string>(AzureResourceGroupOption, true);
-            var appName = syntax.GetParameter<string>(AppNameParam, true);
-            var appSlot = syntax.GetOption<string>(SlotOption, false);
-
-            var privKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment, true);
-
-            var acme = ContextFactory.Invoke(serverUri, key);
-            var orderCtx = acme.Order(orderUri);
-
-            var order = await orderCtx.Resource();
-            if (order.Certificate == null)
+            var cmd = new Command(CommandText, Strings.HelpCommandAzureApp)
             {
-                throw new CertesCliException(string.Format(Strings.ErrorOrderIncompleted, orderCtx.Location));
-            }
+                new Option<string>(SlotOption, Strings.HelpSlot),
+                new Option<string>(PrivateKeyOption, Strings.HelpPrivateKey),
+                new Option<string>(PreferredChainOption, Strings.HelpPreferredChain),
+                new Argument<Uri>(OrderIdParam, Strings.HelpOrderId),
+                new Argument<string>(DomainParam, Strings.HelpDomain),
+                new Argument<string>(AppNameParam, Strings.HelpAppName),
+            };
 
-            var cert = await orderCtx.Download();
-            var x509Cert = new X509Certificate2(cert.Certificate.ToDer());
-            var thumbprint = x509Cert.Thumbprint;
+            AddCommonOptions(cmd);
 
-            using (var client = clientFactory.Invoke(azureCredentials))
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
             {
-                client.SubscriptionId = azureCredentials.DefaultSubscriptionId;
+                var (orderId, domain, app, slot, preferredChain, privateKey, server, keyPath, azureOptions) = args;
+                var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
+                var azureCredentials = await CreateAzureRestClient(azureOptions);
 
-                var certUploaded = await FindCertificate(client, resourceGroup, thumbprint);
+                var privKey = await ReadKey(privateKey, "CERTES_CERT_KEY", File, environment);
+                if (privKey == null)
+                {
+                    throw new CertesCliException(Strings.ErrorNoPrivateKey);
+                }
+
+                var acme = ContextFactory.Invoke(serverUri, key);
+                var orderCtx = acme.Order(orderId);
+
+                var order = await orderCtx.Resource();
+                if (order.Certificate == null)
+                {
+                    throw new CertesCliException(string.Format(Strings.ErrorOrderIncompleted, orderCtx.Location));
+                }
+
+                var cert = await orderCtx.Download(preferredChain);
+                var x509Cert = new X509Certificate2(cert.Certificate.ToDer());
+                var thumbprint = x509Cert.Thumbprint;
+
+                using var client = clientFactory.Invoke(azureCredentials);
+                client.SubscriptionId = azureCredentials.Credentials.DefaultSubscriptionId;
+                var certUploaded = await FindCertificate(client, azureOptions.ResourceGroup, thumbprint);
                 if (certUploaded == null)
                 {
                     certUploaded = await UploadCertificate(
-                        client, resourceGroup, appName, appSlot, cert.ToPfx(privKey), thumbprint);
+                        client, azureOptions.ResourceGroup, app, slot, cert.ToPfx(privKey), thumbprint);
                 }
 
                 var hostNameBinding = new HostNameBindingInner
@@ -93,17 +103,21 @@ namespace Certes.Cli.Commands
                     Thumbprint = certUploaded.Thumbprint,
                 };
 
-                var hostName = string.IsNullOrWhiteSpace(appSlot) ?
+                var hostName = string.IsNullOrWhiteSpace(slot) ?
                     await client.WebApps.CreateOrUpdateHostNameBindingAsync(
-                        resourceGroup, appName, domain, hostNameBinding) :
+                        azureOptions.ResourceGroup, app, domain, hostNameBinding) :
                     await client.WebApps.CreateOrUpdateHostNameBindingSlotAsync(
-                        resourceGroup, appName, domain, hostNameBinding, appSlot);
+                        azureOptions.ResourceGroup, app, domain, hostNameBinding, slot);
 
-                return new
+                var output = new
                 {
                     data = hostName
                 };
-            }
+
+                console.WriteAsJson(output);
+            });
+
+            return cmd;
         }
 
         private static async Task<CertificateInner> UploadCertificate(

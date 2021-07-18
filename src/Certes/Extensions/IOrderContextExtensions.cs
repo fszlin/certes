@@ -62,10 +62,12 @@ namespace Certes
         /// <param name="context">The order context.</param>
         /// <param name="csr">The CSR.</param>
         /// <param name="key">The private key for the certificate.</param>
+        /// <param name="retryCount">Number of retries when the Order is in 'processing' state. (default = 1)</param>
+        /// <param name="preferredChain">The preferred Root Certificate.</param>
         /// <returns>
         /// The certificate generated.
         /// </returns>
-        public static async Task<CertificateChain> Generate(this IOrderContext context, CsrInfo csr, IKey key)
+        public static async Task<CertificateChain> Generate(this IOrderContext context, CsrInfo csr, IKey key, string preferredChain = null, int retryCount = 1)
         {
             var order = await context.Resource();
             if (order.Status != OrderStatus.Ready && // draft-11
@@ -75,13 +77,19 @@ namespace Certes
             }
 
             order = await context.Finalize(csr, key);
+            
+            while (order.Status == OrderStatus.Processing && retryCount-- > 0)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(Math.Max(context.RetryAfter, 1)));
+                order = await context.Resource();
+            }
 
             if (order.Status != OrderStatus.Valid)
             {
                 throw new AcmeException(Strings.ErrorFinalizeFailed);
             }
 
-            return await context.Download();
+            return await context.Download(preferredChain);
         }
 
         /// <summary>

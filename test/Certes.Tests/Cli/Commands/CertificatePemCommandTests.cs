@@ -45,19 +45,22 @@ namespace Certes.Cli.Commands
 
             var orderMock = new Mock<IOrderContext>(MockBehavior.Strict);
             orderMock.Setup(m => m.Resource()).ReturnsAsync(order);
-            orderMock.Setup(m => m.Download()).ReturnsAsync(certChain);
+            orderMock.Setup(m => m.Download(It.Is<string>(s => string.IsNullOrWhiteSpace(s)))).ReturnsAsync(certChain);
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
             ctxMock.Setup(m => m.Order(orderLoc)).Returns(orderMock.Object);
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
+            var (console, stdOutput, errOutput) = MockConsole();
 
             var cmd = new CertificatePemCommand(
                 settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object);
+            var command = cmd.Define();
 
-            var syntax = DefineCommand($"pem {orderLoc}");
-            var ret = await cmd.Execute(syntax);
+            await command.InvokeAsync($"pem {orderLoc}", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            var ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
@@ -70,15 +73,18 @@ namespace Certes.Cli.Commands
                 }),
                 JsonConvert.SerializeObject(ret));
 
-            orderMock.Verify(m => m.Download(), Times.Once);
+            orderMock.Verify(m => m.Download(""), Times.Once);
+            errOutput.Clear();
+            stdOutput.Clear();
 
             var outPath = "./cert.pem";
             string saved = null;
             fileMock.Setup(m => m.WriteAllText(outPath, It.IsAny<string>()))
                 .Callback((string path, string text) => saved = text)
                 .Returns(Task.CompletedTask);
-            syntax = DefineCommand($"pem --out {outPath} {orderLoc}");
-            ret = await cmd.Execute(syntax);
+            await command.InvokeAsync($"pem --out {outPath} {orderLoc}", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
@@ -91,36 +97,12 @@ namespace Certes.Cli.Commands
                 certChainContent.Replace("\r", ""),
                 saved.Replace("\r", "").TrimEnd());
 
+            errOutput.Clear();
+            stdOutput.Clear();
+
             order.Status = OrderStatus.Invalid;
-            syntax = DefineCommand($"pem {orderLoc}");
-            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
-        }
-
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"pem http://acme.com/o/1 --server {LetsEncryptStagingV2}";
-            var syntax = DefineCommand(args);
-
-            Assert.Equal("pem", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "server", LetsEncryptStagingV2);
-            ValidateParameter(syntax, "order-id", new Uri("http://acme.com/o/1"));
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("pem", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new CertificatePemCommand(
-                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil());
-            Assert.Equal(CommandGroup.Certificate.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
+            await command.InvokeAsync($"pem {orderLoc}", console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
         }
     }
 }

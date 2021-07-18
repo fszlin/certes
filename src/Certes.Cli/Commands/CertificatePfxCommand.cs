@@ -1,23 +1,33 @@
 ﻿using System;
 using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.Globalization;
 using System.Text;
-using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using NLog;
 
 namespace Certes.Cli.Commands
 {
-    internal class CertificatePfxCommand : CertificateCommand, ICliCommand
+    internal class CertificatePfxCommand : CertificateCommandBase, ICliCommand
     {
-        private const string CommandText = "pfx";
-        private const string FriendlyNameOption = "friendly-name";
-        private const string PasswordParam = "password";
-        private const string PrivateKeyOption = "private-key";
-        private const string OutOption = "out";
-        private const string IssuerOption = "issuer";
-        private static readonly ILogger logger = LogManager.GetLogger(nameof(CertificatePfxCommand));
+        public record Args(
+            Uri OrderId,
+            string PrivateKey,
+            string FriendlyName,
+            string Issuer,
+            string Password,
+            string PreferredChain,
+            string OutPath,
+            Uri Server,
+            string KeyPath);
 
+        private const string CommandText = "pfx";
+        private const string FriendlyNameOption = "--friendly-name";
+        private const string PasswordParam = "--password";
+        private const string PrivateKeyOption = "--private-key";
+        private const string IssuerOption = "--issuer";
+
+        private readonly ILogger logger = LogManager.GetLogger(nameof(CertificatePfxCommand));
         private readonly IEnvironmentVariables environment;
 
         public CertificatePfxCommand(
@@ -30,67 +40,74 @@ namespace Certes.Cli.Commands
             this.environment = environment;
         }
 
-        public ArgumentCommand<string> Define(ArgumentSyntax syntax)
+        public override Command Define()
         {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandCertificatePfx);
+            var cmd = new Command(CommandText, Strings.HelpCommandCertificatePem)
+            {
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Option<string>(new [] { "--out-path", "--out" }, Strings.HelpCertificateOut),
+                new Option<string>(PrivateKeyOption, Strings.HelpPrivateKey),
+                new Option<string>(FriendlyNameOption, Strings.HelpFriendlyName),
+                new Option<string>(IssuerOption, Strings.HelpCertificateIssuer),
+                new Option<string>(PreferredChainOption, Strings.HelpPreferredChain),
+                new Argument<Uri>(OrderIdOption, Strings.HelpOrderId),
+                new Argument<string>(PasswordParam, Strings.HelpPfxPassword),
+            };
 
-            syntax
-                .DefineServerOption()
-                .DefineKeyOption()
-                .DefineOption(OutOption, help: Strings.HelpCertificateOut)
-                .DefineOption(PrivateKeyOption, help: Strings.HelpPrivateKey)
-                .DefineOption(FriendlyNameOption, help: Strings.HelpFriendlyName)
-                .DefineOption(IssuerOption, help: Strings.HelpCertificateIssuer)
-                .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId)
-                .DefineParameter(PasswordParam, help: Strings.HelpPfxPassword);
+            cmd.Handler = CommandHandler.Create(async (
+                Args args,
+                IConsole console) =>
+            {
+                var (orderId, privateKey, friendlyName, issuer, password, preferredChain, outPath, server, keyPath) = args;
+                var (location, cert) = await DownloadCertificate(orderId, preferredChain, server, keyPath);
+
+                var privKey = await ReadKey(privateKey, "CERTES_CERT_KEY", File, environment);
+                if (privKey == null)
+                {
+                    throw new CertesCliException(Strings.ErrorNoPrivateKey);
+                }
+
+                var pfxName = string.Format(CultureInfo.InvariantCulture, "[certes] {0:yyyyMMddhhmmss}", DateTime.UtcNow);
+                if (!string.IsNullOrWhiteSpace(friendlyName))
+                {
+                    pfxName = string.Concat(friendlyName, " ", pfxName);
+                }
+
+                var pfxBuilder = cert.ToPfx(privKey);
+                if (!string.IsNullOrWhiteSpace(issuer))
+                {
+                    var issuerPem = await File.ReadAllText(issuer);
+                    pfxBuilder.AddIssuers(Encoding.UTF8.GetBytes(issuerPem));
+                }
+
+                var pfx = pfxBuilder.Build(pfxName, password);
+
+                if (string.IsNullOrWhiteSpace(outPath))
+                {
+                    var output = new
+                    {
+                        location,
+                        pfx,
+                    };
+
+                    console.WriteAsJson(output);
+                }
+                else
+                {
+                    logger.Debug("Saving certificate to '{0}'.", outPath);
+                    await File.WriteAllBytes(outPath, pfx);
+
+                    var output = new
+                    {
+                        location,
+                    };
+
+                    console.WriteAsJson(output);
+                }
+            });
 
             return cmd;
-        }
-
-        public async Task<object> Execute(ArgumentSyntax syntax)
-        {
-            var keyPath = syntax.GetParameter<string>(PrivateKeyOption, true);
-            var pwd = syntax.GetParameter<string>(PasswordParam, true);
-            var issuer = syntax.GetParameter<string>(IssuerOption);
-            var friendlyName = syntax.GetParameter<string>(FriendlyNameOption);
-            var (location, cert) = await DownloadCertificate(syntax);
-
-            var privKey = await syntax.ReadKey(PrivateKeyOption, "CERTES_CERT_KEY", File, environment, true);
-            var pfxName = string.Format(CultureInfo.InvariantCulture, "[certes] {0:yyyyMMddhhmmss}", DateTime.UtcNow);
-            if (!string.IsNullOrWhiteSpace(friendlyName))
-            {
-                pfxName = string.Concat(friendlyName, " ", pfxName);
-            }
-
-            var pfxBuilder = cert.ToPfx(privKey);
-            if (!string.IsNullOrWhiteSpace(issuer))
-            {
-                var issuerPem = await File.ReadAllText(issuer);
-                pfxBuilder.AddIssuers(Encoding.UTF8.GetBytes(issuerPem));
-            }
-
-            var pfx = pfxBuilder.Build(pfxName, pwd);
-            
-            var outPath = syntax.GetOption<string>(OutOption);
-            if (string.IsNullOrWhiteSpace(outPath))
-            {
-                return new
-                {
-                    location,
-                    pfx,
-                };
-            }
-            else
-            {
-                logger.Debug("Saving certificate to '{0}'.", outPath);
-                await File.WriteAllBytes(outPath, pfx);
-
-                return new
-                {
-                    location,
-                };
-
-            }
         }
     }
 }

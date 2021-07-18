@@ -1,84 +1,89 @@
 ﻿using System;
 using System.CommandLine;
-using System.Threading.Tasks;
+using System.CommandLine.Invocation;
+using Certes.Acme.Resource;
 using Certes.Cli.Settings;
 using NLog;
-
-using static System.StringComparison;
-using static Certes.Acme.Resource.ChallengeTypes;
 
 namespace Certes.Cli.Commands
 {
     internal class OrderAuthzCommand : CommandBase, ICliCommand
     {
-        private const string CommandText = "authz";
-        private const string OrderIdParam = "order-id";
-        private const string DomainParam = "domain";
-        private const string ChallengeTypeParam = "challenge-type";
+        public record Args(
+            Uri OrderId,
+            string Domain,
+            string ChallengeType,
+            Uri Server,
+            string KeyPath);
+
         private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderAuthzCommand));
 
-        public CommandGroup Group { get; } = CommandGroup.Order;
+        public CommandGroup Group => CommandGroup.Order;
 
-        public OrderAuthzCommand(
-            IUserSettings userSettings,
-            AcmeContextFactory contextFactory,
-            IFileUtil fileUtil)
+        public OrderAuthzCommand(IUserSettings userSettings, AcmeContextFactory contextFactory, IFileUtil fileUtil)
             : base(userSettings, contextFactory, fileUtil)
         {
         }
 
-        public ArgumentCommand<string> Define(ArgumentSyntax syntax)
+        public Command Define()
         {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandOrderAuthz);
+            var cmd = new Command("authz", Strings.HelpCommandOrderAuthz)
+            {
+                new Argument<Uri>("order-id", Strings.HelpOrderId),
+                new Argument<string>("domain", Strings.HelpDomain),
+                new Argument<string>("challenge-type", Strings.HelpChallengeType),
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+            };
 
-            syntax
-                .DefineServerOption()
-                .DefineKeyOption()
-                .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId)
-                .DefineParameter(DomainParam, help: Strings.HelpDomain)
-                .DefineParameter(ChallengeTypeParam, help: Strings.HelpChallengeType);
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
+            {
+                var (orderId, domain, challengeType, server, keyPath) = args;
+                var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
+
+                var type =
+                    string.Equals(challengeType, "dns", StringComparison.OrdinalIgnoreCase) ? ChallengeTypes.Dns01 :
+                    string.Equals(challengeType, "http", StringComparison.OrdinalIgnoreCase) ? ChallengeTypes.Http01 :
+                    throw new CertesCliException(string.Format(Strings.ErrorInvalidChallengeType, challengeType));
+
+                logger.Debug("Loading authz from '{0}'.", serverUri);
+
+                var acme = ContextFactory.Invoke(serverUri, key);
+                var orderCtx = acme.Order(orderId);
+                var authzCtx = await orderCtx.Authorization(domain)
+                    ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
+                var challengeCtx = await authzCtx.Challenge(type)
+                    ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, type));
+
+                var challenge = await challengeCtx.Resource();
+
+                if (string.Equals(type, ChallengeTypes.Dns01, StringComparison.OrdinalIgnoreCase))
+                {
+                    var output = new
+                    {
+                        location = challengeCtx.Location,
+                        dnsTxt = key.DnsTxt(challenge.Token),
+                        resource = challenge,
+                    };
+
+                    console.WriteAsJson(output);
+                }
+                else
+                {
+                    var output = new
+                    {
+                        location = challengeCtx.Location,
+                        challengeFile = $".well-known/acme-challenge/{challenge.Token}",
+                        challengeTxt = $"{challenge.Token}.{key.Thumbprint()}",
+                        resource = challenge,
+                        keyAuthz = challengeCtx.KeyAuthz
+                    };
+
+                    console.WriteAsJson(output);
+                }
+            });
 
             return cmd;
-        }
-
-        public async Task<object> Execute(ArgumentSyntax syntax)
-        {
-            var (serverUri, key) = await ReadAccountKey(syntax, true, false);
-            var orderUri = syntax.GetParameter<Uri>(OrderIdParam, true);
-            var domain = syntax.GetParameter<string>(DomainParam, true);
-            var typeStr = syntax.GetParameter<string>(ChallengeTypeParam, true);
-
-            var type =
-                string.Equals(typeStr, "dns", OrdinalIgnoreCase) ? Dns01 :
-                string.Equals(typeStr, "http", OrdinalIgnoreCase) ? Http01 :
-                throw new ArgumentSyntaxException(string.Format(Strings.ErrorInvalidChallengeType, typeStr));
-
-            logger.Debug("Loading authz from '{0}'.", serverUri);
-
-            var acme = ContextFactory.Invoke(serverUri, key);
-            var orderCtx = acme.Order(orderUri);
-            var authzCtx = await orderCtx.Authorization(domain)
-                ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, domain));
-            var challengeCtx = await authzCtx.Challenge(type)
-                ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, typeStr));
-
-            var challenge = await challengeCtx.Resource();
-
-            if (string.Equals(type, Dns01, OrdinalIgnoreCase))
-            {
-                return new
-                {
-                    location = challengeCtx.Location,
-                    dnsTxt = key.DnsTxt(challenge.Token),
-                    resource = challenge,
-                };
-            }
-
-            return new
-            {
-                location = challengeCtx.Location,
-                resource = challenge,
-            };
         }
     }
 }

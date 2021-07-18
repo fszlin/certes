@@ -24,53 +24,36 @@ namespace Certes.Cli.Commands
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
 
-            var cmd = new ServerShowCommand(settingsMock.Object, (u, k) => ctxMock.Object);
-            var syntax = DefineCommand($"show --server {serverUri}");
+            var (console, stdOutput, errOutput) = MockConsole();
 
-            var ret = await cmd.Execute(syntax);
+            var cmd = new ServerShowCommand(
+                settingsMock.Object, (u, k) => ctxMock.Object);
+            var command = cmd.Define();
+
+            await command.InvokeAsync($"show --server {serverUri}", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            var ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
                     location = serverUri,
                     resource = MockDirectoryV2
-                }),
-                JsonConvert.SerializeObject(ret));
+                }, JsonSettings),
+                JsonConvert.SerializeObject(ret, JsonSettings));
 
-            syntax = DefineCommand($"show");
+            errOutput.Clear();
+            stdOutput.Clear();
 
-            ret = await cmd.Execute(syntax);
+            await command.InvokeAsync($"show", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
                     location = LetsEncryptV2,
                     resource = MockDirectoryV2
-                }),
-                JsonConvert.SerializeObject(ret));
-        }
-
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"show --server {LetsEncryptStagingV2}";
-            var syntax = DefineCommand(args);
-
-            Assert.Equal("show", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "server", LetsEncryptStagingV2);
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("show", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new ServerShowCommand(NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object);
-            Assert.Equal(CommandGroup.Server.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
+                }, JsonSettings),
+                JsonConvert.SerializeObject(ret, JsonSettings));
         }
     }
 }

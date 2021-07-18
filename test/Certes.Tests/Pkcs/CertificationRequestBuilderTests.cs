@@ -7,15 +7,6 @@ namespace Certes.Pkcs
     public class CertificationRequestBuilderTests
     {
         [Fact]
-        public async Task CanCreateCsrWithKey()
-        {
-            var key = await Helper.LoadkeyV1();
-#pragma warning disable 0612
-            new CertificationRequestBuilder(key.Export());
-#pragma warning restore 0612
-        }
-
-        [Fact]
         public void CanCreateCsrWithSignatureKey()
         {
             var key = KeyFactory.NewKey(KeyAlgorithm.RS256);

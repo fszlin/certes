@@ -41,6 +41,10 @@ Create new account.
 var account = await context.NewAccount(
     new [] { "mailto:admin@example.com", "mailto:it@example.com" }, true);
 var account = await context.NewAccount("admin@example.com", true);
+
+// external account binding
+var account = await context.NewAccount("admin@example.com", true, "(EAB Key Identifier)","(EAB Key)");
+var account = await context.NewAccount("admin@example.com", true, "(EAB Key Identifier)","(EAB Key)","(EAB Key Algorithm e.g.HS256)");
 ```
  
 Fetch existing account from server.
@@ -96,7 +100,7 @@ var orderUri = order.Location;
 Retrieve order by URI.
  
 ```C#
-var order = await context.Order(orderUri);
+var order = context.Order(orderUri);
 ```
 
 Finalize the order.
@@ -128,6 +132,12 @@ Download the certificate PEM.
 var certChain = await order.Download();
 ```
 
+Download the certificate PEM signed with a specific root certificate
+
+```C#
+var certChain = await order.Download("ISRG X1 Root");
+```
+
 Finalize and download the certificate.
 
 ```C#
@@ -141,7 +151,22 @@ var cert = await order.Generate(
         Organization = "Dept",
     }, certKey);
 ```
- 
+
+Finalize and download the certificate signed with a specific root certificate.
+
+```C#
+var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
+var cert = await order.Generate(
+    new CsrInfo
+    {
+        CountryName = "CA",
+        State = "State",
+        Locality = "City",
+        Organization = "Dept",
+    }, certKey, "ISRG X1 Root");
+```
+
+
 ## Authorizations
  
 Retrieve authorizations of the order.

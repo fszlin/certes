@@ -42,7 +42,7 @@ The result should look similar to this:
       "mailto:email@example.com"
     ]
   }
-}
+
 ```
 
 ## Ordering SSL Certificates
@@ -96,7 +96,10 @@ can fullfill any one of them.
 ### Setup for Challenges
 
 Certes CLI provides commands for generating necessary data to fullfill
-the challenges. To get the `TXT` record value for `DNS` challenge:
+the challenges.
+
+#### DNS challenge
+ To get the `TXT` record value for `DNS` challenge:
 
 ```Powershell
 certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 *.example.com dns
@@ -112,8 +115,30 @@ The output will contain the `TXT` record value.
 }
 ```
 
+#### HTTP-01 challenge
+ To get token and thumbprint value for `HTTP-01` challenge:
+
+ ```Powershell
+certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 api.example.com http
+```
+The output will contain the two value fields we need to use for order validation.
+
+```json
+{
+  "location": "...",
+  "resource": {
+    "type": "http-01",
+    "url": "https://acme-v02.api.letsencrypt.org/acme/chall-v3/2645311522/sample",
+    "status": "Pending",
+    "token": "iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest"
+  },
+  "keyAuthz": "iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest.Qed9-4Ek4ot3idslj89tmCMGEYlfY5I463X37hCd9i4"
+}
+```
+
+On your application server you need to create file which will be available under *http://api.example.com/.well-known/acme-challenge/iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest* (resource.token value for last url segment). File content needs to be set as *iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest.Qed9-4Ek4ot3idslj89tmCMGEYlfY5I463X37hCd9i4* (keyAuthz value).
 <!--
-TODO: HTTP-01 and TLS-ALPN-01
+TODO: TLS-ALPN-01
 -->
 
 ### Configure DNS challenge on Azure DNS
@@ -173,11 +198,13 @@ certes order finalize https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
 
 > The `--private-key` option can be used to specify the private key for the certificate.
 
+> The `--preferred-chain` option can be used to specify the preferred root certificate. 
+
 To export the certificate in `PEM`:
 
 ```PowerShell
 certes cert pem https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
-  --out my-cert.pem
+  --out my-cert.pem --preferred-chain "ISRG X1 Root"
 ```
 
 Or pack the certificate and private key in `PFX`:

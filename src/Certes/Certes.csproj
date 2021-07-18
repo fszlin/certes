@@ -2,11 +2,7 @@
   <Import Project="../../misc/certes.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard1.3;net45;net47</TargetFrameworks>
-    <AssemblyVersion>2.3.3</AssemblyVersion>
-    <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
-    <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
-    <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
+    <TargetFrameworks>net5.0;netstandard2.0;net461;</TargetFrameworks>
     <Authors>Certes Contributors</Authors>
     <Company />
     <Product>Certes ACME Client</Product>
@@ -14,16 +10,21 @@
     <Description>A client implementation for the Automated Certificate Management Environment (ACME) protocol.</Description>
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate;dotnettool</PackageTags>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/fszlin/certes/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Certes.xml</DocumentationFile>
-    <PackageIconUrl>https://raw.githubusercontent.com/fszlin/certes/master/misc/logo.png</PackageIconUrl>
+    <PackageIcon>logo.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\misc\logo.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
   
   <ItemGroup>
     <None Remove="Resources\Certificates\dst-root-ca-x3.pem" />
     <None Remove="Resources\Certificates\fake-le-root-x1.pem" />
+    <None Remove="Resources\Certificates\isrg-root-x1.pem" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,16 +34,21 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Certificates\dst-root-ca-x3.pem" />
     <EmbeddedResource Include="Resources\Certificates\fake-le-root-x1.pem" />
+    <EmbeddedResource Include="Resources\Certificates\isrg-root-x1.pem" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Net.Http" Condition="'$(TargetFramework)' == 'net45' Or '$(TargetFramework)' == 'net47'" />
+    <Reference Include="System.Net.Http" Condition="'$(TargetFramework)' == 'net461'" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="Portable.BouncyCastle" Version="1.8.1.4" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" Condition="'$(TargetFramework)' == 'netstandard1.3' Or '$(TargetFramework)' == 'net45'" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.8.10" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" Condition="'$(TargetFramework)' == 'net461'" />
   </ItemGroup>
 
   <ItemGroup>

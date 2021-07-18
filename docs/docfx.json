@@ -44,7 +44,7 @@
       "_appName": "Certes",
       "_gitContribute": {
         "repo": "https://github.com/fszlin/certes",
-        "branch": "master",
+        "branch": "main",
         "apiSpecFolder": "docs/api/spec"
       },
       "_appLogoPath": "images/logo.svg",

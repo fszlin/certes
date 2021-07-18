@@ -1,6 +1,6 @@
 ﻿using System;
 using System.CommandLine;
-using System.Threading.Tasks;
+using System.CommandLine.Invocation;
 using Certes.Cli.Settings;
 using NLog;
 
@@ -8,6 +8,8 @@ namespace Certes.Cli.Commands
 {
     internal class OrderShowCommand : CommandBase, ICliCommand
     {
+        public record Args(Uri OrderId, Uri Server, string KeyPath);
+
         private const string CommandText = "show";
         private const string OrderIdParam = "order-id";
         private static readonly ILogger logger = LogManager.GetLogger(nameof(OrderShowCommand));
@@ -22,33 +24,34 @@ namespace Certes.Cli.Commands
         {
         }
 
-        public ArgumentCommand<string> Define(ArgumentSyntax syntax)
+        public Command Define()
         {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandOrderShow);
+            var cmd = new Command(CommandText, Strings.HelpCommandOrderShow)
+            {
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Option<string>(new[]{ "--key-path", "--key", "-k" }, Strings.HelpKey),
+                new Argument<Uri>(OrderIdParam, Strings.HelpOrderId),
+            };
 
-            syntax
-                .DefineServerOption()
-                .DefineKeyOption()
-                .DefineUriParameter(OrderIdParam, help: Strings.HelpOrderId);
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
+            {
+                var (orderId, server, keyPath) = args;
+                var (serverUri, key) = await ReadAccountKey(server, keyPath, true, false);
+                logger.Debug("Loading order from '{0}'.", serverUri);
+
+                var acme = ContextFactory.Invoke(serverUri, key);
+                var orderCtx = acme.Order(orderId);
+
+                var output = new
+                {
+                    location = orderCtx.Location,
+                    resource = await orderCtx.Resource()
+                };
+
+                console.WriteAsJson(output);
+            });
 
             return cmd;
-        }
-
-        public async Task<object> Execute(ArgumentSyntax syntax)
-        {
-            var (serverUri, key) = await ReadAccountKey(syntax, true, false);
-            var orderUri = syntax.GetParameter<Uri>(OrderIdParam, true);
-
-            logger.Debug("Loading order from '{0}'.", serverUri);
-
-            var acme = ContextFactory.Invoke(serverUri, key);
-            var orderCtx = acme.Order(orderUri);
-
-            return new
-            {
-                location = orderCtx.Location,
-                resource = await orderCtx.Resource()
-            };
         }
     }
 }

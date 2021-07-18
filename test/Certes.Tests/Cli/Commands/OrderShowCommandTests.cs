@@ -41,47 +41,24 @@ namespace Certes.Cli.Commands
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
 
+            var (console, stdOutput, errOutput) = MockConsole();
+
             var cmd = new OrderShowCommand(
                 settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object);
+            var command = cmd.Define();
 
-            var syntax = DefineCommand($"show {orderLoc}");
-            var ret = await cmd.Execute(syntax);
+            await command.InvokeAsync($"show {orderLoc}", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            dynamic ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
                     location = orderLoc,
                     resource = order,
-                }),
-                JsonConvert.SerializeObject(ret));
+                }, JsonSettings),
+                JsonConvert.SerializeObject(ret, JsonSettings));
 
             ctxMock.Verify(m => m.Order(orderLoc), Times.Once);
-        }
-
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"show http://acme.com/o/1 --server {LetsEncryptStagingV2}";
-            var syntax = DefineCommand(args);
-
-            Assert.Equal("show", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "server", LetsEncryptStagingV2);
-            ValidateParameter(syntax, "order-id", new Uri("http://acme.com/o/1"));
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("show", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new OrderShowCommand(
-                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil());
-            Assert.Equal(CommandGroup.Order.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
         }
     }
 }

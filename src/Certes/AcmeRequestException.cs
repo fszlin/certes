@@ -10,9 +10,7 @@ namespace Certes
     /// The exception that is thrown when an error occurs while processing ACME operations.
     /// </summary>
     /// <seealso cref="AcmeException" />
-#if !NETSTANDARD1_3
     [Serializable]
-#endif
     public class AcmeRequestException : AcmeException
     {
         /// <summary>
@@ -71,7 +69,6 @@ namespace Certes
         {
         }
 
-#if !NETSTANDARD1_3
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeRequestException"/> class.
         /// </summary>
@@ -118,7 +115,6 @@ namespace Certes
                 info.AddValue("acme.error", JsonConvert.SerializeObject(Error, jsonSerializerSettings));
             }
         }
-#endif
 
         /// <summary>
         /// Gets a message that describes the current exception.

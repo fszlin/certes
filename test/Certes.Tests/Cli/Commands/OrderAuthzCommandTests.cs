@@ -47,8 +47,9 @@ namespace Certes.Cli.Commands
                         Token = "dns-token",
                         Type = ChallengeTypes.Dns01,
                     }
-                }
+                }                
             };
+            var http01KeyAuthzThumbprint = "keyAuthz";
 
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
             settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(LetsEncryptV2);
@@ -57,6 +58,7 @@ namespace Certes.Cli.Commands
             var challengeMock1 = new Mock<IChallengeContext>(MockBehavior.Strict);
             challengeMock1.SetupGet(m => m.Location).Returns(challenge1Loc);
             challengeMock1.SetupGet(m => m.Type).Returns(ChallengeTypes.Http01);
+            challengeMock1.SetupGet(m => m.KeyAuthz).Returns(http01KeyAuthzThumbprint);
             challengeMock1.Setup(m => m.Resource()).ReturnsAsync(authz.Challenges[0]);
             var challengeMock2 = new Mock<IChallengeContext>(MockBehavior.Strict);
             challengeMock2.SetupGet(m => m.Location).Returns(challenge2Loc);
@@ -77,70 +79,60 @@ namespace Certes.Cli.Commands
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
 
+            var (console, stdOutput, errOutput) = MockConsole();
+
             var cmd = new OrderAuthzCommand(
                 settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object);
+            var command = cmd.Define();
 
-            var syntax = DefineCommand($"authz {orderLoc} {domain} http");
-            var ret = await cmd.Execute(syntax);
+            await command.InvokeAsync($"authz {orderLoc} {domain} http", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            dynamic ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
                     location = challenge1Loc,
+                    challengeFile = $".well-known/acme-challenge/{authz.Challenges[0].Token}",
+                    challengeTxt = $"{authz.Challenges[0].Token}.{GetKeyV2().Thumbprint()}",
                     resource = authz.Challenges[0],
-                }),
-                JsonConvert.SerializeObject(ret));
+                    keyAuthz = http01KeyAuthzThumbprint
+                }, JsonSettings),
+                JsonConvert.SerializeObject(ret, JsonSettings));
 
-            syntax = DefineCommand($"authz {orderLoc} {domain} dns");
-            ret = await cmd.Execute(syntax);
+            errOutput.Clear();
+            stdOutput.Clear();
+
+            await command.InvokeAsync($"authz {orderLoc} {domain} dns", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new
                 {
                     location = challenge2Loc,
                     dnsTxt = GetKeyV2().DnsTxt(authz.Challenges[1].Token),
                     resource = authz.Challenges[1],
-                }),
-                JsonConvert.SerializeObject(ret));
+                }, JsonSettings),
+                JsonConvert.SerializeObject(ret, JsonSettings));
 
-            syntax = DefineCommand($"authz {orderLoc} {domain} tls-sni");
-            await Assert.ThrowsAsync<ArgumentSyntaxException>(() => cmd.Execute(syntax));
+            errOutput.Clear();
+            stdOutput.Clear();
 
-            syntax = DefineCommand($"authz {orderLoc} www.some.com http");
-            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
+            await command.InvokeAsync($"authz {orderLoc} {domain} tls-sni", console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
+
+            errOutput.Clear();
+            stdOutput.Clear();
+
+            await command.InvokeAsync($"authz {orderLoc} www.some.com http", console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
 
             authzMock.Setup(m => m.Challenges())
                 .ReturnsAsync(new[] { challengeMock2.Object });
+            errOutput.Clear();
+            stdOutput.Clear();
 
-            syntax = DefineCommand($"authz {orderLoc} {domain} http");
-            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
-        }
-
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"authz http://acme.com/o/1 www.abc.com http --server {LetsEncryptStagingV2}";
-            var syntax = DefineCommand(args);
-
-            Assert.Equal("authz", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "server", LetsEncryptStagingV2);
-            ValidateParameter(syntax, "order-id", new Uri("http://acme.com/o/1"));
-            ValidateParameter(syntax, "domain", "www.abc.com");
-            ValidateParameter(syntax, "challenge-type", "http");
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("authz", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new OrderAuthzCommand(
-                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil());
-            Assert.Equal(CommandGroup.Order.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
+            await command.InvokeAsync($"authz {orderLoc} {domain} http", console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
         }
     }
 }

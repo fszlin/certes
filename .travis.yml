@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-dotnet: 2.1.403
+dotnet: 5.0
 env:
   matrix:
     - CLI_VERSION=Latest
@@ -10,10 +10,10 @@ env:
 branches:
   only:
     - release
-    - master
+    - main
     - dev
     - vnext
 script:
   - dotnet restore
-  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework netcoreapp2.0
-  - dotnet test ./test/Certes.Tests.Integration/Certes.Tests.Integration.csproj --framework netcoreapp2.0
+  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework net5.0
+  - dotnet test ./test/Certes.Tests.Integration/Certes.Tests.Integration.csproj --framework net5.0

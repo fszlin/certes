@@ -57,11 +57,15 @@ namespace Certes.Cli.Commands
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
 
+            var (console, stdOutput, errOutput) = MockConsole();
+
             var cmd = new OrderListCommand(
                 settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object);
+            var command = cmd.Define();
 
-            var syntax = DefineCommand($"list");
-            var ret = await cmd.Execute(syntax);
+            await command.InvokeAsync($"list", console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            dynamic ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(
                 JsonConvert.SerializeObject(new[] 
                 { 
@@ -75,34 +79,8 @@ namespace Certes.Cli.Commands
                         location = order2Loc,
                         resource = order2,
                     }
-                }),
-                JsonConvert.SerializeObject(ret));
-        }
-
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"list --server {LetsEncryptStagingV2}";
-            var syntax = DefineCommand(args);
-
-            Assert.Equal("list", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "server", LetsEncryptStagingV2);
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("list", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new OrderListCommand(
-                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil());
-            Assert.Equal(CommandGroup.Order.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
+                }, JsonSettings),
+                JsonConvert.SerializeObject(ret, JsonSettings));
         }
     }
 }

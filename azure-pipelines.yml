@@ -1,3 +1,84 @@
+trigger:
+- main
 
-pool:
-  vmImage: 'Ubuntu 16.04'
+stages:
+
+- stage: ver
+  displayName: Determine Version
+  jobs:
+  - job: ver
+    displayName: Determine Version
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - task: gitversion/setup@0
+      displayName: Install GitVersion
+      inputs:
+        versionSpec: '5.x'
+
+    - task: gitversion/execute@0
+      displayName: Determine Version
+      inputs:
+        useConfigFile: true
+        configFilePath: 'GitVersion.yml'
+      name: version
+
+- stage: test
+  displayName: Test
+  dependsOn: ver
+  jobs:
+
+  - template: scripts/build.yml
+    parameters:
+      name: Linux_net50
+      displayName: Linux - net5.0
+      framework: net5.0
+      appFramework: net5.0
+      pool:
+        vmImage: 'ubuntu-latest'
+
+  - template: scripts/build.yml
+    parameters:
+      name: macOS_net50
+      displayName: macOS - net5.0
+      framework: net5.0
+      appFramework: net5.0
+      pool:
+        vmImage: 'macOS-latest'
+
+  - template: scripts/build.yml
+    parameters:
+      name: Windows_net50
+      displayName: Windows - net5.0
+      framework: net5.0
+      appFramework: net5.0
+      pool:
+        vmImage: 'windows-latest'
+
+  - template: scripts/build.yml
+    parameters:
+      name: Windows_net461
+      displayName: Windows - net461
+      framework: net461
+      appFramework: net461
+      pool:
+        vmImage: 'windows-latest'
+
+- stage: pack
+  displayName: Pack
+  dependsOn:
+  - ver
+  jobs:
+
+  - template: scripts/pack.yml
+    parameters:
+      name: 'pack'
+      displayName: 'Pack Certes'
+      projectName: 'Certes'
+
+  - template: scripts/pack.yml
+    parameters:
+      name: 'pack_tool'
+      displayName: 'Pack Certes.Tool'
+      projectName: 'Certes.Cli'

@@ -27,6 +27,12 @@ namespace Certes.Acme
         public Uri Location { get; }
 
         /// <summary>
+        /// The timespan after which to retry the request
+        /// </summary>
+        public int RetryAfter { get; protected set; }
+
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="EntityContext{T}"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -45,8 +51,7 @@ namespace Certes.Acme
         /// <returns>The resource entity data.</returns>
         public virtual async Task<T> Resource()
         {
-            var payload = await Context.Sign(null, Location);
-            var resp = await Context.HttpClient.Post<T>(Location, payload, true);
+            var resp = await Context.HttpClient.Post<T>(Context, Location, null, true);
             return resp.Resource;
         }
     }

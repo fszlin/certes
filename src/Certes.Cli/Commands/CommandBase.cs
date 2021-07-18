@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CommandLine;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using NLog;
@@ -9,9 +8,9 @@ namespace Certes.Cli.Commands
     internal abstract class CommandBase
     {
         private static readonly ILogger logger = LogManager.GetLogger(nameof(CommandBase));
-        protected IFileUtil File { get; private set; }
-        protected IUserSettings UserSettings { get; private set; }
-        protected AcmeContextFactory ContextFactory { get; private set; }
+        public IFileUtil File { get; init; }
+        public IUserSettings UserSettings { get; init; }
+        public AcmeContextFactory ContextFactory { get; init; }
 
         protected CommandBase(
             IUserSettings userSettings,
@@ -23,13 +22,12 @@ namespace Certes.Cli.Commands
             File = fileUtil;
         }
 
-        protected async Task<(Uri Server, IKey Key)> ReadAccountKey(
-            ArgumentSyntax syntax, bool fallbackToSettings = false, bool required = false)
+        public async Task<(Uri Server, IKey Key)> ReadAccountKey(
+            Uri server, string keyPath = null, bool fallbackToSettings = false, bool required = false)
         {
-            var serverUri = syntax.GetServerOption() ??
+            var serverUri = server ??
                 await UserSettings.GetDefaultServer();
 
-            var keyPath = syntax.GetKeyOption();
             if (!string.IsNullOrWhiteSpace(keyPath))
             {
                 logger.Debug("Load account key form '{0}'.", keyPath);
@@ -39,7 +37,7 @@ namespace Certes.Cli.Commands
 
             var key = fallbackToSettings ?
                 await UserSettings.GetAccountKey(serverUri) : null;
-            
+
             if (required && key == null)
             {
                 throw new CertesCliException(
@@ -47,6 +45,28 @@ namespace Certes.Cli.Commands
             }
 
             return (serverUri, key);
+        }
+
+        public static async Task<IKey> ReadKey(
+            string keyPath,
+            string environmentVariableName,
+            IFileUtil file,
+            IEnvironmentVariables environment)
+        {
+            if (!string.IsNullOrWhiteSpace(keyPath))
+            {
+                return KeyFactory.FromPem(await file.ReadAllText(keyPath));
+            }
+            else
+            {
+                var keyData = environment.GetVar(environmentVariableName);
+                if (!string.IsNullOrWhiteSpace(keyData))
+                {
+                    return KeyFactory.FromDer(Convert.FromBase64String(keyData));
+                }
+            }
+
+            return null;
         }
     }
 }

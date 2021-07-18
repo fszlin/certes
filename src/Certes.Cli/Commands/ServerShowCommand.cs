@@ -1,7 +1,6 @@
 ﻿using System;
 using System.CommandLine;
-using System.Linq;
-using System.Threading.Tasks;
+using System.CommandLine.Invocation;
 using Certes.Cli.Settings;
 using NLog;
 
@@ -10,10 +9,8 @@ namespace Certes.Cli.Commands
     internal class ServerShowCommand : ICliCommand
     {
         private static readonly ILogger logger = LogManager.GetLogger(nameof(ServerShowCommand));
-
         private readonly AcmeContextFactory contextFactory;
         private readonly IUserSettings userSettings;
-        public CommandGroup Group { get; } = CommandGroup.Server;
 
         public ServerShowCommand(IUserSettings userSettings, AcmeContextFactory contextFactory)
         {
@@ -21,29 +18,31 @@ namespace Certes.Cli.Commands
             this.contextFactory = contextFactory;
         }
 
-        public ArgumentCommand<string> Define(ArgumentSyntax syntax)
+        public CommandGroup Group => CommandGroup.Server;
+
+        public Command Define()
         {
-            var cmd = syntax.DefineCommand("show", help: Strings.HelpCommandServerShow);
-            syntax.DefineServerOption();
+            var cmd = new Command("show", Strings.HelpCommandServerShow)
+            {
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+            };
+
+            cmd.Handler = CommandHandler.Create(async (Uri server, IConsole console) =>
+            {
+                var serverUri = server ?? await userSettings.GetDefaultServer();
+
+                var ctx = contextFactory.Invoke(serverUri, null);
+                logger.Debug("Loading directory from '{0}'", serverUri);
+                var directory = await ctx.GetDirectory();
+
+                console.WriteAsJson(new
+                {
+                    location = serverUri,
+                    resource = directory,
+                });
+            });
 
             return cmd;
         }
-
-        public async Task<object> Execute(ArgumentSyntax syntax)
-        {
-            var serverUri = syntax.GetServerOption() ??
-                await userSettings.GetDefaultServer();
-
-            var ctx = contextFactory.Invoke(serverUri, null);
-            logger.Debug("Loading directory from '{0}'", serverUri);
-            var directory = await ctx.GetDirectory();
-
-            return new
-            {
-                location = serverUri,
-                resource = directory,
-            };
-        }
     }
-
 }

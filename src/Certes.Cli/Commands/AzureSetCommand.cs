@@ -1,84 +1,82 @@
 ﻿using System.Collections.Generic;
 using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.Linq;
 using System.Threading.Tasks;
 using Certes.Cli.Settings;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
-using NLog;
-using static Certes.Cli.Commands.AzureCommand;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 
 namespace Certes.Cli.Commands
 {
-    internal class AzureSetCommand : ICliCommand
+    internal class AzureSetCommand : AzureCommandBase, ICliCommand
     {
         private const string CommandText = "set";
 
         private readonly AzureClientFactory<IResourceManagementClient> clientFactory;
-        private readonly IUserSettings userSettings;
-
         public CommandGroup Group => CommandGroup.Azure;
 
-        public AzureSetCommand(IUserSettings userSettings, AzureClientFactory<IResourceManagementClient> clientFactory)
+        public AzureSetCommand(
+            IUserSettings userSettings,
+            AcmeContextFactory contextFactory,
+            IFileUtil fileUtil,
+            AzureClientFactory<IResourceManagementClient> clientFactory)
+            : base(userSettings, contextFactory, fileUtil)
         {
-            this.userSettings = userSettings;
             this.clientFactory = clientFactory;
         }
 
-        public async Task<object> Execute(ArgumentSyntax syntax)
+        public Command Define()
         {
-            var tenantId = syntax.GetOption<string>(AzureTenantIdOption);
-            var clientId = syntax.GetOption<string>(AzureClientIdOption);
-            var secret = syntax.GetOption<string>(AzureSecretOption);
-            var subscriptionId = syntax.GetOption<string>(AzureSubscriptionIdOption);
-
-            var loginInfo = new ServicePrincipalLoginInformation
+            var cmd = new Command(CommandText, Strings.HelpCommandAzureSet)
             {
-                ClientId = clientId,
-                ClientSecret = secret,
+                new Option<string>(AzureTenantIdOption, Strings.HelpAzureTenantId),
+                new Option<string>(AzureClientIdOption, Strings.HelpAzureClientId),
+                new Option<string>(AzureSecretOption, Strings.HelpAzureSecret),
+                new Option<string>(AzureSubscriptionIdOption, Strings.HelpAzureSubscriptionId),
             };
 
-            var credentials = new AzureCredentials(
-                loginInfo, tenantId, AzureEnvironment.AzureGlobalCloud)
-                .WithDefaultSubscription(subscriptionId);
-
-            var resourceGroups = await LoadResourceGroups(credentials);
-
-            var azSettings = new AzureSettings
+            cmd.Handler = CommandHandler.Create(async (
+                AzureSettings azureOptions,
+                IConsole console) =>
             {
-                ClientId = clientId,
-                TenantId = tenantId,
-                ClientSecret = secret,
-                SubscriptionId = subscriptionId,
-            };
+                var loginInfo = new ServicePrincipalLoginInformation
+                {
+                    ClientId = azureOptions.ClientId,
+                    ClientSecret = azureOptions.ClientSecret,
+                };
 
-            await userSettings.SetAzureSettings(azSettings);
+                var credentials = new AzureCredentials(
+                    loginInfo, azureOptions.TenantId, AzureEnvironment.AzureGlobalCloud)
+                    .WithDefaultSubscription(azureOptions.SubscriptionId);
 
-            return new
-            {
-                resourceGroups
-            };
-        }
+                var builder = RestClient.Configure();
+                var resClient = builder.WithEnvironment(AzureEnvironment.AzureGlobalCloud)
+                    .WithCredentials(credentials)
+                    .Build();
 
-        public ArgumentCommand<string> Define(ArgumentSyntax syntax)
-        {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandAzureSet);
-            syntax
-                .DefineOption(AzureTenantIdOption, help: Strings.HelpAzureTenantId)
-                .DefineOption(AzureClientIdOption, help: Strings.HelpAzureClientId)
-                .DefineOption(AzureSecretOption, help: Strings.HelpAzureSecret)
-                .DefineOption(AzureSubscriptionIdOption, help: Strings.HelpAzureSubscriptionId);
+                var resourceGroups = await LoadResourceGroups(resClient);
+
+                await UserSettings.SetAzureSettings(azureOptions);
+
+                var output = new
+                {
+                    resourceGroups
+                };
+
+                console.WriteAsJson(output);
+            });
 
             return cmd;
         }
 
-        private async Task<IList<(string Location, string Name)>> LoadResourceGroups(AzureCredentials credentials)
+        private async Task<IList<(string Location, string Name)>> LoadResourceGroups(RestClient restClient)
         {
-            using (var client = clientFactory.Invoke(credentials))
-            {
-                var resourceGroups = await client.ResourceGroups.ListAsync();
-                return resourceGroups.Select(g => (g.Location, g.Name)).ToArray();
-            }
+            using var client = clientFactory.Invoke(restClient);
+            client.SubscriptionId = restClient.Credentials.DefaultSubscriptionId;
+            var resourceGroups = await client.ResourceGroups.ListAsync();
+            return resourceGroups.Select(g => (g.Location, g.Name)).ToArray();
         }
     }
 }

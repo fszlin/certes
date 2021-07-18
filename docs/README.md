@@ -1,7 +1,7 @@
 # Certes
 
 Certes is an [ACME](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment)
-client runs on .NET 4.5+ and .NET Standard 1.3+, supports ACME v2 and wildcard certificates.
+client runs on .NET 4.5+ and .NET Standard 2.0+, supports ACME v2 and wildcard certificates.
 It is aimed to provide an easy to use API for managing certificates during deployment processes.
 
 ## Usage
@@ -144,9 +144,9 @@ Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 [![NuGet](https://img.shields.io/nuget/dt/dotnet-certes.svg)](https://www.nuget.org/packages/dotnet-certes/)
 
 
-[![AppVeyor](https://img.shields.io/appveyor/ci/fszlin/certes/master.svg)](https://ci.appveyor.com/project/fszlin/certes)
-[![AppVeyor](https://img.shields.io/appveyor/tests/fszlin/certes/master.svg)](https://ci.appveyor.com/project/fszlin/certes/build/tests)
-[![codecov](https://codecov.io/gh/fszlin/certes/branch/master/graph/badge.svg)](https://codecov.io/gh/fszlin/certes)
-[![BCH compliance](https://bettercodehub.com/edge/badge/fszlin/certes?branch=master)](https://bettercodehub.com/results/fszlin/certes)
+[![AppVeyor](https://img.shields.io/appveyor/ci/fszlin/certes/main.svg)](https://ci.appveyor.com/project/fszlin/certes)
+[![AppVeyor](https://img.shields.io/appveyor/tests/fszlin/certes/main.svg)](https://ci.appveyor.com/project/fszlin/certes/build/tests)
+[![codecov](https://codecov.io/gh/fszlin/certes/branch/main/graph/badge.svg)](https://codecov.io/gh/fszlin/certes)
+[![BCH compliance](https://bettercodehub.com/edge/badge/fszlin/certes?branch=main)](https://bettercodehub.com/results/fszlin/certes)
 
 [AppVeyorCliSample]: https://github.com/fszlin/lo0.in/blob/master/.appveyor.yml#L43

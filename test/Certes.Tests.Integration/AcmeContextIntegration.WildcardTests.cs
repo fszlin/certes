@@ -36,7 +36,7 @@ namespace Certes
                     OrganizationUnit = "Dev",
                     CommonName = hosts[0],
                 }, certKey);
-                var pem = await orderCtx.Download();
+                var pem = await orderCtx.Download(null);
 
                 var builder = new PfxBuilder(pem.Certificate.ToDer(), certKey);
                 foreach (var issuer in pem.Issuers)
@@ -44,7 +44,7 @@ namespace Certes
                     builder.AddIssuer(issuer.ToDer());
                 }
 
-                builder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
+                builder.AddTestCerts();
 
                 var pfx = builder.Build("ci", "abcd1234");
                 Assert.NotNull(pfx);

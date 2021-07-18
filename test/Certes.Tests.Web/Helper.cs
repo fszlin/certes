@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using Certes.Jws;
 using Certes.Pkcs;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.Functions.Worker.Http;
 
 namespace Certes.Tests.CI
 {
@@ -26,9 +26,9 @@ namespace Certes.Tests.CI
             }
         }
 
-        public static AccountKey GetTestKey(HttpRequest request)
+        public static AccountKey GetTestKey(HttpRequestData request)
         {
-            var host = request.Host.Host;
+            var host = request.Url.Host;
             return
                 host.IndexOf(".es256.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(KeyAlgorithm.ES256) :
                 host.IndexOf(".es384.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(KeyAlgorithm.ES384) :

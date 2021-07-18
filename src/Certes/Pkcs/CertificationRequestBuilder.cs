@@ -55,19 +55,6 @@ namespace Certes.Pkcs
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificationRequestBuilder"/> class.
         /// </summary>
-        /// <param name="keyInfo">The key information.</param>
-        /// <exception cref="System.NotSupportedException">
-        /// If the provided key is not one of the supported <seealso cref="KeyAlgorithm"/>.
-        /// </exception>
-        [Obsolete]
-        public CertificationRequestBuilder(KeyInfo keyInfo)
-            : this(KeyFactory.FromDer(keyInfo.PrivateKeyInfo))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CertificationRequestBuilder"/> class.
-        /// </summary>
         public CertificationRequestBuilder()
             : this(KeyFactory.NewKey(KeyAlgorithm.RS256))
         {
@@ -137,21 +124,6 @@ namespace Certes.Pkcs
             return csr.GetDerEncoded();
         }
 
-        /// <summary>
-        /// Exports the key used to generate the CSR.
-        /// </summary>
-        /// <returns>
-        /// The key data.
-        /// </returns>
-        [Obsolete]
-        public KeyInfo Export()
-        {
-            return new KeyInfo
-            {
-                PrivateKeyInfo = Key.ToDer()
-            };
-        }
-
         private Pkcs10CertificationRequest GeneratePkcs10()
         {
             var x509 = new X509Name(attributes.Select(p => p.Id).ToArray(), attributes.Select(p => p.Value).ToArray());
@@ -177,7 +149,7 @@ namespace Certes.Pkcs
 
             LoadKeyPair();
             var signatureFactory = new Asn1SignatureFactory(pkcsObjectId, keyPair.Private);
-            return new Pkcs10CertificationRequest(signatureFactory, x509, keyPair.Public, new DerSet(attribute), keyPair.Private);
+            return new Pkcs10CertificationRequest(signatureFactory, x509, keyPair.Public, new DerSet(attribute));
         }
 
         private void LoadKeyPair()

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,8 +22,20 @@ namespace Certes.Acme
     {
         private const string MimeJoseJson = "application/jose+json";
 
+        /// <remarks>
+        /// ACME clients MUST send a User-Agent header field, in accordance with
+        /// [RFC7231]. This header field SHOULD include the name and version of
+        /// the ACME software in addition to the name and version of the
+        /// underlying HTTP client software.
+        /// </remarks>
+        private readonly static IList<ProductInfoHeaderValue> userAgentHeaders = new[]
+        {
+            new ProductInfoHeaderValue("Certes", Assembly.GetExecutingAssembly().GetName().Version.ToString()),
+            new ProductInfoHeaderValue(".NET", Environment.Version.ToString()),
+        };
+
         private readonly static JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
-        private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(() => new HttpClient());
+        private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(CreateHttpClient);
         private readonly Lazy<HttpClient> http;
 
         private Uri newNonceUri;
@@ -35,6 +50,14 @@ namespace Certes.Acme
         /// </value>
         private HttpClient Http { get => http.Value; }
 
+        /// <summary>
+        /// Creates an instance of HttpClient configured with default settings.
+        /// </summary>
+        internal static HttpClient CreateHttpClient()
+        {
+            var client = new HttpClient();
+            return client;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeHttpClient" /> class.
@@ -56,10 +79,15 @@ namespace Certes.Acme
         /// <returns></returns>
         public async Task<AcmeHttpResponse<T>> Get<T>(Uri uri)
         {
-            using (var response = await Http.GetAsync(uri))
+            var msg = new HttpRequestMessage
             {
-                return await ProcessResponse<T>(response);
-            }
+                Method = HttpMethod.Get,
+                RequestUri = uri,
+            };
+
+            AddUserAgentHeader(msg);
+            using var response = await Http.SendAsync(msg);
+            return await ProcessResponse<T>(response);
         }
 
         /// <summary>
@@ -75,10 +103,17 @@ namespace Certes.Acme
             var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
             // boulder will reject the request if sending charset=utf-8
             content.Headers.ContentType.CharSet = null;
-            using (var response = await Http.PostAsync(uri, content))
+
+            var msg = new HttpRequestMessage
             {
-                return await ProcessResponse<T>(response);
-            }
+                Method = HttpMethod.Post,
+                RequestUri = uri,
+                Content = content,
+            };
+
+            AddUserAgentHeader(msg);
+            using var response = await Http.SendAsync(msg);
+            return await ProcessResponse<T>(response);
         }
 
         /// <summary>
@@ -99,18 +134,25 @@ namespace Certes.Acme
             return nonce;
         }
 
-        private async Task<AcmeHttpResponse<T>> ProcessResponse<T>(HttpResponseMessage response)
-        {
-            var location = response.Headers.Location;
-            var resource = default(T);
-            var links = default(ILookup<string, Uri>);
-            var error = default(AcmeError);
 
-            if (response.Headers.Contains("Replay-Nonce"))
+        private double ExtractRetryAfterHeaderFromResponse(HttpResponseMessage response)
+        {
+            if (response.Headers.RetryAfter != null)
             {
-                nonce = response.Headers.GetValues("Replay-Nonce").Single();
+                var date = response.Headers.RetryAfter.Date;
+                var delta = response.Headers.RetryAfter.Delta;
+                if (date.HasValue)
+                    return Math.Abs((date.Value - DateTime.UtcNow).TotalSeconds);
+                else if (delta.HasValue)
+                    return delta.Value.TotalSeconds;
             }
 
+            return 0;
+        }
+
+        private ILookup<string, Uri> ExtractLinksFromResponse(HttpResponseMessage response)
+        {
+            var links = default(ILookup<string, Uri>);
             if (response.Headers.Contains("Link"))
             {
                 links = response.Headers.GetValues("Link")?
@@ -135,6 +177,21 @@ namespace Certes.Acme
                     })
                     .ToLookup(l => l.Rel, l => l.Uri);
             }
+            return links;
+        }
+
+        private async Task<AcmeHttpResponse<T>> ProcessResponse<T>(HttpResponseMessage response)
+        {
+            var location = response.Headers.Location;
+            var resource = default(T);
+            var error = default(AcmeError);
+            var retryafter = (int)ExtractRetryAfterHeaderFromResponse(response);
+            var links = ExtractLinksFromResponse(response);
+
+            if (response.Headers.Contains("Replay-Nonce"))
+            {
+                nonce = response.Headers.GetValues("Replay-Nonce").Single();
+            }
 
             if (response.IsSuccessStatusCode)
             {
@@ -158,17 +215,21 @@ namespace Certes.Acme
                 }
             }
 
-            return new AcmeHttpResponse<T>(location, resource, links, error);
+            return new AcmeHttpResponse<T>(location, resource, links, error, retryafter);
         }
 
         private async Task FetchNonce()
         {
             newNonceUri = newNonceUri ?? (await Get<Directory>(directoryUri)).Resource.NewNonce;
-            var response = await Http.SendAsync(new HttpRequestMessage
+
+            var msg = new HttpRequestMessage
             {
                 RequestUri = newNonceUri,
                 Method = HttpMethod.Head,
-            });
+            };
+
+            AddUserAgentHeader(msg);
+            var response = await Http.SendAsync(msg);
 
             if (!response.Headers.TryGetValues("Replay-Nonce", out var values))
             {
@@ -189,6 +250,14 @@ namespace Certes.Acme
             }
 
             return false;
+        }
+
+        private static void AddUserAgentHeader(HttpRequestMessage requestMessage)
+        {
+            foreach (var header in userAgentHeaders)
+            {
+                requestMessage.Headers.UserAgent.Add(header);
+            }
         }
     }
 }

@@ -24,6 +24,8 @@ namespace Certes
             DomainSuffix =
                 bool.TrueString.Equals(Environment.GetEnvironmentVariable("APPVEYOR"), StringComparison.OrdinalIgnoreCase) ? "appveyor" :
                 bool.TrueString.Equals(Environment.GetEnvironmentVariable("TRAVIS"), StringComparison.OrdinalIgnoreCase) ? "travis" :
+                !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AGENT_JOBNAME")) ?
+                    new string(Environment.GetEnvironmentVariable("AGENT_JOBNAME").Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLowerInvariant() :
                 "dev";
         }
 
@@ -44,7 +46,7 @@ namespace Certes
                 OrganizationUnit = "Dev",
                 CommonName = hosts[0],
             }, certKey);
-            var cert = await orderCtx.Download();
+            var cert = await orderCtx.Download(null);
 
             var x509 = new X509Certificate2(cert.Certificate.ToDer());
             Assert.Contains(hosts[0], x509.Subject);

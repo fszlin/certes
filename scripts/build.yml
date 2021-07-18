@@ -1,0 +1,91 @@
+
+parameters:
+  name: ''
+  displayName: ''
+  pool: ''
+  framework: ''
+  appFramework: ''
+
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName }}
+  variables:
+    assemblyVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemVer'] ]
+    fileVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.AssemblySemFileVer'] ]
+    informationalVersion: $[ stageDependencies.ver.ver.outputs['version.GitVersion.InformationalVersion'] ]
+  pool: ${{ parameters.pool }}
+
+  steps:
+      
+  - task: UseDotNet@2
+    displayName: 'Add dotnet 3.x'
+    inputs:
+      packageType: 'sdk'
+      version: '3.x'
+      
+  - task: UseDotNet@2
+    displayName: 'Add dotnet 5.x'
+    inputs:
+      packageType: 'sdk'
+      version: '5.x'
+      
+  - task: DotNetCoreCLI@2
+    displayName: 'Restore dotnet tool'
+    inputs:
+      command: 'custom'
+      custom: tool
+      arguments: 'restore'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build unit tests'
+    inputs:
+      command: 'build'
+      projects: 'test/Certes.Tests/Certes.Tests.csproj'
+      arguments: '-f ${{ parameters.appFramework }} -p:SkipSigning=true'
+    env:
+      CERTES_ASSEMBLY_VERSION: $(assemblyVersion)
+      CERTES_FILE_VERSION: $(fileVersion)
+      CERTES_INFORMATIONAL_VERSION: $(informationalVersion)
+      
+  - task: DotNetCoreCLI@2
+    displayName: 'Run unit tests'
+    inputs:
+      command: 'test'
+      projects: 'test/Certes.Tests/Certes.Tests.csproj'
+      arguments: '-f ${{ parameters.appFramework }} --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
+      testRunTitle: 'Unit Tests'
+      publishTestResults: false
+ 
+  - task: DotNetCoreCLI@2
+    displayName: 'Upload unit tests code coverage'
+    inputs:
+      command: 'custom'
+      custom: codecov
+      arguments: '-f $(Build.SourcesDirectory)/test/Certes.Tests/TestResults/**/*.xml --flag unittests -t $(CODECOV_TOKEN)'
+      
+  - task: DotNetCoreCLI@2
+    displayName: 'Build integration tests'
+    inputs:
+      command: 'build'
+      projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
+      arguments: '-f ${{ parameters.appFramework }} -p:SkipSigning=true'
+    env:
+      CERTES_ASSEMBLY_VERSION: $(assemblyVersion)
+      CERTES_FILE_VERSION: $(fileVersion)
+      CERTES_INFORMATIONAL_VERSION: $(informationalVersion)
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Run integration tests'
+    inputs:
+      command: 'test'
+      projects: 'test/Certes.Tests.Integration/Certes.Tests.Integration.csproj'
+      arguments: '-f ${{ parameters.appFramework }} --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
+      testRunTitle: 'Integration Tests'
+      publishTestResults: false
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Upload integration tests code coverage'
+    inputs:
+      command: 'custom'
+      custom: codecov
+      arguments: '-f $(Build.SourcesDirectory)/test/Certes.Tests.Integration/TestResults/**/*.xml --flag integration -t $(CODECOV_TOKEN)'

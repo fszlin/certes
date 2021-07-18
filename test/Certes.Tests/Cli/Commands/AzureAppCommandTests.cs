@@ -12,6 +12,7 @@ using Microsoft.Azure.Management.AppService.Fluent.Models;
 using Microsoft.Rest.Azure;
 using Moq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using static Certes.Acme.WellKnownServers;
 using static Certes.Cli.CliTestHelper;
@@ -54,7 +55,7 @@ namespace Certes.Cli.Commands
             var orderMock = new Mock<IOrderContext>(MockBehavior.Strict);
             orderMock.Setup(m => m.Location).Returns(orderLoc);
             orderMock.Setup(m => m.Resource()).ReturnsAsync(order);
-            orderMock.Setup(m => m.Download()).ReturnsAsync(certChain);
+            orderMock.Setup(m => m.Download(It.Is<string>(v => string.IsNullOrWhiteSpace(v)))).ReturnsAsync(certChain);
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
@@ -111,14 +112,18 @@ namespace Certes.Cli.Commands
 
             var envMock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
 
+            var (console, stdOutput, errOutput) = MockConsole();
+
             var cmd = new AzureAppCommand(
                 settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object, envMock.Object, _ => appSvcMock.Object);
+            var command = cmd.Define();
 
             var args = $"app {orderLoc} {domain} {appName} --private-key {keyPath}"
                 + $" --tenant-id tenantId --client-id clientId --client-secret abcd1234"
                 + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
-            var syntax = DefineCommand(args);
-            dynamic ret = await cmd.Execute(syntax);
+            await command.InvokeAsync(args, console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            dynamic ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.NotNull(ret.data);
 
             webAppOpMock.Verify(m => m.CreateOrUpdateHostNameBindingWithHttpMessagesAsync(
@@ -130,12 +135,16 @@ namespace Certes.Cli.Commands
                 .ReturnsAsync((string r, string a, string n, HostNameBindingInner d, string s, Dictionary<string, List<string>> h, CancellationToken t)
                     => new AzureOperationResponse<HostNameBindingInner> { Body = d });
 
+            errOutput.Clear();
+            stdOutput.Clear();
+
             args = $"app {orderLoc} {domain} {appName} --private-key {keyPath}"
                 + $" --slot {appSlot}"
                 + $" --tenant-id tenantId --client-id clientId --client-secret abcd1234"
                 + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
-            syntax = DefineCommand(args);
-            ret = await cmd.Execute(syntax);
+            await command.InvokeAsync(args, console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.NotNull(ret.data);
             webAppOpMock.Verify(m => m.CreateOrUpdateHostNameBindingSlotWithHttpMessagesAsync(
                 resourceGroup, appName, domain, It.IsAny<HostNameBindingInner>(), appSlot, default, default), Times.Once);
@@ -156,59 +165,26 @@ namespace Certes.Cli.Commands
                     )
                 });
 
+            errOutput.Clear();
+            stdOutput.Clear();
+
             args = $"app {orderLoc} {domain} {appName} --private-key {keyPath}"
                 + $" --tenant-id tenantId --client-id clientId --client-secret abcd1234"
                 + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
-            syntax = DefineCommand(args);
-            ret = await cmd.Execute(syntax);
+            await command.InvokeAsync(args, console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.NotNull(ret.data);
-            Assert.Equal(cert.Thumbprint, ret.data.Thumbprint);
+            var thumbprint = ret.data["properties.thumbprint"];
+            Assert.Equal(cert.Thumbprint, $"{thumbprint}");
 
             // order incompleted
             orderMock.Setup(m => m.Resource()).ReturnsAsync(new Order());
             args = $"app {orderLoc} {domain} {appName} --private-key {keyPath}"
                 + $" --tenant-id tenantId --client-id clientId --client-secret abcd1234"
                 + $" --subscription-id {Guid.NewGuid()} --resource-group {resourceGroup}";
-            syntax = DefineCommand(args);
-            await Assert.ThrowsAsync<CertesCliException>(() => cmd.Execute(syntax));
-        }
-
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"app http://acme.com/o/1 www.abc.com my-app --private-key ./cert-key.pem"
-                + " --slot staging"
-                + " --tenant-id tenantId --client-id clientId --client-secret abcd1234"
-                + " --subscription-id subscriptionId --resource-group resGroup";
-            var syntax = DefineCommand(args);
-
-            Assert.Equal("app", syntax.ActiveCommand.Value);
-            ValidateParameter(syntax, "order-id", new Uri("http://acme.com/o/1"));
-            ValidateParameter(syntax, "app", "my-app");
-            ValidateParameter(syntax, "domain", "www.abc.com");
-            ValidateParameter(syntax, "private-key", "./cert-key.pem");
-            ValidateOption(syntax, "tenant-id", "tenantId");
-            ValidateOption(syntax, "client-id", "clientId");
-            ValidateOption(syntax, "client-secret", "abcd1234");
-            ValidateOption(syntax, "subscription-id", "subscriptionId");
-            ValidateOption(syntax, "resource-group", "resGroup");
-            ValidateOption(syntax, "slot", "staging");
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("app", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new AzureAppCommand(
-                NoopSettings(), (u, k) => new Mock<IAcmeContext>().Object, new FileUtil(), null, null);
-            Assert.Equal(CommandGroup.Azure.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
+            await command.InvokeAsync(args, console.Object);
+            Assert.False(errOutput.Length == 0, "Should print error");
         }
     }
 }

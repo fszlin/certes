@@ -32,12 +32,12 @@ namespace Certes
             Assert.Equal(inner, ex.InnerException);
         }
 
-#if !NETCOREAPP1_0
+#if NET452
         [Fact]
         public void CanSerialize()
         {
             var ex = new AcmeRequestException("certes");
-            
+
             var serializer = new BinaryFormatter();
 
             using (var buffer = new MemoryStream())
@@ -50,7 +50,7 @@ namespace Certes
                 Assert.Equal("certes", deserialized.Message);
             }
         }
-        
+
         [Fact]
         public void CanSerializeWithErrorAndMessage()
         {

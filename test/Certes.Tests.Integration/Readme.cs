@@ -47,10 +47,10 @@ namespace Certes
                 Organization = "Certes",
                 OrganizationUnit = "Dev",
                 CommonName = "www.certes-ci.dymetis.com",
-            }, privateKey);
+            }, privateKey, null);
 
             var pfxBuilder = cert.ToPfx(privateKey);
-            pfxBuilder.AddIssuer(File.ReadAllBytes("./Data/test-root.pem"));
+            pfxBuilder.AddTestCerts();
             var pfx = pfxBuilder.Build("my-cert", "abcd1234");
         }
     }

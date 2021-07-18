@@ -18,13 +18,6 @@ namespace Certes.Acme.Resource
         Pending,
 
         /// <summary>
-        /// The processing status.
-        /// </summary>
-        [Obsolete("Use ChallengeStatus.Processing instead.")]
-        [EnumMember(Value = "processing")]
-        Processing,
-
-        /// <summary>
         /// The valid status.
         /// </summary>
         [EnumMember(Value = "valid")]

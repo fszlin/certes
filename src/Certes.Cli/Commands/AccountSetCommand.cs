@@ -1,5 +1,6 @@
-﻿using System.CommandLine;
-using System.Threading.Tasks;
+﻿using System;
+using System.CommandLine;
+using System.CommandLine.Invocation;
 using Certes.Cli.Settings;
 using NLog;
 
@@ -7,51 +8,46 @@ namespace Certes.Cli.Commands
 {
     internal class AccountSetCommand : CommandBase, ICliCommand
     {
-        private const string CommandText = "set";
-        private const string KeyParam = "key";
+        public record Args(Uri Server, string KeyPath);
 
         private static readonly ILogger logger = LogManager.GetLogger(nameof(AccountSetCommand));
 
-        public CommandGroup Group { get; } = CommandGroup.Account;
-
-        public AccountSetCommand(
-            IUserSettings userSettings,
-            AcmeContextFactory contextFactory,
-            IFileUtil fileUtil)
+        public AccountSetCommand(IUserSettings userSettings, AcmeContextFactory contextFactory, IFileUtil fileUtil)
             : base(userSettings, contextFactory, fileUtil)
         {
         }
 
-        public ArgumentCommand<string> Define(ArgumentSyntax syntax)
-        {
-            var cmd = syntax.DefineCommand(CommandText, help: Strings.HelpCommandAccountSet);
+        public CommandGroup Group => CommandGroup.Account;
 
-            syntax
-                .DefineServerOption()
-                .DefineParameter(KeyParam, help: Strings.HelpKey);
+        public Command Define()
+        {
+            var cmd = new Command("set", Strings.HelpCommandAccountSet)
+            {
+                new Option<Uri>(new[]{ "--server", "-s" }, Strings.HelpServer),
+                new Argument<string>("key-path", Strings.HelpKey),
+            };
+
+            cmd.Handler = CommandHandler.Create(async (Args args, IConsole console) =>
+            {
+                var (server, keyPath) = args;
+                var (serverUri, key) = await ReadAccountKey(server, keyPath, false);
+
+                logger.Debug("Setting account for '{0}'.", serverUri);
+
+                var acme = ContextFactory.Invoke(serverUri, key);
+                var acctCtx = await acme.Account();
+
+                await UserSettings.SetAccountKey(serverUri, key);
+                var output = new
+                {
+                    location = acctCtx.Location,
+                    resource = await acctCtx.Resource()
+                };
+
+                console.WriteAsJson(output);
+            });
 
             return cmd;
-        }
-
-        public async Task<object> Execute(ArgumentSyntax syntax)
-        {
-            var (serverUri, _) = await ReadAccountKey(syntax, false);
-
-            var keyPath = syntax.GetParameter<string>(KeyParam, true);
-            var pem = await File.ReadAllText(keyPath);
-            var key = KeyFactory.FromPem(pem);
-
-            logger.Debug("Setting account for '{0}'.", serverUri);
-
-            var acme = ContextFactory.Invoke(serverUri, key);
-            var acctCtx = await acme.Account();
-
-            await UserSettings.SetAccountKey(serverUri, key);
-            return new
-            {
-                location = acctCtx.Location,
-                resource = await acctCtx.Resource()
-            };
         }
     }
 }

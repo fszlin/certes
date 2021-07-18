@@ -7,6 +7,7 @@ using Microsoft.Azure.Management.ResourceManager.Fluent.Models;
 using Microsoft.Rest.Azure;
 using Moq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using static Certes.Cli.CliTestHelper;
 
@@ -37,6 +38,8 @@ namespace Certes.Cli.Commands
 
             var resMock = new Mock<IResourceManagementClient>(MockBehavior.Strict);
             var resGroupOpMock = new Mock<IResourceGroupsOperations>(MockBehavior.Strict);
+            var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
+            var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
 
             resMock.Setup(m => m.Dispose());
             resMock.SetupSet(m => m.SubscriptionId);
@@ -51,50 +54,25 @@ namespace Certes.Cli.Commands
                         })
                     )
                 });
-                
-            var cmd = new AzureSetCommand(
-                settingsMock.Object, _ => resMock.Object);
 
-            var syntax = DefineCommand(
+            var (console, stdOutput, errOutput) = MockConsole();
+
+            var cmd = new AzureSetCommand(
+                settingsMock.Object, (u, k) => ctxMock.Object, fileMock.Object, _ => resMock.Object);
+            var command = cmd.Define();
+
+            var args =
                 $"set" +
                 $" --tenant-id {azSettings.TenantId} --client-id {azSettings.ClientId}" +
                 $" --client-secret {azSettings.ClientSecret}" +
-                $" --subscription-id {azSettings.SubscriptionId}");
-            dynamic ret = await cmd.Execute(syntax);
+                $" --subscription-id {azSettings.SubscriptionId}";
+            await command.InvokeAsync(args, console.Object);
+            Assert.True(errOutput.Length == 0, errOutput.ToString());
+            dynamic ret = JsonConvert.DeserializeObject(stdOutput.ToString());
 
-            Assert.Equal(2, ret.resourceGroups.Length);
+            var resourceGroupsReturned = ret.resourceGroups as JArray;
+            Assert.Equal(2, resourceGroupsReturned.Count);
             settingsMock.Verify(m => m.SetAzureSettings(It.IsAny<AzureSettings>()), Times.Once);
-        }
-
-        [Fact]
-        public void CanDefineCommand()
-        {
-            var args = $"set"
-                + " --tenant-id tenantId --client-id clientId --client-secret abcd1234"
-                + " --subscription-id subscriptionId";
-            var syntax = DefineCommand(args);
-
-            Assert.Equal("set", syntax.ActiveCommand.Value);
-            ValidateOption(syntax, "tenant-id", "tenantId");
-            ValidateOption(syntax, "client-id", "clientId");
-            ValidateOption(syntax, "client-secret", "abcd1234");
-            ValidateOption(syntax, "subscription-id", "subscriptionId");
-
-            syntax = DefineCommand("noop");
-            Assert.NotEqual("set", syntax.ActiveCommand.Value);
-        }
-
-        private static ArgumentSyntax DefineCommand(string args)
-        {
-            var cmd = new AzureSetCommand(
-                NoopSettings(), null);
-            Assert.Equal(CommandGroup.Azure.Command, cmd.Group.Command);
-            return ArgumentSyntax.Parse(args.Split(' '), syntax =>
-            {
-                syntax.HandleErrors = false;
-                syntax.DefineCommand("noop");
-                cmd.Define(syntax);
-            });
         }
     }
 }

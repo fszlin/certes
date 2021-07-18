@@ -7,9 +7,7 @@ namespace Certes
     /// The exception that is thrown when an error occurs while processing ACME operations.
     /// </summary>
     /// <seealso cref="Exception" />
-#if !NETSTANDARD1_3
     [Serializable]
-#endif
     public class AcmeException : Exception
     {
         /// <summary>
@@ -44,7 +42,6 @@ namespace Certes
         {
         }
 
-#if !NETSTANDARD1_3
         /// <summary>
         /// Initializes a new instance of the <see cref="AcmeException"/> class.
         /// </summary>
@@ -60,6 +57,5 @@ namespace Certes
             : base(info, context)
         {
         }
-#endif
     }
 }

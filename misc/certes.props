@@ -6,10 +6,36 @@
     <SignAssembly>true</SignAssembly>
     <PublicSign Condition="'$(TargetFramework)' != 'net45' AND '$(TargetFramework)' != 'net452' AND '$(TargetFramework)' != 'net47'">True</PublicSign>
     <AssemblyOriginatorKeyFile>../../misc/certes.snk</AssemblyOriginatorKeyFile>
+    <AssemblyVersion>2.4.0</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(APPVEYOR)' != ''">
     <CertesFileVersionSuffix>.$(APPVEYOR_BUILD_NUMBER)</CertesFileVersionSuffix>
     <CertesInformationalVersionSuffix>-$(APPVEYOR_REPO_BRANCH)-$(APPVEYOR_BUILD_NUMBER)</CertesInformationalVersionSuffix>
     <CertesPackageVersionSuffix Condition="'$(APPVEYOR_REPO_BRANCH)' != 'release'">$(CertesInformationalVersionSuffix)</CertesPackageVersionSuffix>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
+    <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
+    <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
+  </PropertyGroup>
+  <!-- Overwrite versions if specified via env -->
+  <PropertyGroup>
+    <AssemblyVersion Condition="$(CERTES_ASSEMBLY_VERSION) != ''">$(CERTES_ASSEMBLY_VERSION)</AssemblyVersion>
+    <Version Condition="$(CERTES_PACKAGE_VERSION) != ''">$(CERTES_PACKAGE_VERSION)</Version>
+    <FileVersion Condition="$(CERTES_FILE_VERSION) != ''">$(CERTES_FILE_VERSION)</FileVersion>
+    <InformationalVersion Condition="$(CERTES_INFORMATIONAL_VERSION) != ''">$(CERTES_INFORMATIONAL_VERSION)</InformationalVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(SkipSigning)' == 'true'">
+    <SignAssembly>False</SignAssembly>
+    <PublicSign>False</PublicSign>
+    <DefineConstants>$(DefineConstants);SKIP_SIGNING</DefineConstants>
   </PropertyGroup>
 </Project>
