@@ -11,14 +11,8 @@ branches:
   pull-request:
     tag: pr
     increment: Patch
-  feature:
-    regex: .*/
-    tag: useBranchName
-    increment: Patch
-    source-branches: ['main', 'feature']
-    track-merge-target: true
   release:
     tag: ''
-    regex: releases?[/-]\d+\.\d+\.\d+
+    regex: release
     increment: Patch
     is-release-branch: true
