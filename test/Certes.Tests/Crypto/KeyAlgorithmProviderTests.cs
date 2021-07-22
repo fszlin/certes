@@ -37,15 +37,18 @@ namespace Certes.Crypto
         }
 
         [Theory]
-        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.RS256, null)]
+        [InlineData(KeyAlgorithm.RS256, 2048)]
+        [InlineData(KeyAlgorithm.RS256, 3072)]
+        [InlineData(KeyAlgorithm.RS256, 4096)]
         [InlineData(KeyAlgorithm.ES256)]
         [InlineData(KeyAlgorithm.ES384)]
         [InlineData(KeyAlgorithm.ES512)]
-        public void CanGetKey(KeyAlgorithm algorithm)
+        public void CanGetKey(KeyAlgorithm algorithm, int? keySize = null)
         {
             var provider = new KeyAlgorithmProvider();
             var algo = provider.Get(algorithm);
-            var key = (AsymmetricCipherKey)algo.GenerateKey();
+            var key = (AsymmetricCipherKey)algo.GenerateKey(keySize);
 
             var keyData = key.ToDer();
 
