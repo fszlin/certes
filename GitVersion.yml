@@ -6,6 +6,7 @@ branches:
     tag: beta
     regex: ^master$|^main$
     increment: Patch
+    is-source-branch-for: ['release']
   pull-request:
     tag: pr
     increment: Patch
