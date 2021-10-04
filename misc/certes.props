@@ -4,9 +4,9 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <LangVersion>Latest</LangVersion>
     <SignAssembly>true</SignAssembly>
-    <PublicSign Condition="'$(TargetFramework)' != 'net45' AND '$(TargetFramework)' != 'net452' AND '$(TargetFramework)' != 'net47'">True</PublicSign>
+    <PublicSign Condition="'$(TargetFramework)' != 'net461'">True</PublicSign>
     <AssemblyOriginatorKeyFile>../../misc/certes.snk</AssemblyOriginatorKeyFile>
-    <AssemblyVersion>2.4.0</AssemblyVersion>
+    <AssemblyVersion>3.0.0</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(APPVEYOR)' != ''">
     <CertesFileVersionSuffix>.$(APPVEYOR_BUILD_NUMBER)</CertesFileVersionSuffix>
