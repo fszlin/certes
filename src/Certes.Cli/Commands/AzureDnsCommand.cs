@@ -112,8 +112,7 @@ namespace Certes.Cli.Commands
                     if (identifier.EndsWith($".{zone.Name}", StringComparison.OrdinalIgnoreCase) ||
                         identifier.Equals(zone.Name, StringComparison.OrdinalIgnoreCase))
                     {
-                        logger.Debug(() =>
-                            string.Format("DNS zone:\n{0}", JsonConvert.SerializeObject(zone, Formatting.Indented)));
+                        logger.Debug("DNS zone:\n{0}", JsonConvert.SerializeObject(zone, Formatting.Indented));
                         return zone;
                     }
                 }
