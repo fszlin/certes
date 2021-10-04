@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="title" content="Class KeyFactory
    - Certes ">
-    <meta name="generator" content="docfx 2.58.0.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../../images/favicon.ico">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
@@ -129,7 +129,7 @@
     <a href="https://github.com/fszlin/certes/new/main/docs/api/spec/new?filename=Certes_KeyFactory_FromDer_System_Byte___.md&amp;value=---%0Auid%3A%20Certes.KeyFactory.FromDer(System.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/main/src/Certes/KeyFactory.cs/#L28">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/main/src/Certes/KeyFactory.cs/#L29">View Source</a>
   </span>
   <a id="Certes_KeyFactory_FromDer_" data-uid="Certes.KeyFactory.FromDer*"></a>
   <h4 id="Certes_KeyFactory_FromDer_System_Byte___" data-uid="Certes.KeyFactory.FromDer(System.Byte[])">FromDer(Byte[])</h4>
@@ -179,7 +179,7 @@
     <a href="https://github.com/fszlin/certes/new/main/docs/api/spec/new?filename=Certes_KeyFactory_FromPem_System_String_.md&amp;value=---%0Auid%3A%20Certes.KeyFactory.FromPem(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/main/src/Certes/KeyFactory.cs/#L36">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/main/src/Certes/KeyFactory.cs/#L37">View Source</a>
   </span>
   <a id="Certes_KeyFactory_FromPem_" data-uid="Certes.KeyFactory.FromPem*"></a>
   <h4 id="Certes_KeyFactory_FromPem_System_String_" data-uid="Certes.KeyFactory.FromPem(System.String)">FromPem(String)</h4>
@@ -226,19 +226,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fszlin/certes/new/main/docs/api/spec/new?filename=Certes_KeyFactory_NewKey_Certes_KeyAlgorithm_.md&amp;value=---%0Auid%3A%20Certes.KeyFactory.NewKey(Certes.KeyAlgorithm)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fszlin/certes/new/main/docs/api/spec/new?filename=Certes_KeyFactory_NewKey_Certes_KeyAlgorithm_System_Nullable_System_Int32__.md&amp;value=---%0Auid%3A%20Certes.KeyFactory.NewKey(Certes.KeyAlgorithm%2CSystem.Nullable%7BSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fszlin/certes/blob/main/src/Certes/KeyFactory.cs/#L17">View Source</a>
+    <a href="https://github.com/fszlin/certes/blob/main/src/Certes/KeyFactory.cs/#L18">View Source</a>
   </span>
   <a id="Certes_KeyFactory_NewKey_" data-uid="Certes.KeyFactory.NewKey*"></a>
-  <h4 id="Certes_KeyFactory_NewKey_Certes_KeyAlgorithm_" data-uid="Certes.KeyFactory.NewKey(Certes.KeyAlgorithm)">NewKey(KeyAlgorithm)</h4>
+  <h4 id="Certes_KeyFactory_NewKey_Certes_KeyAlgorithm_System_Nullable_System_Int32__" data-uid="Certes.KeyFactory.NewKey(Certes.KeyAlgorithm,System.Nullable{System.Int32})">NewKey(KeyAlgorithm, Nullable&lt;Int32&gt;)</h4>
   <div class="markdown level1 summary"><p>Creates a random key.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="text-muted font-weight-light font-italic decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IKey NewKey(KeyAlgorithm algorithm)</code></pre>
+    <pre><code class="lang-csharp hljs">public static IKey NewKey(KeyAlgorithm algorithm, int? keySize = null)</code></pre>
   </div>
   <h5 class="text-muted font-weight-light font-italic parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -254,6 +254,12 @@
         <td><a class="xref" href="Certes.KeyAlgorithm.html">KeyAlgorithm</a></td>
         <td><span class="parametername">algorithm</span></td>
         <td><p>The algorithm to use.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">keySize</span></td>
+        <td><p>Optional key size (used for RSA, defaults to 2048)</p>
 </td>
       </tr>
     </tbody>

@@ -3052,12 +3052,15 @@ references:
   isSpec: "True"
   fullName: Certes.KeyFactory.FromPem
   nameWithType: KeyFactory.FromPem
-- uid: Certes.KeyFactory.NewKey(Certes.KeyAlgorithm)
-  name: NewKey(KeyAlgorithm)
-  href: api/certes/Certes.KeyFactory.html#Certes_KeyFactory_NewKey_Certes_KeyAlgorithm_
-  commentId: M:Certes.KeyFactory.NewKey(Certes.KeyAlgorithm)
-  fullName: Certes.KeyFactory.NewKey(Certes.KeyAlgorithm)
-  nameWithType: KeyFactory.NewKey(KeyAlgorithm)
+- uid: Certes.KeyFactory.NewKey(Certes.KeyAlgorithm,System.Nullable{System.Int32})
+  name: NewKey(KeyAlgorithm, Nullable<Int32>)
+  href: api/certes/Certes.KeyFactory.html#Certes_KeyFactory_NewKey_Certes_KeyAlgorithm_System_Nullable_System_Int32__
+  commentId: M:Certes.KeyFactory.NewKey(Certes.KeyAlgorithm,System.Nullable{System.Int32})
+  name.vb: NewKey(KeyAlgorithm, Nullable(Of Int32))
+  fullName: Certes.KeyFactory.NewKey(Certes.KeyAlgorithm, System.Nullable<System.Int32>)
+  fullName.vb: Certes.KeyFactory.NewKey(Certes.KeyAlgorithm, System.Nullable(Of System.Int32))
+  nameWithType: KeyFactory.NewKey(KeyAlgorithm, Nullable<Int32>)
+  nameWithType.vb: KeyFactory.NewKey(KeyAlgorithm, Nullable(Of Int32))
 - uid: Certes.KeyFactory.NewKey*
   name: NewKey
   href: api/certes/Certes.KeyFactory.html#Certes_KeyFactory_NewKey_
