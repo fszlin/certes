@@ -15,5 +15,5 @@ branches:
     - vnext
 script:
   - dotnet restore
-  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework net5.0
-  - dotnet test ./test/Certes.Tests.Integration/Certes.Tests.Integration.csproj --framework net5.0
+  - dotnet test ./test/Certes.Tests/Certes.Tests.csproj --framework net6.0
+  - dotnet test ./test/Certes.Tests.Integration/Certes.Tests.Integration.csproj --framework net6.0
