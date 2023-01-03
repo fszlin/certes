@@ -4,15 +4,15 @@ build:
   project: Certes.sln
 
 skip_tags: true
-image: Visual Studio 2019
+image: Visual Studio 2022
 
 skip_commits:
   files:
-  - '*.md'
+    - "*.md"
   #- '*.yml'
 
-clone_depth: 1  
-nuget:  
+clone_depth: 1
+nuget:
   disable_publish_on_pr: true
 
 environment:
@@ -49,23 +49,23 @@ test_script:
 on_success:
   # gh-pages
   - ps: |
-        If (-Not $env:APPVEYOR_PULL_REQUEST_TITLE -And $env:APPVEYOR_REPO_BRANCH -Eq "main")
-        {
-          git clone -q --depth=1 https://github.com/fszlin/docstrap.git docs/docstrap
-          choco install docfx -y
-          docfx docs/docfx.json
-          git config --global core.autocrlf false
-          git config --global credential.helper store
-          git config --global user.email $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL
-          git config --global user.name $env:APPVEYOR_REPO_COMMIT_AUTHOR
-          Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GITHUB_ACCESS_TOKEN):x-oauth-basic@github.com`n"
-          git clone https://github.com/fszlin/certes.git -b gh-pages gh-pages -q
-          Copy-Item ./docs/_site/* ./gh-pages/ -Recurse -Container -Force
-          cd gh-pages
-          git add -A 2>&1
-          git commit -m $env:APPVEYOR_REPO_COMMIT_MESSAGE -q
-          git push origin gh-pages -q
-          cd $env:APPVEYOR_BUILD_FOLDER
-        }
+      If (-Not $env:APPVEYOR_PULL_REQUEST_TITLE -And $env:APPVEYOR_REPO_BRANCH -Eq "main")
+      {
+        git clone -q --depth=1 https://github.com/fszlin/docstrap.git docs/docstrap
+        choco install docfx -y
+        docfx docs/docfx.json
+        git config --global core.autocrlf false
+        git config --global credential.helper store
+        git config --global user.email $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL
+        git config --global user.name $env:APPVEYOR_REPO_COMMIT_AUTHOR
+        Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GITHUB_ACCESS_TOKEN):x-oauth-basic@github.com`n"
+        git clone https://github.com/fszlin/certes.git -b gh-pages gh-pages -q
+        Copy-Item ./docs/_site/* ./gh-pages/ -Recurse -Container -Force
+        cd gh-pages
+        git add -A 2>&1
+        git commit -m $env:APPVEYOR_REPO_COMMIT_MESSAGE -q
+        git push origin gh-pages -q
+        cd $env:APPVEYOR_BUILD_FOLDER
+      }
 
 configuration: Release
