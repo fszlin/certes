@@ -78,7 +78,7 @@ namespace Certes
 
             order = await context.Finalize(csr, key);
 
-            while (order?.Status == OrderStatus.Processing && retryCount-- > 0)
+            while ((order == null || order.Status == OrderStatus.Processing) && retryCount-- > 0)
             {
                 await Task.Delay(TimeSpan.FromSeconds(Math.Max(context.RetryAfter, 1)));
                 order = await context.Resource();
