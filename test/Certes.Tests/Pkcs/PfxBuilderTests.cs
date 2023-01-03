@@ -15,10 +15,11 @@ namespace Certes.Pkcs
         [InlineData(KeyAlgorithm.ES512)]
         public async Task CanCreatePfxChain(KeyAlgorithm alog)
         {
-            var (cert, key) = await Helper.GetValidCert();
+            var cert = await Helper.GetValidCert();
 
             var pfxBuilder = new PfxBuilder(
                 Encoding.UTF8.GetBytes(cert), KeyFactory.NewKey(alog));
+            pfxBuilder.AddTestCerts();
             pfxBuilder.AddIssuers(Encoding.UTF8.GetBytes(cert));
             var pfx = pfxBuilder.Build("my-cert", "abcd1234");
         }

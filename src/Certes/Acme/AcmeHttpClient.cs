@@ -9,8 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
 using Certes.Json;
-using Certes.Properties;
 using Newtonsoft.Json;
+using Strings = Certes.Properties.Strings;
 
 namespace Certes.Acme
 {
@@ -87,7 +87,7 @@ namespace Certes.Acme
 
             AddUserAgentHeader(msg);
             using var response = await Http.SendAsync(msg);
-            return await ProcessResponse<T>(response);
+            return await ProcessResponse<T>(response, uri);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Certes.Acme
 
             AddUserAgentHeader(msg);
             using var response = await Http.SendAsync(msg);
-            return await ProcessResponse<T>(response);
+            return await ProcessResponse<T>(response, uri);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace Certes.Acme
             return links;
         }
 
-        private async Task<AcmeHttpResponse<T>> ProcessResponse<T>(HttpResponseMessage response)
+        private async Task<AcmeHttpResponse<T>> ProcessResponse<T>(HttpResponseMessage response, Uri requestedUri)
         {
             var location = response.Headers.Location;
             var resource = default(T);
@@ -208,10 +208,22 @@ namespace Certes.Acme
             }
             else
             {
-                if (IsJsonMedia(response.Content?.Headers.ContentType.MediaType))
+                if (IsJsonMedia(response.Content?.Headers?.ContentType?.MediaType))
                 {
                     var json = await response.Content.ReadAsStringAsync();
                     error = JsonConvert.DeserializeObject<AcmeError>(json);
+                }
+                else
+                {
+                    // propagate network errors, e.g. proxy, gateway, timeout, etc.
+                    try
+                    {
+                        response.EnsureSuccessStatusCode();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new AcmeException(string.Format(Strings.ErrorHttpRequest, requestedUri), ex);
+                    }
                 }
             }
 

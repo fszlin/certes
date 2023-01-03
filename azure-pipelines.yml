@@ -1,88 +1,85 @@
 trigger:
-- main
-- release
+  - main
+  - release
 
 pr:
-- main
+  - main
 
 stages:
-
-- stage: ver
-  displayName: Determine Version
-  jobs:
-  - job: ver
+  - stage: ver
     displayName: Determine Version
-    pool:
-      vmImage: 'ubuntu-latest'
+    jobs:
+      - job: ver
+        displayName: Determine Version
+        pool:
+          vmImage: "ubuntu-latest"
 
-    steps:
-    - task: gitversion/setup@0
-      displayName: Install GitVersion
-      inputs:
-        versionSpec: '5.x'
+        steps:
+          - task: gitversion/setup@0
+            displayName: Install GitVersion
+            inputs:
+              versionSpec: "5.x"
 
-    - task: gitversion/execute@0
-      displayName: Determine Version
-      inputs:
-        useConfigFile: true
-        configFilePath: 'GitVersion.yml'
-      name: version
+          - task: gitversion/execute@0
+            displayName: Determine Version
+            inputs:
+              useConfigFile: true
+              configFilePath: "GitVersion.yml"
+            name: version
 
-- stage: test
-  displayName: Test
-  dependsOn: ver
-  jobs:
+  - stage: test
+    displayName: Test
+    dependsOn: ver
+    jobs:
+      - template: scripts/build.yml
+        parameters:
+          name: Linux_net60
+          displayName: Linux - net6.0
+          framework: net6.0
+          appFramework: net6.0
+          pool:
+            vmImage: "ubuntu-latest"
 
-  - template: scripts/build.yml
-    parameters:
-      name: Linux_net50
-      displayName: Linux - net5.0
-      framework: net5.0
-      appFramework: net5.0
-      pool:
-        vmImage: 'ubuntu-latest'
+      - template: scripts/build.yml
+        parameters:
+          name: macOS_net60
+          displayName: macOS - net6.0
+          framework: net6.0
+          appFramework: net6.0
+          pool:
+            vmImage: "macOS-latest"
 
-  - template: scripts/build.yml
-    parameters:
-      name: macOS_net50
-      displayName: macOS - net5.0
-      framework: net5.0
-      appFramework: net5.0
-      pool:
-        vmImage: 'macOS-latest'
+      - template: scripts/build.yml
+        parameters:
+          name: Windows_net60
+          displayName: Windows - net6.0
+          framework: net6.0
+          appFramework: net6.0
+          pool:
+            vmImage: "windows-latest"
 
-  - template: scripts/build.yml
-    parameters:
-      name: Windows_net50
-      displayName: Windows - net5.0
-      framework: net5.0
-      appFramework: net5.0
-      pool:
-        vmImage: 'windows-latest'
+      - template: scripts/build.yml
+        parameters:
+          name: Windows_net462
+          displayName: Windows - net462
+          framework: net462
+          appFramework: net462
+          pool:
+            vmImage: "windows-latest"
 
-  - template: scripts/build.yml
-    parameters:
-      name: Windows_net461
-      displayName: Windows - net461
-      framework: net461
-      appFramework: net461
-      pool:
-        vmImage: 'windows-latest'
+  - stage: pack
+    displayName: Pack
+    dependsOn:
+      - ver
+    jobs:
+      - template: scripts/pack.yml
+        parameters:
+          name: "pack"
+          displayName: "Pack Certes"
+          projectName: "Certes"
 
-- stage: pack
-  displayName: Pack
-  dependsOn:
-  - ver
-  jobs:
-
-  - template: scripts/pack.yml
-    parameters:
-      name: 'pack'
-      displayName: 'Pack Certes'
-      projectName: 'Certes'
-
-  - template: scripts/pack.yml
-    parameters:
-      name: 'pack_tool'
-      displayName: 'Pack Certes.Tool'
-      projectName: 'Certes.Cli'
+      - template: scripts/pack.yml
+        parameters:
+          name: "pack_tool"
+          displayName: "Pack Certes.Tool"
+          projectName: "Certes.Cli"

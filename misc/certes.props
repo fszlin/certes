@@ -4,14 +4,15 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <LangVersion>Latest</LangVersion>
     <SignAssembly>true</SignAssembly>
-    <PublicSign Condition="'$(TargetFramework)' != 'net461'">True</PublicSign>
+    <PublicSign Condition="'$(TargetFramework)' != 'net462'">True</PublicSign>
     <AssemblyOriginatorKeyFile>../../misc/certes.snk</AssemblyOriginatorKeyFile>
     <AssemblyVersion>3.0.0</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(APPVEYOR)' != ''">
     <CertesFileVersionSuffix>.$(APPVEYOR_BUILD_NUMBER)</CertesFileVersionSuffix>
     <CertesInformationalVersionSuffix>-$(APPVEYOR_REPO_BRANCH)-$(APPVEYOR_BUILD_NUMBER)</CertesInformationalVersionSuffix>
-    <CertesPackageVersionSuffix Condition="'$(APPVEYOR_REPO_BRANCH)' != 'release'">$(CertesInformationalVersionSuffix)</CertesPackageVersionSuffix>
+    <CertesPackageVersionSuffix Condition="'$(APPVEYOR_REPO_BRANCH)' != 'release'">
+      $(CertesInformationalVersionSuffix)</CertesPackageVersionSuffix>
   </PropertyGroup>
   <PropertyGroup>
     <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
@@ -23,7 +24,8 @@
     <AssemblyVersion Condition="$(CERTES_ASSEMBLY_VERSION) != ''">$(CERTES_ASSEMBLY_VERSION)</AssemblyVersion>
     <Version Condition="$(CERTES_PACKAGE_VERSION) != ''">$(CERTES_PACKAGE_VERSION)</Version>
     <FileVersion Condition="$(CERTES_FILE_VERSION) != ''">$(CERTES_FILE_VERSION)</FileVersion>
-    <InformationalVersion Condition="$(CERTES_INFORMATIONAL_VERSION) != ''">$(CERTES_INFORMATIONAL_VERSION)</InformationalVersion>
+    <InformationalVersion Condition="$(CERTES_INFORMATIONAL_VERSION) != ''">
+      $(CERTES_INFORMATIONAL_VERSION)</InformationalVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>

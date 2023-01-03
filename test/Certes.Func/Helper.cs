@@ -1,16 +1,14 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using Certes.Jws;
 using Certes.Pkcs;
 using Microsoft.Azure.Functions.Worker.Http;
 
-namespace Certes.Tests.CI
+namespace Certes.Func
 {
     internal static class Helper
     {
         public static string Env(string name) =>
-            Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Process);
+            Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Process) ?? "";
 
         public static AccountKey GetTestKey(KeyAlgorithm algo)
         {
@@ -30,9 +28,9 @@ namespace Certes.Tests.CI
         {
             var host = request.Url.Host;
             return
-                host.IndexOf(".es256.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(KeyAlgorithm.ES256) :
-                host.IndexOf(".es384.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(KeyAlgorithm.ES384) :
-                host.IndexOf(".es512.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(KeyAlgorithm.ES512) :
+                host.IndexOf("-es256.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(KeyAlgorithm.ES256) :
+                host.IndexOf("-es384.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(KeyAlgorithm.ES384) :
+                host.IndexOf("-es512.", StringComparison.OrdinalIgnoreCase) >= 0 ? GetTestKey(KeyAlgorithm.ES512) :
                 GetTestKey(KeyAlgorithm.RS256);
         }
     }

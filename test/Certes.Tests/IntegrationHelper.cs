@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
+using Certes.Acme.Resource;
 using Certes.Pkcs;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Certes
 {
@@ -30,7 +33,7 @@ namespace Certes
         private static Uri stagingServerV2;
 
         public static IAcmeHttpClient GetAcmeHttpClient(Uri uri) => Helper.CreateHttp(uri, http.Value);
-        
+
         public static async Task<Uri> GetAcmeUriV2()
         {
             if (stagingServerV2 != null)
@@ -40,11 +43,10 @@ namespace Certes
 
             var servers = new[] {
                 //new Uri("https://lo0.in:4431/directory"),
-                new Uri("https://boulder-certes-ci.dymetis.com:4431/directory"),
+                //new Uri("http://localhost:8080/dir"),
+                new Uri("https://pebble.azurewebsites.net/dir"),
                 //WellKnownServers.LetsEncryptStagingV2,
             };
-
-            var rootCerts = new[] { "root-cert-rsa.pem", "root-cert-ecdsa.pem" };
 
             var exceptions = new List<Exception>();
             foreach (var uri in servers)
@@ -67,13 +69,9 @@ namespace Certes
 
                     try
                     {
-                        foreach (var rootCert in rootCerts)
-                        {
-                            var certUri = new Uri(uri, $"/certes/root-cert?file={rootCert}");
-                            var certData = await http.Value.GetByteArrayAsync(certUri);
-                            TestCertificates.Add(certData);
-
-                        }
+                        var certUri = new Uri(uri, $"/mgnt/roots/0");
+                        var certData = await http.Value.GetByteArrayAsync(certUri);
+                        TestCertificates.Add(certData);
                     }
                     catch
                     {
@@ -92,7 +90,9 @@ namespace Certes
 
         public static async Task DeployDns01(KeyAlgorithm algo, Dictionary<string, string> tokens)
         {
-            using (await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens)))) { }
+            using var resp = await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens), Encoding.UTF8, "application/json"));
+
+            var respJson = await resp.Content.ReadAsStringAsync();
         }
 
         public static void AddTestCerts(this PfxBuilder pfx)
@@ -101,6 +101,56 @@ namespace Certes
             {
                 pfx.AddIssuers(cert);
             }
+        }
+
+        public static async Task<IOrderContext> AuthorizeHttp(AcmeContext ctx, IList<string> hosts)
+        {
+            for (var i = 0; i < 10; ++i)
+            {
+                var orderCtx = await ctx.NewOrder(hosts);
+                var order = await orderCtx.Resource();
+                Assert.NotNull(order);
+                Assert.Equal(hosts.Count, order.Authorizations?.Count);
+                Assert.True(OrderStatus.Pending == order.Status || OrderStatus.Ready == order.Status || OrderStatus.Processing == order.Status);
+
+                var authrizations = await orderCtx.Authorizations();
+
+                foreach (var authz in authrizations)
+                {
+                    var a = await authz.Resource();
+                    if (a.Status == AuthorizationStatus.Pending)
+                    {
+                        var httpChallenge = await authz.Http();
+                        await httpChallenge.Validate();
+                    }
+                }
+
+                while (true)
+                {
+                    await Task.Delay(100);
+
+                    var statuses = new List<AuthorizationStatus>();
+                    foreach (var authz in authrizations)
+                    {
+                        var a = await authz.Resource();
+                        statuses.Add(a?.Status ?? AuthorizationStatus.Pending);
+                    }
+
+                    if (statuses.All(s => s == AuthorizationStatus.Valid))
+                    {
+                        return orderCtx;
+                    }
+
+
+                    if (statuses.Any(s => s == AuthorizationStatus.Invalid))
+                    {
+                        break;
+                    }
+                }
+            }
+
+            Assert.True(false, "Authorization failed.");
+            return null;
         }
     }
 }

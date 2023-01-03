@@ -24,7 +24,7 @@ namespace Certes
         public static async Task<Order> Finalize(this IOrderContext context, CsrInfo csr, IKey key)
         {
             var builder = await context.CreateCsr(key);
-            
+
             foreach (var (name, value) in csr.Fields)
             {
                 builder.AddName(name, value);
@@ -77,14 +77,14 @@ namespace Certes
             }
 
             order = await context.Finalize(csr, key);
-            
-            while (order.Status == OrderStatus.Processing && retryCount-- > 0)
+
+            while ((order == null || order.Status == OrderStatus.Processing) && retryCount-- > 0)
             {
                 await Task.Delay(TimeSpan.FromSeconds(Math.Max(context.RetryAfter, 1)));
                 order = await context.Resource();
             }
 
-            if (order.Status != OrderStatus.Valid)
+            if (order?.Status != OrderStatus.Valid)
             {
                 throw new AcmeException(Strings.ErrorFinalizeFailed);
             }

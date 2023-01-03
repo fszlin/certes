@@ -1,24 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Net.Http;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
-using Certes.Crypto;
-using Newtonsoft.Json.Linq;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
 using Xunit;
+using static Certes.IntegrationHelper;
 
 namespace Certes
 {
     public static partial class Helper
     {
-        private static readonly KeyAlgorithmProvider signatureAlgorithmProvider = new KeyAlgorithmProvider();
-        private static (string Certificate, string Key)? validCertificate;
+        private static string ValidCertPem = null;
 
         public static IList<string> Logs
         {
@@ -91,23 +88,41 @@ namespace Certes
             }
         }
 
-        public static async Task<(string Certificate, string Key)> GetValidCert()
+        public static async Task<string> GetValidCert()
         {
-            if (validCertificate != null)
+            if (ValidCertPem != null)
             {
-                return validCertificate.Value;
+                return ValidCertPem;
             }
 
-            using (var http = new HttpClient())
-            {
-                var cert = await http.GetStringAsync("http://certes-ci.dymetis.com/cert-data");
-                var key = await http.GetStringAsync("http://certes-ci.dymetis.com/cert-key");
+            var hosts = new[] { $"xunit-es256.certes-ci.dymetis.com" };
+            var dirUri = await GetAcmeUriV2();
+            var httpClient = GetAcmeHttpClient(dirUri);
+            var ctx = new AcmeContext(dirUri, GetKeyV2(), http: httpClient);
+            var orderCtx = await AuthorizeHttp(ctx, hosts);
 
-                validCertificate = (cert, key);
-                return validCertificate.Value;
+            var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
+            var finalizedOrder = await orderCtx.Finalize(new CsrInfo
+            {
+                CountryName = "CA",
+                State = "Ontario",
+                Locality = "Toronto",
+                Organization = "Certes",
+                OrganizationUnit = "Dev",
+                CommonName = hosts[0],
+            }, certKey);
+
+            var cert = await orderCtx.Download(null);
+
+            var buffer = new StringBuilder();
+            buffer.AppendLine(cert.Certificate.ToPem());
+            foreach (var issuer in cert.Issuers)
+            {
+                buffer.AppendLine(issuer.ToPem());
             }
 
-            throw new Exception("Fail to load certificate");
+            var pem = buffer.ToString();
+            return ValidCertPem = pem;
         }
     }
 }

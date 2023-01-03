@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Management.Dns.Fluent;
@@ -10,19 +6,25 @@ using Microsoft.Azure.Management.Dns.Fluent.Models;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using static Certes.Func.Helper;
 
-using static Certes.Tests.CI.Helper;
-
-namespace Certes.Tests.CI
+namespace Certes.Func
 {
-    public static class DnsChanllengeFunction
+    public class DnsChanllengeFunction
     {
-        [Function("SetupDns")]
-        public static async Task<HttpResponseData> SetupDns(
+        private readonly ILogger _logger;
+
+        public DnsChanllengeFunction(ILoggerFactory loggerFactory)
+        {
+            _logger = loggerFactory.CreateLogger<HttpChanllengeFunction>();
+        }
+
+        [Function(nameof(HandleDnsChallenge))]
+        public async Task<HttpResponseData> HandleDnsChallenge(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "dns-01/{algo}")] HttpRequestData req,
-            string algo,
-            FunctionContext executionContext)
+            string algo)
         {
             Dictionary<string, string> tokens;
             using (var reader = new StreamReader(req.Body))
@@ -31,6 +33,7 @@ namespace Certes.Tests.CI
                 tokens = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
             }
 
+            var addedRecords = new Dictionary<string, string>();
             var keyType = (KeyAlgorithm)Enum.Parse(typeof(KeyAlgorithm), algo, true);
             var accountKey = GetTestKey(keyType);
 
@@ -52,6 +55,7 @@ namespace Certes.Tests.CI
                 foreach (var p in tokens)
                 {
                     var name = "_acme-challenge." + p.Key.Replace(".dymetis.com", "");
+                    var value = accountKey.SignatureKey.DnsTxt(p.Value);
                     await client.RecordSets.CreateOrUpdateAsync(
                         "dymetis",
                         "dymetis.com",
@@ -60,11 +64,14 @@ namespace Certes.Tests.CI
                         new RecordSetInner(
                             name: name,
                             tTL: 1,
-                            txtRecords: new[] { new TxtRecord(new[] { accountKey.SignatureKey.DnsTxt(p.Value) }) }));
+                            txtRecords: new[] { new TxtRecord(new[] { value }) }));
+
+                    addedRecords.Add(name, value);
                 }
             }
 
             var response = req.CreateResponse(HttpStatusCode.OK);
+            await response.WriteAsJsonAsync(addedRecords);
             return response;
         }
     }

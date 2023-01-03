@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Certes.Acme.Resource;
 using Certes.Pkcs;
 using Xunit;
 using Xunit.Abstractions;
@@ -23,7 +22,7 @@ namespace Certes
             {
                 var dirUri = await GetAcmeUriV2();
 
-                var hosts = new[] { $"www-dns-{DomainSuffix}.es256.certes-ci.dymetis.com", $"mail-dns-{DomainSuffix}.es256.certes-ci.dymetis.com" };
+                var hosts = new[] { $"www-dns-es256.certes-ci.dymetis.com", $"mail-dns-es256.certes-ci.dymetis.com" };
                 var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
                 var orderCtx = await AuthzDns(ctx, hosts);
                 while (orderCtx == null)

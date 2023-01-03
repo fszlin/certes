@@ -1,4 +1,11 @@
 // based on https://github.com/jefferai/golang-alpn-example/blob/master/alpnexample.go
+
+// scp ./tls-alpn-responder.go elin@certes-alpn.canadacentral.cloudapp.azure.com:/home/elin/tls-alpn/tls-alpn-responder.go
+
+// sudo apt install golang-go
+// go mod init certes.app/tls-apln
+// go get .
+
 // nohup sudo go run tls-alpn-responder.go > /dev/null 2>&1
 
 package main

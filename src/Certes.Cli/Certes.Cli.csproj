@@ -3,11 +3,12 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net5.0</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <Authors>Certes Contributors</Authors>
     <Company />
     <Product>Certes ACME Client CLI</Product>
-    <Description>Dotnet tool for Automated Certificate Management Environment (ACME) protocol, powered by Certes.</Description>
+    <Description>Dotnet tool for Automated Certificate Management Environment (ACME) protocol,
+      powered by Certes.</Description>
     <PackageType>DotnetTool</PackageType>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -34,14 +35,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="6.2.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+    <PackageReference Include="Autofac" Version="6.5.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NLog" Version="4.7.11" />
-    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.38.0" />
-    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.38.0" />
+    <PackageReference Include="NLog" Version="5.1.1" />
+    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.38.1" />
+    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.38.1" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.21216.1" />
   </ItemGroup>
 
