@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
 using Xunit;
@@ -28,10 +27,13 @@ namespace Certes
 
             var orderUri = order.Location;
 
-            await httpChallenge.Validate();
-
             var res = await authz.Resource();
-            while (res.Status != AuthorizationStatus.Valid && res.Status != AuthorizationStatus.Invalid)
+            if (res.Status == AuthorizationStatus.Pending)
+            {
+                await httpChallenge.Validate();
+            }
+
+            while (res?.Status != AuthorizationStatus.Valid && res?.Status != AuthorizationStatus.Invalid)
             {
                 res = await authz.Resource();
             }

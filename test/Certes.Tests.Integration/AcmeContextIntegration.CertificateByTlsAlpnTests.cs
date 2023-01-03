@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -29,7 +30,7 @@ namespace Certes
             public async Task CanGenerateCertificateTlsAlpn()
             {
                 var dirUri = await GetAcmeUriV2();
-                var hosts = new[] { $"{DomainSuffix}.tls-alpn.certes-ci.dymetis.com" };
+                var hosts = new[] { $"{Guid.NewGuid():N}.tls-alpn.certes-ci.dymetis.com" };
                 var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
                 var orderCtx = await ctx.NewOrder(hosts);
                 var order = await orderCtx.Resource();
@@ -61,7 +62,7 @@ namespace Certes
                     foreach (var authz in authrizations)
                     {
                         var a = await authz.Resource();
-                        statuses.Add(a.Status ?? AuthorizationStatus.Pending);
+                        statuses.Add(a?.Status ?? AuthorizationStatus.Pending);
                     }
 
                     if (statuses.All(s => s == AuthorizationStatus.Valid || s == AuthorizationStatus.Invalid))
@@ -112,7 +113,8 @@ namespace Certes
                     Key = certKey.ToDer(),
                 }, JsonUtil.CreateSettings());
 
-                using (var resp = await http.Value.PostAsync(
+                using (
+                    var resp = await http.Value.PostAsync(
                         $"https://{authz.Identifier.Value}/tls-alpn-01/",
                         new StringContent(json, Encoding.UTF8, "application/json")))
                 {

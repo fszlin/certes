@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -12,7 +13,6 @@ using Microsoft.Azure.Management.AppService.Fluent.Models;
 using Microsoft.Rest.Azure;
 using Moq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Xunit;
 using static Certes.Acme.WellKnownServers;
 using static Certes.Cli.CliTestHelper;
@@ -32,8 +32,13 @@ namespace Certes.Cli.Commands
             var appName = "my-app";
             var appSlot = "staging";
             var keyPath = "./cert-key.pem";
-            
-            var (certChainContent, _) = await GetValidCert();
+
+            var certChainContent = await GetValidCert();
+            foreach (var testRoot in IntegrationHelper.TestCertificates)
+            {
+                certChainContent += Encoding.UTF8.GetString(testRoot) + Environment.NewLine;
+            }
+
             var certChain = new CertificateChain(certChainContent);
 
             var order = new Order

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
+using Certes.Acme.Resource;
 using Certes.Pkcs;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Certes
 {
@@ -98,6 +101,56 @@ namespace Certes
             {
                 pfx.AddIssuers(cert);
             }
+        }
+
+        public static async Task<IOrderContext> AuthorizeHttp(AcmeContext ctx, IList<string> hosts)
+        {
+            for (var i = 0; i < 10; ++i)
+            {
+                var orderCtx = await ctx.NewOrder(hosts);
+                var order = await orderCtx.Resource();
+                Assert.NotNull(order);
+                Assert.Equal(hosts.Count, order.Authorizations?.Count);
+                Assert.True(OrderStatus.Pending == order.Status || OrderStatus.Ready == order.Status || OrderStatus.Processing == order.Status);
+
+                var authrizations = await orderCtx.Authorizations();
+
+                foreach (var authz in authrizations)
+                {
+                    var a = await authz.Resource();
+                    if (a.Status == AuthorizationStatus.Pending)
+                    {
+                        var httpChallenge = await authz.Http();
+                        await httpChallenge.Validate();
+                    }
+                }
+
+                while (true)
+                {
+                    await Task.Delay(100);
+
+                    var statuses = new List<AuthorizationStatus>();
+                    foreach (var authz in authrizations)
+                    {
+                        var a = await authz.Resource();
+                        statuses.Add(a?.Status ?? AuthorizationStatus.Pending);
+                    }
+
+                    if (statuses.All(s => s == AuthorizationStatus.Valid))
+                    {
+                        return orderCtx;
+                    }
+
+
+                    if (statuses.Any(s => s == AuthorizationStatus.Invalid))
+                    {
+                        break;
+                    }
+                }
+            }
+
+            Assert.True(false, "Authorization failed.");
+            return null;
         }
     }
 }

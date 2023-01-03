@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CommandLine;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
@@ -33,7 +34,12 @@ namespace Certes.Cli.Commands
                 Status = OrderStatus.Valid,
             };
 
-            var (certChainContent, _) = await GetValidCert();
+            var certChainContent = await GetValidCert();
+            foreach (var testRoot in IntegrationHelper.TestCertificates)
+            {
+                certChainContent += Encoding.UTF8.GetString(testRoot) + Environment.NewLine;
+            }
+
             var certChain = new CertificateChain(certChainContent);
 
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
