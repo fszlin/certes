@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Pkcs;
@@ -86,7 +87,9 @@ namespace Certes
 
         public static async Task DeployDns01(KeyAlgorithm algo, Dictionary<string, string> tokens)
         {
-            using (await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens)))) { }
+            using var resp = await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens), Encoding.UTF8, "application/json"));
+
+            var respJson = await resp.Content.ReadAsStringAsync();
         }
 
         public static void AddTestCerts(this PfxBuilder pfx)

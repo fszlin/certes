@@ -93,13 +93,13 @@ namespace Certes
                 foreach (var authz in authrizations)
                 {
                     var a = await authz.Resource();
-                    if (AuthorizationStatus.Invalid == a.Status)
+                    if (AuthorizationStatus.Invalid == a?.Status)
                     {
                         return null;
                     }
                     else
                     {
-                        statuses.Add(a.Status ?? AuthorizationStatus.Pending);
+                        statuses.Add(a?.Status ?? AuthorizationStatus.Pending);
                     }
                 }
 
