@@ -32,7 +32,7 @@ namespace Certes
         protected async Task CanGenerateCertificateWithEC(KeyAlgorithm algo)
         {
             var dirUri = await GetAcmeUriV2();
-            var hosts = new[] { $"www-ec-{DomainSuffix}.{algo}.certes-ci.dymetis.com".ToLower() };
+            var hosts = new[] { $"www-ec-{algo}.certes-ci.dymetis.com".ToLower() };
             var ctx = new AcmeContext(dirUri, GetKeyV2(algo), http: GetAcmeHttpClient(dirUri));
             var orderCtx = await AuthorizeHttp(ctx, hosts);
 
@@ -126,8 +126,12 @@ namespace Certes
 
                 foreach (var authz in authrizations)
                 {
-                    var httpChallenge = await authz.Http();
-                    await httpChallenge.Validate();
+                    var a = await authz.Resource();
+                    if (a.Status == AuthorizationStatus.Pending)
+                    {
+                        var httpChallenge = await authz.Http();
+                        await httpChallenge.Validate();
+                    }
                 }
 
                 while (true)
@@ -138,7 +142,7 @@ namespace Certes
                     foreach (var authz in authrizations)
                     {
                         var a = await authz.Resource();
-                        statuses.Add(a.Status ?? AuthorizationStatus.Pending);
+                        statuses.Add(a?.Status ?? AuthorizationStatus.Pending);
                     }
 
                     if (statuses.All(s => s == AuthorizationStatus.Valid))

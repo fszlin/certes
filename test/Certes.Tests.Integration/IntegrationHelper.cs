@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -30,7 +29,7 @@ namespace Certes
         private static Uri stagingServerV2;
 
         public static IAcmeHttpClient GetAcmeHttpClient(Uri uri) => Helper.CreateHttp(uri, http.Value);
-        
+
         public static async Task<Uri> GetAcmeUriV2()
         {
             if (stagingServerV2 != null)
@@ -40,11 +39,10 @@ namespace Certes
 
             var servers = new[] {
                 //new Uri("https://lo0.in:4431/directory"),
-                new Uri("https://boulder-certes-ci.dymetis.com:4431/directory"),
+                //new Uri("http://localhost:8080/dir"),
+                new Uri("https://pebble.azurewebsites.net/dir"),
                 //WellKnownServers.LetsEncryptStagingV2,
             };
-
-            var rootCerts = new[] { "root-cert-rsa.pem", "root-cert-ecdsa.pem" };
 
             var exceptions = new List<Exception>();
             foreach (var uri in servers)
@@ -67,13 +65,9 @@ namespace Certes
 
                     try
                     {
-                        foreach (var rootCert in rootCerts)
-                        {
-                            var certUri = new Uri(uri, $"/certes/root-cert?file={rootCert}");
-                            var certData = await http.Value.GetByteArrayAsync(certUri);
-                            TestCertificates.Add(certData);
-
-                        }
+                        var certUri = new Uri(uri, $"/mgnt/roots/0");
+                        var certData = await http.Value.GetByteArrayAsync(certUri);
+                        TestCertificates.Add(certData);
                     }
                     catch
                     {

@@ -30,7 +30,6 @@ namespace Certes
                 Assert.NotNull(account);
                 Assert.Equal(AccountStatus.Valid, account.Status);
 
-                await accountCtx.Update(agreeTermsOfService: true);
                 await accountCtx.Update(contact: new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@certes.app" });
 
                 account = await accountCtx.Deactivate();

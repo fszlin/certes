@@ -22,7 +22,7 @@ namespace Certes
             public async Task CanGenerateCertificateHttp()
             {
                 var dirUri = await GetAcmeUriV2();
-                var hosts = new[] { $"www-http-{DomainSuffix}.es256.certes-ci.dymetis.com", $"mail-http-{DomainSuffix}.es256.certes-ci.dymetis.com" };
+                var hosts = new[] { $"www-http-es256.certes-ci.dymetis.com", $"mail-http-es256.certes-ci.dymetis.com" };
                 var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
                 var orderCtx = await AuthorizeHttp(ctx, hosts);
 

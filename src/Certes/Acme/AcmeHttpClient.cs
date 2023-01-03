@@ -208,7 +208,7 @@ namespace Certes.Acme
             }
             else
             {
-                if (IsJsonMedia(response.Content?.Headers.ContentType.MediaType))
+                if (IsJsonMedia(response.Content?.Headers?.ContentType?.MediaType))
                 {
                     var json = await response.Content.ReadAsStringAsync();
                     error = JsonConvert.DeserializeObject<AcmeError>(json);
