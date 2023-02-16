@@ -20,6 +20,7 @@ namespace Certes.Json
                     NamingStrategy = new CamelCaseNamingStrategy()
                 },
                 NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Include,
                 MissingMemberHandling = MissingMemberHandling.Ignore
             };
 
