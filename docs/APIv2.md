@@ -62,7 +62,7 @@ var accountInfo = await account.Resource();
 Update contacts, or accept `Terms of Service` again if it's updated.
  
 ```C#
-await account.UpdateUpdate(
+await account.Update(
     contact: new[] { $"mailto:support@example.com" },
     agreeTermsOfService: true);
 ```
