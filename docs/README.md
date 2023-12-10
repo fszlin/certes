@@ -39,6 +39,9 @@ var accountKey = KeyFactory.FromPem(pemKey);
 var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2, accountKey);
 var account = await acme.Account();
 ```
+Note: If you don't have the `pemKey` from a previous session, create a new account. An account is
+tied to its generated certificates, not to an email address. The only impact of a lost (or unavailable)
+account key would be loss of any previous rate limit adjustment that was granted to that account.
 
 See [API doc](APIv2.md#accounts) for additional operations.
 
