@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Certes.Crypto;
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Pkix;
@@ -70,11 +71,14 @@ namespace Certes.Pkcs
         /// </summary>
         /// <param name="friendlyName">The friendly name.</param>
         /// <param name="password">The password.</param>
+        /// <param name="certAlgorithm">The Cert Algorithm</param>
         /// <returns>The PFX data.</returns>
-        public byte[] Build(string friendlyName, string password)
+        public byte[] Build(string friendlyName, string password, DerObjectIdentifier certAlgorithm = null)
         {
             var keyPair = LoadKeyPair();
-            var store = new Pkcs12StoreBuilder().Build();
+            var builder = new Pkcs12StoreBuilder();
+            if(certAlgorithm!=null) builder.SetCertAlgorithm(certAlgorithm);
+            var store = builder.Build();
 
             var entry = new X509CertificateEntry(certificate);
             store.SetCertificateEntry(friendlyName, entry);
