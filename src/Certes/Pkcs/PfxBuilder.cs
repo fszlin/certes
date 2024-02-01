@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Certes.Crypto;
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Pkix;
