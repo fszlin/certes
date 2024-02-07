@@ -47,7 +47,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" Condition="'$(TargetFramework)' == 'net462'" />
   </ItemGroup>
 
