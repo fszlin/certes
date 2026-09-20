@@ -2,10 +2,44 @@
 
 ## Status as of 2026-09-20
 
-Certes is retiring its legacy automation before introducing GitHub Actions.
-No replacement Actions workflows are installed yet. Run the local checks in
+Certes has retired its legacy automation. An initial GitHub Actions workflow is
+defined for build/package validation; its first hosted run still needs verifying.
+Run the local checks in
 [AGENTS.md](https://github.com/fszlin/certes/blob/main/AGENTS.md) and include their
 results in PRs during the transition.
+
+### Initial Actions workflow
+
+`.github/workflows/build.yml` runs on PRs targeting `main`, pushes to `main`, and
+manual dispatch, with SDK 10.0.301 and read-only repository permissions:
+
+- `Build (ubuntu-24.04)`, `Build (windows-2025)`, and `Build (macos-26)` compile
+  the signed library in Release for all retained targets, then compile the CLI
+  and both test projects with `SkipSigning=true` in Debug. They do not execute
+  the tests or compile the Azure Functions hosted challenge helper.
+- `Package smoke checks` packs the signed library and CLI in Release, then
+  consumes both packages using an isolated NuGet cache. The .NET 10 library
+  consumer exercises RSA/ECDSA key round-trips and CSR generation; the CLI runs
+  `--help` using .NET 10 roll-forward. No packages are published or uploaded.
+- `Legacy unit tests (manual diagnostic)` runs only when a manual dispatch sets
+  `run_legacy_tests` to true. It runs the entire `net6.0` unit suite with .NET 10
+  roll-forward, with no exclusions or failure suppression. The six hosted-Pebble
+  failures are expected until fixtures are repaired. This diagnostic must not
+  become a required PR check in its current form.
+
+A green build/package run is not a passing unit/integration suite or verified CA
+interoperability. The skipped-by-default diagnostic is a temporary CI rollout
+boundary, not removal or disabling of test cases. Automatic offline test runs
+remain the next priority. Runtime/target modernization is a separate change.
+
+Runner OS labels are explicit versions matching the current `-latest` image
+families at selection time: Ubuntu 24.04 and Windows Server 2025 on x64, macOS 26
+on ARM64. Revisit these labels before image deprecation; versioned labels still
+receive image updates and are not immutable snapshots.
+
+Action references are pinned to commit SHAs. Jobs have timeouts and superseded
+runs are cancelled. Required branch checks should be configured only after these
+job names and hosted runs have been verified; they have not been configured yet.
 
 ### Repository settings changed
 
@@ -73,13 +107,13 @@ complete cleanup beyond the disabled repository webhooks:
 
 ## Replacement plan
 
-The immediately following infrastructure PR should establish minimal GitHub
-Actions build validation and a path to required offline unit tests. Keep the CI
-gap short without concealing the six known hosted-service failures.
+Verify the initial Actions workflow on GitHub, then establish required offline
+unit tests. Keep the test gap short without concealing the six known
+hosted-service failures.
 
 Use focused PRs to introduce:
 
-1. Build and documentation validation, then offline unit tests and local Pebble
+1. Documentation validation, offline unit tests, and local Pebble
    integration tests as the test baseline is repaired. Preserve known failure
    reporting rather than weakening assertions to obtain a green build.
 2. New required status checks on `main` after stable Actions check names exist.

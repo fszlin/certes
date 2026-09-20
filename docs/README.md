@@ -149,5 +149,6 @@ Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 [![NuGet](https://img.shields.io/nuget/dt/dotnet-certes.svg)](https://www.nuget.org/packages/dotnet-certes/)
 
 
-Legacy CI integrations are being retired in favor of GitHub Actions. Replacement
-workflows are not yet installed; see the [migration status](ci-migration.md).
+Legacy CI integrations have been retired in favor of initial GitHub Actions
+build/package checks. Automatic test execution is still pending; see the
+[migration status](ci-migration.md).

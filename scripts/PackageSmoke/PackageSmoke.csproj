@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RestoreSources>$(MSBuildThisFileDirectory)../../artifacts/packages;https://api.nuget.org/v3/index.json</RestoreSources>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Certes" Version="0.0.0-ci-smoke" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,101 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_legacy_tests:
+        description: Run the full unit suite (known hosted-service failures)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025, macos-26]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          dotnet-version: 10.0.301
+      - name: Runtime information
+        run: dotnet --info
+      - name: Build signed library (all targets)
+        run: dotnet build src/Certes/Certes.csproj -c Release -p:ContinuousIntegrationBuild=true
+      - name: Compile CLI and both test projects (all test targets)
+        run: dotnet build test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -p:SkipSigning=true
+      - name: Record verification scope
+        shell: bash
+        run: |
+          printf '%s\n' \
+            '### Build verification only' \
+            'Library, CLI, and unit/integration test compilation were checked.' \
+            'Tests were not executed: six unit cases depend on a hosted Pebble service that returned HTTP 401 at the revival baseline.' \
+            'Use the manual run_legacy_tests input for the full diagnostic suite. Failures are not suppressed.' \
+            'Offline unit tests and local Pebble integration are the next test-infrastructure tasks.' >> "$GITHUB_STEP_SUMMARY"
+
+  packages:
+    name: Package smoke checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CERTES_PACKAGE_VERSION: 0.0.0-ci-smoke
+      NUGET_PACKAGES: ${{ github.workspace }}/artifacts/nuget-smoke
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          dotnet-version: 10.0.301
+      - name: Pack signed library and CLI
+        run: |
+          dotnet pack src/Certes/Certes.csproj -c Release -p:ContinuousIntegrationBuild=true --output artifacts/packages
+          dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:ContinuousIntegrationBuild=true --output artifacts/packages
+      - name: Consume the library package
+        run: dotnet run --project scripts/PackageSmoke/PackageSmoke.csproj -c Release
+      - name: Install and launch the packaged CLI
+        shell: bash
+        run: |
+          dotnet tool install dotnet-certes --version "$CERTES_PACKAGE_VERSION" --tool-path artifacts/tools --add-source artifacts/packages
+          DOTNET_ROLL_FORWARD=LatestMajor artifacts/tools/certes --help
+
+  legacy-tests:
+    name: Legacy unit tests (manual diagnostic)
+    if: github.event_name == 'workflow_dispatch' && inputs.run_legacy_tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          dotnet-version: 10.0.301
+      - name: Record runtime
+        run: dotnet --info
+      - name: Run all unit tests with diagnostic roll-forward
+        env:
+          DOTNET_ROLL_FORWARD: LatestMajor
+        run: dotnet test test/Certes.Tests/Certes.Tests.csproj -f net6.0 -p:SkipSigning=true
