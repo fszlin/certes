@@ -65,9 +65,11 @@ contributors and LLM coding agents.
 See the [branching and release strategy](AGENTS.md#branching-and-releases)
 before preparing a contribution or release.
 
-Legacy CI webhooks and obsolete required checks have been disabled. GitHub Actions
-workflows are not yet installed. See [CI migration status](docs/ci-migration.md)
-for completed changes, including verified Azure build/release shutdown.
+The initial [GitHub Actions workflow](.github/workflows/build.yml) checks
+cross-platform compilation and local package consumption. It does not run unit
+tests automatically while their hosted-service dependency is being repaired.
+See [CI migration status](docs/ci-migration.md) for coverage, the manual test
+diagnostic, and remaining work. Legacy build/release automation is disabled.
 
 Run commands from the repository root:
 

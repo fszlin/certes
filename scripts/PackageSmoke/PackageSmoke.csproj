@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RestoreSources>$(MSBuildThisFileDirectory)../../artifacts/packages;https://api.nuget.org/v3/index.json</RestoreSources>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Certes" Version="$(CERTES_PACKAGE_VERSION)" />
+  </ItemGroup>
+  <Target Name="RequireSmokePackageVersion" BeforeTargets="CollectPackageReferences">
+    <Error Condition="'$(CERTES_PACKAGE_VERSION)' == ''" Text="Set CERTES_PACKAGE_VERSION to the locally packed smoke version before restoring or running this project." />
+  </Target>
+</Project>

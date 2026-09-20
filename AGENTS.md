@@ -25,6 +25,8 @@ current task. Keep this guide accurate when commands, targets, or blockers chang
 | `test/Certes.Func/` | Azure Functions challenge-test helper; not part of the core library |
 | `misc/certes.props` | Shared build settings, signing, versions, warnings-as-errors |
 | `docs/` | Usage/API documentation and DocFX site |
+| `.github/workflows/build.yml` | Cross-platform compilation, package smoke checks, optional legacy test diagnostic |
+| `scripts/PackageSmoke/` | Consumer of the locally packed library; not a solution project |
 | `azure-pipelines.yml` | Disabled legacy pipeline placeholder |
 | `docs/ci-migration.md` | CI retirement state and GitHub Actions migration follow-ups |
 
@@ -97,13 +99,20 @@ Example review disclosure:
 
 ## Build and verification
 
-Legacy repository webhooks and obsolete required checks are disabled. Replacement
-GitHub Actions workflows are not yet installed. Consult `docs/ci-migration.md`
-before changing automation; Azure DevOps build/release shutdown is verified there.
-Run relevant checks locally and report results during this transition.
+Legacy repository webhooks and obsolete required checks are disabled. The initial
+GitHub Actions workflow checks compilation and package consumption, not an
+automatically passing test suite. Full legacy unit tests can be run manually with
+the `run_legacy_tests` workflow input; failures are not suppressed. Consult
+`docs/ci-migration.md` before changing automation. Run relevant checks locally and
+report results during this transition; hosted workflow success must be verified
+after pushing the workflow.
 
 Run commands from the repository root. Check `dotnet --info` before diagnosing
 runtime failures. There is currently no `global.json`.
+
+The initial CI workflow installs SDK 10.0.301. CLI package smoke checks and the
+optional legacy tests use .NET 10 runtime roll-forward diagnostically; production
+project targets are unchanged. Workflow syntax can be checked with `actionlint`.
 
 Current targets are `net6.0;netstandard2.0;net462` for the library, `net6.0` for
 the CLI, `net6.0;net462` for tests, and `net7.0` for the Functions helper. .NET 6/7
@@ -162,6 +171,26 @@ For package/build changes, also verify `dotnet pack` for the affected shipping
 project in Release configuration and test consumption of the resulting package.
 Do not infer release readiness from the unsigned test build alone.
 
+To reproduce the package smoke checks (POSIX shell, SDK 10.0.301), use an empty
+temporary NuGet cache so a prior package with the same smoke version cannot mask
+the current output:
+
+```sh
+export NUGET_PACKAGES="$(mktemp -d)"
+export CERTES_PACKAGE_VERSION=0.0.0-ci-smoke
+dotnet pack src/Certes/Certes.csproj -c Release -p:ContinuousIntegrationBuild=true --output artifacts/packages
+dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:ContinuousIntegrationBuild=true --output artifacts/packages
+dotnet run --project scripts/PackageSmoke/PackageSmoke.csproj -c Release
+dotnet tool install dotnet-certes --version "$CERTES_PACKAGE_VERSION" --tool-path artifacts/tools --add-source artifacts/packages
+DOTNET_ROLL_FORWARD=LatestMajor artifacts/tools/certes --help
+```
+
+Use a fresh `artifacts/tools` directory for tool installation. These checks verify
+the version supplied by `CERTES_PACKAGE_VERSION`; the consumer requires this
+variable and shares it with packing and CLI installation. These checks verify
+local package consumption only; packages are not published. The consumer runs on
+.NET 10 and does not verify every library target or full certificate issuance.
+
 For documentation-only changes, check links and `git diff --check`; compilation
 and test reruns are unnecessary unless code examples or behavior also change.
 
@@ -203,8 +232,9 @@ Observed at `ffa00c6` on 2026-09-20, using SDK 10.0.301 on macOS ARM64:
 - CLI Azure Fluent dependencies are marked legacy by NuGet and pull in a
   flagged `System.Text.RegularExpressions 4.3.0` dependency. Re-run audits before
   drawing current conclusions; package findings do not prove exploitability.
-- Legacy CI has been retired locally, repository webhooks disabled, and Azure
-  build/release automation disabled and verified. Replacement CI is outstanding
+- Legacy CI has been retired, repository webhooks disabled, and Azure build/release
+  automation disabled and verified. Initial Actions build/package checks are
+  defined; automatic test execution and required checks remain outstanding
   (see `docs/ci-migration.md`).
 - Cancellation, renewal information, certificate profiles, and IP identifiers
   are not implemented in the current APIs.
