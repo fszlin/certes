@@ -62,9 +62,8 @@ examples and implementation-status claims should be checked against the code.
 verification commands, and known blockers. It is intended for both human
 contributors and LLM coding agents.
 
-Development uses short-lived, focused branches merged into `main` after review
-and verification. Releases are explicit; merging does not publish packages. See
-the [branching and release strategy](AGENTS.md#branching-and-releases).
+See the [branching and release strategy](AGENTS.md#branching-and-releases)
+before preparing a contribution or release.
 
 Legacy CI webhooks and obsolete required checks have been disabled. GitHub Actions
 workflows are not yet installed. See [CI migration status](docs/ci-migration.md)
@@ -83,16 +82,10 @@ runtime roll-forward diagnostic and test-service dependency.
 
 ### Revival baseline
 
-At commit `ffa00c6`, reviewed on 2026-09-20 using SDK 10.0.301 on macOS ARM64:
-
-- The library built for all three targets with zero warnings or errors.
-- CLI and unit-test compilation succeeded.
-- Running the `net6.0` unit tests with roll-forward to .NET 10 produced
-  **138 passed and 6 failed**. All six failures reached the old hosted Pebble
-  endpoint, which returned HTTP 401.
-
-This is a dated diagnostic baseline, not a claim of current CA interoperability
-or a supported .NET 10 test configuration.
+The dated build/test results and known blockers are maintained in
+[AGENTS.md's revival baseline](AGENTS.md#known-revival-baseline-and-pitfalls).
+These diagnostics do not establish current CA interoperability or a supported
+.NET 10 test configuration.
 
 ### Revival priorities
 

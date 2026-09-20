@@ -33,6 +33,11 @@ or revoke external service credentials.
   used by the pipeline. Other remote branches retain their old YAML until updated.
 - Retained `GitVersion.yml` and shared package/signing settings for evaluation
   when implementing releases; retiring CI does not change package identity.
+- Retained `.github/stale.yml` because it configures issue/PR housekeeping rather
+  than build or publishing automation. Its Stale GitHub App installation status
+  is unverified; retaining the file is not confirmation that the bot is active
+  or disabled. Review the installation before deciding whether to keep automated
+  stale marking and closure during the revival.
 
 These file changes take effect remotely only after they are pushed/merged.
 
@@ -67,6 +72,10 @@ complete cleanup beyond the disabled repository webhooks:
    do not depend on GitHub webhook delivery.
 
 ## Replacement plan
+
+The immediately following infrastructure PR should establish minimal GitHub
+Actions build validation and a path to required offline unit tests. Keep the CI
+gap short without concealing the six known hosted-service failures.
 
 Use focused PRs to introduce:
 

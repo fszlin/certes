@@ -32,22 +32,10 @@ rules. These apply to both human contributors and LLM-assisted changes.
 
 ### Branching and releases
 
-Use a short-lived branch from current `main` for each focused task, for example
-`docs/revival-guide`, `build/net10`, `test/offline-fixtures`, or
-`fix/order-polling`. Keep PRs small enough to review and verify independently.
-Merge reviewed, verified changes into `main` incrementally rather than keeping
-the entire revival on one long-lived branch. Report existing baseline test
-failures separately from any regressions.
-
-`main` is the next release under development; merging does not publish a package.
-Publishing should be an explicit release/tag operation, with prereleases when
-useful. A consolidated release pipeline is still planned. Create a separate
-release/maintenance branch only when supporting an existing version in parallel
-with newer development.
-
-For LLM-assisted work, follow the [agent branching rules](../AGENTS.md#branching-and-releases),
-including preserving the working tree and obtaining explicit instructions before
-committing, pushing, merging, tagging, or publishing.
+Follow the [branching and release strategy](../AGENTS.md#branching-and-releases)
+for branch scope, verification, incremental merges, and explicit release
+authorization. Keep that section as the authoritative policy for both human and
+LLM-assisted contributions.
 
 ### Ways to contribute
 

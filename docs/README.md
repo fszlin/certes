@@ -136,8 +136,6 @@ See [CLI usage](CLI.md), or simply use the `--help` option to get started
 certes --help
 ```
 
-Also check this [AppVeyor script][AppVeyorCliSample] for renewing certificates on Azure apps.
-
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags](https://github.com/fszlin/certes/tags) on this repository. 
@@ -153,5 +151,3 @@ Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 
 Legacy CI integrations are being retired in favor of GitHub Actions. Replacement
 workflows are not yet installed; see the [migration status](ci-migration.md).
-
-[AppVeyorCliSample]: https://github.com/fszlin/lo0.in/blob/master/.appveyor.yml#L43
