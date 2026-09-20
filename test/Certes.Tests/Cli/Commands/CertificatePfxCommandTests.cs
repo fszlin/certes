@@ -1,7 +1,6 @@
 ﻿using System;
 using System.CommandLine;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
@@ -15,7 +14,6 @@ using static Certes.Helper;
 
 namespace Certes.Cli.Commands
 {
-    [Collection(nameof(Helper.GetValidCert))]
     public class CertificatePfxCommandTests
     {
         [Fact]
@@ -34,13 +32,8 @@ namespace Certes.Cli.Commands
                 Status = OrderStatus.Valid,
             };
 
-            var certChainContent = await GetValidCert();
-            foreach (var testRoot in IntegrationHelper.TestCertificates)
-            {
-                certChainContent += Encoding.UTF8.GetString(testRoot) + Environment.NewLine;
-            }
-
-            var certChain = new CertificateChain(certChainContent);
+            var fixture = new CertificateFixture(KeyAlgorithm.RS256);
+            var certChain = fixture.Chain;
 
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
             settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(LetsEncryptV2);
@@ -55,7 +48,7 @@ namespace Certes.Cli.Commands
             ctxMock.Setup(m => m.Order(orderLoc)).Returns(orderMock.Object);
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
-            fileMock.Setup(m => m.ReadAllText(privateKeyPath)).ReturnsAsync(KeyAlgorithm.RS256.GetTestKey());
+            fileMock.Setup(m => m.ReadAllText(privateKeyPath)).ReturnsAsync(fixture.Key.ToPem());
 
             var envMock = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
             var (console, stdOutput, errOutput) = MockConsole();
@@ -69,13 +62,16 @@ namespace Certes.Cli.Commands
             dynamic ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.Equal(certLoc.ToString(), $"{ret.location}");
             Assert.NotNull(ret.pfx);
+            fixture.AssertPfx(Convert.FromBase64String((string)ret.pfx), "abcd1234", null);
 
             orderMock.Verify(m => m.Download(""), Times.Once);
             errOutput.Clear();
             stdOutput.Clear();
 
             var outPath = "./cert.pfx";
+            byte[] writtenPfx = null;
             fileMock.Setup(m => m.WriteAllBytes(outPath, It.IsAny<byte[]>()))
+                .Callback((string _, byte[] bytes) => writtenPfx = bytes)
                 .Returns(Task.CompletedTask);
             await command.InvokeAsync($"pfx {orderLoc} --private-key {privateKeyPath} abcd1234 --out {outPath}", console.Object);
             Assert.True(errOutput.Length == 0, errOutput.ToString());
@@ -88,6 +84,7 @@ namespace Certes.Cli.Commands
                 JsonConvert.SerializeObject(ret));
 
             fileMock.Verify(m => m.WriteAllBytes(outPath, It.IsAny<byte[]>()), Times.Once);
+            fixture.AssertPfx(writtenPfx, "abcd1234", null);
             fileMock.ResetCalls();
             errOutput.Clear();
             stdOutput.Clear();
@@ -103,6 +100,7 @@ namespace Certes.Cli.Commands
             Assert.True(errOutput.Length == 0, errOutput.ToString());
             ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             fileMock.Verify(m => m.WriteAllBytes(outPath, It.IsAny<byte[]>()), Times.Once);
+            Assert.StartsWith("friendly [certes] ", fixture.AssertPfx(writtenPfx, "abcd1234", null));
         }
     }
 }

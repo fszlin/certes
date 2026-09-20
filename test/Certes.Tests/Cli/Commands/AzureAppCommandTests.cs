@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -20,7 +19,6 @@ using static Certes.Helper;
 
 namespace Certes.Cli.Commands
 {
-    [Collection(nameof(Helper.GetValidCert))]
     public class AzureAppCommandTests
     {
         [Fact]
@@ -33,13 +31,8 @@ namespace Certes.Cli.Commands
             var appSlot = "staging";
             var keyPath = "./cert-key.pem";
 
-            var certChainContent = await GetValidCert();
-            foreach (var testRoot in IntegrationHelper.TestCertificates)
-            {
-                certChainContent += Encoding.UTF8.GetString(testRoot) + Environment.NewLine;
-            }
-
-            var certChain = new CertificateChain(certChainContent);
+            var fixture = new CertificateFixture(KeyAlgorithm.ES256);
+            var certChain = fixture.Chain;
 
             var order = new Order
             {
@@ -69,7 +62,7 @@ namespace Certes.Cli.Commands
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
             fileMock.Setup(m => m.ReadAllText(keyPath))
-                .ReturnsAsync(KeyFactory.NewKey(KeyAlgorithm.ES256).ToPem());
+                .ReturnsAsync(fixture.Key.ToPem());
 
             var appSvcMock = new Mock<IWebSiteManagementClient>(MockBehavior.Strict);
             var certOpMock = new Mock<ICertificatesOperations>(MockBehavior.Strict);
@@ -91,6 +84,8 @@ namespace Certes.Cli.Commands
                     )
                 });
             certOpMock.Setup(m => m.CreateOrUpdateWithHttpMessagesAsync(resourceGroup, It.IsAny<string>(), It.IsAny<CertificateInner>(), default, default))
+                .Callback((string r, string n, CertificateInner c, Dictionary<string, List<string>> h, CancellationToken t)
+                    => fixture.AssertPfx(c.PfxBlob, c.Password, null))
                 .ReturnsAsync((string r, string n, CertificateInner c, Dictionary<string, List<string>> h, CancellationToken t)
                     => new AzureOperationResponse<CertificateInner> { Body = c });
 

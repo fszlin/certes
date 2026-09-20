@@ -150,5 +150,5 @@ Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 
 
 Legacy CI integrations have been retired in favor of initial GitHub Actions
-build/package checks. Automatic test execution is still pending; see the
+build/package checks and automatic offline unit tests; see the
 [migration status](ci-migration.md).

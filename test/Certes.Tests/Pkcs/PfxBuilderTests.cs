@@ -1,11 +1,7 @@
-﻿using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
+﻿using Xunit;
 
 namespace Certes.Pkcs
 {
-    [Collection(nameof(Helper.GetValidCert))]
     public class PfxBuilderTests
     {
         [Theory]
@@ -13,15 +9,12 @@ namespace Certes.Pkcs
         [InlineData(KeyAlgorithm.ES256)]
         [InlineData(KeyAlgorithm.ES384)]
         [InlineData(KeyAlgorithm.ES512)]
-        public async Task CanCreatePfxChain(KeyAlgorithm alog)
+        public void CanCreatePfxChain(KeyAlgorithm algorithm)
         {
-            var cert = await Helper.GetValidCert();
-
-            var pfxBuilder = new PfxBuilder(
-                Encoding.UTF8.GetBytes(cert), KeyFactory.NewKey(alog));
-            pfxBuilder.AddTestCerts();
-            pfxBuilder.AddIssuers(Encoding.UTF8.GetBytes(cert));
+            var fixture = new CertificateFixture(algorithm);
+            var pfxBuilder = fixture.Chain.ToPfx(fixture.Key);
             var pfx = pfxBuilder.Build("my-cert", "abcd1234");
+            fixture.AssertPfx(pfx, "abcd1234", "my-cert");
         }
 
         [Theory]
@@ -29,14 +22,21 @@ namespace Certes.Pkcs
         [InlineData(KeyAlgorithm.ES256)]
         [InlineData(KeyAlgorithm.ES384)]
         [InlineData(KeyAlgorithm.ES512)]
-        public void CanCreatePfxWithoutChain(KeyAlgorithm alog)
+        public void CanCreatePfxWithoutChain(KeyAlgorithm algorithm)
         {
-            var leafCert = File.ReadAllText("./Data/leaf-cert.pem");
-
-            var pfxBuilder = new PfxBuilder(
-                Encoding.UTF8.GetBytes(leafCert), KeyFactory.NewKey(alog));
+            var fixture = new CertificateFixture(algorithm);
+            var pfxBuilder = new PfxBuilder(fixture.Leaf.GetEncoded(), fixture.Key);
             pfxBuilder.FullChain = false;
             var pfx = pfxBuilder.Build("my-cert", "abcd1234");
+            fixture.AssertPfx(pfx, "abcd1234", "my-cert", fullChain: false);
+        }
+
+        [Fact]
+        public void FullChainRequiresIssuers()
+        {
+            var fixture = new CertificateFixture(KeyAlgorithm.ES256);
+            var builder = new PfxBuilder(fixture.Leaf.GetEncoded(), fixture.Key);
+            Assert.Throws<AcmeException>(() => builder.Build("my-cert", "abcd1234"));
         }
     }
 }

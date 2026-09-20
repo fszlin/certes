@@ -20,12 +20,12 @@ current task. Keep this guide accurate when commands, targets, or blockers chang
 | `src/Certes/Jws/`, `Crypto/`, `Json/` | Signing, key algorithms, wire serialization |
 | `src/Certes/Pkcs/` | CSR, certificate-chain, and PFX utilities |
 | `src/Certes.Cli/` | Commands, dependency injection, settings, Azure integrations |
-| `test/Certes.Tests/` | xUnit/Moq tests, including some legacy network-dependent tests |
+| `test/Certes.Tests/` | Offline xUnit/Moq tests and ephemeral certificate fixtures |
 | `test/Certes.Tests.Integration/` | ACME integration flows using external test services |
 | `test/Certes.Func/` | Azure Functions challenge-test helper; not part of the core library |
 | `misc/certes.props` | Shared build settings, signing, versions, warnings-as-errors |
 | `docs/` | Usage/API documentation and DocFX site |
-| `.github/workflows/build.yml` | Cross-platform compilation, package smoke checks, optional legacy test diagnostic |
+| `.github/workflows/build.yml` | Cross-platform compilation and unit tests, package smoke checks |
 | `scripts/PackageSmoke/` | Consumer of the locally packed library; not a solution project |
 | `azure-pipelines.yml` | Disabled legacy pipeline placeholder |
 | `docs/ci-migration.md` | CI retirement state and GitHub Actions migration follow-ups |
@@ -99,10 +99,10 @@ Example review disclosure:
 
 ## Build and verification
 
-Legacy repository webhooks and obsolete required checks are disabled. The initial
-GitHub Actions workflow checks compilation and package consumption, not an
-automatically passing test suite. Full legacy unit tests can be run manually with
-the `run_legacy_tests` workflow input; failures are not suppressed. Consult
+Legacy repository webhooks and obsolete required checks are disabled. The
+GitHub Actions workflow checks compilation, the full offline unit suite, and
+package consumption. Unit tests run on all three OS runners without filters or
+failure suppression. The former `run_legacy_tests` opt-in is removed. Consult
 `docs/ci-migration.md` before changing automation. Run relevant checks locally and
 report results during this transition; hosted workflow success must be verified
 after pushing the workflow.
@@ -111,7 +111,7 @@ Run commands from the repository root. Check `dotnet --info` before diagnosing
 runtime failures. There is currently no `global.json`.
 
 The initial CI workflow installs SDK 10.0.301. CLI package smoke checks and the
-optional legacy tests use .NET 10 runtime roll-forward diagnostically; production
+unit tests use .NET 10 runtime roll-forward diagnostically; production
 project targets are unchanged. Workflow syntax can be checked with `actionlint`.
 
 Current targets are `net6.0;netstandard2.0;net462` for the library, `net6.0` for
@@ -151,11 +151,14 @@ focused tests when appropriate, then run checks relevant to the affected surface
 dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -f net6.0 -p:SkipSigning=true
 ```
 
-Inspect `test/Certes.Tests/IntegrationHelper.cs` and the relevant integration
+Inspect `test/Certes.Tests.Integration/IntegrationHelper.cs` and the relevant integration
 test before running this command. The current setup depends on hosted ACME and
 challenge services, including DNS mutations. It is not a self-contained local
 suite. Local Pebble infrastructure is a revival task; no working local setup is
-provided yet. Unit tests should become network-independent.
+provided yet. Keep unit tests network-independent: `CertificateFixture` generates
+an ephemeral root/intermediate/leaf chain and matching key locally. The network
+helper belongs only to the integration-test project. Restoring NuGet packages
+still requires a package source/cache; offline execution refers to the tests.
 
 ### Dependency checks
 
@@ -214,12 +217,15 @@ and test reruns are unnecessary unless code examples or behavior also change.
 
 ## Known revival baseline and pitfalls
 
-Observed at `ffa00c6` on 2026-09-20, using SDK 10.0.301 on macOS ARM64:
+Baseline reviewed on 2026-09-20, using SDK 10.0.301 on macOS ARM64. Protocol and
+dependency observations below originate at `ffa00c6`; test status was updated
+after the offline-fixture change:
 
 - The core library built for all targets; CLI/unit-test compilation also passed.
-- With roll-forward to .NET 10, 138 unit tests passed and 6 failed. The failures
-  came from the hosted Pebble endpoint returning HTTP 401, via `GetValidCert()`.
-  Do not skip assertions or weaken tests to conceal this dependency.
+- With roll-forward to .NET 10, all 145 unit tests pass, with no skips. The six
+  former hosted-Pebble failures now use local certificate fixtures with matching
+  keys and PFX assertions; a missing-issuer test was added. Hosted ACME integration
+  tests remain external-service-dependent and have not been verified.
 - `EntityContext.Resource()` and `OrderContext.Finalize()` discard the response
   `RetryAfter`; `IOrderContextExtensions.Generate()` defaults to one retry.
 - `OrderContext.Download()` can dereference null `Links` when a preferred chain
@@ -234,7 +240,7 @@ Observed at `ffa00c6` on 2026-09-20, using SDK 10.0.301 on macOS ARM64:
   drawing current conclusions; package findings do not prove exploitability.
 - Legacy CI has been retired, repository webhooks disabled, and Azure build/release
   automation disabled and verified. Initial Actions build/package checks are
-  defined; automatic test execution and required checks remain outstanding
+  defined with automatic unit-test execution; required checks remain outstanding
   (see `docs/ci-migration.md`).
 - Cancellation, renewal information, certificate profiles, and IP identifiers
   are not implemented in the current APIs.

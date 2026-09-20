@@ -3,20 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
 using Xunit;
-using static Certes.IntegrationHelper;
 
 namespace Certes
 {
     public static partial class Helper
     {
-        private static string ValidCertPem = null;
-
         public static IList<string> Logs
         {
             get
@@ -86,43 +81,6 @@ namespace Certes
                 default:
                     return Keys.RS256Key;
             }
-        }
-
-        public static async Task<string> GetValidCert()
-        {
-            if (ValidCertPem != null)
-            {
-                return ValidCertPem;
-            }
-
-            var hosts = new[] { $"xunit-es256.certes-ci.dymetis.com" };
-            var dirUri = await GetAcmeUriV2();
-            var httpClient = GetAcmeHttpClient(dirUri);
-            var ctx = new AcmeContext(dirUri, GetKeyV2(), http: httpClient);
-            var orderCtx = await AuthorizeHttp(ctx, hosts);
-
-            var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
-            var finalizedOrder = await orderCtx.Finalize(new CsrInfo
-            {
-                CountryName = "CA",
-                State = "Ontario",
-                Locality = "Toronto",
-                Organization = "Certes",
-                OrganizationUnit = "Dev",
-                CommonName = hosts[0],
-            }, certKey);
-
-            var cert = await orderCtx.Download(null);
-
-            var buffer = new StringBuilder();
-            buffer.AppendLine(cert.Certificate.ToPem());
-            foreach (var issuer in cert.Issuers)
-            {
-                buffer.AppendLine(issuer.ToPem());
-            }
-
-            var pem = buffer.ToString();
-            return ValidCertPem = pem;
         }
     }
 }
