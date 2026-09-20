@@ -17,8 +17,8 @@ manual dispatch, with SDK 10.0.301 and read-only repository permissions:
 
 - `Build (ubuntu-24.04)`, `Build (windows-2025)`, and `Build (macos-26)` compile
   the signed library in Release for all retained targets, then compile the CLI
-  and both test projects with `SkipSigning=true` in Debug. They do not execute
-  the tests or compile the Azure Functions hosted challenge helper.
+  explicitly and both test projects with `SkipSigning=true` in Debug. They do
+  not execute the tests or compile the Azure Functions hosted challenge helper.
 - `Package smoke checks` packs the signed library and CLI in Release, then
   consumes both packages using an isolated NuGet cache. The .NET 10 library
   consumer exercises RSA/ECDSA key round-trips and CSR generation; the CLI runs
@@ -40,12 +40,20 @@ on ARM64. Revisit these labels before image deprecation; versioned labels still
 receive image updates and are not immutable snapshots.
 
 Action references are pinned to commit SHAs. Jobs have timeouts and superseded
-runs are cancelled. Required branch checks should be configured only after these
-job names and hosted runs have been verified; they have not been configured yet.
+PR runs are cancelled. Push and manual runs use unique concurrency groups so
+rapid merges do not replace pending or running main builds. Required branch
+checks should be configured only after these job names and hosted runs have
+been verified; they have not been configured yet.
 
 The first hosted run exposed missing `.gitmodules` metadata for the existing
 `docs/docstrap` gitlink. Its repository URL is restored so checkout can clean up
 credentials successfully. Build jobs do not initialize the documentation submodule.
+
+Known build/package warnings include `NETSDK1138` for the CLI's .NET 6 target,
+missing package README notices, and SourceLink's missing `docs/docstrap/.git`
+warning from the uninitialized documentation submodule. The SourceLink warning
+is retained and disclosed; resolving it belongs with documentation/submodule or
+SourceLink maintenance. These checks do not verify debugger source retrieval.
 
 ### Repository settings changed
 
@@ -127,6 +135,9 @@ Use focused PRs to introduce:
 4. Explicit release/tag-driven package publishing, gated on successful
    verification, with prerelease support and preserved assembly signing.
 5. Dependency updates and scheduled vulnerability checks.
+6. Decide whether to modernize and compile `test/Certes.Func` or retire it once
+   local Pebble replaces the hosted challenge infrastructure; its .NET 7 target
+   remains outside current CI coverage.
 
 Use minimal workflow permissions and pin third-party actions to reviewed commit
 SHAs. PR validation must not publish packages or require publishing credentials.

@@ -186,6 +186,8 @@ DOTNET_ROLL_FORWARD=LatestMajor artifacts/tools/certes --help
 ```
 
 Use a fresh `artifacts/tools` directory for tool installation. These checks verify
+the version supplied by `CERTES_PACKAGE_VERSION`; the consumer requires this
+variable and shares it with packing and CLI installation. These checks verify
 local package consumption only; packages are not published. The consumer runs on
 .NET 10 and does not verify every library target or full certificate issuance.
 
