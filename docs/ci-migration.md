@@ -3,7 +3,9 @@
 ## Status as of 2026-09-20
 
 Certes has retired its legacy automation. An initial GitHub Actions workflow is
-defined for build/package validation; its first hosted run still needs verifying.
+defined for build/package validation. All three OS builds and package smoke
+checks passed in [hosted run 35544493782](https://github.com/fszlin/certes/actions/runs/35544493782)
+at commit `0d29d32`; the optional legacy test diagnostic was not run.
 Run the local checks in
 [AGENTS.md](https://github.com/fszlin/certes/blob/main/AGENTS.md) and include their
 results in PRs during the transition.
@@ -111,8 +113,8 @@ complete cleanup beyond the disabled repository webhooks:
 
 ## Replacement plan
 
-Verify the initial Actions workflow on GitHub, then establish required offline
-unit tests. Keep the test gap short without concealing the six known
+Establish required build checks and offline unit tests following the successful
+initial hosted run. Keep the test gap short without concealing the six known
 hosted-service failures.
 
 Use focused PRs to introduce:
