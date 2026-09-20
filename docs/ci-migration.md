@@ -41,6 +41,10 @@ Action references are pinned to commit SHAs. Jobs have timeouts and superseded
 runs are cancelled. Required branch checks should be configured only after these
 job names and hosted runs have been verified; they have not been configured yet.
 
+The first hosted run exposed missing `.gitmodules` metadata for the existing
+`docs/docstrap` gitlink. Its repository URL is restored so checkout can clean up
+credentials successfully. Build jobs do not initialize the documentation submodule.
+
 ### Repository settings changed
 
 - Disabled all six legacy repository webhooks: AppVeyor, Travis CI, Codecov,

@@ -1,0 +1,3 @@
+[submodule "docs/docstrap"]
+    path = docs/docstrap
+    url = https://github.com/fszlin/docstrap.git
