@@ -26,7 +26,18 @@ By contributing to this project, you:
 
 ## Getting started
 
-**What does "contributing" mean?**
+Read the [repository README](../README.md) for the revival status and
+[AGENTS.md](../AGENTS.md) for the project map, build/test commands, and development
+rules. These apply to both human contributors and LLM-assisted changes.
+
+### Branching and releases
+
+Follow the [branching and release strategy](../AGENTS.md#branching-and-releases)
+for branch scope, verification, incremental merges, and explicit release
+authorization. Keep that section as the authoritative policy for both human and
+LLM-assisted contributions.
+
+### Ways to contribute
 
 Creating an issue is the simplest form of contributing to
 a project. But there are many ways to contribute, including the following:
