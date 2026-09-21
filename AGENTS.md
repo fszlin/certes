@@ -241,8 +241,6 @@ were updated after the .NET 10 migration:
   issues below are not fixed by the bounded polling in the test helper.
 - `IOrderContextExtensions.Generate()` defaults to 60 polling retries, honors
   server-directed `Retry-After` intervals, and preserves explicit retry budgets.
-- `OrderContext.Download()` can dereference null `Links` when a preferred chain
-  does not match and the server supplies no `Link` header.
 - `Pkcs/CertificationStore.cs` (the filename differs from `CertificateStore`)
   requires a path to a self-signed root, uses old embedded roots, and indexes
   issuers by subject DN. This affects both PEM and PFX export.

@@ -39,7 +39,7 @@ namespace Certes.Acme
                 orderList.AddRange(
                     resp.Resource.Orders.Select(o => new OrderContext(Context, o)));
 
-                next = resp.Links["next"].FirstOrDefault();
+                next = resp.Links?["next"].FirstOrDefault();
             }
 
             return orderList;
