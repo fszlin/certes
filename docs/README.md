@@ -4,7 +4,7 @@ Certes is an [ACME](https://en.wikipedia.org/wiki/Automated_Certificate_Manageme
 client for .NET, supporting ACME v2 and wildcard certificates.
 It provides an easy-to-use API for managing certificates during deployment processes.
 
-This checkout targets .NET 10, .NET Standard 2.0, and .NET Framework 4.6.2 for the
+This checkout targets .NET 10, .NET 8, .NET Standard 2.0, and .NET Framework 4.6.2 for the
 library. The project is being revived; see the
 [repository README](https://github.com/fszlin/certes/blob/main/README.md) for
 current status and [AGENTS.md](https://github.com/fszlin/certes/blob/main/AGENTS.md)
@@ -123,6 +123,8 @@ Check the [APIs](APIv2.md) for more details.
 ## CLI
 
 The CLI is available as a dotnet global tool. This checkout requires .NET 10.
+The next CLI release raises the requirement from .NET 6; install .NET 10 before
+upgrading, even if your application uses the library on .NET 8.
 For a published tool version,
 check its runtime requirements on [NuGet](https://www.nuget.org/packages/dotnet-certes/).
 

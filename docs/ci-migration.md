@@ -17,10 +17,13 @@ results in PRs during the transition.
 ### Initial Actions workflow
 
 `.github/workflows/build.yml` runs on PRs targeting `main`, pushes to `main`, and
-manual dispatch, with SDK 10.0.301 installed by `actions/setup-dotnet` and read-only
+manual dispatch, with the latest `10.0.x` SDK installed by `actions/setup-dotnet` and read-only
 repository permissions. The .NET 10 migration changes the modern targets from
 `net6.0` to `net10.0` and removes diagnostic runtime roll-forward. Local verification
-passed all 145 tests on .NET 10; hosted verification of this migration is pending.
+passed all 145 tests on .NET 10. Hosted run
+[35548024969](https://github.com/fszlin/certes/actions/runs/35548024969) verified
+all four checks at `80ce393`. Subsequent .NET 8 asset/smoke additions require
+their own hosted verification.
 
 - `Build (ubuntu-24.04)`, `Build (windows-2025)`, and `Build (macos-26)` compile
   the signed library in Release for all retained targets, then compile the CLI
@@ -29,10 +32,13 @@ passed all 145 tests on .NET 10; hosted verification of this migration is pendin
   compiled outputs. No filters or failure suppression are applied. The Azure
   Functions helper and integration-test execution remain outside these jobs.
 - `Package smoke checks` packs the signed library and CLI in Release, then
-  consumes both packages using an isolated NuGet cache. The .NET 10 library
-  consumer exercises RSA/ECDSA key round-trips and CSR generation; the CLI runs
+  consumes both packages using an isolated NuGet cache. Library consumers on
+  .NET 8 and 10 exercise RSA/ECDSA key round-trips and CSR generation; the CLI runs
   `--help` directly on .NET 10. A compile-only `net6.0` consumer checks selection of
-  the library's `netstandard2.0` compatibility asset. No packages are published or
+  the library's `netstandard2.0` compatibility asset. MSBuild assertions enforce
+  the exact package version and asset path on all three consumer targets. The
+  package job installs SDK 8.0.x alongside 10.0.x for native .NET 8 execution.
+  No packages are published or
   uploaded.
 - The former `Legacy unit tests (manual diagnostic)` job and `run_legacy_tests`
   input are removed: the unit suite now runs on every PR, main push, and manual run.
@@ -82,9 +88,15 @@ SourceLink maintenance. These checks do not verify debugger source retrieval.
 ### .NET 10 compatibility decisions
 
 - Local development requires a .NET 10 SDK, with no `global.json` pin. CI installs
-  the tested SDK 10.0.301 explicitly.
-- Library assets are `net10.0`, `netstandard2.0`, and `net462`; the dedicated
-  `net6.0` asset is replaced by the compatibility asset for older modern clients.
+  the latest `10.0.x` SDK and logs `dotnet --info` in both jobs. CI follows .NET 10
+  SDK updates rather than pinning a patch/feature band; historical verification
+  results record the exact versions used at the time.
+- Library assets are `net10.0`, `net8.0`, `netstandard2.0`, and `net462`.
+  .NET 8/9 consumers select `net8.0`; .NET 6/7 select `netstandard2.0` after removal
+  of the dedicated `net6.0` asset. The .NET 8 asset is covered by a native package
+  smoke run, not the full unit suite. Microsoft support for .NET 8 ends on
+  [November 10, 2026](https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core);
+  review its support policy before release and again at that date.
 - The CLI requires .NET 10. This runtime requirement change must be included in
   release notes. Assembly signing, package identities, and dependency versions
   are retained.

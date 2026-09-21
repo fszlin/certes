@@ -110,16 +110,19 @@ after pushing the workflow.
 Run commands from the repository root. Check `dotnet --info` before diagnosing
 runtime failures. Install a .NET 10 SDK for development. There is no `global.json`;
 local SDK selection follows the installed .NET environment. CI explicitly installs
-the tested SDK 10.0.301 in `.github/workflows/build.yml`.
+the latest available `10.0.x` SDK in `.github/workflows/build.yml` and logs
+`dotnet --info`. Record the resolved SDK/runtime versions when reporting checks.
 
 The CLI and modern unit tests target and run on .NET 10 directly, without
 `DOTNET_ROLL_FORWARD`. Workflow syntax can be checked with `actionlint`.
 
-Current targets are `net10.0;netstandard2.0;net462` for the library, `net10.0` for
+Current targets are `net10.0;net8.0;netstandard2.0;net462` for the library, `net10.0` for
 the CLI, and `net10.0;net462` for tests. The Functions helper still targets the
 out-of-support `net7.0` and remains outside CI pending replacement by local Pebble.
-The package smoke project also compiles (but does not run) a `net6.0` consumer
-to check selection of the library's `netstandard2.0` compatibility asset.
+The package smoke project runs on .NET 8 and 10 and also compiles (but does not
+run) a `net6.0` consumer. MSBuild assertions verify the selected package asset
+and version for each target, including `netstandard2.0` selection on .NET 6.
+.NET 8 support ends November 10, 2026; revisit that asset's support policy then.
 
 ### Build the core library across its targets
 
@@ -169,7 +172,7 @@ For package/build changes, also verify `dotnet pack` for the affected shipping
 project in Release configuration and test consumption of the resulting package.
 Do not infer release readiness from the unsigned test build alone.
 
-To reproduce the package smoke checks (POSIX shell, SDK 10.0.301), use an empty
+To reproduce the package smoke checks (POSIX shell, .NET 10 SDK), use an empty
 temporary NuGet cache so a prior package with the same smoke version cannot mask
 the current output:
 
@@ -179,6 +182,7 @@ export CERTES_PACKAGE_VERSION=0.0.0-ci-smoke
 dotnet pack src/Certes/Certes.csproj -c Release -p:ContinuousIntegrationBuild=true --output artifacts/packages
 dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:ContinuousIntegrationBuild=true --output artifacts/packages
 dotnet run --project scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net10.0
+dotnet run --project scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net8.0
 dotnet build scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net6.0
 dotnet tool install dotnet-certes --version "$CERTES_PACKAGE_VERSION" --tool-path artifacts/tools --add-source artifacts/packages
 artifacts/tools/certes --help
@@ -187,8 +191,9 @@ artifacts/tools/certes --help
 Use a fresh `artifacts/tools` directory for tool installation. These checks verify
 the version supplied by `CERTES_PACKAGE_VERSION`; the consumer requires this
 variable and shares it with packing and CLI installation. This verifies
-local package consumption only; packages are not published. The consumer runs on
-.NET 10; the .NET 6 compatibility probe is compile-only. Neither verifies every
+local package consumption only; packages are not published. Install the .NET 8
+runtime for its native smoke run (CI installs SDK 8.0.x alongside 10.0.x).
+The .NET 6 compatibility probe is compile-only. These checks do not verify every
 library target at runtime or full certificate issuance.
 
 For documentation-only changes, check links and `git diff --check`; compilation

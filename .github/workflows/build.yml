@@ -33,7 +33,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
-          dotnet-version: 10.0.301
+          dotnet-version: 10.0.x
       - name: Runtime information
         run: dotnet --info
       - name: Build signed library (all targets)
@@ -68,13 +68,19 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
-          dotnet-version: 10.0.301
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - name: Runtime information
+        run: dotnet --info
       - name: Pack signed library and CLI
         run: |
           dotnet pack src/Certes/Certes.csproj -c Release -p:ContinuousIntegrationBuild=true --output artifacts/packages
           dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:ContinuousIntegrationBuild=true --output artifacts/packages
       - name: Consume the library package
         run: dotnet run --project scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net10.0
+      - name: Consume the library package on .NET 8
+        run: dotnet run --project scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net8.0
       - name: Compile .NET 6 consumer against the compatibility asset
         run: dotnet build scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net6.0
       - name: Install and launch the packaged CLI

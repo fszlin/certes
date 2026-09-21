@@ -8,11 +8,16 @@ var assembly = typeof(AcmeContext).Assembly.GetName();
 var framework = (TargetFrameworkAttribute)Attribute.GetCustomAttribute(
     typeof(AcmeContext).Assembly, typeof(TargetFrameworkAttribute));
 #if NET10_0_OR_GREATER
-if (framework.FrameworkName != ".NETCoreApp,Version=v10.0")
-{
-    throw new InvalidOperationException("The .NET 10 consumer must select the net10.0 library asset.");
-}
+const string expectedFramework = ".NETCoreApp,Version=v10.0";
+#elif NET8_0_OR_GREATER
+const string expectedFramework = ".NETCoreApp,Version=v8.0";
+#else
+const string expectedFramework = ".NETStandard,Version=v2.0";
 #endif
+if (framework?.FrameworkName != expectedFramework)
+{
+    throw new InvalidOperationException($"Expected library asset {expectedFramework}, got {framework?.FrameworkName ?? "no target framework attribute"}.");
+}
 if (assembly.GetPublicKeyToken()?.Length != 8)
 {
     throw new InvalidOperationException("The package must preserve strong-name identity.");

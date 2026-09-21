@@ -19,20 +19,25 @@ The current checkout still targets:
 
 | Component | Targets |
 | --- | --- |
-| Library | `net10.0`, `netstandard2.0`, `net462` |
+| Library | `net10.0`, `net8.0`, `netstandard2.0`, `net462` |
 | CLI | `net10.0` |
 | Unit and integration tests | `net10.0`, `net462` |
 | Azure Functions test helper | `net7.0` |
 
-Development and the CLI now use .NET 10 LTS. CI uses SDK 10.0.301.
+Development and the CLI now use .NET 10 LTS. CI installs the latest `10.0.x` SDK
+and logs the resolved version.
 The Functions helper remains on out-of-support .NET 7 pending replacement.
 Targets describe this checkout, not necessarily the latest published packages.
 
 The library retains .NET Standard 2.0 and .NET Framework 4.6.2 compatibility assets;
-consumers below .NET 10, including .NET 6, select a compatible asset instead of a
-dedicated `net6.0` build. CI compiles a .NET 6 consumer but does not run it on the
+consumers on .NET 8/9 select `net8.0`, while .NET 6/7 use `netstandard2.0` instead
+of a dedicated `net6.0` build. CI runs package smoke checks on .NET 8 and 10 and
+compiles a .NET 6 consumer but does not run it on the
 unsupported .NET 6 runtime. The next CLI package requires .NET 10; this is a
 runtime requirement change for existing CLI users.
+
+.NET 8 remains supported by Microsoft until November 10, 2026. Its library
+asset supports existing consumers; .NET 10 is the development and CLI baseline.
 
 ## Use Certes
 
