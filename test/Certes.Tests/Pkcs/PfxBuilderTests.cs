@@ -36,6 +36,26 @@ namespace Certes.Pkcs
         }
 
         [Theory]
+        [InlineData(KeyAlgorithm.RS256, KeyAlgorithm.RS256, true)]
+        [InlineData(KeyAlgorithm.RS256, KeyAlgorithm.RS256, false)]
+        [InlineData(KeyAlgorithm.ES256, KeyAlgorithm.ES256, true)]
+        [InlineData(KeyAlgorithm.ES256, KeyAlgorithm.ES256, false)]
+        [InlineData(KeyAlgorithm.ES256, KeyAlgorithm.ES384, true)]
+        [InlineData(KeyAlgorithm.ES256, KeyAlgorithm.ES384, false)]
+        public void RejectsPrivateKeyThatDoesNotMatchLeafCertificate(
+            KeyAlgorithm certificateAlgorithm, KeyAlgorithm privateKeyAlgorithm, bool fullChain)
+        {
+            var fixture = new CertificateFixture(certificateAlgorithm);
+            var pfxBuilder = fixture.Chain.ToPfx(KeyFactory.NewKey(privateKeyAlgorithm));
+            pfxBuilder.FullChain = fullChain;
+
+            var exception = Assert.Throws<AcmeException>(
+                () => pfxBuilder.Build("my-cert", "abcd1234"));
+
+            Assert.Equal("The private key does not match the leaf certificate.", exception.Message);
+        }
+
+        [Theory]
         [InlineData(KeyAlgorithm.RS256)]
         [InlineData(KeyAlgorithm.ES256)]
         public void CanCreatePfxChainWithoutRoot(KeyAlgorithm algorithm)
