@@ -142,7 +142,7 @@ namespace Certes.Acme
                 var date = response.Headers.RetryAfter.Date;
                 var delta = response.Headers.RetryAfter.Delta;
                 if (date.HasValue)
-                    return Math.Abs((date.Value - DateTime.UtcNow).TotalSeconds);
+                    return Math.Max((date.Value - DateTime.UtcNow).TotalSeconds, 0);
                 else if (delta.HasValue)
                     return delta.Value.TotalSeconds;
             }

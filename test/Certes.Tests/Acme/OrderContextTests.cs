@@ -72,5 +72,31 @@ namespace Certes.Acme
             Assert.Empty(authzs);
 
         }
+
+        [Fact]
+        public async Task FinalizePropagatesRetryAfter()
+        {
+            var order = new Order
+            {
+                Finalize = new Uri("http://acme.d/order/101/finalize"),
+            };
+            var finalized = new Order { Status = OrderStatus.Processing };
+
+            contextMock.SetupGet(c => c.HttpClient).Returns(httpClientMock.Object);
+            contextMock.SetupGet(c => c.BadNonceRetryCount).Returns(1);
+            contextMock
+                .Setup(c => c.Sign(It.IsAny<object>(), It.IsAny<Uri>()))
+                .ReturnsAsync(new JwsPayload());
+            httpClientMock
+                .SetupSequence(m => m.Post<Order>(It.IsAny<Uri>(), It.IsAny<JwsPayload>()))
+                .ReturnsAsync(new AcmeHttpResponse<Order>(location, order, default, default, 3))
+                .ReturnsAsync(new AcmeHttpResponse<Order>(location, finalized, default, default, 11));
+
+            var ctx = new OrderContext(contextMock.Object, location);
+            var result = await ctx.Finalize(new byte[] { 1, 2, 3 });
+
+            Assert.Equal(finalized, result);
+            Assert.Equal(11, ctx.RetryAfter);
+        }
     }
 }

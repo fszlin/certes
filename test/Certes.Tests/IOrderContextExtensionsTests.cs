@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -338,6 +340,93 @@ namespace Certes
         }
 
         [Fact]
+        public async Task PollsPendingAndProcessingUsingServerRetryAfterDelay()
+        {
+            var pem = File.ReadAllText("./Data/cert-es256.pem");
+            var ready = new Order
+            {
+                Identifiers = new[] { new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns } },
+                Status = OrderStatus.Ready,
+            };
+            var pending = new Order
+            {
+                Identifiers = ready.Identifiers,
+                Status = OrderStatus.Pending,
+            };
+            var valid = new Order
+            {
+                Identifiers = ready.Identifiers,
+                Status = OrderStatus.Valid,
+            };
+            var orderCtxMock = new Mock<IOrderContext>();
+            var resourceCalls = 0;
+            orderCtxMock
+                .Setup(m => m.Resource())
+                .ReturnsAsync(() => ++resourceCalls <= 2 ? ready : resourceCalls <= 4 ? pending : valid);
+            orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>())).ReturnsAsync(new Order
+            {
+                Identifiers = ready.Identifiers,
+                Status = OrderStatus.Processing,
+            });
+            orderCtxMock.SetupSequence(m => m.RetryAfter)
+                .Returns(120)
+                .Returns(0)
+                .Returns(int.MaxValue);
+            orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
+
+            var delays = new List<TimeSpan>();
+            var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+            await IOrderContextExtensions.Generate(
+                orderCtxMock.Object,
+                new CsrInfo { CommonName = "www.certes.com" },
+                key,
+                null,
+                3,
+                delay =>
+                {
+                    delays.Add(delay);
+                    return Task.CompletedTask;
+                });
+
+            Assert.Equal(3, delays.Count);
+            Assert.Equal(TimeSpan.FromSeconds(120), delays[0]);
+            Assert.Equal(TimeSpan.FromSeconds(1), delays[1]);
+            Assert.Equal(TimeSpan.FromMinutes(15), delays[2]);
+            Assert.Equal(5, resourceCalls);
+        }
+
+        [Fact]
+        public async Task HonorsCallerPollingBudget()
+        {
+            var order = new Order
+            {
+                Identifiers = new[] { new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns } },
+                Status = OrderStatus.Ready,
+            };
+            var processing = new Order
+            {
+                Identifiers = order.Identifiers,
+                Status = OrderStatus.Processing,
+            };
+            var orderCtxMock = new Mock<IOrderContext>();
+            var resourceCalls = 0;
+            orderCtxMock.Setup(m => m.Resource()).ReturnsAsync(() => ++resourceCalls <= 2 ? order : processing);
+            orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>())).ReturnsAsync(processing);
+            orderCtxMock.SetupGet(m => m.RetryAfter).Returns(0);
+
+            var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+            await Assert.ThrowsAsync<AcmeException>(() => IOrderContextExtensions.Generate(
+                orderCtxMock.Object,
+                new CsrInfo { CommonName = "www.certes.com" },
+                key,
+                null,
+                100,
+                _ => Task.CompletedTask));
+
+            Assert.Equal(102, resourceCalls);
+        }
+
+        [Fact]
         public async Task ThrowWhenProcessintTooOften()
         {
             var pem = File.ReadAllText("./Data/cert-es256.pem");
@@ -384,12 +473,17 @@ namespace Certes
                 });
 
             var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
-            await Assert.ThrowsAsync<AcmeException>(() =>
-                orderCtxMock.Object.Generate(new CsrInfo
+            await Assert.ThrowsAsync<AcmeException>(() => IOrderContextExtensions.Generate(
+                orderCtxMock.Object,
+                new CsrInfo
                 {
                     CountryName = "C",
                     CommonName = "www.certes.com",
-                }, key));
+                },
+                key,
+                null,
+                1,
+                _ => Task.CompletedTask));
         }
 
     }

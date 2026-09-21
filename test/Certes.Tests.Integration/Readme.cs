@@ -46,8 +46,7 @@ namespace Certes
             acme = new AcmeContext(acmeDir, accountKey, httpClient);
             order = acme.Order(orderUri);
             var privateKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
-            // Harness override: Generate defaults to one retry and currently loses Retry-After.
-            // This tests issuance with a bounded retry budget, not the docs' default polling policy.
+            // Keep the number of polling retries bounded independently of elapsed delay.
             var cert = await order.Generate(new CsrInfo
             {
                 CountryName = "CA",
