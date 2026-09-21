@@ -1,4 +1,6 @@
 ﻿using Certes.Crypto;
+using Certes.Properties;
+using Org.BouncyCastle.X509;
 
 namespace Certes
 {
@@ -46,6 +48,22 @@ namespace Certes
         {
             var algorithm = keyAlgorithmProvider.Get(key.Algorithm);
             return algorithm.CreateSigner(key);
+        }
+
+        /// <summary>
+        /// Loads the key pair after verifying that it belongs to the certificate. This checks
+        /// key ownership only; it does not validate the certificate or its chain.
+        /// </summary>
+        internal static Org.BouncyCastle.Crypto.AsymmetricCipherKeyPair GetKeyPair(
+            this IKey key, X509Certificate certificate)
+        {
+            var (_, keyPair) = keyAlgorithmProvider.GetKeyPair(key.ToDer());
+            if (!keyPair.Public.Equals(certificate.GetPublicKey()))
+            {
+                throw new AcmeException(Strings.ErrorPrivateKeyMismatch);
+            }
+
+            return keyPair;
         }
     }
 }

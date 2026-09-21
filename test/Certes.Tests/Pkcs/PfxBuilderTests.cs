@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Certes.Properties;
 using Xunit;
 
 namespace Certes.Pkcs
@@ -52,7 +53,7 @@ namespace Certes.Pkcs
             var exception = Assert.Throws<AcmeException>(
                 () => pfxBuilder.Build("my-cert", "abcd1234"));
 
-            Assert.Equal("The private key does not match the leaf certificate.", exception.Message);
+            Assert.Equal(Strings.ErrorPrivateKeyMismatch, exception.Message);
         }
 
         [Theory]

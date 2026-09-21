@@ -37,8 +37,19 @@ namespace Certes
         /// <param name="certificateChain">The certificate chain.</param>
         /// <param name="certKey">The certificate key.</param>
         /// <returns>The encoded certificate chain.</returns>
+        /// <remarks>
+        /// When a key is supplied, verifies that it matches the leaf certificate. This does not
+        /// validate the certificate chain or establish trust in it.
+        /// </remarks>
         public static string ToPem(this CertificateChain certificateChain, IKey certKey = null)
         {
+            if (certKey != null)
+            {
+                var certParser = new X509CertificateParser();
+                var certificate = certParser.ReadCertificate(certificateChain.Certificate.ToDer());
+                certKey.GetKeyPair(certificate);
+            }
+
             var certStore = new CertificateStore();
             foreach (var issuer in certificateChain.Issuers)
             {

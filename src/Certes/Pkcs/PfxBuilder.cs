@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Certes.Crypto;
-using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
@@ -86,12 +85,7 @@ namespace Certes.Pkcs
         /// </remarks>
         public byte[] Build(string friendlyName, string password)
         {
-            var keyPair = LoadKeyPair();
-            if (!keyPair.Public.Equals(certificate.GetPublicKey()))
-            {
-                throw new AcmeException("The private key does not match the leaf certificate.");
-            }
-
+            var keyPair = privateKey.GetKeyPair(certificate);
             var store = new Pkcs12StoreBuilder().Build();
 
             var entry = new X509CertificateEntry(certificate);
@@ -140,12 +134,6 @@ namespace Certes.Pkcs
             var chain = new List<X509Certificate> { certificate };
             chain.AddRange(issuers);
             return chain;
-        }
-
-        private AsymmetricCipherKeyPair LoadKeyPair()
-        {
-            var (_, keyPair) = signatureAlgorithmProvider.GetKeyPair(privateKey.ToDer());
-            return keyPair;
         }
     }
 }
