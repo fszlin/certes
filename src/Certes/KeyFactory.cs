@@ -57,11 +57,7 @@ namespace Certes
         /// <exception cref="AcmeException">Thrown when the key does not match the certificate.</exception>
         internal static void EnsureKeyMatches(this IKey key, X509Certificate certificate)
         {
-            var (_, keyPair) = keyAlgorithmProvider.GetKeyPair(key.ToDer());
-            if (!keyPair.Public.Equals(certificate.GetPublicKey()))
-            {
-                throw new AcmeException(Strings.ErrorPrivateKeyMismatch);
-            }
+            LoadVerified(key, certificate);
         }
 
         /// <summary>
@@ -73,8 +69,21 @@ namespace Certes
         /// <exception cref="AcmeException">Thrown when the key does not match the certificate.</exception>
         internal static Org.BouncyCastle.Crypto.AsymmetricCipherKeyPair GetKeyPairFor(this IKey key, X509Certificate certificate)
         {
-            key.EnsureKeyMatches(certificate);
+            return LoadVerified(key, certificate);
+        }
+
+        /// <summary>
+        /// Loads and verifies the key pair matches the certificate. This checks key ownership
+        /// only; it does not validate the certificate or its chain.
+        /// </summary>
+        private static Org.BouncyCastle.Crypto.AsymmetricCipherKeyPair LoadVerified(IKey key, X509Certificate certificate)
+        {
             var (_, keyPair) = keyAlgorithmProvider.GetKeyPair(key.ToDer());
+            if (!keyPair.Public.Equals(certificate.GetPublicKey()))
+            {
+                throw new AcmeException(Strings.ErrorPrivateKeyMismatch);
+            }
+
             return keyPair;
         }
     }
