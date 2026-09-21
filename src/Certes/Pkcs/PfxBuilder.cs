@@ -85,7 +85,7 @@ namespace Certes.Pkcs
         /// </remarks>
         public byte[] Build(string friendlyName, string password)
         {
-            var keyPair = privateKey.GetKeyPair(certificate);
+            var keyPair = privateKey.GetKeyPairFor(certificate);
             var store = new Pkcs12StoreBuilder().Build();
 
             var entry = new X509CertificateEntry(certificate);

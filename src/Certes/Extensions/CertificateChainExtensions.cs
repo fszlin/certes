@@ -47,7 +47,7 @@ namespace Certes
             {
                 var certParser = new X509CertificateParser();
                 var certificate = certParser.ReadCertificate(certificateChain.Certificate.ToDer());
-                certKey.GetKeyPair(certificate);
+                certKey.EnsureKeyMatches(certificate);
             }
 
             var certStore = new CertificateStore();
