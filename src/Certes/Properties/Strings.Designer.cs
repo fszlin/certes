@@ -142,6 +142,15 @@ namespace Certes.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The private key does not match the leaf certificate..
+        /// </summary>
+        internal static string ErrorPrivateKeyMismatch {
+            get {
+                return ResourceManager.GetString("ErrorPrivateKeyMismatch", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Unsupported resource type &apos;{0}&apos;..
         /// </summary>
         internal static string ErrorUnsupportedResourceType {

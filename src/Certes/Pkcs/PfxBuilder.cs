@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Certes.Crypto;
-using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
@@ -15,9 +14,9 @@ namespace Certes.Pkcs
     /// <remarks>
     /// This packages a certificate chain; it does not validate a certification path. Issuers
     /// are accepted only after verifying that they signed the certificate below them, but
-    /// issuer constraints, revocation, complete-path validity, and whether the supplied private
-    /// key matches the certificate are not checked. Trust decisions belong to the relying party
-    /// that consumes the PFX.
+    /// issuer constraints, revocation, and complete-path validity are not checked. The supplied
+    /// private key is checked against the leaf certificate, but trust decisions belong to the
+    /// relying party that consumes the PFX.
     /// </remarks>
     public class PfxBuilder
     {
@@ -80,12 +79,13 @@ namespace Certes.Pkcs
         /// <param name="password">The password.</param>
         /// <returns>The PFX data.</returns>
         /// <remarks>
-        /// Packages the certificate and its linked issuers. No certification path validation is
-        /// performed, so an expired or otherwise unusable certificate is exported as supplied.
+        /// Verifies that the private key matches the leaf certificate, then packages the
+        /// certificate and its linked issuers. No certification path validation is performed,
+        /// so an expired or otherwise unusable certificate is exported as supplied.
         /// </remarks>
         public byte[] Build(string friendlyName, string password)
         {
-            var keyPair = LoadKeyPair();
+            var keyPair = privateKey.GetKeyPairFor(certificate);
             var store = new Pkcs12StoreBuilder().Build();
 
             var entry = new X509CertificateEntry(certificate);
@@ -134,12 +134,6 @@ namespace Certes.Pkcs
             var chain = new List<X509Certificate> { certificate };
             chain.AddRange(issuers);
             return chain;
-        }
-
-        private AsymmetricCipherKeyPair LoadKeyPair()
-        {
-            var (_, keyPair) = signatureAlgorithmProvider.GetKeyPair(privateKey.ToDer());
-            return keyPair;
         }
     }
 }

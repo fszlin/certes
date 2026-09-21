@@ -20,24 +20,36 @@ namespace Certes.Acme
             Assert.Equal(pem.Replace("\r", "").Trim(), result.Replace("\r", "").Trim());
         }
 
-        [Fact]
-        public void CanGenerateFullChainPemWithKey()
+        [Theory]
+        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES384)]
+        [InlineData(KeyAlgorithm.ES512)]
+        public void CanGenerateFullChainPemWithKey(KeyAlgorithm algorithm)
         {
-            var key = KeyFactory.NewKey(KeyAlgorithm.ES256);
-
-            var pem =
-                string.Join(Environment.NewLine,
-                File.ReadAllText("./Data/cert.pem").Trim());
-
-            // The library no longer embeds CA roots, so no issuer is appended implicitly.
+            var fixture = new CertificateFixture(algorithm);
             var expectedPem =
-                key.ToPem().Trim() +
+                fixture.Key.ToPem().Trim() +
                 Environment.NewLine +
-                pem;
+                fixture.Chain.ToPem();
 
-            var chain = new CertificateChain(pem);
-            var result = chain.ToPem(key);
+            var result = fixture.Chain.ToPem(fixture.Key);
             Assert.Equal(expectedPem.Replace("\r", "").Trim(), result.Replace("\r", "").Trim());
+        }
+
+        [Theory]
+        [InlineData(KeyAlgorithm.RS256, KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256, KeyAlgorithm.ES256)]
+        [InlineData(KeyAlgorithm.ES256, KeyAlgorithm.ES384)]
+        public void RejectsPrivateKeyThatDoesNotMatchLeafCertificate(
+            KeyAlgorithm certificateAlgorithm, KeyAlgorithm privateKeyAlgorithm)
+        {
+            var fixture = new CertificateFixture(certificateAlgorithm);
+
+            var exception = Assert.Throws<AcmeException>(
+                () => fixture.Chain.ToPem(KeyFactory.NewKey(privateKeyAlgorithm)));
+
+            Assert.Equal(Properties.Strings.ErrorPrivateKeyMismatch, exception.Message);
         }
 
         [Fact]

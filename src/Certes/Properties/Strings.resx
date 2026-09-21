@@ -144,6 +144,9 @@
   <data name="ErrorMissingCertificateData" xml:space="preserve">
     <value>Certificate data missing, please fetch the certificate from '{0}'.</value>
   </data>
+  <data name="ErrorPrivateKeyMismatch" xml:space="preserve">
+    <value>The private key does not match the leaf certificate.</value>
+  </data>
   <data name="ErrorUnsupportedResourceType" xml:space="preserve">
     <value>Unsupported resource type '{0}'.</value>
   </data>

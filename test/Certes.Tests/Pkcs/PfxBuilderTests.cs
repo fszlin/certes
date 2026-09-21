@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Certes.Properties;
 using Xunit;
 
 namespace Certes.Pkcs
@@ -33,6 +34,26 @@ namespace Certes.Pkcs
             pfxBuilder.FullChain = false;
             var pfx = pfxBuilder.Build("my-cert", "abcd1234");
             fixture.AssertPfx(pfx, "abcd1234", "my-cert", fullChain: false);
+        }
+
+        [Theory]
+        [InlineData(KeyAlgorithm.RS256, KeyAlgorithm.RS256, true)]
+        [InlineData(KeyAlgorithm.RS256, KeyAlgorithm.RS256, false)]
+        [InlineData(KeyAlgorithm.ES256, KeyAlgorithm.ES256, true)]
+        [InlineData(KeyAlgorithm.ES256, KeyAlgorithm.ES256, false)]
+        [InlineData(KeyAlgorithm.ES256, KeyAlgorithm.ES384, true)]
+        [InlineData(KeyAlgorithm.ES256, KeyAlgorithm.ES384, false)]
+        public void RejectsPrivateKeyThatDoesNotMatchLeafCertificate(
+            KeyAlgorithm certificateAlgorithm, KeyAlgorithm privateKeyAlgorithm, bool fullChain)
+        {
+            var fixture = new CertificateFixture(certificateAlgorithm);
+            var pfxBuilder = fixture.Chain.ToPfx(KeyFactory.NewKey(privateKeyAlgorithm));
+            pfxBuilder.FullChain = fullChain;
+
+            var exception = Assert.Throws<AcmeException>(
+                () => pfxBuilder.Build("my-cert", "abcd1234"));
+
+            Assert.Equal(Strings.ErrorPrivateKeyMismatch, exception.Message);
         }
 
         [Theory]

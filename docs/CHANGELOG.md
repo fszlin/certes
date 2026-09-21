@@ -21,6 +21,10 @@ All notable changes to this project will be documented in this file.
   depending on its inputs. Issuers are still accepted only after verifying that
   they signed the certificate below them; issuer constraints, revocation and
   complete-path validity are the relying party's responsibility.
+- PFX and PEM export now reject a private key that does not match the leaf
+  certificate instead of creating unusable output. The PFX ownership check
+  applies with or without the full chain. These checks do not validate
+  certificate trust.
 - The next `dotnet-certes` CLI release requires .NET 10 instead of .NET 6.
   Install the .NET 10 runtime before upgrading the tool. Choose the release
   version with this runtime requirement change in mind; the assembly version is
