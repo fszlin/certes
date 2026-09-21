@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Certes.Pkcs;
+using Certes.Acme.Resource;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,14 +23,9 @@ namespace Certes
             {
                 var dirUri = await GetAcmeUriV2();
 
-                var hosts = new[] { $"www-dns-es256.certes-ci.dymetis.com", $"mail-dns-es256.certes-ci.dymetis.com" };
+                var hosts = new[] { "www-dns.example.test", "mail-dns.example.test" };
                 var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
                 var orderCtx = await AuthzDns(ctx, hosts);
-                while (orderCtx == null)
-                {
-                    Output.WriteLine("DNS authz failed, retrying...");
-                    orderCtx = await AuthzDns(ctx, hosts);
-                }
 
                 var csr = new CertificationRequestBuilder();
                 csr.AddName($"C=CA, ST=Ontario, L=Toronto, O=Certes, OU=Dev, CN={hosts[0]}");
@@ -41,7 +37,9 @@ namespace Certes
                 var der = csr.Generate();
 
                 var finalizedOrder = await orderCtx.Finalize(der);
+                await WaitForOrder(orderCtx, OrderStatus.Valid);
                 var certificate = await orderCtx.Download(null);
+                AssertExport(certificate, csr.Key);
 
                 await ClearAuthorizations(orderCtx);
             }

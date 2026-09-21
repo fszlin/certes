@@ -1,156 +1,225 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Pkcs;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Pkcs;
 using Xunit;
 
 namespace Certes
 {
     public static class IntegrationHelper
     {
-        public static readonly List<byte[]> TestCertificates = new();
+        private static readonly Uri directory = new Uri("https://localhost:14000/dir");
+        private static readonly Uri management = new Uri("https://localhost:15000/");
+        private static readonly Uri challenges = new Uri("http://localhost:8055/");
+        private static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(CreateHttpClient);
+        private static readonly Lazy<Task<Uri>> initialize = new Lazy<Task<Uri>>(Initialize);
+        private static byte[] root;
 
-        public static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() =>
+        private static HttpClient CreateHttpClient()
         {
-#if NETCOREAPP3_1_OR_GREATER
-            var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
-#elif NETCOREAPP1_0_OR_GREATER
-            var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (msg, cert, chains, errors) => true };
+#if NET10_0_OR_GREATER
+            var handler = new HttpClientHandler { AllowAutoRedirect = false, UseProxy = false };
+            // Trust only this pinned test server certificate, for the two loopback TLS ports.
+            // Never install Pebble's public test CA in the OS trust store.
+            using var pinned = X509CertificateLoader.LoadCertificateFromFile(Path.Combine(AppContext.BaseDirectory, "Pebble", "localhost.pem"));
+            var expected = pinned.RawData;
+            handler.ServerCertificateCustomValidationCallback = (request, certificate, chain, errors) =>
+                request.RequestUri.Host == "localhost" &&
+                (request.RequestUri.Port == 14000 || request.RequestUri.Port == 15000) &&
+                certificate != null &&
+                (errors & (SslPolicyErrors.RemoteCertificateNameMismatch | SslPolicyErrors.RemoteCertificateNotAvailable)) == 0 &&
+                DateTime.UtcNow >= certificate.NotBefore.ToUniversalTime() &&
+                DateTime.UtcNow <= certificate.NotAfter.ToUniversalTime() &&
+                expected.SequenceEqual(certificate.RawData);
+            var client = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(10) };
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Certes-Integration/1.0");
+            return client;
 #else
-            System.Net.ServicePointManager.ServerCertificateValidationCallback = (msg, cert, chains, errors) => true;
-            var handler = new HttpClientHandler();
+            throw new PlatformNotSupportedException("The local Pebble integration harness runs on .NET 10. net462 is compile-only.");
 #endif
+        }
 
-            return new HttpClient(handler);
-        });
-
-        private static Uri stagingServerV2;
-
-        public static IAcmeHttpClient GetAcmeHttpClient(Uri uri) => Helper.CreateHttp(uri, http.Value);
-
-        public static async Task<Uri> GetAcmeUriV2()
+        public static IAcmeHttpClient GetAcmeHttpClient(Uri uri)
         {
-            if (stagingServerV2 != null)
+            if (uri != directory)
             {
-                return stagingServerV2;
+                throw new ArgumentException("Integration tests use only the local Pebble directory.", nameof(uri));
             }
 
-            var servers = new[] {
-                //new Uri("https://lo0.in:4431/directory"),
-                //new Uri("http://localhost:8080/dir"),
-                new Uri("https://pebble.azurewebsites.net/dir"),
-                //WellKnownServers.LetsEncryptStagingV2,
-            };
+            return new AcmeHttpClient(uri, http.Value);
+        }
 
-            var exceptions = new List<Exception>();
-            foreach (var uri in servers)
+        public static Task<Uri> GetAcmeUriV2() => initialize.Value;
+
+        private static async Task<Uri> Initialize()
+        {
+            try
             {
+                await http.Value.GetStringAsync(directory);
+                root = await http.Value.GetByteArrayAsync(new Uri(management, "roots/0"));
+                foreach (var algorithm in new[] { KeyAlgorithm.RS256, KeyAlgorithm.ES256, KeyAlgorithm.ES384 })
+                {
+                    var context = new AcmeContext(directory, Helper.GetKeyV2(algorithm), GetAcmeHttpClient(directory));
+                    await context.NewAccount(new[] { "mailto:ci@example.test" }, true);
+                }
+
+                return directory;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Local Pebble is not ready. Run docker compose -f scripts/Pebble/compose.yml up -d, then retry. See scripts/Pebble/README.md.", ex);
+            }
+        }
+
+        public static async Task ConfigureChallenge(string operation, object data)
+        {
+            using var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+            using var response = await http.Value.PostAsync(new Uri(challenges, operation), content);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public static Task<IOrderContext> AuthorizeHttp(AcmeContext context, IList<string> hosts)
+            => Authorize(context, hosts, ChallengeTypes.Http01);
+
+        public static async Task<IOrderContext> Authorize(AcmeContext context, IList<string> hosts, string type)
+        {
+            var order = await context.NewOrder(hosts);
+            var initial = await order.Resource();
+            Assert.NotNull(initial);
+            Assert.Equal(hosts.Count, initial.Authorizations?.Count);
+            Assert.True(initial.Status == OrderStatus.Pending || initial.Status == OrderStatus.Ready,
+                $"Unexpected initial order status: {initial.Status}");
+            foreach (var authz in await order.Authorizations())
+            {
+                var resource = await authz.Resource();
+                if (resource.Status == AuthorizationStatus.Valid)
+                {
+                    continue;
+                }
+
+                var challenge = await authz.Challenge(type);
+                Assert.NotNull(challenge);
+                var host = resource.Identifier.Value;
+                var token = challenge.Token;
+                var keyAuthz = context.AccountKey.KeyAuthorization(token);
+                var dnsHost = $"_acme-challenge.{host}.";
                 try
                 {
-                    await http.Value.GetStringAsync(uri);
-
-                    foreach (var algo in new[] { KeyAlgorithm.ES256, KeyAlgorithm.ES384, KeyAlgorithm.RS256 })
+                    if (type == ChallengeTypes.Http01)
                     {
-                        try
-                        {
-                            var ctx = new AcmeContext(uri, Helper.GetKeyV2(algo), GetAcmeHttpClient(uri));
-                            await ctx.NewAccount(new[] { "mailto:ci@certes.app" }, true);
-                        }
-                        catch
-                        {
-                        }
+                        await ConfigureChallenge("add-http01", new { token, content = keyAuthz });
+                    }
+                    else if (type == ChallengeTypes.Dns01)
+                    {
+                        await ConfigureChallenge("set-txt", new { host = dnsHost, value = context.AccountKey.DnsTxt(token) });
+                    }
+                    else if (type == ChallengeTypes.TlsAlpn01)
+                    {
+                        await ConfigureChallenge("add-tlsalpn01", new { host, content = keyAuthz });
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Unsupported local challenge type.", nameof(type));
                     }
 
-                    try
-                    {
-                        var certUri = new Uri(uri, $"/mgnt/roots/0");
-                        var certData = await http.Value.GetByteArrayAsync(certUri);
-                        TestCertificates.Add(certData);
-                    }
-                    catch
-                    {
-                    }
-
-                    return stagingServerV2 = uri;
+                    await challenge.Validate();
+                    await WaitForAuthorization(authz);
                 }
-                catch (Exception ex)
+                finally
                 {
-                    exceptions.Add(ex);
+                    if (type == ChallengeTypes.Http01)
+                    {
+                        await ConfigureChallenge("del-http01", new { token });
+                    }
+                    else if (type == ChallengeTypes.Dns01)
+                    {
+                        await ConfigureChallenge("clear-txt", new { host = dnsHost });
+                    }
+                    else if (type == ChallengeTypes.TlsAlpn01)
+                    {
+                        await ConfigureChallenge("del-tlsalpn01", new { host });
+                    }
                 }
             }
 
-            throw new AggregateException("No staging server available.", exceptions);
+            await WaitForOrder(order, OrderStatus.Ready);
+            return order;
         }
 
-        public static async Task DeployDns01(KeyAlgorithm algo, Dictionary<string, string> tokens)
+        public static async Task WaitForAuthorization(IAuthorizationContext authorization, AuthorizationStatus expected = AuthorizationStatus.Valid)
         {
-            using var resp = await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens), Encoding.UTF8, "application/json"));
-
-            var respJson = await resp.Content.ReadAsStringAsync();
-        }
-
-        public static void AddTestCerts(this PfxBuilder pfx)
-        {
-            foreach (var cert in TestCertificates)
+            var clock = Stopwatch.StartNew();
+            while (clock.Elapsed < TimeSpan.FromSeconds(60))
             {
-                pfx.AddIssuers(cert);
+                var resource = await authorization.Resource();
+                if (resource.Status == expected)
+                {
+                    return;
+                }
+
+                if (resource.Status != AuthorizationStatus.Pending)
+                {
+                    throw new InvalidOperationException($"Authorization ended in {resource.Status}; expected {expected}.");
+                }
+
+                await Task.Delay(200);
             }
+
+            throw new TimeoutException($"Authorization did not become {expected} within 60 seconds.");
         }
 
-        public static async Task<IOrderContext> AuthorizeHttp(AcmeContext ctx, IList<string> hosts)
+        public static async Task WaitForOrder(IOrderContext order, OrderStatus expected)
         {
-            for (var i = 0; i < 10; ++i)
+            var clock = Stopwatch.StartNew();
+            while (clock.Elapsed < TimeSpan.FromSeconds(60))
             {
-                var orderCtx = await ctx.NewOrder(hosts);
-                var order = await orderCtx.Resource();
-                Assert.NotNull(order);
-                Assert.Equal(hosts.Count, order.Authorizations?.Count);
-                Assert.True(OrderStatus.Pending == order.Status || OrderStatus.Ready == order.Status || OrderStatus.Processing == order.Status);
-
-                var authrizations = await orderCtx.Authorizations();
-
-                foreach (var authz in authrizations)
+                var resource = await order.Resource();
+                if (resource.Status == expected)
                 {
-                    var a = await authz.Resource();
-                    if (a.Status == AuthorizationStatus.Pending)
-                    {
-                        var httpChallenge = await authz.Http();
-                        await httpChallenge.Validate();
-                    }
+                    return;
                 }
 
-                while (true)
+                if (resource.Status == OrderStatus.Invalid)
                 {
-                    await Task.Delay(100);
-
-                    var statuses = new List<AuthorizationStatus>();
-                    foreach (var authz in authrizations)
-                    {
-                        var a = await authz.Resource();
-                        statuses.Add(a?.Status ?? AuthorizationStatus.Pending);
-                    }
-
-                    if (statuses.All(s => s == AuthorizationStatus.Valid))
-                    {
-                        return orderCtx;
-                    }
-
-
-                    if (statuses.Any(s => s == AuthorizationStatus.Invalid))
-                    {
-                        break;
-                    }
+                    throw new InvalidOperationException("Order became invalid during local issuance.");
                 }
+
+                await Task.Delay(200);
             }
 
-            Assert.True(false, "Authorization failed.");
-            return null;
+            throw new TimeoutException($"Order did not become {expected} within 60 seconds.");
+        }
+
+        public static void AddTestCerts(this PfxBuilder builder) => builder.AddIssuer(root);
+
+        public static void AssertExport(CertificateChain chain, IKey key)
+        {
+            var builder = chain.ToPfx(key);
+            builder.AddTestCerts();
+            using var stream = new MemoryStream(builder.Build("integration", "test-password"));
+            var store = new Pkcs12Store(stream, "test-password".ToCharArray());
+            Assert.True(store.IsKeyEntry("integration"));
+            Assert.Equal(key.ToDer(), PrivateKeyInfoFactory.CreatePrivateKeyInfo(store.GetKey("integration").Key).GetDerEncoded());
+            Assert.Equal(chain.Certificate.ToDer(), store.GetCertificate("integration").Certificate.GetEncoded());
+            Assert.True(store.GetCertificateChain("integration").Length >= 2);
+
+            // Current PEM export requires a root; Pebble deliberately omits it.
+            var withRoot = new CertificateChain(chain.Certificate.ToPem() +
+                string.Concat(chain.Issuers.Select(i => i.ToPem())) + Encoding.UTF8.GetString(root));
+            var pem = withRoot.ToPem();
+            Assert.StartsWith(chain.Certificate.ToPem().Trim(), pem);
+            Assert.Equal(chain.Certificate.ToDer(), new CertificateChain(pem).Certificate.ToDer());
         }
     }
 }
