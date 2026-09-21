@@ -12,6 +12,13 @@ namespace Certes.Pkcs
     /// <summary>
     /// Supports generating PFX from the certificate and key pair.
     /// </summary>
+    /// <remarks>
+    /// This packages a certificate chain; it does not validate a certification path. Issuers
+    /// are accepted only after verifying that they signed the certificate below them, but
+    /// issuer constraints, revocation, complete-path validity, and whether the supplied private
+    /// key matches the certificate are not checked. Trust decisions belong to the relying party
+    /// that consumes the PFX.
+    /// </remarks>
     public class PfxBuilder
     {
         private static readonly KeyAlgorithmProvider signatureAlgorithmProvider = new KeyAlgorithmProvider();
@@ -26,6 +33,10 @@ namespace Certes.Pkcs
         /// <value>
         ///   <c>true</c> if include the full certificate chain in the PFX; otherwise, <c>false</c>.
         /// </value>
+        /// <remarks>
+        /// The chain is the certificate followed by the issuers linked to it, excluding any
+        /// self-signed root. It is not a validated certification path.
+        /// </remarks>
         public bool FullChain { get; set; } = true;
 
         /// <summary>
@@ -68,6 +79,10 @@ namespace Certes.Pkcs
         /// <param name="friendlyName">The friendly name.</param>
         /// <param name="password">The password.</param>
         /// <returns>The PFX data.</returns>
+        /// <remarks>
+        /// Packages the certificate and its linked issuers. No certification path validation is
+        /// performed, so an expired or otherwise unusable certificate is exported as supplied.
+        /// </remarks>
         public byte[] Build(string friendlyName, string password)
         {
             var keyPair = LoadKeyPair();

@@ -24,7 +24,7 @@ namespace Certes
         public X509Certificate Root { get; }
         public CertificateChain Chain { get; }
 
-        public CertificateFixture(KeyAlgorithm algorithm)
+        public CertificateFixture(KeyAlgorithm algorithm, bool expireLeaf = false)
         {
             var provider = new KeyAlgorithmProvider();
             Key = KeyFactory.NewKey(algorithm);
@@ -35,7 +35,9 @@ namespace Certes
 
             Root = Issue("CN=Certes Unit Test Root", "CN=Certes Unit Test Root", rootKey.Public, rootKey.Private, true, 1, now);
             Intermediate = Issue("CN=Certes Unit Test Intermediate", Root.SubjectDN.ToString(), intermediateKey.Public, rootKey.Private, true, 2, now);
-            Leaf = Issue("CN=unit.example", Intermediate.SubjectDN.ToString(), leafKey.Public, intermediateKey.Private, false, 3, now);
+            // Issue() sets notAfter 30 days after the supplied instant.
+            var leafIssuedAt = expireLeaf ? now.AddDays(-400) : now;
+            Leaf = Issue("CN=unit.example", Intermediate.SubjectDN.ToString(), leafKey.Public, intermediateKey.Private, false, 3, leafIssuedAt);
 
             Leaf.Verify(Intermediate.GetPublicKey());
             Intermediate.Verify(Root.GetPublicKey());
