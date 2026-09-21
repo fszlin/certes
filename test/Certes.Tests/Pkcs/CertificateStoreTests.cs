@@ -105,10 +105,11 @@ namespace Certes.Pkcs
         }
 
         [Fact]
-        public void GetIssuersTerminatesOnMutuallyIssuedCertificates()
+        public void GetIssuersReturnsVerifiedAcyclicPrefixForMutuallyIssuedCertificates()
         {
             // Issuers are indexed by subject name, so a pair of certificates naming each other
-            // as issuer forms a cycle. The walk must stop rather than loop.
+            // as issuer forms a cycle. The walk must stop and return the verified prefix built
+            // before the cycle repeats, never revisiting a subject name.
             var provider = new KeyAlgorithmProvider();
             var (_, keyPair) = provider.GetKeyPair(KeyFactory.NewKey(KeyAlgorithm.RS256).ToDer());
             var now = DateTime.UtcNow;
@@ -124,11 +125,25 @@ namespace Certes.Pkcs
             store.Add(first.GetEncoded());
             store.Add(second.GetEncoded());
 
-            var issuers = store.GetIssuers(leaf.GetEncoded());
+            var parser = new X509CertificateParser();
+            var issuers = store.GetIssuers(leaf.GetEncoded())
+                .Select(der => parser.ReadCertificate(der))
+                .ToList();
 
-            Assert.Equal(2, issuers.Count);
-            Assert.Equal(first.GetEncoded(), issuers[0]);
-            Assert.Equal(second.GetEncoded(), issuers[1]);
+            // Terminates, and no subject name appears twice.
+            Assert.Equal(
+                issuers.Select(c => c.SubjectDN).Distinct().Count(),
+                issuers.Count);
+
+            // Every returned issuer signed the certificate below it.
+            var child = leaf;
+            foreach (var issuer in issuers)
+            {
+                child.Verify(issuer.GetPublicKey());
+                child = issuer;
+            }
+
+            Assert.Equal(new[] { first.GetEncoded(), second.GetEncoded() }, issuers.Select(c => c.GetEncoded()));
         }
 
         [Fact]
