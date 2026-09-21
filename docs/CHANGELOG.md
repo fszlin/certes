@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 - Target .NET 10 for the CLI and modern library/test builds; retain library
   `netstandard2.0` and `net462` assets for compatible consumers. The next CLI
   release requires .NET 10 instead of .NET 6.
-- Pin development SDK 10.0.301 and run the offline unit suite natively on .NET 10.
+- Use SDK 10.0.301 in CI and run the offline unit suite natively on .NET 10.
 - Mark formatter-based exception serialization APIs obsolete on the .NET 10
   library asset, matching the platform APIs; legacy-target APIs remain available.
 

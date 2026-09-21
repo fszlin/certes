@@ -108,8 +108,9 @@ report results during this transition; hosted workflow success must be verified
 after pushing the workflow.
 
 Run commands from the repository root. Check `dotnet --info` before diagnosing
-runtime failures. `global.json` pins SDK 10.0.301 exactly (no SDK roll-forward or
-prereleases); install that SDK before building. CI reads the same file.
+runtime failures. Install a .NET 10 SDK for development. There is no `global.json`;
+local SDK selection follows the installed .NET environment. CI explicitly installs
+the tested SDK 10.0.301 in `.github/workflows/build.yml`.
 
 The CLI and modern unit tests target and run on .NET 10 directly, without
 `DOTNET_ROLL_FORWARD`. Workflow syntax can be checked with `actionlint`.

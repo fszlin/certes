@@ -17,7 +17,7 @@ results in PRs during the transition.
 ### Initial Actions workflow
 
 `.github/workflows/build.yml` runs on PRs targeting `main`, pushes to `main`, and
-manual dispatch, with SDK 10.0.301 selected by `global.json` and read-only
+manual dispatch, with SDK 10.0.301 installed by `actions/setup-dotnet` and read-only
 repository permissions. The .NET 10 migration changes the modern targets from
 `net6.0` to `net10.0` and removes diagnostic runtime roll-forward. Local verification
 passed all 145 tests on .NET 10; hosted verification of this migration is pending.
@@ -81,7 +81,8 @@ SourceLink maintenance. These checks do not verify debugger source retrieval.
 
 ### .NET 10 compatibility decisions
 
-- `global.json` pins SDK 10.0.301 without SDK roll-forward or prereleases.
+- Local development requires a .NET 10 SDK, with no `global.json` pin. CI installs
+  the tested SDK 10.0.301 explicitly.
 - Library assets are `net10.0`, `netstandard2.0`, and `net462`; the dedicated
   `net6.0` asset is replaced by the compatibility asset for older modern clients.
 - The CLI requires .NET 10. This runtime requirement change must be included in

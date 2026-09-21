@@ -24,7 +24,7 @@ The current checkout still targets:
 | Unit and integration tests | `net10.0`, `net462` |
 | Azure Functions test helper | `net7.0` |
 
-Development and the CLI now use .NET 10 LTS. `global.json` pins SDK 10.0.301.
+Development and the CLI now use .NET 10 LTS. CI uses SDK 10.0.301.
 The Functions helper remains on out-of-support .NET 7 pending replacement.
 Targets describe this checkout, not necessarily the latest published packages.
 
@@ -83,7 +83,7 @@ dotnet build src/Certes/Certes.csproj
 dotnet test test/Certes.Tests/Certes.Tests.csproj -f net10.0 -p:SkipSigning=true
 ```
 
-Install SDK 10.0.301 as pinned by `global.json`; no runtime roll-forward is needed.
+Install a .NET 10 SDK; no runtime roll-forward is needed.
 See [AGENTS.md](AGENTS.md) for detailed commands. Unit tests need no CA service or containers;
 the separate integration suite still depends on hosted services.
 
