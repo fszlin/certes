@@ -2,10 +2,10 @@
   <Import Project="../../misc/certes.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net462</TargetFrameworks>
+    <TargetFrameworks>net10.0;net462</TargetFrameworks>
     <RootNamespace>Certes</RootNamespace>
     <NoWarn>1701;1702;1705;0618</NoWarn>
-    <IncludeCli Condition="'$(TargetFramework)' == 'net6.0'">True</IncludeCli>
+    <IncludeCli Condition="'$(TargetFramework)' == 'net10.0'">True</IncludeCli>
     <PublicSign>False</PublicSign>
   </PropertyGroup>
 

@@ -2,6 +2,21 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Breaking changes
+- The next `dotnet-certes` CLI release requires .NET 10 instead of .NET 6.
+  Install the .NET 10 runtime before upgrading the tool. Choose the release
+  version with this runtime requirement change in mind; the assembly version is
+  not the package release decision.
+
+### Changed
+- Target .NET 10 for the CLI and modern tests. Ship library `net10.0` and `net8.0`
+  assets alongside retained `netstandard2.0` and `net462` assets. .NET 8/9 library
+  consumers select `net8.0`; .NET 6/7 consumers select `netstandard2.0` rather than
+  the removed `net6.0` asset. The latter path is compile-checked, not runtime-tested.
+- Use the latest `10.0.x` SDK in CI and run the offline unit suite natively on .NET 10.
+- Mark formatter-based exception serialization APIs obsolete on the .NET 8/10
+  library asset, matching the platform APIs; legacy-target APIs remain available.
+
 ### Added
 - Support alternate link relations ([#232][i232])
 - [CLI] Add option for alternate link relation

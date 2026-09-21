@@ -85,7 +85,7 @@ namespace Certes.Cli.Commands
                 }
 
                 var cert = await orderCtx.Download(preferredChain);
-                var x509Cert = new X509Certificate2(cert.Certificate.ToDer());
+                using var x509Cert = X509CertificateLoader.LoadCertificate(cert.Certificate.ToDer());
                 var thumbprint = x509Cert.Thumbprint;
 
                 using var client = clientFactory.Invoke(azureCredentials);

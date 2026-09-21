@@ -149,7 +149,7 @@ namespace Certes.Cli.Commands
             webAppOpMock.Verify(m => m.CreateOrUpdateHostNameBindingSlotWithHttpMessagesAsync(
                 resourceGroup, appName, domain, It.IsAny<HostNameBindingInner>(), appSlot, default, default), Times.Once);
 
-            var cert = new X509Certificate2(certChain.Certificate.ToDer());
+            using var cert = X509CertificateLoader.LoadCertificate(certChain.Certificate.ToDer());
             certOpMock.Setup(m => m.ListByResourceGroupWithHttpMessagesAsync(resourceGroup, default, default))
                 .ReturnsAsync(new AzureOperationResponse<IPage<CertificateInner>>
                 {

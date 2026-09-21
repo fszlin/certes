@@ -33,7 +33,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
-          dotnet-version: 10.0.301
+          dotnet-version: 10.0.x
       - name: Runtime information
         run: dotnet --info
       - name: Build signed library (all targets)
@@ -42,20 +42,18 @@ jobs:
         run: dotnet build src/Certes.Cli/Certes.Cli.csproj -p:SkipSigning=true
       - name: Compile both test projects (all test targets)
         run: dotnet build test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -p:SkipSigning=true
-      - name: Run offline unit tests (diagnostic runtime roll-forward)
+      - name: Run offline unit tests (.NET 10)
         # Reuses the preceding build: keep configuration, target, and SkipSigning aligned.
-        env:
-          DOTNET_ROLL_FORWARD: LatestMajor
-        run: dotnet test test/Certes.Tests/Certes.Tests.csproj -f net6.0 -p:SkipSigning=true --no-build --no-restore
+        run: dotnet test test/Certes.Tests/Certes.Tests.csproj -f net10.0 -p:SkipSigning=true --no-build --no-restore
       - name: Record verification scope
         shell: bash
         run: |
           printf '%s\n' \
             '### Build and offline unit-test verification' \
             'Library, CLI, and unit/integration test compilation were checked.' \
-            'The entire net6.0 unit suite ran with .NET 10 runtime roll-forward; no test filters or failure suppression.' \
+            'The entire net10.0 unit suite ran on .NET 10; no test filters or failure suppression.' \
             'Hosted ACME integration tests and net462 runtime tests were not executed.' \
-            'Local Pebble integration and supported target/runtime modernization remain follow-up tasks.' >> "$GITHUB_STEP_SUMMARY"
+            'Local Pebble integration remains a follow-up task.' >> "$GITHUB_STEP_SUMMARY"
 
   packages:
     name: Package smoke checks
@@ -70,15 +68,23 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
-          dotnet-version: 10.0.301
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - name: Runtime information
+        run: dotnet --info
       - name: Pack signed library and CLI
         run: |
           dotnet pack src/Certes/Certes.csproj -c Release -p:ContinuousIntegrationBuild=true --output artifacts/packages
           dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:ContinuousIntegrationBuild=true --output artifacts/packages
       - name: Consume the library package
-        run: dotnet run --project scripts/PackageSmoke/PackageSmoke.csproj -c Release
+        run: dotnet run --project scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net10.0
+      - name: Consume the library package on .NET 8
+        run: dotnet run --project scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net8.0
+      - name: Compile .NET 6 consumer against the compatibility asset
+        run: dotnet build scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net6.0
       - name: Install and launch the packaged CLI
         shell: bash
         run: |
           dotnet tool install dotnet-certes --version "$CERTES_PACKAGE_VERSION" --tool-path artifacts/tools --add-source artifacts/packages
-          DOTNET_ROLL_FORWARD=LatestMajor artifacts/tools/certes --help
+          artifacts/tools/certes --help
