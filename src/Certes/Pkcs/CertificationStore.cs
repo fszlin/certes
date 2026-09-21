@@ -51,7 +51,11 @@ namespace Certes.Pkcs
         /// </summary>
         /// <param name="der">The certificate.</param>
         /// <returns>
-        /// The issuers of the certificate.
+        /// The issuers of the certificate, ordered from the closest issuer upwards. The chain
+        /// stops at the first self-signed certificate, or at the highest issuer available when
+        /// no self-signed certificate is present. ACME servers are not expected to supply the
+        /// self-signed root (RFC 8555, section 7.4.2), so a chain that ends at an intermediate
+        /// is not an error.
         /// </returns>
         public IList<byte[]> GetIssuers(byte[] der)
         {
@@ -59,21 +63,36 @@ namespace Certes.Pkcs
             var certificate = certParser.ReadCertificate(der);
 
             var chain = new List<X509Certificate>();
+            var visited = new HashSet<X509Name>() { certificate.SubjectDN };
             while (!certificate.SubjectDN.Equivalent(certificate.IssuerDN))
             {
-                if (certificates.TryGetValue(certificate.IssuerDN, out var issuer) ||
-                    embeddedCertificates.Value.TryGetValue(certificate.IssuerDN, out issuer))
+                if (!certificates.TryGetValue(certificate.IssuerDN, out var issuer) &&
+                    !embeddedCertificates.Value.TryGetValue(certificate.IssuerDN, out issuer))
                 {
-                    chain.Add(issuer);
-                    certificate = issuer;
+                    if (chain.Count == 0)
+                    {
+                        // Nothing could be linked to the certificate at all, which means the
+                        // supplied issuers do not belong to this chain.
+                        throw new AcmeException(
+                            string.Format(Strings.ErrorIssuerNotFound, certificate.IssuerDN, certificate.SubjectDN));
+                    }
+
+                    // The chain is complete up to the highest issuer available. ACME servers are
+                    // not expected to supply the self-signed root (RFC 8555, section 7.4.2).
+                    break;
                 }
-                else
+
+                if (!visited.Add(issuer.SubjectDN))
                 {
-                    throw new AcmeException(
-                        string.Format(Strings.ErrorIssuerNotFound, certificate.IssuerDN, certificate.SubjectDN));
+                    // Cross-signed certificates can reference each other by subject name.
+                    // Stop rather than walking the cycle indefinitely.
+                    break;
                 }
+
+                chain.Add(issuer);
+                certificate = issuer;
             }
-            
+
             return chain.Select(cert => cert.GetEncoded()).ToArray();
         }
     }

@@ -50,8 +50,41 @@ namespace Certes
             }
         }
 
-        public string AssertPfx(byte[] pfx, string password, string alias, bool fullChain = true)
+        /// <summary>
+        /// Builds a chain from the given certificates, leaf first.
+        /// </summary>
+        public static CertificateChain ChainOf(params X509Certificate[] certificates)
         {
+            using (var text = new StringWriter())
+            {
+                var writer = new PemWriter(text);
+                foreach (var certificate in certificates)
+                {
+                    writer.WriteObject(certificate);
+                }
+
+                return new CertificateChain(text.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Asserts the exact certificate chain stored against the key entry, in order.
+        /// </summary>
+        public void AssertPfxChain(byte[] pfx, string password, params X509Certificate[] expected)
+        {
+            using (var stream = new MemoryStream(pfx))
+            {
+                var store = new Pkcs12Store(stream, password.ToCharArray());
+                var alias = store.Aliases.Cast<string>().Single(store.IsKeyEntry);
+                var chain = store.GetCertificateChain(alias);
+
+                Assert.Equal(
+                    expected.Select(c => c.GetEncoded()),
+                    chain.Select(c => c.Certificate.GetEncoded()));
+            }
+        }
+
+        public string AssertPfx(byte[] pfx, string password, string alias, bool fullChain = true)        {
             using (var stream = new MemoryStream(pfx))
             {
                 var store = new Pkcs12Store(stream, password.ToCharArray());
@@ -79,7 +112,7 @@ namespace Certes
             }
         }
 
-        private static X509Certificate Issue(string subject, string issuer, AsymmetricKeyParameter publicKey,
+        internal static X509Certificate Issue(string subject, string issuer, AsymmetricKeyParameter publicKey,
             AsymmetricKeyParameter signingKey, bool isCa, int serial, DateTime now)
         {
             var generator = new X509V3CertificateGenerator();
