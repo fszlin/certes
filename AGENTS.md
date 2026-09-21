@@ -231,7 +231,9 @@ observations below originate at `ffa00c6`; build/test and audit status
 were updated after the .NET 10 migration:
 
 - The core library built for all targets; CLI/unit-test compilation also passed.
-- On the native `net10.0` target, all 145 unit tests pass, with no skips. The six
+- On the native `net10.0` target, all 149 unit tests pass, with no skips. Four
+  offline TLS-ALPN certificate-generation cases cover RSA/ECDSA keys, SANs,
+  self-signatures, and the critical ACME identifier extension. The six
   former hosted-Pebble failures now use local certificate fixtures with matching
   keys and PFX assertions; a missing-issuer test was added. The 13 integration tests
   pass locally against pinned Pebble 2.10.1 on Docker Desktop/macOS ARM64. This

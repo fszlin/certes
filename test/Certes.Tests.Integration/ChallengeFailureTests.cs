@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
@@ -11,7 +11,7 @@ namespace Certes
         [Theory]
         [InlineData(ChallengeTypes.Http01)]
         [InlineData(ChallengeTypes.Dns01)]
-        [InlineData("tls-alpn-01")]
+        [InlineData("tls-alpn-01")] // TlsAlpn01 is a public property, not an attribute-compatible constant.
         public async Task MissingResponseFailsValidation(string type)
         {
             var directory = await IntegrationHelper.GetAcmeUriV2();

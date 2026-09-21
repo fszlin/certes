@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -64,21 +64,37 @@ namespace Certes
 
         private static async Task<Uri> Initialize()
         {
+            var stage = "loading the pinned TLS certificate";
             try
             {
-                await http.Value.GetStringAsync(directory);
-                root = await http.Value.GetByteArrayAsync(new Uri(management, "roots/0"));
+                var client = http.Value;
+                stage = "fetching the ACME directory";
+                await client.GetStringAsync(directory);
+                stage = "fetching the issuance root from the management API";
+                var fetchedRoot = await client.GetByteArrayAsync(new Uri(management, "roots/0"));
                 foreach (var algorithm in new[] { KeyAlgorithm.RS256, KeyAlgorithm.ES256, KeyAlgorithm.ES384 })
                 {
+                    stage = $"provisioning the {algorithm} test account";
                     var context = new AcmeContext(directory, Helper.GetKeyV2(algorithm), GetAcmeHttpClient(directory));
                     await context.NewAccount(new[] { "mailto:ci@example.test" }, true);
                 }
 
+                root = fetchedRoot;
                 return directory;
             }
+#if NET10_0_OR_GREATER
+            catch (HttpRequestException ex) when (ex.HttpRequestError == HttpRequestError.SecureConnectionError)
+            {
+                throw new InvalidOperationException($"Pebble TLS validation failed while {stage}. Check the localhost certificate pin, hostname, validity dates, and pinned image version. See scripts/Pebble/README.md.", ex);
+            }
+            catch (HttpRequestException ex) when (ex.HttpRequestError == HttpRequestError.ConnectionError || ex.HttpRequestError == HttpRequestError.NameResolutionError)
+            {
+                throw new InvalidOperationException($"Could not connect to local Pebble while {stage}. Run docker compose -f scripts/Pebble/compose.yml up -d and bash scripts/Pebble/wait.sh; check loopback ports. See scripts/Pebble/README.md.", ex);
+            }
+#endif
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Local Pebble is not ready. Run docker compose -f scripts/Pebble/compose.yml up -d, then retry. See scripts/Pebble/README.md.", ex);
+                throw new InvalidOperationException($"Pebble initialization failed while {stage}. Inspect the inner exception and container logs; this may be an HTTP, management API, or account-provisioning error. See scripts/Pebble/README.md.", ex);
             }
         }
 
@@ -201,7 +217,15 @@ namespace Certes
             throw new TimeoutException($"Order did not become {expected} within 60 seconds.");
         }
 
-        public static void AddTestCerts(this PfxBuilder builder) => builder.AddIssuer(root);
+        public static void AddTestCerts(this PfxBuilder builder)
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException("Pebble issuance root is unavailable. Await GetAcmeUriV2() successfully before exporting certificates.");
+            }
+
+            builder.AddIssuer(root);
+        }
 
         public static void AssertExport(CertificateChain chain, IKey key)
         {

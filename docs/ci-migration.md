@@ -45,7 +45,8 @@ all four checks at `80ce393`. The .NET 8 asset/smoke additions also passed in
 - `Pebble integration` starts the pinned local CA and challenge responder on a
   Linux runner, waits for readiness, executes the 13 integration cases on .NET 10,
   and tears down the containers even on failure. Local macOS ARM64 verification
-  passed; hosted verification of this new job is pending. It is not yet a required
+  and Linux [run 35550345812](https://github.com/fszlin/certes/actions/runs/35550345812)
+  passed at `0bc5579`; that run preceded the strict-mode follow-up. It is not yet a required
   check. See [local setup](../scripts/Pebble/README.md) for scope and commands.
 
 The six former HTTP 401 failures used a hosted CA to obtain test certificates.
@@ -178,6 +179,10 @@ complete cleanup beyond the disabled repository webhooks:
 ## Replacement plan
 
 Verify the new Pebble integration job on hosted runners before making it required.
+After repeated successful strict-mode runs establish stability, promote `Pebble
+integration` to a required branch check. After production polling/nonce fixes,
+add an optional stress job with delays, nonce rejection, and authorization reuse
+enabled; baseline success does not cover those conditions.
 
 Use focused PRs to introduce:
 
