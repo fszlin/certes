@@ -340,7 +340,7 @@ namespace Certes
         }
 
         [Fact]
-        public async Task PollsPendingAndProcessingUsingBoundedRetryAfterDelay()
+        public async Task PollsPendingAndProcessingUsingServerRetryAfterDelay()
         {
             var pem = File.ReadAllText("./Data/cert-es256.pem");
             var ready = new Order
@@ -368,7 +368,9 @@ namespace Certes
                 Identifiers = ready.Identifiers,
                 Status = OrderStatus.Processing,
             });
-            orderCtxMock.SetupGet(m => m.RetryAfter).Returns(120);
+            orderCtxMock.SetupSequence(m => m.RetryAfter)
+                .Returns(120)
+                .Returns(0);
             orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
 
             var delays = new List<TimeSpan>();
@@ -386,12 +388,13 @@ namespace Certes
                 });
 
             Assert.Equal(2, delays.Count);
-            Assert.All(delays, delay => Assert.Equal(TimeSpan.FromSeconds(60), delay));
+            Assert.Equal(TimeSpan.FromSeconds(120), delays[0]);
+            Assert.Equal(TimeSpan.FromSeconds(1), delays[1]);
             Assert.Equal(4, resourceCalls);
         }
 
         [Fact]
-        public async Task BoundsProcessingPolling()
+        public async Task HonorsCallerPollingBudget()
         {
             var order = new Order
             {
@@ -418,7 +421,7 @@ namespace Certes
                 100,
                 _ => Task.CompletedTask));
 
-            Assert.Equal(62, resourceCalls);
+            Assert.Equal(102, resourceCalls);
         }
 
         [Fact]

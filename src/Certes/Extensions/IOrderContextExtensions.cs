@@ -13,8 +13,6 @@ namespace Certes
     public static class IOrderContextExtensions
     {
         private const int DefaultRetryCount = 60;
-        private const int MaxRetryCount = 60;
-        private const int MaxRetryAfterSeconds = 60;
 
         /// <summary>
         /// Finalizes the certificate order.
@@ -66,7 +64,7 @@ namespace Certes
         /// <param name="context">The order context.</param>
         /// <param name="csr">The CSR.</param>
         /// <param name="key">The private key for the certificate.</param>
-        /// <param name="retryCount">Maximum number of polling retries while the Order is pending or processing. (default = 60)</param>
+        /// <param name="retryCount">Maximum number of polling retries while the Order is pending or processing. (default = 60; negative values are treated as zero)</param>
         /// <param name="preferredChain">The preferred Root Certificate.</param>
         /// <returns>
         /// The certificate generated.
@@ -91,10 +89,10 @@ namespace Certes
 
             order = await context.Finalize(csr, key);
 
-            retryCount = Math.Min(Math.Max(retryCount, 0), MaxRetryCount);
+            retryCount = Math.Max(retryCount, 0);
             while ((order == null || order.Status == OrderStatus.Pending || order.Status == OrderStatus.Processing) && retryCount-- > 0)
             {
-                await delay(TimeSpan.FromSeconds(Math.Min(Math.Max(context.RetryAfter, 1), MaxRetryAfterSeconds)));
+                await delay(TimeSpan.FromSeconds(Math.Max(context.RetryAfter, 1)));
                 order = await context.Resource();
             }
 
