@@ -6,11 +6,6 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      run_legacy_tests:
-        description: Run the full unit suite (known hosted-service failures)
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -47,15 +42,20 @@ jobs:
         run: dotnet build src/Certes.Cli/Certes.Cli.csproj -p:SkipSigning=true
       - name: Compile both test projects (all test targets)
         run: dotnet build test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -p:SkipSigning=true
+      - name: Run offline unit tests (diagnostic runtime roll-forward)
+        # Reuses the preceding build: keep configuration, target, and SkipSigning aligned.
+        env:
+          DOTNET_ROLL_FORWARD: LatestMajor
+        run: dotnet test test/Certes.Tests/Certes.Tests.csproj -f net6.0 -p:SkipSigning=true --no-build --no-restore
       - name: Record verification scope
         shell: bash
         run: |
           printf '%s\n' \
-            '### Build verification only' \
+            '### Build and offline unit-test verification' \
             'Library, CLI, and unit/integration test compilation were checked.' \
-            'Tests were not executed: six unit cases depend on a hosted Pebble service that returned HTTP 401 at the revival baseline.' \
-            'Use the manual run_legacy_tests input for the full diagnostic suite. Failures are not suppressed.' \
-            'Offline unit tests and local Pebble integration are the next test-infrastructure tasks.' >> "$GITHUB_STEP_SUMMARY"
+            'The entire net6.0 unit suite ran with .NET 10 runtime roll-forward; no test filters or failure suppression.' \
+            'Hosted ACME integration tests and net462 runtime tests were not executed.' \
+            'Local Pebble integration and supported target/runtime modernization remain follow-up tasks.' >> "$GITHUB_STEP_SUMMARY"
 
   packages:
     name: Package smoke checks
@@ -82,22 +82,3 @@ jobs:
         run: |
           dotnet tool install dotnet-certes --version "$CERTES_PACKAGE_VERSION" --tool-path artifacts/tools --add-source artifacts/packages
           DOTNET_ROLL_FORWARD=LatestMajor artifacts/tools/certes --help
-
-  legacy-tests:
-    name: Legacy unit tests (manual diagnostic)
-    if: github.event_name == 'workflow_dispatch' && inputs.run_legacy_tests
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-        with:
-          persist-credentials: false
-      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
-        with:
-          dotnet-version: 10.0.301
-      - name: Record runtime
-        run: dotnet --info
-      - name: Run all unit tests with diagnostic roll-forward
-        env:
-          DOTNET_ROLL_FORWARD: LatestMajor
-        run: dotnet test test/Certes.Tests/Certes.Tests.csproj -f net6.0 -p:SkipSigning=true

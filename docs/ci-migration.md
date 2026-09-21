@@ -5,7 +5,11 @@
 Certes has retired its legacy automation. An initial GitHub Actions workflow is
 defined for build/package validation. All three OS builds and package smoke
 checks passed in [hosted run 35544493782](https://github.com/fszlin/certes/actions/runs/35544493782)
-at commit `0d29d32`; the optional legacy test diagnostic was not run.
+at commit `0d29d32`; that initial rollout did not execute unit tests. The follow-up
+offline-fixture change adds automatic unit tests to each OS job. All 145 tests
+passed on each OS, alongside package smoke checks, in
+[hosted run 35545870442](https://github.com/fszlin/certes/actions/runs/35545870442)
+at commit `09490e1`, using .NET 10 roll-forward.
 Run the local checks in
 [AGENTS.md](https://github.com/fszlin/certes/blob/main/AGENTS.md) and include their
 results in PRs during the transition.
@@ -18,21 +22,33 @@ manual dispatch, with SDK 10.0.301 and read-only repository permissions:
 - `Build (ubuntu-24.04)`, `Build (windows-2025)`, and `Build (macos-26)` compile
   the signed library in Release for all retained targets, then compile the CLI
   explicitly and both test projects with `SkipSigning=true` in Debug. They do
-  not execute the tests or compile the Azure Functions hosted challenge helper.
+  run the full `net6.0` unit suite with .NET 10 runtime roll-forward using those
+  compiled outputs. No filters or failure suppression are applied. The Azure
+  Functions helper and integration-test execution remain outside these jobs.
 - `Package smoke checks` packs the signed library and CLI in Release, then
   consumes both packages using an isolated NuGet cache. The .NET 10 library
   consumer exercises RSA/ECDSA key round-trips and CSR generation; the CLI runs
   `--help` using .NET 10 roll-forward. No packages are published or uploaded.
-- `Legacy unit tests (manual diagnostic)` runs only when a manual dispatch sets
-  `run_legacy_tests` to true. It runs the entire `net6.0` unit suite with .NET 10
-  roll-forward, with no exclusions or failure suppression. The six hosted-Pebble
-  failures are expected until fixtures are repaired. This diagnostic must not
-  become a required PR check in its current form.
+- The former `Legacy unit tests (manual diagnostic)` job and `run_legacy_tests`
+  input are removed: the unit suite now runs on every PR, main push, and manual run.
 
-A green build/package run is not a passing unit/integration suite or verified CA
-interoperability. The skipped-by-default diagnostic is a temporary CI rollout
-boundary, not removal or disabling of test cases. Automatic offline test runs
-remain the next priority. Runtime/target modernization is a separate change.
+The six former HTTP 401 failures used a hosted CA to obtain test certificates.
+They now generate valid root/intermediate/leaf chains and matching keys locally,
+and inspect exported PFX contents. `IntegrationHelper.cs` moved to the integration
+project; unit tests no longer have access to that network helper. No test cases
+were disabled. A missing-issuer failure test brings the suite to 145 cases.
+
+The new PFX fixture covers RSA and ES256/ES384/ES512 leaf keys, all issued by
+RSA-signing CAs. It does not exercise ECDSA-signed chains, cross-signing, unordered
+or extraneous issuer bundles, or duplicate subject DNs. Its supplied root also
+does not exercise embedded-root fallback. The existing
+`CertificateChainTests.CanGenerateFullChainPemWithKey` still exercises fallback
+to embedded DST Root CA X3 during PEM export; this is not comprehensive coverage
+of every embedded root or of PFX path building. Broader chain coverage belongs
+with certificate-store/export fixes.
+
+A green run verifies unit tests and package consumption, not CA interoperability
+or `net462` runtime behavior. Runtime/target modernization remains a separate change.
 
 Runner OS labels are explicit versions matching the current `-latest` image
 families at selection time: Ubuntu 24.04 and Windows Server 2025 on x64, macOS 26
@@ -121,15 +137,13 @@ complete cleanup beyond the disabled repository webhooks:
 
 ## Replacement plan
 
-Establish required build checks and offline unit tests following the successful
-initial hosted run. Keep the test gap short without concealing the six known
-hosted-service failures.
+Establish required checks after hosted verification of the automatic unit suite,
+then replace external integration-test dependencies with local Pebble.
 
 Use focused PRs to introduce:
 
-1. Documentation validation, offline unit tests, and local Pebble
-   integration tests as the test baseline is repaired. Preserve known failure
-   reporting rather than weakening assertions to obtain a green build.
+1. Documentation validation and local Pebble integration tests. Preserve known
+   failure reporting rather than weakening assertions to obtain a green build.
 2. New required status checks on `main` after stable Actions check names exist.
 3. DocFX builds and GitHub Pages deployment for documentation changes.
 4. Explicit release/tag-driven package publishing, gated on successful

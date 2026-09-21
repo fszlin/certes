@@ -66,10 +66,10 @@ See the [branching and release strategy](AGENTS.md#branching-and-releases)
 before preparing a contribution or release.
 
 The initial [GitHub Actions workflow](.github/workflows/build.yml) checks
-cross-platform compilation and local package consumption. It does not run unit
-tests automatically while their hosted-service dependency is being repaired.
-See [CI migration status](docs/ci-migration.md) for coverage, the manual test
-diagnostic, and remaining work. Legacy build/release automation is disabled.
+cross-platform compilation, the full offline unit suite, and local package
+consumption. Tests currently use .NET 10 runtime roll-forward pending target
+modernization. See [CI migration status](docs/ci-migration.md) for coverage and
+remaining work. Legacy build/release automation is disabled.
 
 Run commands from the repository root:
 
@@ -80,7 +80,8 @@ dotnet test test/Certes.Tests/Certes.Tests.csproj -f net6.0 -p:SkipSigning=true
 
 The test command requires a .NET 6 runtime by default. The repository does not
 yet pin an SDK with `global.json`. See [AGENTS.md](AGENTS.md) for the temporary
-runtime roll-forward diagnostic and test-service dependency.
+runtime roll-forward diagnostic. Unit tests need no CA service or containers;
+the separate integration suite still depends on hosted services.
 
 ### Revival baseline
 
@@ -91,7 +92,7 @@ These diagnostics do not establish current CA interoperability or a supported
 
 ### Revival priorities
 
-1. Establish a supported SDK/runtime, offline unit tests, local Pebble integration
+1. Establish a supported SDK/runtime, local Pebble integration
    tests, and one maintained CI pipeline.
 2. Fix order polling, certificate-chain export, alternate-chain handling, and
    CLI secret-file handling.
