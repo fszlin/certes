@@ -13,8 +13,11 @@ All notable changes to this project will be documented in this file.
   requiring a self-signed root. ACME servers are not expected to supply the root
   (RFC 8555, section 7.4.2), so PEM and PFX export previously failed on
   spec-compliant chains from any CA whose root is not embedded in this library.
-  Chains whose supplied issuers cannot be linked to the certificate at all still
-  fail, and the PFX output continues to omit the self-signed root.
+  Issuers are now accepted only after verifying that they signed the certificate
+  below them, so a certificate sharing an issuer's subject name is no longer
+  treated as an issuer. Supplying issuers that did not sign the certificate still
+  fails; supplying none exports the certificate alone. The PFX output continues to
+  omit the self-signed root, which is used as a trust anchor only.
 - Fall back to the default certificate chain and stop order-list pagination when
   ACME responses omit optional `Link` headers.
 - Preserve ACME server-directed `Retry-After` polling delays and honor explicit

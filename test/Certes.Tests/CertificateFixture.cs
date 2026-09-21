@@ -84,7 +84,8 @@ namespace Certes
             }
         }
 
-        public string AssertPfx(byte[] pfx, string password, string alias, bool fullChain = true)        {
+        public string AssertPfx(byte[] pfx, string password, string alias, bool fullChain = true)
+        {
             using (var stream = new MemoryStream(pfx))
             {
                 var store = new Pkcs12Store(stream, password.ToCharArray());

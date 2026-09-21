@@ -38,6 +38,42 @@ namespace Certes.Pkcs
         }
 
         [Fact]
+        public void GetIssuersFailsWhenSuppliedIssuersDoNotSignTheCertificate()
+        {
+            // Issuers are indexed by subject name, which does not establish an issuer
+            // relationship. A certificate sharing the issuer's name but holding a different
+            // key must not be accepted.
+            var fixture = new CertificateFixture(KeyAlgorithm.ES256);
+            var unrelated = new CertificateFixture(KeyAlgorithm.ES256);
+            Assert.True(fixture.Leaf.IssuerDN.Equivalent(unrelated.Intermediate.SubjectDN));
+
+            var store = new CertificateStore();
+            store.Add(unrelated.Intermediate.GetEncoded());
+
+            Assert.Throws<AcmeException>(() => store.GetIssuers(fixture.Leaf.GetEncoded()));
+        }
+
+        [Fact]
+        public void ToPemFailsWhenSuppliedIssuersDoNotSignTheCertificate()
+        {
+            var fixture = new CertificateFixture(KeyAlgorithm.ES256);
+            var unrelated = new CertificateFixture(KeyAlgorithm.ES256);
+            var chain = CertificateFixture.ChainOf(fixture.Leaf, unrelated.Intermediate);
+
+            Assert.Throws<AcmeException>(() => chain.ToPem());
+        }
+
+        [Fact]
+        public void ToPfxFailsWhenSuppliedIssuersDoNotSignTheCertificate()
+        {
+            var fixture = new CertificateFixture(KeyAlgorithm.ES256);
+            var unrelated = new CertificateFixture(KeyAlgorithm.ES256);
+            var chain = CertificateFixture.ChainOf(fixture.Leaf, unrelated.Intermediate);
+
+            Assert.Throws<AcmeException>(() => chain.ToPfx(fixture.Key).Build("my-cert", "abcd1234"));
+        }
+
+        [Fact]
         public void GetIssuersFailsWhenImmediateIssuerIsMissing()
         {
             // A gap directly above the leaf means the supplied issuers are not for this chain.
@@ -46,6 +82,16 @@ namespace Certes.Pkcs
             store.Add(fixture.Root.GetEncoded());
 
             Assert.Throws<AcmeException>(() => store.GetIssuers(fixture.Leaf.GetEncoded()));
+        }
+
+        [Fact]
+        public void GetIssuersReturnsNothingWhenNoIssuersAreSupplied()
+        {
+            // A leaf issued directly by a root that the server omitted has no issuers to
+            // return, which is not an error.
+            var fixture = new CertificateFixture(KeyAlgorithm.ES256);
+
+            Assert.Empty(new CertificateStore().GetIssuers(fixture.Leaf.GetEncoded()));
         }
 
         [Fact]

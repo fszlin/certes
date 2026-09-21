@@ -57,11 +57,16 @@ namespace Certes.Pkcs
         }
 
         [Fact]
-        public void FullChainRequiresIssuers()
+        public void FullChainExportsLeafWhenNoIssuersAreSupplied()
         {
+            // A leaf issued directly by a root the server omitted has no issuers to package.
             var fixture = new CertificateFixture(KeyAlgorithm.ES256);
             var builder = new PfxBuilder(fixture.Leaf.GetEncoded(), fixture.Key);
-            Assert.Throws<AcmeException>(() => builder.Build("my-cert", "abcd1234"));
+
+            var pfx = builder.Build("my-cert", "abcd1234");
+
+            fixture.AssertPfx(pfx, "abcd1234", "my-cert", fullChain: false);
+            fixture.AssertPfxChain(pfx, "abcd1234", fixture.Leaf);
         }
     }
 }
