@@ -250,7 +250,6 @@ gh-pages/
 launchSettings.json
 local.settings.json
 .vscode/
-.opencode/
 .DS_Store
 *.arm.json
 *Zip Deploy.json
