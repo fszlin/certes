@@ -9,6 +9,13 @@ All notable changes to this project will be documented in this file.
   not the package release decision.
 
 ### Changed
+- Retain cross-signed issuer alternates that share a subject name, instead of
+  letting the last one added replace the others. The issuer is now chosen when
+  the chain is built, by verifying which candidate signed the certificate below
+  it. When several alternates verify, as cross-signed pairs sharing a key do, a
+  self-signed alternate is preferred and the chain ends there. Exported chains no
+  longer depend on the order issuers were added in; supplying both alternates
+  previously produced either chain depending on insertion order.
 - Export the certificate chain up to the highest issuer available, instead of
   requiring a self-signed root. ACME servers are not expected to supply the root
   (RFC 8555, section 7.4.2), so PEM and PFX export previously failed on

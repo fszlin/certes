@@ -160,5 +160,115 @@ namespace Certes.Pkcs
             Assert.Equal(fixture.Leaf.GetEncoded(), exported[0].GetEncoded());
             Assert.Equal(fixture.Intermediate.GetEncoded(), exported[1].GetEncoded());
         }
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void GetIssuersPrefersSelfSignedCrossSignedAlternate(bool addSelfSignedFirst)
+        {
+            // The self-signed and cross-signed alternates share a subject name and a key, so
+            // both verify the leaf. Selection must not depend on which was added last.
+            var pki = new CrossSignedPki();
+            var store = new CertificateStore();
+            if (addSelfSignedFirst)
+            {
+                store.Add(pki.SelfSignedIssuer.GetEncoded());
+                store.Add(pki.CrossSignedIssuer.GetEncoded());
+            }
+            else
+            {
+                store.Add(pki.CrossSignedIssuer.GetEncoded());
+                store.Add(pki.SelfSignedIssuer.GetEncoded());
+            }
+
+            store.Add(pki.CrossSigningRoot.GetEncoded());
+
+            var issuers = store.GetIssuers(pki.Leaf.GetEncoded());
+
+            // The short chain ends at the self-signed alternate.
+            var issuer = Assert.Single(issuers);
+            Assert.Equal(pki.SelfSignedIssuer.GetEncoded(), issuer);
+        }
+
+        [Fact]
+        public void GetIssuersUsesCrossSignedAlternateWhenItIsTheOnlyOneSupplied()
+        {
+            var pki = new CrossSignedPki();
+            var store = new CertificateStore();
+            store.Add(pki.CrossSignedIssuer.GetEncoded());
+            store.Add(pki.CrossSigningRoot.GetEncoded());
+
+            var issuers = store.GetIssuers(pki.Leaf.GetEncoded());
+
+            Assert.Equal(
+                new[] { pki.CrossSignedIssuer.GetEncoded(), pki.CrossSigningRoot.GetEncoded() },
+                issuers);
+        }
+
+        [Fact]
+        public void GetIssuersIsNotShadowedBySameSubjectImposter()
+        {
+            // A certificate sharing the issuer's subject name but holding a different key must
+            // not displace the real issuer, whichever order they are added in.
+            var pki = new CrossSignedPki();
+            var store = new CertificateStore();
+            store.Add(pki.CrossSignedIssuer.GetEncoded());
+            store.Add(pki.SameSubjectImposter.GetEncoded());
+            store.Add(pki.CrossSigningRoot.GetEncoded());
+
+            var issuers = store.GetIssuers(pki.Leaf.GetEncoded());
+
+            Assert.Equal(
+                new[] { pki.CrossSignedIssuer.GetEncoded(), pki.CrossSigningRoot.GetEncoded() },
+                issuers);
+        }
+
+        [Fact]
+        public void AddIgnoresDuplicateCertificates()
+        {
+            var pki = new CrossSignedPki();
+            var store = new CertificateStore();
+            store.Add(pki.CrossSignedIssuer.GetEncoded());
+            store.Add(pki.CrossSignedIssuer.GetEncoded());
+            store.Add(pki.CrossSigningRoot.GetEncoded());
+
+            Assert.Equal(2, store.GetIssuers(pki.Leaf.GetEncoded()).Count);
+        }
+
+        /// <summary>
+        /// A cross-signed issuer: one subject name and key, published both self-signed and
+        /// signed by a second root, mirroring the ISRG Root X1 arrangement.
+        /// </summary>
+        private sealed class CrossSignedPki
+        {
+            public X509Certificate CrossSigningRoot { get; }
+            public X509Certificate SelfSignedIssuer { get; }
+            public X509Certificate CrossSignedIssuer { get; }
+            public X509Certificate SameSubjectImposter { get; }
+            public X509Certificate Leaf { get; }
+
+            public CrossSignedPki()
+            {
+                var provider = new KeyAlgorithmProvider();
+                var (_, rootKey) = provider.GetKeyPair(KeyFactory.NewKey(KeyAlgorithm.RS256).ToDer());
+                var (_, issuerKey) = provider.GetKeyPair(KeyFactory.NewKey(KeyAlgorithm.RS256).ToDer());
+                var (_, otherKey) = provider.GetKeyPair(KeyFactory.NewKey(KeyAlgorithm.RS256).ToDer());
+                var (_, leafKey) = provider.GetKeyPair(KeyFactory.NewKey(KeyAlgorithm.RS256).ToDer());
+                var now = DateTime.UtcNow;
+
+                const string rootName = "CN=Certes Cross Signing Root";
+                const string issuerName = "CN=Certes Cross Signed Issuer";
+
+                CrossSigningRoot = CertificateFixture.Issue(
+                    rootName, rootName, rootKey.Public, rootKey.Private, true, 21, now);
+                SelfSignedIssuer = CertificateFixture.Issue(
+                    issuerName, issuerName, issuerKey.Public, issuerKey.Private, true, 22, now);
+                CrossSignedIssuer = CertificateFixture.Issue(
+                    issuerName, rootName, issuerKey.Public, rootKey.Private, true, 23, now);
+                SameSubjectImposter = CertificateFixture.Issue(
+                    issuerName, issuerName, otherKey.Public, otherKey.Private, true, 24, now);
+                Leaf = CertificateFixture.Issue(
+                    "CN=cross.example", issuerName, leafKey.Public, issuerKey.Private, false, 25, now);
+            }
+        }
     }
 }
