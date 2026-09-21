@@ -52,8 +52,7 @@ jobs:
             '### Build and offline unit-test verification' \
             'Library, CLI, and unit/integration test compilation were checked.' \
             'The entire net10.0 unit suite ran on .NET 10; no test filters or failure suppression.' \
-            'Hosted ACME integration tests and net462 runtime tests were not executed.' \
-            'Local Pebble integration remains a follow-up task.' >> "$GITHUB_STEP_SUMMARY"
+            'Local ACME integration runs in the separate Pebble job; net462 runtime tests were not executed.' >> "$GITHUB_STEP_SUMMARY"
 
   packages:
     name: Package smoke checks
@@ -88,3 +87,29 @@ jobs:
         run: |
           dotnet tool install dotnet-certes --version "$CERTES_PACKAGE_VERSION" --tool-path artifacts/tools --add-source artifacts/packages
           artifacts/tools/certes --help
+
+  integration:
+    name: Pebble integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
+        with:
+          dotnet-version: 10.0.x
+      - name: Runtime information
+        run: dotnet --info
+      - name: Start pinned local CA and challenge responder
+        run: |
+          docker compose -f scripts/Pebble/compose.yml up -d
+          bash scripts/Pebble/wait.sh
+      - name: Run ACME integration tests
+        run: dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -f net10.0 -p:SkipSigning=true
+      - name: Container diagnostics
+        if: failure()
+        run: docker compose -f scripts/Pebble/compose.yml logs --no-color
+      - name: Stop local CA
+        if: always()
+        run: docker compose -f scripts/Pebble/compose.yml down

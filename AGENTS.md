@@ -21,12 +21,13 @@ current task. Keep this guide accurate when commands, targets, or blockers chang
 | `src/Certes/Pkcs/` | CSR, certificate-chain, and PFX utilities |
 | `src/Certes.Cli/` | Commands, dependency injection, settings, Azure integrations |
 | `test/Certes.Tests/` | Offline xUnit/Moq tests and ephemeral certificate fixtures |
-| `test/Certes.Tests.Integration/` | ACME integration flows using external test services |
+| `test/Certes.Tests.Integration/` | ACME integration flows using local Pebble and challtestsrv |
 | `test/Certes.Func/` | Azure Functions challenge-test helper; not part of the core library |
 | `misc/certes.props` | Shared build settings, signing, versions, warnings-as-errors |
 | `docs/` | Usage/API documentation and DocFX site |
 | `.github/workflows/build.yml` | Cross-platform compilation and unit tests, package smoke checks |
 | `scripts/PackageSmoke/` | Consumer of the locally packed library; not a solution project |
+| `scripts/Pebble/` | Pinned container stack, readiness probe, and local integration instructions |
 | `azure-pipelines.yml` | Disabled legacy pipeline placeholder |
 | `docs/ci-migration.md` | CI retirement state and GitHub Actions migration follow-ups |
 
@@ -118,7 +119,8 @@ The CLI and modern unit tests target and run on .NET 10 directly, without
 
 Current targets are `net10.0;net8.0;netstandard2.0;net462` for the library, `net10.0` for
 the CLI, and `net10.0;net462` for tests. The Functions helper still targets the
-out-of-support `net7.0` and remains outside CI pending replacement by local Pebble.
+out-of-support `net7.0` and remains outside CI pending retirement; the integration
+suite now uses local Pebble instead.
 The package smoke project runs on .NET 8 and 10 and also compiles (but does not
 run) a `net6.0` consumer. MSBuild assertions verify the selected package asset
 and version for each target, including `netstandard2.0` selection on .NET 6.
@@ -146,14 +148,19 @@ focused tests when appropriate, then run checks relevant to the affected surface
 ### Integration tests
 
 ```sh
+docker compose -f scripts/Pebble/compose.yml up -d
+bash scripts/Pebble/wait.sh
 dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -f net10.0 -p:SkipSigning=true
+docker compose -f scripts/Pebble/compose.yml down
 ```
 
 Inspect `test/Certes.Tests.Integration/IntegrationHelper.cs` and the relevant integration
-test before running this command. The current setup depends on hosted ACME and
-challenge services, including DNS mutations. It is not a self-contained local
-suite. Local Pebble infrastructure is a revival task; no working local setup is
-provided yet. Keep unit tests network-independent: `CertificateFixture` generates
+test before changing the setup. See `scripts/Pebble/README.md` for prerequisites,
+TLS certificate pinning, fixed loopback ports, and coverage limits. Docker Desktop
+is verified on macOS ARM64; Linux CI uses Docker. Podman is not yet verified.
+The local harness runs only on .NET 10; `net462` remains compile-only and rejects
+network initialization. Never add a global TLS bypass or public-CA fallback.
+Keep unit tests network-independent: `CertificateFixture` generates
 an ephemeral root/intermediate/leaf chain and matching key locally. The network
 helper belongs only to the integration-test project. Restoring NuGet packages
 still requires a package source/cache; offline execution refers to the tests.
@@ -214,8 +221,8 @@ and test reruns are unnecessary unless code examples or behavior also change.
 - Exercise pending/ready/processing/valid/invalid order states, `Retry-After`,
   bad nonces, and network errors when changing issuance or polling.
 - Use test keys and local/staging CAs for development. Keep private keys, tokens,
-  and account credentials out of commits, logs, and test output. TLS validation
-  bypasses in legacy test helpers must not migrate into production transport.
+  and account credentials out of commits, logs, and test output. The loopback
+  certificate pin in the integration helper must not migrate into production transport.
 
 ## Known revival baseline and pitfalls
 
@@ -224,10 +231,14 @@ observations below originate at `ffa00c6`; build/test and audit status
 were updated after the .NET 10 migration:
 
 - The core library built for all targets; CLI/unit-test compilation also passed.
-- On the native `net10.0` target, all 145 unit tests pass, with no skips. The six
+- On the native `net10.0` target, all 149 unit tests pass, with no skips. Four
+  offline TLS-ALPN certificate-generation cases cover RSA/ECDSA keys, SANs,
+  self-signatures, and the critical ACME identifier extension. The six
   former hosted-Pebble failures now use local certificate fixtures with matching
-  keys and PFX assertions; a missing-issuer test was added. Hosted ACME integration
-  tests remain external-service-dependent and have not been verified.
+  keys and PFX assertions; a missing-issuer test was added. The 13 integration tests
+  pass locally against pinned Pebble 2.10.1 on Docker Desktop/macOS ARM64. This
+  verifies the local test CA, not public CA interoperability. Production polling
+  issues below are not fixed by the bounded polling in the test helper.
 - `EntityContext.Resource()` and `OrderContext.Finalize()` discard the response
   `RetryAfter`; `IOrderContextExtensions.Generate()` defaults to one retry.
 - `OrderContext.Download()` can dereference null `Links` when a preferred chain

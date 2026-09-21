@@ -22,7 +22,7 @@ namespace Certes
             public async Task CanGenerateCertificateHttp()
             {
                 var dirUri = await GetAcmeUriV2();
-                var hosts = new[] { $"www-http-es256.certes-ci.dymetis.com", $"mail-http-es256.certes-ci.dymetis.com" };
+                var hosts = new[] { "www-http.example.test", "mail-http.example.test" };
                 var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
                 var orderCtx = await AuthorizeHttp(ctx, hosts);
 
@@ -36,7 +36,9 @@ namespace Certes
                     OrganizationUnit = "Dev",
                     CommonName = hosts[0],
                 }, certKey);
+                await WaitForOrder(orderCtx, OrderStatus.Valid);
                 var certChain = await orderCtx.Download(null);
+                AssertExport(certChain, certKey);
 
                 var pfxBuilder = certChain.ToPfx(certKey);
                 pfxBuilder.AddTestCerts();

@@ -26,7 +26,7 @@ The current checkout still targets:
 
 Development and the CLI now use .NET 10 LTS. CI installs the latest `10.0.x` SDK
 and logs the resolved version.
-The Functions helper remains on out-of-support .NET 7 pending replacement.
+The unused Functions helper remains on out-of-support .NET 7 pending retirement.
 Targets describe this checkout, not necessarily the latest published packages.
 
 The library retains .NET Standard 2.0 and .NET Framework 4.6.2 compatibility assets;
@@ -90,7 +90,7 @@ dotnet test test/Certes.Tests/Certes.Tests.csproj -f net10.0 -p:SkipSigning=true
 
 Install a .NET 10 SDK; no runtime roll-forward is needed.
 See [AGENTS.md](AGENTS.md) for detailed commands. Unit tests need no CA service or containers;
-the separate integration suite still depends on hosted services.
+the separate integration suite uses the [local Pebble container stack](scripts/Pebble/README.md).
 
 ### Revival baseline
 
@@ -100,7 +100,7 @@ Passing unit tests do not establish current CA interoperability.
 
 ### Revival priorities
 
-1. Add local Pebble integration tests to the maintained CI pipeline.
+1. Expand local Pebble integration coverage as protocol and export fixes land.
 2. Fix order polling, certificate-chain export, alternate-chain handling, and
    CLI secret-file handling.
 3. Refresh dependencies, validate package consumption, and update documentation

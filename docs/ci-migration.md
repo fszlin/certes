@@ -22,8 +22,8 @@ repository permissions. The .NET 10 migration changes the modern targets from
 `net6.0` to `net10.0` and removes diagnostic runtime roll-forward. Local verification
 passed all 145 tests on .NET 10. Hosted run
 [35548024969](https://github.com/fszlin/certes/actions/runs/35548024969) verified
-all four checks at `80ce393`. Subsequent .NET 8 asset/smoke additions require
-their own hosted verification.
+all four checks at `80ce393`. The .NET 8 asset/smoke additions also passed in
+[run 35549055095](https://github.com/fszlin/certes/actions/runs/35549055095).
 
 - `Build (ubuntu-24.04)`, `Build (windows-2025)`, and `Build (macos-26)` compile
   the signed library in Release for all retained targets, then compile the CLI
@@ -42,6 +42,12 @@ their own hosted verification.
   uploaded.
 - The former `Legacy unit tests (manual diagnostic)` job and `run_legacy_tests`
   input are removed: the unit suite now runs on every PR, main push, and manual run.
+- `Pebble integration` starts the pinned local CA and challenge responder on a
+  Linux runner, waits for readiness, executes the 13 integration cases on .NET 10,
+  and tears down the containers even on failure. Local macOS ARM64 verification
+  and Linux [run 35550345812](https://github.com/fszlin/certes/actions/runs/35550345812)
+  passed at `0bc5579`; that run preceded the strict-mode follow-up. It is not yet a required
+  check. See [local setup](../scripts/Pebble/README.md) for scope and commands.
 
 The six former HTTP 401 failures used a hosted CA to obtain test certificates.
 They now generate valid root/intermediate/leaf chains and matching keys locally,
@@ -172,21 +178,24 @@ complete cleanup beyond the disabled repository webhooks:
 
 ## Replacement plan
 
-Verify the .NET 10 migration on hosted runners, then replace external
-integration-test dependencies with local Pebble.
+Verify the new Pebble integration job on hosted runners before making it required.
+After repeated successful strict-mode runs establish stability, promote `Pebble
+integration` to a required branch check. After production polling/nonce fixes,
+add an optional stress job with delays, nonce rejection, and authorization reuse
+enabled; baseline success does not cover those conditions.
 
 Use focused PRs to introduce:
 
-1. Documentation validation and local Pebble integration tests. Preserve known
+1. Documentation validation and broader local Pebble integration coverage. Preserve known
    failure reporting rather than weakening assertions to obtain a green build.
 2. Maintain required status checks on `main` as CI coverage evolves.
 3. DocFX builds and GitHub Pages deployment for documentation changes.
 4. Explicit release/tag-driven package publishing, gated on successful
    verification, with prerelease support and preserved assembly signing.
 5. Dependency updates and scheduled vulnerability checks.
-6. Decide whether to modernize and compile `test/Certes.Func` or retire it once
-   local Pebble replaces the hosted challenge infrastructure; its .NET 7 target
-   remains outside current CI coverage.
+6. Retire the unused `test/Certes.Func` hosted challenge helper in a focused change;
+   local Pebble now replaces it for integration tests. Its .NET 7 target remains
+   outside current CI coverage.
 
 Use minimal workflow permissions and pin third-party actions to reviewed commit
 SHAs. PR validation must not publish packages or require publishing credentials.

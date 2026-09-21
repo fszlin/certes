@@ -17,7 +17,7 @@ namespace Certes
             var acme = new AcmeContext(acmeDir, accountKey, httpClient);
             var account = await acme.Account();
 
-            var order = await acme.NewOrder(new[] { "www.certes-ci.dymetis.com" });
+            var order = await acme.NewOrder(new[] { "readme.example.test" });
 
             var authz = (await order.Authorizations()).First();
             var httpChallenge = await authz.Http();
@@ -30,17 +30,24 @@ namespace Certes
             var res = await authz.Resource();
             if (res.Status == AuthorizationStatus.Pending)
             {
-                await httpChallenge.Validate();
+                await IntegrationHelper.ConfigureChallenge("add-http01", new { token, content = keyAuthz });
+                try
+                {
+                    await httpChallenge.Validate();
+                    await IntegrationHelper.WaitForAuthorization(authz);
+                }
+                finally
+                {
+                    await IntegrationHelper.ConfigureChallenge("del-http01", new { token });
+                }
             }
-
-            while (res?.Status != AuthorizationStatus.Valid && res?.Status != AuthorizationStatus.Invalid)
-            {
-                res = await authz.Resource();
-            }
+            await IntegrationHelper.WaitForOrder(order, OrderStatus.Ready);
 
             acme = new AcmeContext(acmeDir, accountKey, httpClient);
             order = acme.Order(orderUri);
             var privateKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
+            // Harness override: Generate defaults to one retry and currently loses Retry-After.
+            // This tests issuance with a bounded retry budget, not the docs' default polling policy.
             var cert = await order.Generate(new CsrInfo
             {
                 CountryName = "CA",
@@ -48,8 +55,9 @@ namespace Certes
                 Locality = "Toronto",
                 Organization = "Certes",
                 OrganizationUnit = "Dev",
-                CommonName = "www.certes-ci.dymetis.com",
-            }, privateKey, null);
+                CommonName = "readme.example.test",
+            }, privateKey, null, retryCount: 60);
+            IntegrationHelper.AssertExport(cert, privateKey);
 
             var pfxBuilder = cert.ToPfx(privateKey);
             pfxBuilder.AddTestCerts();
