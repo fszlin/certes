@@ -51,30 +51,78 @@ namespace Certes.Pkcs
         /// </summary>
         /// <param name="der">The certificate.</param>
         /// <returns>
-        /// The issuers of the certificate.
+        /// The issuers of the certificate, ordered from the closest issuer upwards. Each issuer
+        /// must have signed the certificate below it. The chain stops at the first self-signed
+        /// certificate, or at the highest issuer available when no self-signed certificate is
+        /// present: ACME servers are not expected to supply the self-signed root (RFC 8555,
+        /// section 7.4.2), so a chain that ends at an intermediate is not an error.
         /// </returns>
+        /// <exception cref="AcmeException">
+        /// Issuers were supplied, but none of them signed the certificate.
+        /// </exception>
         public IList<byte[]> GetIssuers(byte[] der)
         {
             var certParser = new X509CertificateParser();
             var certificate = certParser.ReadCertificate(der);
 
             var chain = new List<X509Certificate>();
+            var visited = new HashSet<X509Name>() { certificate.SubjectDN };
             while (!certificate.SubjectDN.Equivalent(certificate.IssuerDN))
             {
-                if (certificates.TryGetValue(certificate.IssuerDN, out var issuer) ||
-                    embeddedCertificates.Value.TryGetValue(certificate.IssuerDN, out issuer))
+                if (!TryGetIssuer(certificate, out var issuer))
                 {
-                    chain.Add(issuer);
-                    certificate = issuer;
+                    if (chain.Count == 0 && certificates.Count > 0)
+                    {
+                        // Issuers were supplied but none of them signed the certificate, so the
+                        // caller supplied issuers that do not belong to this chain.
+                        throw new AcmeException(
+                            string.Format(Strings.ErrorIssuerNotFound, certificate.IssuerDN, certificate.SubjectDN));
+                    }
+
+                    // The chain is complete up to the highest issuer available. ACME servers are
+                    // not expected to supply the self-signed root (RFC 8555, section 7.4.2).
+                    break;
                 }
-                else
+
+                if (!visited.Add(issuer.SubjectDN))
                 {
-                    throw new AcmeException(
-                        string.Format(Strings.ErrorIssuerNotFound, certificate.IssuerDN, certificate.SubjectDN));
+                    // Cross-signed certificates can reference each other by subject name.
+                    // Stop rather than walking the cycle indefinitely.
+                    break;
                 }
+
+                chain.Add(issuer);
+                certificate = issuer;
             }
-            
+
             return chain.Select(cert => cert.GetEncoded()).ToArray();
+        }
+
+        /// <summary>
+        /// Finds the certificate that signed <paramref name="certificate"/>. Candidates are
+        /// indexed by subject name, which does not establish an issuer relationship, so the
+        /// signature is verified before the candidate is accepted.
+        /// </summary>
+        private bool TryGetIssuer(X509Certificate certificate, out X509Certificate issuer)
+        {
+            if (!certificates.TryGetValue(certificate.IssuerDN, out issuer) &&
+                !embeddedCertificates.Value.TryGetValue(certificate.IssuerDN, out issuer))
+            {
+                return false;
+            }
+
+            try
+            {
+                certificate.Verify(issuer.GetPublicKey());
+                return true;
+            }
+            catch (Exception)
+            {
+                // The candidate shares the issuer's subject name but did not sign this
+                // certificate; it is not a usable issuer.
+                issuer = null;
+                return false;
+            }
         }
     }
 }

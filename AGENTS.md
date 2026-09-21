@@ -241,9 +241,14 @@ were updated after the .NET 10 migration:
   issues below are not fixed by the bounded polling in the test helper.
 - `IOrderContextExtensions.Generate()` defaults to 60 polling retries, honors
   server-directed `Retry-After` intervals, and preserves explicit retry budgets.
-- `Pkcs/CertificationStore.cs` (the filename differs from `CertificateStore`)
-  requires a path to a self-signed root, uses old embedded roots, and indexes
-  issuers by subject DN. This affects both PEM and PFX export.
+- `Pkcs/CertificationStore.cs` (the filename differs from `CertificateStore`) no
+  longer requires a self-signed root and verifies that each issuer signed the
+  certificate below it. It still indexes issuers by subject DN, so only one
+  candidate per subject name is retained and cross-signed alternates cannot be
+  selected; the embedded roots are still consulted automatically for both PEM and
+  PFX, and `Resources/Certificates` still ships the expired DST Root CA X3 and the
+  Let's Encrypt staging root. `PfxBuilder` runs PKIX validation only when a
+  self-signed root is available, and packages the linked issuers otherwise.
 - CLI settings contain account keys/Azure credentials. `FileUtil` currently
   uses default file permissions and non-atomic writes.
 - CLI Azure Fluent dependencies remain legacy. A fresh audit after the .NET 10

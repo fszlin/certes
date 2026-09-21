@@ -109,10 +109,23 @@ namespace Certes.Pkcs
                 {
                     IsRoot = cert.IssuerDN.Equivalent(cert.SubjectDN),
                     Cert = cert
-                });
+                })
+                .ToList();
 
             var rootCerts = new HashSet(certificates.Where(c => c.IsRoot).Select(c => new TrustAnchor(c.Cert, null)));
             var intermediateCerts = certificates.Where(c => !c.IsRoot).Select(c => c.Cert).ToList();
+
+            if (rootCerts.Count == 0)
+            {
+                // ACME servers are not expected to supply the self-signed root (RFC 8555,
+                // section 7.4.2). Without a trust anchor there is nothing for the path builder
+                // to validate against, so emit the issuers already linked to the certificate.
+                // The self-signed root is excluded from the output either way.
+                var partialChain = new List<X509Certificate> { certificate };
+                partialChain.AddRange(intermediateCerts);
+                return partialChain;
+            }
+
             intermediateCerts.Add(certificate);
 
             var target = new X509CertStoreSelector
