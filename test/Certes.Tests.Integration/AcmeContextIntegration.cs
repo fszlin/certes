@@ -40,7 +40,11 @@ namespace Certes
             }, certKey);
             var cert = await orderCtx.Download(null);
 
-            var x509 = new X509Certificate2(cert.Certificate.ToDer());
+#if NET9_0_OR_GREATER
+            using var x509 = X509CertificateLoader.LoadCertificate(cert.Certificate.ToDer());
+#else
+            using var x509 = new X509Certificate2(cert.Certificate.ToDer());
+#endif
             Assert.Contains(hosts[0], x509.Subject);
 
             // deactivate authz so the subsequence can trigger challenge validation

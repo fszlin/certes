@@ -19,15 +19,20 @@ The current checkout still targets:
 
 | Component | Targets |
 | --- | --- |
-| Library | `net6.0`, `netstandard2.0`, `net462` |
-| CLI | `net6.0` |
-| Unit and integration tests | `net6.0`, `net462` |
+| Library | `net10.0`, `netstandard2.0`, `net462` |
+| CLI | `net10.0` |
+| Unit and integration tests | `net10.0`, `net462` |
 | Azure Functions test helper | `net7.0` |
 
-.NET 6 and 7 are out of support. Moving development and the CLI to .NET 10 LTS
-is the proposed next step; it has not yet been implemented. Target frameworks in
-the project files describe this checkout, not necessarily the latest published
-NuGet packages.
+Development and the CLI now use .NET 10 LTS. `global.json` pins SDK 10.0.301.
+The Functions helper remains on out-of-support .NET 7 pending replacement.
+Targets describe this checkout, not necessarily the latest published packages.
+
+The library retains .NET Standard 2.0 and .NET Framework 4.6.2 compatibility assets;
+consumers below .NET 10, including .NET 6, select a compatible asset instead of a
+dedicated `net6.0` build. CI compiles a .NET 6 consumer but does not run it on the
+unsupported .NET 6 runtime. The next CLI package requires .NET 10; this is a
+runtime requirement change for existing CLI users.
 
 ## Use Certes
 
@@ -67,33 +72,30 @@ before preparing a contribution or release.
 
 The initial [GitHub Actions workflow](.github/workflows/build.yml) checks
 cross-platform compilation, the full offline unit suite, and local package
-consumption. Tests currently use .NET 10 runtime roll-forward pending target
-modernization. See [CI migration status](docs/ci-migration.md) for coverage and
+consumption. Tests run directly on .NET 10. See
+[CI migration status](docs/ci-migration.md) for coverage and
 remaining work. Legacy build/release automation is disabled.
 
 Run commands from the repository root:
 
 ```sh
 dotnet build src/Certes/Certes.csproj
-dotnet test test/Certes.Tests/Certes.Tests.csproj -f net6.0 -p:SkipSigning=true
+dotnet test test/Certes.Tests/Certes.Tests.csproj -f net10.0 -p:SkipSigning=true
 ```
 
-The test command requires a .NET 6 runtime by default. The repository does not
-yet pin an SDK with `global.json`. See [AGENTS.md](AGENTS.md) for the temporary
-runtime roll-forward diagnostic. Unit tests need no CA service or containers;
+Install SDK 10.0.301 as pinned by `global.json`; no runtime roll-forward is needed.
+See [AGENTS.md](AGENTS.md) for detailed commands. Unit tests need no CA service or containers;
 the separate integration suite still depends on hosted services.
 
 ### Revival baseline
 
 The dated build/test results and known blockers are maintained in
 [AGENTS.md's revival baseline](AGENTS.md#known-revival-baseline-and-pitfalls).
-These diagnostics do not establish current CA interoperability or a supported
-.NET 10 test configuration.
+Passing unit tests do not establish current CA interoperability.
 
 ### Revival priorities
 
-1. Establish a supported SDK/runtime, local Pebble integration
-   tests, and one maintained CI pipeline.
+1. Add local Pebble integration tests to the maintained CI pipeline.
 2. Fix order polling, certificate-chain export, alternate-chain handling, and
    CLI secret-file handling.
 3. Refresh dependencies, validate package consumption, and update documentation

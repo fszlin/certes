@@ -17,18 +17,23 @@ results in PRs during the transition.
 ### Initial Actions workflow
 
 `.github/workflows/build.yml` runs on PRs targeting `main`, pushes to `main`, and
-manual dispatch, with SDK 10.0.301 and read-only repository permissions:
+manual dispatch, with SDK 10.0.301 selected by `global.json` and read-only
+repository permissions. The .NET 10 migration changes the modern targets from
+`net6.0` to `net10.0` and removes diagnostic runtime roll-forward. Local verification
+passed all 145 tests on .NET 10; hosted verification of this migration is pending.
 
 - `Build (ubuntu-24.04)`, `Build (windows-2025)`, and `Build (macos-26)` compile
   the signed library in Release for all retained targets, then compile the CLI
   explicitly and both test projects with `SkipSigning=true` in Debug. They do
-  run the full `net6.0` unit suite with .NET 10 runtime roll-forward using those
+  run the full `net10.0` unit suite directly on .NET 10 using those
   compiled outputs. No filters or failure suppression are applied. The Azure
   Functions helper and integration-test execution remain outside these jobs.
 - `Package smoke checks` packs the signed library and CLI in Release, then
   consumes both packages using an isolated NuGet cache. The .NET 10 library
   consumer exercises RSA/ECDSA key round-trips and CSR generation; the CLI runs
-  `--help` using .NET 10 roll-forward. No packages are published or uploaded.
+  `--help` directly on .NET 10. A compile-only `net6.0` consumer checks selection of
+  the library's `netstandard2.0` compatibility asset. No packages are published or
+  uploaded.
 - The former `Legacy unit tests (manual diagnostic)` job and `run_legacy_tests`
   input are removed: the unit suite now runs on every PR, main push, and manual run.
 
@@ -48,7 +53,7 @@ of every embedded root or of PFX path building. Broader chain coverage belongs
 with certificate-store/export fixes.
 
 A green run verifies unit tests and package consumption, not CA interoperability
-or `net462` runtime behavior. Runtime/target modernization remains a separate change.
+or `net462` runtime behavior.
 
 Runner OS labels are explicit versions matching the current `-latest` image
 families at selection time: Ubuntu 24.04 and Windows Server 2025 on x64, macOS 26
@@ -58,18 +63,35 @@ receive image updates and are not immutable snapshots.
 Action references are pinned to commit SHAs. Jobs have timeouts and superseded
 PR runs are cancelled. Push and manual runs use unique concurrency groups so
 rapid merges do not replace pending or running main builds. Required branch
-checks should be configured only after these job names and hosted runs have
-been verified; they have not been configured yet.
+checks are now configured after the successful post-merge run
+[35546812954](https://github.com/fszlin/certes/actions/runs/35546812954): all three
+`Build (...)` checks and `Package smoke checks` are required on `main`, restricted
+to the GitHub Actions app, with branches required to be up to date. Existing
+administrator bypass settings were preserved.
 
 The first hosted run exposed missing `.gitmodules` metadata for the existing
 `docs/docstrap` gitlink. Its repository URL is restored so checkout can clean up
 credentials successfully. Build jobs do not initialize the documentation submodule.
 
-Known build/package warnings include `NETSDK1138` for the CLI's .NET 6 target,
-missing package README notices, and SourceLink's missing `docs/docstrap/.git`
+Known build/package warnings include missing package README notices and
+SourceLink's missing `docs/docstrap/.git`
 warning from the uninitialized documentation submodule. The SourceLink warning
 is retained and disclosed; resolving it belongs with documentation/submodule or
 SourceLink maintenance. These checks do not verify debugger source retrieval.
+
+### .NET 10 compatibility decisions
+
+- `global.json` pins SDK 10.0.301 without SDK roll-forward or prereleases.
+- Library assets are `net10.0`, `netstandard2.0`, and `net462`; the dedicated
+  `net6.0` asset is replaced by the compatibility asset for older modern clients.
+- The CLI requires .NET 10. This runtime requirement change must be included in
+  release notes. Assembly signing, package identities, and dependency versions
+  are retained.
+- Legacy formatter-based exception serialization members remain present but are
+  marked obsolete on modern .NET, matching the platform's `SYSLIB0051` guidance.
+  Legacy-target annotations remain unchanged.
+- CLI certificate loading uses `X509CertificateLoader`; integration tests retain
+  the existing constructor on `net462`. The Functions helper remains `net7.0`.
 
 ### Repository settings changed
 
@@ -137,14 +159,14 @@ complete cleanup beyond the disabled repository webhooks:
 
 ## Replacement plan
 
-Establish required checks after hosted verification of the automatic unit suite,
-then replace external integration-test dependencies with local Pebble.
+Verify the .NET 10 migration on hosted runners, then replace external
+integration-test dependencies with local Pebble.
 
 Use focused PRs to introduce:
 
 1. Documentation validation and local Pebble integration tests. Preserve known
    failure reporting rather than weakening assertions to obtain a green build.
-2. New required status checks on `main` after stable Actions check names exist.
+2. Maintain required status checks on `main` as CI coverage evolves.
 3. DocFX builds and GitHub Pages deployment for documentation changes.
 4. Explicit release/tag-driven package publishing, gated on successful
    verification, with prerelease support and preserved assembly signing.

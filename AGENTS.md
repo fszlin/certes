@@ -108,15 +108,17 @@ report results during this transition; hosted workflow success must be verified
 after pushing the workflow.
 
 Run commands from the repository root. Check `dotnet --info` before diagnosing
-runtime failures. There is currently no `global.json`.
+runtime failures. `global.json` pins SDK 10.0.301 exactly (no SDK roll-forward or
+prereleases); install that SDK before building. CI reads the same file.
 
-The initial CI workflow installs SDK 10.0.301. CLI package smoke checks and the
-unit tests use .NET 10 runtime roll-forward diagnostically; production
-project targets are unchanged. Workflow syntax can be checked with `actionlint`.
+The CLI and modern unit tests target and run on .NET 10 directly, without
+`DOTNET_ROLL_FORWARD`. Workflow syntax can be checked with `actionlint`.
 
-Current targets are `net6.0;netstandard2.0;net462` for the library, `net6.0` for
-the CLI, `net6.0;net462` for tests, and `net7.0` for the Functions helper. .NET 6/7
-are out of support. .NET 10 modernization is planned, not yet implemented.
+Current targets are `net10.0;netstandard2.0;net462` for the library, `net10.0` for
+the CLI, and `net10.0;net462` for tests. The Functions helper still targets the
+out-of-support `net7.0` and remains outside CI pending replacement by local Pebble.
+The package smoke project also compiles (but does not run) a `net6.0` consumer
+to check selection of the library's `netstandard2.0` compatibility asset.
 
 ### Build the core library across its targets
 
@@ -127,28 +129,20 @@ dotnet build src/Certes/Certes.csproj
 ### Compile and run the unit-test project
 
 ```sh
-dotnet test test/Certes.Tests/Certes.Tests.csproj -f net6.0 -p:SkipSigning=true
+dotnet test test/Certes.Tests/Certes.Tests.csproj -f net10.0 -p:SkipSigning=true
 ```
 
-This also builds the CLI. The normal test host requires the .NET 6 runtime.
+This also builds the CLI. The test host requires the .NET 10 runtime.
 Building `net462` on a non-Windows machine does not demonstrate that its tests
 run; use a Windows/.NET Framework environment for runtime verification.
 
-If .NET 6 is absent, the following POSIX-shell command can provide a temporary
-diagnostic on an installed newer runtime, without changing project files:
-
-```sh
-DOTNET_ROLL_FORWARD=LatestMajor dotnet test test/Certes.Tests/Certes.Tests.csproj -f net6.0 -p:SkipSigning=true
-```
-
-Always report which runtime was used. Roll-forward is not a replacement for a
-supported target/test matrix. Use `--filter FullyQualifiedName~<TestClass>` for
+Always report which runtime was used. Use `--filter FullyQualifiedName~<TestClass>` for
 focused tests when appropriate, then run checks relevant to the affected surface.
 
 ### Integration tests
 
 ```sh
-dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -f net6.0 -p:SkipSigning=true
+dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -f net10.0 -p:SkipSigning=true
 ```
 
 Inspect `test/Certes.Tests.Integration/IntegrationHelper.cs` and the relevant integration
@@ -183,16 +177,18 @@ export NUGET_PACKAGES="$(mktemp -d)"
 export CERTES_PACKAGE_VERSION=0.0.0-ci-smoke
 dotnet pack src/Certes/Certes.csproj -c Release -p:ContinuousIntegrationBuild=true --output artifacts/packages
 dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:ContinuousIntegrationBuild=true --output artifacts/packages
-dotnet run --project scripts/PackageSmoke/PackageSmoke.csproj -c Release
+dotnet run --project scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net10.0
+dotnet build scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net6.0
 dotnet tool install dotnet-certes --version "$CERTES_PACKAGE_VERSION" --tool-path artifacts/tools --add-source artifacts/packages
-DOTNET_ROLL_FORWARD=LatestMajor artifacts/tools/certes --help
+artifacts/tools/certes --help
 ```
 
 Use a fresh `artifacts/tools` directory for tool installation. These checks verify
 the version supplied by `CERTES_PACKAGE_VERSION`; the consumer requires this
-variable and shares it with packing and CLI installation. These checks verify
+variable and shares it with packing and CLI installation. This verifies
 local package consumption only; packages are not published. The consumer runs on
-.NET 10 and does not verify every library target or full certificate issuance.
+.NET 10; the .NET 6 compatibility probe is compile-only. Neither verifies every
+library target at runtime or full certificate issuance.
 
 For documentation-only changes, check links and `git diff --check`; compilation
 and test reruns are unnecessary unless code examples or behavior also change.
@@ -217,12 +213,12 @@ and test reruns are unnecessary unless code examples or behavior also change.
 
 ## Known revival baseline and pitfalls
 
-Baseline reviewed on 2026-09-20, using SDK 10.0.301 on macOS ARM64. Protocol and
-dependency observations below originate at `ffa00c6`; test status was updated
-after the offline-fixture change:
+Baseline reviewed on 2026-09-20, using SDK 10.0.301 on macOS ARM64. Protocol
+observations below originate at `ffa00c6`; build/test and audit status
+were updated after the .NET 10 migration:
 
 - The core library built for all targets; CLI/unit-test compilation also passed.
-- With roll-forward to .NET 10, all 145 unit tests pass, with no skips. The six
+- On the native `net10.0` target, all 145 unit tests pass, with no skips. The six
   former hosted-Pebble failures now use local certificate fixtures with matching
   keys and PFX assertions; a missing-issuer test was added. Hosted ACME integration
   tests remain external-service-dependent and have not been verified.
@@ -235,12 +231,14 @@ after the offline-fixture change:
   issuers by subject DN. This affects both PEM and PFX export.
 - CLI settings contain account keys/Azure credentials. `FileUtil` currently
   uses default file permissions and non-atomic writes.
-- CLI Azure Fluent dependencies are marked legacy by NuGet and pull in a
-  flagged `System.Text.RegularExpressions 4.3.0` dependency. Re-run audits before
-  drawing current conclusions; package findings do not prove exploitability.
+- CLI Azure Fluent dependencies remain legacy. A fresh audit after the .NET 10
+  retarget reported no vulnerable packages in the library or CLI graphs; the old
+  net6.0 graph had flagged `System.Text.RegularExpressions 4.3.0`. Dependencies
+  were not upgraded in this migration. Re-run audits before drawing current
+  conclusions; package findings do not prove exploitability.
 - Legacy CI has been retired, repository webhooks disabled, and Azure build/release
   automation disabled and verified. Initial Actions build/package checks are
-  defined with automatic unit-test execution; required checks remain outstanding
+  defined with automatic unit-test execution; all four checks are required on main
   (see `docs/ci-migration.md`).
 - Cancellation, renewal information, certificate profiles, and IP identifiers
   are not implemented in the current APIs.

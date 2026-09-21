@@ -1,9 +1,18 @@
 using System;
+using System.Runtime.Versioning;
 using Certes;
 using Certes.Pkcs;
 
 // Exercise the packed public API and dependencies without contacting a CA.
 var assembly = typeof(AcmeContext).Assembly.GetName();
+var framework = (TargetFrameworkAttribute)Attribute.GetCustomAttribute(
+    typeof(AcmeContext).Assembly, typeof(TargetFrameworkAttribute));
+#if NET10_0_OR_GREATER
+if (framework.FrameworkName != ".NETCoreApp,Version=v10.0")
+{
+    throw new InvalidOperationException("The .NET 10 consumer must select the net10.0 library asset.");
+}
+#endif
 if (assembly.GetPublicKeyToken()?.Length != 8)
 {
     throw new InvalidOperationException("The package must preserve strong-name identity.");
