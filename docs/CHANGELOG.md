@@ -3,6 +3,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Breaking changes
+- Stop shipping and consulting embedded CA roots. `Resources/Certificates` carried
+  DST Root CA X3, which expired on 2021-09-30, the Let's Encrypt **staging** root,
+  and ISRG Root X1, and any of them could be appended to an exported chain without
+  the caller asking. Certes is CA-agnostic, the set was Let's Encrypt-only and
+  already stale, and serving an expired root is what broke older clients in 2021.
+  PEM export no longer appends a root the server did not return; supply one through
+  `PfxBuilder.AddIssuer`/`AddIssuers` or the chain itself if you need it packaged.
+  PFX output is unaffected, because the self-signed root was already excluded.
+  Missing roots stopped being fatal in the same release, so chains now simply end
+  at the highest issuer available.
+- `PfxBuilder` packages the linked certificate chain and no longer runs PKIX path
+  validation when a self-signed root happens to be present. Validation previously
+  depended on whether a root was supplied, so the same call validated or did not
+  depending on its inputs. Issuers are still accepted only after verifying that
+  they signed the certificate below them; issuer constraints, revocation and
+  complete-path validity are the relying party's responsibility.
 - The next `dotnet-certes` CLI release requires .NET 10 instead of .NET 6.
   Install the .NET 10 runtime before upgrading the tool. Choose the release
   version with this runtime requirement change in mind; the assembly version is

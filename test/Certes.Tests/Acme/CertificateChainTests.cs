@@ -29,12 +29,11 @@ namespace Certes.Acme
                 string.Join(Environment.NewLine,
                 File.ReadAllText("./Data/cert.pem").Trim());
 
+            // The library no longer embeds CA roots, so no issuer is appended implicitly.
             var expectedPem =
                 key.ToPem().Trim() +
-                Environment.NewLine + 
-                pem +
                 Environment.NewLine +
-                File.ReadAllText("./Data/dst-root-ca-x3.pem").Trim();
+                pem;
 
             var chain = new CertificateChain(pem);
             var result = chain.ToPem(key);
