@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
   not the package release decision.
 
 ### Changed
+- Fall back to the default certificate chain and stop order-list pagination when
+  ACME responses omit optional `Link` headers.
 - Preserve ACME server-directed `Retry-After` polling delays and honor explicit
   `Generate` retry budgets. `Generate` now defaults to 60 polling retries, so a
   pending or processing order may wait up to 60 server-directed intervals before

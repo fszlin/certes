@@ -98,5 +98,35 @@ namespace Certes.Acme
             Assert.Equal(finalized, result);
             Assert.Equal(11, ctx.RetryAfter);
         }
+
+        [Fact]
+        public async Task DownloadFallsBackToDefaultChainWhenAlternateLinksAreMissing()
+        {
+            var order = new Order
+            {
+                Certificate = new Uri("http://acme.d/order/101/cert/1"),
+            };
+            var certificate = System.IO.File.ReadAllText("./Data/defaultLeaf.pem");
+
+            contextMock.SetupGet(c => c.HttpClient).Returns(httpClientMock.Object);
+            contextMock.SetupGet(c => c.BadNonceRetryCount).Returns(1);
+            contextMock
+                .Setup(c => c.Sign(It.IsAny<object>(), It.IsAny<Uri>()))
+                .ReturnsAsync(new JwsPayload());
+            httpClientMock
+                .Setup(m => m.Post<Order>(location, It.IsAny<JwsPayload>()))
+                .ReturnsAsync(new AcmeHttpResponse<Order>(location, order, default, default));
+            httpClientMock
+                .Setup(m => m.Post<string>(order.Certificate, It.IsAny<JwsPayload>()))
+                .ReturnsAsync(new AcmeHttpResponse<string>(order.Certificate, certificate, null, null));
+
+            var ctx = new OrderContext(contextMock.Object, location);
+            var result = await ctx.Download("UnknownRoot");
+
+            Assert.Equal(
+                certificate.Replace("\r", string.Empty).Replace("\n", string.Empty),
+                result.Certificate.ToPem().Replace("\r", string.Empty).Replace("\n", string.Empty));
+            httpClientMock.Verify(m => m.Post<string>(order.Certificate, It.IsAny<JwsPayload>()), Times.Once);
+        }
     }
 }
