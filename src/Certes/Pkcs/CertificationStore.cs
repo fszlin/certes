@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Certes.Properties;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.X509;
@@ -14,24 +13,6 @@ namespace Certes.Pkcs
     public class CertificateStore
     {
         private readonly Dictionary<X509Name, List<X509Certificate>> certificates = new Dictionary<X509Name, List<X509Certificate>>();
-
-        private readonly Lazy<Dictionary<X509Name, List<X509Certificate>>> embeddedCertificates = new Lazy<Dictionary<X509Name, List<X509Certificate>>>(() =>
-        {
-            var certParser = new X509CertificateParser();
-            var assembly = typeof(PfxBuilder).GetTypeInfo().Assembly;
-            return assembly
-                .GetManifestResourceNames()
-                .Where(n => n.EndsWith(".pem"))
-                .Select(n =>
-                {
-                    using (var stream = assembly.GetManifestResourceStream(n))
-                    {
-                        return certParser.ReadCertificate(stream);
-                    }
-                })
-                .GroupBy(c => c.SubjectDN)
-                .ToDictionary(g => g.Key, g => g.ToList());
-        }, true);
 
         /// <summary>
         /// Adds issuer certificates.
@@ -116,17 +97,12 @@ namespace Certes.Pkcs
         /// signature is verified before a candidate is accepted.
         /// </summary>
         /// <remarks>
-        /// Supplied issuers take precedence: the embedded certificates are consulted only when
-        /// no supplied certificate can serve as the issuer, so an embedded root never displaces
-        /// an explicitly supplied alternate.
-        /// <para>
-        /// Within each source, cross-signed alternates share a subject name and a key, so more
-        /// than one candidate can verify the signature. Candidates that are currently within
+        /// Cross-signed alternates share a subject name and a key, so more than one candidate
+        /// can verify the signature. Candidates that are currently within
         /// their validity period are preferred, so an expired alternate is not chosen over a
         /// usable one. Among equally usable candidates a self-signed alternate is preferred,
         /// which ends the chain at that certificate rather than continuing through its
         /// cross-signing issuer. Remaining ties keep the order the certificates were added in.
-        /// </para>
         /// <para>
         /// This is issuer selection for packaging, not path validation: issuer constraints and
         /// the validity of the complete path are not evaluated here.
@@ -134,8 +110,7 @@ namespace Certes.Pkcs
         /// </remarks>
         private bool TryGetIssuer(X509Certificate certificate, out X509Certificate issuer)
         {
-            issuer = SelectIssuer(GetSupplied(certificate.IssuerDN), certificate)
-                ?? SelectIssuer(GetEmbedded(certificate.IssuerDN), certificate);
+            issuer = SelectIssuer(GetSupplied(certificate.IssuerDN), certificate);
 
             return issuer != null;
         }
@@ -154,11 +129,6 @@ namespace Certes.Pkcs
         private IEnumerable<X509Certificate> GetSupplied(X509Name subject) =>
             certificates.TryGetValue(subject, out var supplied)
                 ? supplied
-                : Enumerable.Empty<X509Certificate>();
-
-        private IEnumerable<X509Certificate> GetEmbedded(X509Name subject) =>
-            embeddedCertificates.Value.TryGetValue(subject, out var embedded)
-                ? embedded
                 : Enumerable.Empty<X509Certificate>();
 
         private static bool HasSigned(X509Certificate issuer, X509Certificate certificate)

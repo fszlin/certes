@@ -244,13 +244,11 @@ were updated after the .NET 10 migration:
 - `Pkcs/CertificationStore.cs` (the filename differs from `CertificateStore`) no
   longer requires a self-signed root, verifies that each issuer signed the
   certificate below it, and retains cross-signed alternates that share a subject
-  name, preferring supplied issuers over embedded ones and then an unexpired
-  candidate and a self-signed alternate so the chain ends there. Issuer selection is not path validation: issuer constraints and
-  complete-path validity are not evaluated. The embedded
-  roots are still consulted automatically for both PEM and PFX, and
-  `Resources/Certificates` still ships the expired DST Root CA X3 and the Let's
-  Encrypt staging root. `PfxBuilder` runs PKIX validation only when a self-signed
-  root is available, and packages the linked issuers otherwise.
+  name, preferring an unexpired candidate and then a self-signed alternate so the
+  chain ends there. Issuer selection is not path validation: issuer constraints,
+  revocation and complete-path validity are not evaluated. The library no longer
+  embeds CA roots, so issuers must be supplied by the caller or the ACME server.
+  `PfxBuilder` packages the linked chain and excludes the self-signed root.
 - CLI settings contain account keys/Azure credentials. `FileUtil` currently
   uses default file permissions and non-atomic writes.
 - CLI Azure Fluent dependencies remain legacy. A fresh audit after the .NET 10

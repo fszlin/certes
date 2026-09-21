@@ -4,17 +4,21 @@ using System.Linq;
 using Certes.Crypto;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
-using Org.BouncyCastle.Pkix;
 using Org.BouncyCastle.Security;
-using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.X509;
-using Org.BouncyCastle.X509.Store;
 
 namespace Certes.Pkcs
 {
     /// <summary>
     /// Supports generating PFX from the certificate and key pair.
     /// </summary>
+    /// <remarks>
+    /// This packages a certificate chain; it does not validate a certification path. Issuers
+    /// are accepted only after verifying that they signed the certificate below them, but
+    /// issuer constraints, revocation, complete-path validity, and whether the supplied private
+    /// key matches the certificate are not checked. Trust decisions belong to the relying party
+    /// that consumes the PFX.
+    /// </remarks>
     public class PfxBuilder
     {
         private static readonly KeyAlgorithmProvider signatureAlgorithmProvider = new KeyAlgorithmProvider();
@@ -29,6 +33,10 @@ namespace Certes.Pkcs
         /// <value>
         ///   <c>true</c> if include the full certificate chain in the PFX; otherwise, <c>false</c>.
         /// </value>
+        /// <remarks>
+        /// The chain is the certificate followed by the issuers linked to it, excluding any
+        /// self-signed root. It is not a validated certification path.
+        /// </remarks>
         public bool FullChain { get; set; } = true;
 
         /// <summary>
@@ -71,6 +79,10 @@ namespace Certes.Pkcs
         /// <param name="friendlyName">The friendly name.</param>
         /// <param name="password">The password.</param>
         /// <returns>The PFX data.</returns>
+        /// <remarks>
+        /// Packages the certificate and its linked issuers. No certification path validation is
+        /// performed, so an expired or otherwise unusable certificate is exported as supplied.
+        /// </remarks>
         public byte[] Build(string friendlyName, string password)
         {
             var keyPair = LoadKeyPair();
@@ -99,55 +111,29 @@ namespace Certes.Pkcs
             }
         }
 
+        /// <summary>
+        /// Builds the chain packaged with the key entry: the certificate followed by the
+        /// issuers linked to it, excluding any self-signed root.
+        /// </summary>
+        /// <remarks>
+        /// This packages a chain; it does not validate a certification path. Issuers are linked
+        /// by <see cref="CertificateStore"/>, which verifies that each one signed the
+        /// certificate below it, but issuer constraints, revocation and complete-path validity
+        /// are not evaluated. The self-signed root is excluded because relying parties supply
+        /// their own trust anchors, and ACME servers are not expected to return one
+        /// (RFC 8555, section 7.4.2).
+        /// </remarks>
         private IList<X509Certificate> FindIssuers()
         {
             var certParser = new X509CertificateParser();
-            var certificates = certificateStore
+            var issuers = certificateStore
                 .GetIssuers(certificate.GetEncoded())
                 .Select(der => certParser.ReadCertificate(der))
-                .Select(cert => new
-                {
-                    IsRoot = cert.IssuerDN.Equivalent(cert.SubjectDN),
-                    Cert = cert
-                })
-                .ToList();
+                .Where(cert => !cert.IssuerDN.Equivalent(cert.SubjectDN));
 
-            var rootCerts = new HashSet(certificates.Where(c => c.IsRoot).Select(c => new TrustAnchor(c.Cert, null)));
-            var intermediateCerts = certificates.Where(c => !c.IsRoot).Select(c => c.Cert).ToList();
-
-            if (rootCerts.Count == 0)
-            {
-                // ACME servers are not expected to supply the self-signed root (RFC 8555,
-                // section 7.4.2). Without a trust anchor there is nothing for the path builder
-                // to validate against, so emit the issuers already linked to the certificate.
-                // The self-signed root is excluded from the output either way.
-                var partialChain = new List<X509Certificate> { certificate };
-                partialChain.AddRange(intermediateCerts);
-                return partialChain;
-            }
-
-            intermediateCerts.Add(certificate);
-
-            var target = new X509CertStoreSelector
-            {
-                Certificate = certificate
-            };
-
-            var builderParams = new PkixBuilderParameters(rootCerts, target)
-            {
-                IsRevocationEnabled = false
-            };
-
-            builderParams.AddStore(
-                X509StoreFactory.Create(
-                    "Certificate/Collection",
-                    new X509CollectionStoreParameters(intermediateCerts)));
-
-            var builder = new PkixCertPathBuilder();
-            var result = builder.Build(builderParams);
-
-            var fullChain = result.CertPath.Certificates.Cast<X509Certificate>().ToArray();
-            return fullChain;
+            var chain = new List<X509Certificate> { certificate };
+            chain.AddRange(issuers);
+            return chain;
         }
 
         private AsymmetricCipherKeyPair LoadKeyPair()
