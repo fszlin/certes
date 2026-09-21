@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Certes.Crypto;
 using Org.BouncyCastle.X509;
 using Xunit;
@@ -223,7 +225,7 @@ namespace Certes.Pkcs
         }
 
         [Fact]
-        public void AddIgnoresDuplicateCertificates()
+        public void AddingTheSameCertificateTwiceDoesNotAffectTheChain()
         {
             var pki = new CrossSignedPki();
             var store = new CertificateStore();
@@ -251,6 +253,72 @@ namespace Certes.Pkcs
             Assert.Equal(
                 new[] { pki.CrossSignedIssuer.GetEncoded(), pki.CrossSigningRoot.GetEncoded() },
                 issuers);
+        }
+
+        [Fact]
+        public void SuppliedIssuerTakesPrecedenceOverEmbeddedRoot()
+        {
+            // An embedded root must not displace an explicitly supplied cross-signed alternate
+            // of the same subject and key. Synthetic subject names cannot expose this, so this
+            // uses a subject/key that the library actually embeds.
+            var embeddedRoot = LoadEmbeddedCertificate("fake-le-root-x1.pem");
+            var intermediate = new X509CertificateParser()
+                .ReadCertificate(File.ReadAllBytes("./Data/fake-le-intermediate-x1.pem"));
+            Assert.True(intermediate.IssuerDN.Equivalent(embeddedRoot.SubjectDN));
+
+            var provider = new KeyAlgorithmProvider();
+            var (_, ephemeralRootKey) = provider.GetKeyPair(KeyFactory.NewKey(KeyAlgorithm.RS256).ToDer());
+            var now = DateTime.UtcNow;
+            const string ephemeralRootName = "CN=Certes Ephemeral Cross Signing Root";
+
+            var ephemeralRoot = CertificateFixture.Issue(
+                ephemeralRootName, ephemeralRootName,
+                ephemeralRootKey.Public, ephemeralRootKey.Private, true, 41, now);
+
+            // Same subject and key as the embedded root, but signed by the ephemeral root.
+            var crossSigned = CertificateFixture.Issue(
+                embeddedRoot.SubjectDN.ToString(), ephemeralRootName,
+                embeddedRoot.GetPublicKey(), ephemeralRootKey.Private, true, 42, now);
+
+            // Both the embedded root and the cross-signed variant verify the intermediate.
+            intermediate.Verify(embeddedRoot.GetPublicKey());
+            intermediate.Verify(crossSigned.GetPublicKey());
+            crossSigned.Verify(ephemeralRoot.GetPublicKey());
+
+            var store = new CertificateStore();
+            store.Add(crossSigned.GetEncoded());
+            store.Add(ephemeralRoot.GetEncoded());
+
+            var issuers = store.GetIssuers(intermediate.GetEncoded());
+
+            Assert.Equal(
+                new[] { crossSigned.GetEncoded(), ephemeralRoot.GetEncoded() },
+                issuers);
+            Assert.DoesNotContain(embeddedRoot.GetEncoded(), issuers);
+        }
+
+        [Fact]
+        public void EmbeddedRootIsUsedWhenNoSuppliedIssuerServes()
+        {
+            // The embedded fallback still applies when nothing supplied can act as the issuer.
+            var embeddedRoot = LoadEmbeddedCertificate("fake-le-root-x1.pem");
+            var intermediate = new X509CertificateParser()
+                .ReadCertificate(File.ReadAllBytes("./Data/fake-le-intermediate-x1.pem"));
+
+            var issuers = new CertificateStore().GetIssuers(intermediate.GetEncoded());
+
+            var issuer = Assert.Single(issuers);
+            Assert.Equal(embeddedRoot.GetEncoded(), issuer);
+        }
+
+        private static X509Certificate LoadEmbeddedCertificate(string name)
+        {
+            var assembly = typeof(PfxBuilder).GetTypeInfo().Assembly;
+            var resource = assembly.GetManifestResourceNames().Single(n => n.EndsWith(name));
+            using (var stream = assembly.GetManifestResourceStream(resource))
+            {
+                return new X509CertificateParser().ReadCertificate(stream);
+            }
         }
 
         /// <summary>
