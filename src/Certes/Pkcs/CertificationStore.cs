@@ -117,15 +117,23 @@ namespace Certes.Pkcs
         /// </summary>
         /// <remarks>
         /// Cross-signed alternates share a subject name and a key, so more than one candidate
-        /// can verify the signature. A self-signed alternate is preferred, which ends the chain
-        /// at that certificate rather than continuing through its cross-signing issuer.
-        /// Remaining ties keep the order the certificates were added in.
+        /// can verify the signature. Candidates that are currently within their validity period
+        /// are preferred, so an expired alternate is not chosen over a usable one. Among equally
+        /// usable candidates a self-signed alternate is preferred, which ends the chain at that
+        /// certificate rather than continuing through its cross-signing issuer. Remaining ties
+        /// keep the order the certificates were added in.
+        /// <para>
+        /// This is issuer selection for packaging, not path validation: issuer constraints and
+        /// the validity of the complete path are not evaluated here.
+        /// </para>
         /// </remarks>
         private bool TryGetIssuer(X509Certificate certificate, out X509Certificate issuer)
         {
+            var now = DateTime.UtcNow;
             issuer = GetCandidates(certificate.IssuerDN)
                 .Where(candidate => HasSigned(candidate, certificate))
-                .OrderByDescending(candidate => candidate.SubjectDN.Equivalent(candidate.IssuerDN))
+                .OrderByDescending(candidate => candidate.IsValid(now))
+                .ThenByDescending(candidate => candidate.SubjectDN.Equivalent(candidate.IssuerDN))
                 .FirstOrDefault();
 
             return issuer != null;

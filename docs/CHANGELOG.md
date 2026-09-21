@@ -12,7 +12,8 @@ All notable changes to this project will be documented in this file.
 - Retain cross-signed issuer alternates that share a subject name, instead of
   letting the last one added replace the others. The issuer is now chosen when
   the chain is built, by verifying which candidate signed the certificate below
-  it. When several alternates verify, as cross-signed pairs sharing a key do, a
+  it. When several alternates verify, as cross-signed pairs sharing a key do,
+  candidates inside their validity period are preferred over expired ones, then a
   self-signed alternate is preferred and the chain ends there. Exported chains no
   longer depend on the order issuers were added in; supplying both alternates
   previously produced either chain depending on insertion order.

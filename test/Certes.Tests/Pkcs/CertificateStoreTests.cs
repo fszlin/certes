@@ -234,6 +234,25 @@ namespace Certes.Pkcs
             Assert.Equal(2, store.GetIssuers(pki.Leaf.GetEncoded()).Count);
         }
 
+        [Fact]
+        public void GetIssuersPrefersValidAlternateOverExpiredSelfSignedOne()
+        {
+            // An expired self-signed alternate must not be chosen over a usable cross-signed
+            // path. Serving an expired root is what broke older clients when DST Root CA X3
+            // expired in 2021.
+            var pki = new CrossSignedPki(expireSelfSignedIssuer: true);
+            var store = new CertificateStore();
+            store.Add(pki.SelfSignedIssuer.GetEncoded());
+            store.Add(pki.CrossSignedIssuer.GetEncoded());
+            store.Add(pki.CrossSigningRoot.GetEncoded());
+
+            var issuers = store.GetIssuers(pki.Leaf.GetEncoded());
+
+            Assert.Equal(
+                new[] { pki.CrossSignedIssuer.GetEncoded(), pki.CrossSigningRoot.GetEncoded() },
+                issuers);
+        }
+
         /// <summary>
         /// A cross-signed issuer: one subject name and key, published both self-signed and
         /// signed by a second root, mirroring the ISRG Root X1 arrangement.
@@ -246,7 +265,7 @@ namespace Certes.Pkcs
             public X509Certificate SameSubjectImposter { get; }
             public X509Certificate Leaf { get; }
 
-            public CrossSignedPki()
+            public CrossSignedPki(bool expireSelfSignedIssuer = false)
             {
                 var provider = new KeyAlgorithmProvider();
                 var (_, rootKey) = provider.GetKeyPair(KeyFactory.NewKey(KeyAlgorithm.RS256).ToDer());
@@ -255,13 +274,16 @@ namespace Certes.Pkcs
                 var (_, leafKey) = provider.GetKeyPair(KeyFactory.NewKey(KeyAlgorithm.RS256).ToDer());
                 var now = DateTime.UtcNow;
 
+                // Issue() sets notAfter 30 days after the supplied instant.
+                var selfSignedIssuedAt = expireSelfSignedIssuer ? now.AddDays(-400) : now;
+
                 const string rootName = "CN=Certes Cross Signing Root";
                 const string issuerName = "CN=Certes Cross Signed Issuer";
 
                 CrossSigningRoot = CertificateFixture.Issue(
                     rootName, rootName, rootKey.Public, rootKey.Private, true, 21, now);
                 SelfSignedIssuer = CertificateFixture.Issue(
-                    issuerName, issuerName, issuerKey.Public, issuerKey.Private, true, 22, now);
+                    issuerName, issuerName, issuerKey.Public, issuerKey.Private, true, 22, selfSignedIssuedAt);
                 CrossSignedIssuer = CertificateFixture.Issue(
                     issuerName, rootName, issuerKey.Public, rootKey.Private, true, 23, now);
                 SameSubjectImposter = CertificateFixture.Issue(

@@ -244,7 +244,9 @@ were updated after the .NET 10 migration:
 - `Pkcs/CertificationStore.cs` (the filename differs from `CertificateStore`) no
   longer requires a self-signed root, verifies that each issuer signed the
   certificate below it, and retains cross-signed alternates that share a subject
-  name, preferring a self-signed alternate so the chain ends there. The embedded
+  name, preferring an unexpired candidate and then a self-signed alternate so the
+  chain ends there. Issuer selection is not path validation: issuer constraints and
+  complete-path validity are not evaluated. The embedded
   roots are still consulted automatically for both PEM and PFX, and
   `Resources/Certificates` still ships the expired DST Root CA X3 and the Let's
   Encrypt staging root. `PfxBuilder` runs PKIX validation only when a self-signed
