@@ -12,6 +12,9 @@ namespace Certes
     /// </summary>
     public static class IOrderContextExtensions
     {
+        private const int DefaultRetryCount = 60;
+        private const int MaxRetryAfterSeconds = 15 * 60;
+
         /// <summary>
         /// Finalizes the certificate order.
         /// </summary>
@@ -62,12 +65,21 @@ namespace Certes
         /// <param name="context">The order context.</param>
         /// <param name="csr">The CSR.</param>
         /// <param name="key">The private key for the certificate.</param>
-        /// <param name="retryCount">Number of retries when the Order is in 'processing' state. (default = 1)</param>
+        /// <param name="retryCount">Maximum number of polling retries while the Order is pending or processing. (default = 60; negative values are treated as zero)</param>
         /// <param name="preferredChain">The preferred Root Certificate.</param>
         /// <returns>
         /// The certificate generated.
         /// </returns>
-        public static async Task<CertificateChain> Generate(this IOrderContext context, CsrInfo csr, IKey key, string preferredChain = null, int retryCount = 1)
+        public static async Task<CertificateChain> Generate(this IOrderContext context, CsrInfo csr, IKey key, string preferredChain = null, int retryCount = DefaultRetryCount)
+            => await Generate(context, csr, key, preferredChain, retryCount, Task.Delay);
+
+        internal static async Task<CertificateChain> Generate(
+            IOrderContext context,
+            CsrInfo csr,
+            IKey key,
+            string preferredChain,
+            int retryCount,
+            Func<TimeSpan, Task> delay)
         {
             var order = await context.Resource();
             if (order.Status != OrderStatus.Ready && // draft-11
@@ -78,9 +90,10 @@ namespace Certes
 
             order = await context.Finalize(csr, key);
 
-            while ((order == null || order.Status == OrderStatus.Processing) && retryCount-- > 0)
+            retryCount = Math.Max(retryCount, 0);
+            while ((order == null || order.Status == OrderStatus.Pending || order.Status == OrderStatus.Processing) && retryCount-- > 0)
             {
-                await Task.Delay(TimeSpan.FromSeconds(Math.Max(context.RetryAfter, 1)));
+                await delay(TimeSpan.FromSeconds(Math.Min(Math.Max(context.RetryAfter, 1), MaxRetryAfterSeconds)));
                 order = await context.Resource();
             }
 

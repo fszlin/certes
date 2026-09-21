@@ -47,6 +47,7 @@ namespace Certes.Acme
             var order = await Resource();
             var payload = new Order.Payload { Csr = JwsConvert.ToBase64String(csr) };
             var resp = await Context.HttpClient.Post<Order>(Context, order.Finalize, payload, true);
+            RetryAfter = resp.RetryAfter;
             return resp.Resource;
         }
 

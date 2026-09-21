@@ -239,8 +239,8 @@ were updated after the .NET 10 migration:
   pass locally against pinned Pebble 2.10.1 on Docker Desktop/macOS ARM64. This
   verifies the local test CA, not public CA interoperability. Production polling
   issues below are not fixed by the bounded polling in the test helper.
-- `EntityContext.Resource()` and `OrderContext.Finalize()` discard the response
-  `RetryAfter`; `IOrderContextExtensions.Generate()` defaults to one retry.
+- `IOrderContextExtensions.Generate()` defaults to 60 polling retries, honors
+  server-directed `Retry-After` intervals, and preserves explicit retry budgets.
 - `OrderContext.Download()` can dereference null `Links` when a preferred chain
   does not match and the server supplies no `Link` header.
 - `Pkcs/CertificationStore.cs` (the filename differs from `CertificateStore`)

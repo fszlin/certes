@@ -9,6 +9,14 @@ All notable changes to this project will be documented in this file.
   not the package release decision.
 
 ### Changed
+- Preserve ACME server-directed `Retry-After` polling delays and honor explicit
+  `Generate` retry budgets. `Generate` now defaults to 60 polling retries, so a
+  pending or processing order may wait up to 60 server-directed intervals before
+  failing; individual delays are capped at 15 minutes to prevent an abusive or
+  malformed header from blocking indefinitely. Callers that need a shorter budget
+  should pass `retryCount` explicitly.
+  Recompile callers that rely on the optional default after upgrading, because C#
+  embeds optional argument values at the call site.
 - Target .NET 10 for the CLI and modern tests. Ship library `net10.0` and `net8.0`
   assets alongside retained `netstandard2.0` and `net462` assets. .NET 8/9 library
   consumers select `net8.0`; .NET 6/7 consumers select `netstandard2.0` rather than

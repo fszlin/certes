@@ -41,11 +41,12 @@ namespace Certes.Acme
                     Assert.Equal(expectedPayload.Payload, p.Payload);
                     Assert.Equal(expectedPayload.Protected, p.Protected);
                 })
-                .ReturnsAsync(new AcmeHttpResponse<Account>(location, acct, default, default));
+                .ReturnsAsync(new AcmeHttpResponse<Account>(location, acct, default, default, 17));
             var ctx = new EntityContext<Account>(ctxMock.Object, location);
 
             var res = await ctx.Resource();
             Assert.Equal(acct, res);
+            Assert.Equal(17, ctx.RetryAfter);
 
             location = new Uri("http://acme.d/acct/2");
             httpMock
