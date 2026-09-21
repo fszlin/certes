@@ -362,7 +362,7 @@ namespace Certes
             var resourceCalls = 0;
             orderCtxMock
                 .Setup(m => m.Resource())
-                .ReturnsAsync(() => ++resourceCalls <= 2 ? ready : resourceCalls == 3 ? pending : valid);
+                .ReturnsAsync(() => ++resourceCalls <= 2 ? ready : resourceCalls <= 4 ? pending : valid);
             orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>())).ReturnsAsync(new Order
             {
                 Identifiers = ready.Identifiers,
@@ -370,7 +370,8 @@ namespace Certes
             });
             orderCtxMock.SetupSequence(m => m.RetryAfter)
                 .Returns(120)
-                .Returns(0);
+                .Returns(0)
+                .Returns(int.MaxValue);
             orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
 
             var delays = new List<TimeSpan>();
@@ -387,10 +388,11 @@ namespace Certes
                     return Task.CompletedTask;
                 });
 
-            Assert.Equal(2, delays.Count);
+            Assert.Equal(3, delays.Count);
             Assert.Equal(TimeSpan.FromSeconds(120), delays[0]);
             Assert.Equal(TimeSpan.FromSeconds(1), delays[1]);
-            Assert.Equal(4, resourceCalls);
+            Assert.Equal(TimeSpan.FromMinutes(15), delays[2]);
+            Assert.Equal(5, resourceCalls);
         }
 
         [Fact]

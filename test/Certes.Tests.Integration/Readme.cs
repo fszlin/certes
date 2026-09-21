@@ -46,7 +46,7 @@ namespace Certes
             acme = new AcmeContext(acmeDir, accountKey, httpClient);
             order = acme.Order(orderUri);
             var privateKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
-            // Keep the integration test bounded independently of server polling delays.
+            // Keep the number of polling retries bounded independently of elapsed delay.
             var cert = await order.Generate(new CsrInfo
             {
                 CountryName = "CA",
