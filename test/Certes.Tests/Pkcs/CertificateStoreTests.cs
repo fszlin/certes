@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Certes.Crypto;
 using Org.BouncyCastle.X509;
 using Xunit;
@@ -159,6 +161,204 @@ namespace Certes.Pkcs
             Assert.Equal(2, exported.Count);
             Assert.Equal(fixture.Leaf.GetEncoded(), exported[0].GetEncoded());
             Assert.Equal(fixture.Intermediate.GetEncoded(), exported[1].GetEncoded());
+        }
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void GetIssuersPrefersSelfSignedCrossSignedAlternate(bool addSelfSignedFirst)
+        {
+            // The self-signed and cross-signed alternates share a subject name and a key, so
+            // both verify the leaf. Selection must not depend on which was added last.
+            var pki = new CrossSignedPki();
+            var store = new CertificateStore();
+            if (addSelfSignedFirst)
+            {
+                store.Add(pki.SelfSignedIssuer.GetEncoded());
+                store.Add(pki.CrossSignedIssuer.GetEncoded());
+            }
+            else
+            {
+                store.Add(pki.CrossSignedIssuer.GetEncoded());
+                store.Add(pki.SelfSignedIssuer.GetEncoded());
+            }
+
+            store.Add(pki.CrossSigningRoot.GetEncoded());
+
+            var issuers = store.GetIssuers(pki.Leaf.GetEncoded());
+
+            // The short chain ends at the self-signed alternate.
+            var issuer = Assert.Single(issuers);
+            Assert.Equal(pki.SelfSignedIssuer.GetEncoded(), issuer);
+        }
+
+        [Fact]
+        public void GetIssuersUsesCrossSignedAlternateWhenItIsTheOnlyOneSupplied()
+        {
+            var pki = new CrossSignedPki();
+            var store = new CertificateStore();
+            store.Add(pki.CrossSignedIssuer.GetEncoded());
+            store.Add(pki.CrossSigningRoot.GetEncoded());
+
+            var issuers = store.GetIssuers(pki.Leaf.GetEncoded());
+
+            Assert.Equal(
+                new[] { pki.CrossSignedIssuer.GetEncoded(), pki.CrossSigningRoot.GetEncoded() },
+                issuers);
+        }
+
+        [Fact]
+        public void GetIssuersIsNotShadowedBySameSubjectImposter()
+        {
+            // A certificate sharing the issuer's subject name but holding a different key must
+            // not displace the real issuer, whichever order they are added in.
+            var pki = new CrossSignedPki();
+            var store = new CertificateStore();
+            store.Add(pki.CrossSignedIssuer.GetEncoded());
+            store.Add(pki.SameSubjectImposter.GetEncoded());
+            store.Add(pki.CrossSigningRoot.GetEncoded());
+
+            var issuers = store.GetIssuers(pki.Leaf.GetEncoded());
+
+            Assert.Equal(
+                new[] { pki.CrossSignedIssuer.GetEncoded(), pki.CrossSigningRoot.GetEncoded() },
+                issuers);
+        }
+
+        [Fact]
+        public void AddingTheSameCertificateTwiceDoesNotAffectTheChain()
+        {
+            var pki = new CrossSignedPki();
+            var store = new CertificateStore();
+            store.Add(pki.CrossSignedIssuer.GetEncoded());
+            store.Add(pki.CrossSignedIssuer.GetEncoded());
+            store.Add(pki.CrossSigningRoot.GetEncoded());
+
+            Assert.Equal(2, store.GetIssuers(pki.Leaf.GetEncoded()).Count);
+        }
+
+        [Fact]
+        public void GetIssuersPrefersValidAlternateOverExpiredSelfSignedOne()
+        {
+            // An expired self-signed alternate must not be chosen over a usable cross-signed
+            // path. Serving an expired root is what broke older clients when DST Root CA X3
+            // expired in 2021.
+            var pki = new CrossSignedPki(expireSelfSignedIssuer: true);
+            var store = new CertificateStore();
+            store.Add(pki.SelfSignedIssuer.GetEncoded());
+            store.Add(pki.CrossSignedIssuer.GetEncoded());
+            store.Add(pki.CrossSigningRoot.GetEncoded());
+
+            var issuers = store.GetIssuers(pki.Leaf.GetEncoded());
+
+            Assert.Equal(
+                new[] { pki.CrossSignedIssuer.GetEncoded(), pki.CrossSigningRoot.GetEncoded() },
+                issuers);
+        }
+
+        [Fact]
+        public void SuppliedIssuerTakesPrecedenceOverEmbeddedRoot()
+        {
+            // An embedded root must not displace an explicitly supplied cross-signed alternate
+            // of the same subject and key. Synthetic subject names cannot expose this, so this
+            // uses a subject/key that the library actually embeds.
+            var embeddedRoot = LoadEmbeddedCertificate("fake-le-root-x1.pem");
+            var intermediate = new X509CertificateParser()
+                .ReadCertificate(File.ReadAllBytes("./Data/fake-le-intermediate-x1.pem"));
+            Assert.True(intermediate.IssuerDN.Equivalent(embeddedRoot.SubjectDN));
+
+            var provider = new KeyAlgorithmProvider();
+            var (_, ephemeralRootKey) = provider.GetKeyPair(KeyFactory.NewKey(KeyAlgorithm.RS256).ToDer());
+            var now = DateTime.UtcNow;
+            const string ephemeralRootName = "CN=Certes Ephemeral Cross Signing Root";
+
+            var ephemeralRoot = CertificateFixture.Issue(
+                ephemeralRootName, ephemeralRootName,
+                ephemeralRootKey.Public, ephemeralRootKey.Private, true, 41, now);
+
+            // Same subject and key as the embedded root, but signed by the ephemeral root.
+            var crossSigned = CertificateFixture.Issue(
+                embeddedRoot.SubjectDN.ToString(), ephemeralRootName,
+                embeddedRoot.GetPublicKey(), ephemeralRootKey.Private, true, 42, now);
+
+            // Both the embedded root and the cross-signed variant verify the intermediate.
+            intermediate.Verify(embeddedRoot.GetPublicKey());
+            intermediate.Verify(crossSigned.GetPublicKey());
+            crossSigned.Verify(ephemeralRoot.GetPublicKey());
+
+            var store = new CertificateStore();
+            store.Add(crossSigned.GetEncoded());
+            store.Add(ephemeralRoot.GetEncoded());
+
+            var issuers = store.GetIssuers(intermediate.GetEncoded());
+
+            Assert.Equal(
+                new[] { crossSigned.GetEncoded(), ephemeralRoot.GetEncoded() },
+                issuers);
+            Assert.DoesNotContain(embeddedRoot.GetEncoded(), issuers);
+        }
+
+        [Fact]
+        public void EmbeddedRootIsUsedWhenNoSuppliedIssuerServes()
+        {
+            // The embedded fallback still applies when nothing supplied can act as the issuer.
+            var embeddedRoot = LoadEmbeddedCertificate("fake-le-root-x1.pem");
+            var intermediate = new X509CertificateParser()
+                .ReadCertificate(File.ReadAllBytes("./Data/fake-le-intermediate-x1.pem"));
+
+            var issuers = new CertificateStore().GetIssuers(intermediate.GetEncoded());
+
+            var issuer = Assert.Single(issuers);
+            Assert.Equal(embeddedRoot.GetEncoded(), issuer);
+        }
+
+        private static X509Certificate LoadEmbeddedCertificate(string name)
+        {
+            var assembly = typeof(PfxBuilder).GetTypeInfo().Assembly;
+            var resource = assembly.GetManifestResourceNames().Single(n => n.EndsWith(name));
+            using (var stream = assembly.GetManifestResourceStream(resource))
+            {
+                return new X509CertificateParser().ReadCertificate(stream);
+            }
+        }
+
+        /// <summary>
+        /// A cross-signed issuer: one subject name and key, published both self-signed and
+        /// signed by a second root, mirroring the ISRG Root X1 arrangement.
+        /// </summary>
+        private sealed class CrossSignedPki
+        {
+            public X509Certificate CrossSigningRoot { get; }
+            public X509Certificate SelfSignedIssuer { get; }
+            public X509Certificate CrossSignedIssuer { get; }
+            public X509Certificate SameSubjectImposter { get; }
+            public X509Certificate Leaf { get; }
+
+            public CrossSignedPki(bool expireSelfSignedIssuer = false)
+            {
+                var provider = new KeyAlgorithmProvider();
+                var (_, rootKey) = provider.GetKeyPair(KeyFactory.NewKey(KeyAlgorithm.RS256).ToDer());
+                var (_, issuerKey) = provider.GetKeyPair(KeyFactory.NewKey(KeyAlgorithm.RS256).ToDer());
+                var (_, otherKey) = provider.GetKeyPair(KeyFactory.NewKey(KeyAlgorithm.RS256).ToDer());
+                var (_, leafKey) = provider.GetKeyPair(KeyFactory.NewKey(KeyAlgorithm.RS256).ToDer());
+                var now = DateTime.UtcNow;
+
+                // Issue() sets notAfter 30 days after the supplied instant.
+                var selfSignedIssuedAt = expireSelfSignedIssuer ? now.AddDays(-400) : now;
+
+                const string rootName = "CN=Certes Cross Signing Root";
+                const string issuerName = "CN=Certes Cross Signed Issuer";
+
+                CrossSigningRoot = CertificateFixture.Issue(
+                    rootName, rootName, rootKey.Public, rootKey.Private, true, 21, now);
+                SelfSignedIssuer = CertificateFixture.Issue(
+                    issuerName, issuerName, issuerKey.Public, issuerKey.Private, true, 22, selfSignedIssuedAt);
+                CrossSignedIssuer = CertificateFixture.Issue(
+                    issuerName, rootName, issuerKey.Public, rootKey.Private, true, 23, now);
+                SameSubjectImposter = CertificateFixture.Issue(
+                    issuerName, issuerName, otherKey.Public, otherKey.Private, true, 24, now);
+                Leaf = CertificateFixture.Issue(
+                    "CN=cross.example", issuerName, leafKey.Public, issuerKey.Private, false, 25, now);
+            }
         }
     }
 }

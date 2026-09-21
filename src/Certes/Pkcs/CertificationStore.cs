@@ -13,9 +13,9 @@ namespace Certes.Pkcs
     /// </summary>
     public class CertificateStore
     {
-        private readonly Dictionary<X509Name, X509Certificate> certificates = new Dictionary<X509Name, X509Certificate>();
+        private readonly Dictionary<X509Name, List<X509Certificate>> certificates = new Dictionary<X509Name, List<X509Certificate>>();
 
-        private readonly Lazy<Dictionary<X509Name, X509Certificate>> embeddedCertificates = new Lazy<Dictionary<X509Name, X509Certificate>>(() =>
+        private readonly Lazy<Dictionary<X509Name, List<X509Certificate>>> embeddedCertificates = new Lazy<Dictionary<X509Name, List<X509Certificate>>>(() =>
         {
             var certParser = new X509CertificateParser();
             var assembly = typeof(PfxBuilder).GetTypeInfo().Assembly;
@@ -29,7 +29,8 @@ namespace Certes.Pkcs
                         return certParser.ReadCertificate(stream);
                     }
                 })
-                .ToDictionary(c => c.SubjectDN, c => c);
+                .GroupBy(c => c.SubjectDN)
+                .ToDictionary(g => g.Key, g => g.ToList());
         }, true);
 
         /// <summary>
@@ -42,7 +43,18 @@ namespace Certes.Pkcs
             var issuers = certParser.ReadCertificates(certificates).OfType<X509Certificate>();
             foreach (var cert in issuers)
             {
-                this.certificates[cert.SubjectDN] = cert;
+                // Cross-signed certificates share a subject name, so alternates are retained
+                // instead of replacing each other. The issuer is chosen when the chain is built.
+                if (!this.certificates.TryGetValue(cert.SubjectDN, out var alternates))
+                {
+                    alternates = new List<X509Certificate>();
+                    this.certificates.Add(cert.SubjectDN, alternates);
+                }
+
+                if (!alternates.Any(existing => existing.Equals(cert)))
+                {
+                    alternates.Add(cert);
+                }
             }
         }
 
@@ -101,16 +113,56 @@ namespace Certes.Pkcs
         /// <summary>
         /// Finds the certificate that signed <paramref name="certificate"/>. Candidates are
         /// indexed by subject name, which does not establish an issuer relationship, so the
-        /// signature is verified before the candidate is accepted.
+        /// signature is verified before a candidate is accepted.
         /// </summary>
+        /// <remarks>
+        /// Supplied issuers take precedence: the embedded certificates are consulted only when
+        /// no supplied certificate can serve as the issuer, so an embedded root never displaces
+        /// an explicitly supplied alternate.
+        /// <para>
+        /// Within each source, cross-signed alternates share a subject name and a key, so more
+        /// than one candidate can verify the signature. Candidates that are currently within
+        /// their validity period are preferred, so an expired alternate is not chosen over a
+        /// usable one. Among equally usable candidates a self-signed alternate is preferred,
+        /// which ends the chain at that certificate rather than continuing through its
+        /// cross-signing issuer. Remaining ties keep the order the certificates were added in.
+        /// </para>
+        /// <para>
+        /// This is issuer selection for packaging, not path validation: issuer constraints and
+        /// the validity of the complete path are not evaluated here.
+        /// </para>
+        /// </remarks>
         private bool TryGetIssuer(X509Certificate certificate, out X509Certificate issuer)
         {
-            if (!certificates.TryGetValue(certificate.IssuerDN, out issuer) &&
-                !embeddedCertificates.Value.TryGetValue(certificate.IssuerDN, out issuer))
-            {
-                return false;
-            }
+            issuer = SelectIssuer(GetSupplied(certificate.IssuerDN), certificate)
+                ?? SelectIssuer(GetEmbedded(certificate.IssuerDN), certificate);
 
+            return issuer != null;
+        }
+
+        private static X509Certificate SelectIssuer(
+            IEnumerable<X509Certificate> candidates, X509Certificate certificate)
+        {
+            var now = DateTime.UtcNow;
+            return candidates
+                .Where(candidate => HasSigned(candidate, certificate))
+                .OrderByDescending(candidate => candidate.IsValid(now))
+                .ThenByDescending(candidate => candidate.SubjectDN.Equivalent(candidate.IssuerDN))
+                .FirstOrDefault();
+        }
+
+        private IEnumerable<X509Certificate> GetSupplied(X509Name subject) =>
+            certificates.TryGetValue(subject, out var supplied)
+                ? supplied
+                : Enumerable.Empty<X509Certificate>();
+
+        private IEnumerable<X509Certificate> GetEmbedded(X509Name subject) =>
+            embeddedCertificates.Value.TryGetValue(subject, out var embedded)
+                ? embedded
+                : Enumerable.Empty<X509Certificate>();
+
+        private static bool HasSigned(X509Certificate issuer, X509Certificate certificate)
+        {
             try
             {
                 certificate.Verify(issuer.GetPublicKey());
@@ -120,7 +172,6 @@ namespace Certes.Pkcs
             {
                 // The candidate shares the issuer's subject name but did not sign this
                 // certificate; it is not a usable issuer.
-                issuer = null;
                 return false;
             }
         }
