@@ -43,6 +43,7 @@ jobs:
       - name: Compile both test projects (all test targets)
         run: dotnet build test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -p:SkipSigning=true
       - name: Run offline unit tests (diagnostic runtime roll-forward)
+        # Reuses the preceding build: keep configuration, target, and SkipSigning aligned.
         env:
           DOTNET_ROLL_FORWARD: LatestMajor
         run: dotnet test test/Certes.Tests/Certes.Tests.csproj -f net6.0 -p:SkipSigning=true --no-build --no-restore

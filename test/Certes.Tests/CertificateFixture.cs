@@ -37,6 +37,9 @@ namespace Certes
             Intermediate = Issue("CN=Certes Unit Test Intermediate", Root.SubjectDN.ToString(), intermediateKey.Public, rootKey.Private, true, 2, now);
             Leaf = Issue("CN=unit.example", Intermediate.SubjectDN.ToString(), leafKey.Public, intermediateKey.Private, false, 3, now);
 
+            Leaf.Verify(Intermediate.GetPublicKey());
+            Intermediate.Verify(Root.GetPublicKey());
+
             using (var text = new StringWriter())
             {
                 var writer = new PemWriter(text);
@@ -66,8 +69,6 @@ namespace Certes
                 if (fullChain)
                 {
                     Assert.Contains(chain, c => c.Certificate.Equals(Intermediate));
-                    Leaf.Verify(Intermediate.GetPublicKey());
-                    Intermediate.Verify(Root.GetPublicKey());
                 }
                 else
                 {

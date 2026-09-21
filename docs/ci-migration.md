@@ -6,9 +6,10 @@ Certes has retired its legacy automation. An initial GitHub Actions workflow is
 defined for build/package validation. All three OS builds and package smoke
 checks passed in [hosted run 35544493782](https://github.com/fszlin/certes/actions/runs/35544493782)
 at commit `0d29d32`; that initial rollout did not execute unit tests. The follow-up
-offline-fixture change adds automatic unit tests to each OS job. Locally, all 145
-tests pass on macOS ARM64 with .NET 10 roll-forward; hosted verification of the
-new test steps is pending.
+offline-fixture change adds automatic unit tests to each OS job. All 145 tests
+passed on each OS, alongside package smoke checks, in
+[hosted run 35545870442](https://github.com/fszlin/certes/actions/runs/35545870442)
+at commit `09490e1`, using .NET 10 roll-forward.
 Run the local checks in
 [AGENTS.md](https://github.com/fszlin/certes/blob/main/AGENTS.md) and include their
 results in PRs during the transition.
@@ -36,6 +37,15 @@ They now generate valid root/intermediate/leaf chains and matching keys locally,
 and inspect exported PFX contents. `IntegrationHelper.cs` moved to the integration
 project; unit tests no longer have access to that network helper. No test cases
 were disabled. A missing-issuer failure test brings the suite to 145 cases.
+
+The new PFX fixture covers RSA and ES256/ES384/ES512 leaf keys, all issued by
+RSA-signing CAs. It does not exercise ECDSA-signed chains, cross-signing, unordered
+or extraneous issuer bundles, or duplicate subject DNs. Its supplied root also
+does not exercise embedded-root fallback. The existing
+`CertificateChainTests.CanGenerateFullChainPemWithKey` still exercises fallback
+to embedded DST Root CA X3 during PEM export; this is not comprehensive coverage
+of every embedded root or of PFX path building. Broader chain coverage belongs
+with certificate-store/export fixes.
 
 A green run verifies unit tests and package consumption, not CA interoperability
 or `net462` runtime behavior. Runtime/target modernization remains a separate change.
