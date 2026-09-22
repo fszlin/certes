@@ -260,8 +260,9 @@ were updated after the .NET 10 migration:
    conclusions; package findings do not prove exploitability.
 - Legacy CI has been retired, repository webhooks disabled, and Azure build/release
    automation disabled and verified. GitHub Actions build/package/integration checks are
-   defined with automatic unit-test and local Pebble execution; all four checks are required
-   on main (see `docs/ci-migration.md`).
+   defined with automatic unit-test and local Pebble execution; all five checks are required
+   on main: Build (ubuntu-24.04), Build (windows-2025), Build (macos-26), Package smoke checks,
+   and Pebble integration (see `docs/ci-migration.md`).
 - Cancellation, renewal information, certificate profiles, and IP identifiers
   are not implemented in the current APIs.
 
