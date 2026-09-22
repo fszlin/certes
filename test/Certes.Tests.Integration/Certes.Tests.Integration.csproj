@@ -23,6 +23,10 @@
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
     <PackageReference Include="Moq" Version="4.18.4" />
+    <!-- Explicit Newtonsoft.Json 13.0.4 override: integration tests use ConfigureChallenge
+         which serializes test challenge data. Newtonsoft.Json is still used here for simplicity
+         since it's a test utility, not production ACME code. -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NLog" Version="5.1.1" />
     <PackageReference Include="System.CommandLine" Version="0.1.0-*" Condition="'$(IncludeCli)' == 'True'" />
     <PackageReference Include="xunit" Version="2.4.2" />

@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Certes.Acme.Resource
 {
@@ -14,7 +14,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The new nonce endpoint.
         /// </value>
-        [JsonProperty("newNonce")]
+        [JsonPropertyName("newNonce")]
         public Uri NewNonce { get; }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The new account endpoint.
         /// </value>
-        [JsonProperty("newAccount")]
+        [JsonPropertyName("newAccount")]
         public Uri NewAccount { get; }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The new order endpoint.
         /// </value>
-        [JsonProperty("newOrder")]
+        [JsonPropertyName("newOrder")]
         public Uri NewOrder { get; }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The revoke cert.
         /// </value>
-        [JsonProperty("revokeCert")]
+        [JsonPropertyName("revokeCert")]
         public Uri RevokeCert { get; }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The key change endpoint.
         /// </value>
-        [JsonProperty("keyChange")]
+        [JsonPropertyName("keyChange")]
         public Uri KeyChange { get; }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The metadata.
         /// </value>
-        [JsonProperty("meta")]
+        [JsonPropertyName("meta")]
         public DirectoryMeta Meta { get; }
 
         /// <summary>

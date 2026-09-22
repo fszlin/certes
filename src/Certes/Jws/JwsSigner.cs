@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Text;
+using System.Text.Json;
 using Certes.Json;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Certes.Jws
 {
@@ -45,11 +46,17 @@ namespace Certes.Jws
             string nonce = null)
         {
             var jsonSettings = JsonUtil.CreateSettings();
+            var jwkElement = JsonSerializer.Deserialize<JsonElement>(
+                JsonSerializer.Serialize(
+                    keyPair.JsonWebKey,
+                    keyPair.JsonWebKey.GetType(),
+                    jsonSettings));
+
             var protectedHeader = (keyId) == null ?
                 (object)new
                 {
                     alg = keyPair.Algorithm.ToJwsAlgorithm(),
-                    jwk = keyPair.JsonWebKey,
+                    jwk = jwkElement,
                     nonce,
                     url,
                 } :
@@ -63,8 +70,8 @@ namespace Certes.Jws
 
             var entityJson = payload == null ?
                 "" :
-                JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
-            var protectedHeaderJson = JsonConvert.SerializeObject(protectedHeader, Formatting.None, jsonSettings);
+                JsonSerializer.Serialize(payload, jsonSettings);
+            var protectedHeaderJson = JsonSerializer.Serialize(protectedHeader, jsonSettings);
 
             var payloadEncoded = JwsConvert.ToBase64String(Encoding.UTF8.GetBytes(entityJson));
             var protectedHeaderEncoded = JwsConvert.ToBase64String(Encoding.UTF8.GetBytes(protectedHeaderJson));

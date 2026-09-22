@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Certes.Acme.Resource
 {
@@ -16,7 +16,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The terms of service.
         /// </value>
-        [JsonProperty("termsOfService")]
+        [JsonPropertyName("termsOfService")]
         public Uri TermsOfService { get; }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The website.
         /// </value>
-        [JsonProperty("website")]
+        [JsonPropertyName("website")]
         public Uri Website { get; }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The caa identities.
         /// </value>
-        [JsonProperty("caaIdentities")]
+        [JsonPropertyName("caaIdentities")]
         public IList<string> CaaIdentities { get; }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Certes.Acme.Resource
         /// <value>
         ///   <c>true</c> if external account required; otherwise, <c>false</c>.
         /// </value>
-        [JsonProperty("externalAccountRequired")]
+        [JsonPropertyName("externalAccountRequired")]
         public bool? ExternalAccountRequired { get; }
 
         /// <summary>

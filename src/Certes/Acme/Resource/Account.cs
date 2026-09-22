@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 
@@ -18,7 +18,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The status.
         /// </value>
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public AccountStatus? Status { get; set; }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The contact.
         /// </value>
-        [JsonProperty("contact")]
+        [JsonPropertyName("contact")]
         public IList<string> Contact { get; set; }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Certes.Acme.Resource
         /// <value>
         ///   <c>true</c> if the terms of service is agreed; otherwise, <c>false</c>.
         /// </value>
-        [JsonProperty("termsOfServiceAgreed")]
+        [JsonPropertyName("termsOfServiceAgreed")]
         public bool? TermsOfServiceAgreed { get; set; }
 
 
@@ -46,7 +46,7 @@ namespace Certes.Acme.Resource
         /// <value>
         ///  
         /// </value>
-        [JsonProperty("externalAccountBinding")]
+        [JsonPropertyName("externalAccountBinding")]
         public object ExternalAccountBinding { get; set; }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The orders.
         /// </value>
-        [JsonProperty("orders")]
+        [JsonPropertyName("orders")]
         public Uri Orders { get; set; }
 
         /// <summary>
@@ -70,8 +70,8 @@ namespace Certes.Acme.Resource
             /// <value>
             /// The only return existing flag.
             /// </value>
-            [JsonProperty("onlyReturnExisting")]
-            internal bool? OnlyReturnExisting { get; set; }
+            [JsonPropertyName("onlyReturnExisting")]
+            public bool? OnlyReturnExisting { get; set; }
         }
     }
 }

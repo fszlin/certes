@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Certes.Acme.Resource
 {
@@ -18,7 +18,7 @@ namespace Certes.Acme.Resource
         /// <remarks>
         /// See <see cref="OrderStatus"/> for possible values.
         /// </remarks>
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public OrderStatus? Status { get; set; }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The expires.
         /// </value>
-        [JsonProperty("expires")]
+        [JsonPropertyName("expires")]
         public DateTimeOffset? Expires { get; set; }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The not before.
         /// </value>
-        [JsonProperty("notBefore")]
+        [JsonPropertyName("notBefore")]
         public DateTimeOffset? NotBefore { get; set; }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The not after.
         /// </value>
-        [JsonProperty("notAfter")]
+        [JsonPropertyName("notAfter")]
         public DateTimeOffset? NotAfter { get; set; }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Certes.Acme.Resource
         /// <remarks>
         /// TODO: model https://tools.ietf.org/html/rfc7807
         /// </remarks>
-        [JsonProperty("error")]
+        [JsonPropertyName("error")]
         public object Error { get; set; }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The authorizations.
         /// </value>
-        [JsonProperty("authorizations")]
+        [JsonPropertyName("authorizations")]
         public IList<Uri> Authorizations { get; set; }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The finalize.
         /// </value>
-        [JsonProperty("finalize")]
+        [JsonPropertyName("finalize")]
         public Uri Finalize { get; set; }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The certificate.
         /// </value>
-        [JsonProperty("certificate")]
+        [JsonPropertyName("certificate")]
         public Uri Certificate { get; set; }
 
         /// <summary>
@@ -107,8 +107,8 @@ namespace Certes.Acme.Resource
             /// <value>
             /// The CSR.
             /// </value>
-            [JsonProperty("csr")]
-            internal string Csr { get; set; }
+            [JsonPropertyName("csr")]
+            public string Csr { get; set; }
         }
     }
 }

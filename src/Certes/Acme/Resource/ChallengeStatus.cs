@@ -1,36 +1,34 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using System.Runtime.Serialization;
 
 namespace Certes.Acme.Resource
 {
     /// <summary>
     /// Represents the status for <see cref="Challenge"/>.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
     public enum ChallengeStatus
     {
         /// <summary>
         /// The pending status.
         /// </summary>
-        [JsonProperty("pending")]
+        [EnumMember(Value = "pending")]
         Pending,
 
         /// <summary>
         /// The processing status.
         /// </summary>
-        [JsonProperty("processing")]
+        [EnumMember(Value = "processing")]
         Processing,
 
         /// <summary>
         /// The valid status.
         /// </summary>
-        [JsonProperty("valid")]
+        [EnumMember(Value = "valid")]
         Valid,
 
         /// <summary>
         /// The invalid status.
         /// </summary>
-        [JsonProperty("invalid")]
+        [EnumMember(Value = "invalid")]
         Invalid,
     }
 }

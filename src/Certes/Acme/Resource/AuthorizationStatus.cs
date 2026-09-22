@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace Certes.Acme.Resource
 {
     /// <summary>
     /// Represents the status of <see cref="Authorization"/>.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
     public enum AuthorizationStatus
     {
         /// <summary>

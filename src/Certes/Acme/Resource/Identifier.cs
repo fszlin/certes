@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Certes.Acme.Resource
 {
@@ -13,7 +13,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The type.
         /// </value>
-        [JsonProperty("type")]
+        [JsonPropertyName("type")]
         public IdentifierType Type { get; set; }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The value.
         /// </value>
-        [JsonProperty("value")]
+        [JsonPropertyName("value")]
         public string Value { get; set; }
     }
 }

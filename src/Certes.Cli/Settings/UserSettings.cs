@@ -5,7 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Json;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Certes.Cli.Settings
 {
@@ -34,7 +35,7 @@ namespace Certes.Cli.Settings
             var settings = await LoadUserSettings();
 
             settings.DefaultServer = serverUri;
-            var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
+            var json = JsonSerializer.Serialize(settings, JsonUtil.CreateSettings());
             await fileUtil.WriteAllText(settingsFilepath.Value, json);
         }
 
@@ -62,7 +63,7 @@ namespace Certes.Cli.Settings
 
             serverSetting.Key = key.ToDer();
             settings.Servers = servers;
-            var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
+            var json = JsonSerializer.Serialize(settings, JsonUtil.CreateSettings());
             await fileUtil.WriteAllText(settingsFilepath.Value, json);
         }
 
@@ -96,7 +97,7 @@ namespace Certes.Cli.Settings
             var settings = await LoadUserSettings();
 
             settings.Azure = azSettings;
-            var json = JsonConvert.SerializeObject(settings, JsonUtil.CreateSettings());
+            var json = JsonSerializer.Serialize(settings, JsonUtil.CreateSettings());
             await fileUtil.WriteAllText(settingsFilepath.Value, json);
         }
 
@@ -105,7 +106,7 @@ namespace Certes.Cli.Settings
             var json = await fileUtil.ReadAllText(settingsFilepath.Value);
             return json == null ?
                 new Model() :
-                JsonConvert.DeserializeObject<Model>(json, JsonUtil.CreateSettings());
+                JsonSerializer.Deserialize<Model>(json, JsonUtil.CreateSettings());
         }
 
         private string ReadSettingsFilepath()

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Certes.Acme.Resource
 {
@@ -13,7 +13,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The certificate to be revoked, in the base64url-encoded version of the DER format.
         /// </value>
-        [JsonProperty("certificate")]
+        [JsonPropertyName("certificate")]
         public string Certificate { get; set; }
 
 
@@ -23,7 +23,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The revocation reason.
         /// </value>
-        [JsonProperty("reason")]
+        [JsonPropertyName("reason")]
         public RevocationReason? Reason { get; set; }
     }
 }

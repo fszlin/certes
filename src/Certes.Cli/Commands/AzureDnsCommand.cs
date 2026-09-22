@@ -6,7 +6,8 @@ using Certes.Cli.Settings;
 using Microsoft.Azure.Management.Dns.Fluent;
 using Microsoft.Azure.Management.Dns.Fluent.Models;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using NLog;
 
 namespace Certes.Cli.Commands
@@ -112,7 +113,8 @@ namespace Certes.Cli.Commands
                     if (identifier.EndsWith($".{zone.Name}", StringComparison.OrdinalIgnoreCase) ||
                         identifier.Equals(zone.Name, StringComparison.OrdinalIgnoreCase))
                     {
-                        logger.Debug("DNS zone:\n{0}", JsonConvert.SerializeObject(zone, Formatting.Indented));
+                        var options = new JsonSerializerOptions { WriteIndented = true };
+                        logger.Debug("DNS zone:\n{0}", JsonSerializer.Serialize(zone, options));
                         return zone;
                     }
                 }

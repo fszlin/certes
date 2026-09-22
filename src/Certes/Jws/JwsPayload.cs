@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Certes.Jws
 {
@@ -13,7 +13,7 @@ namespace Certes.Jws
         /// <value>
         /// The protected.
         /// </value>
-        [JsonProperty("protected")]
+        [JsonPropertyName("protected")]
         public string Protected { get; set; }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace Certes.Jws
         /// <value>
         /// The payload.
         /// </value>
-        [JsonProperty("payload")]
+        [JsonPropertyName("payload")]
         public string Payload { get; set; }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Certes.Jws
         /// <value>
         /// The signature.
         /// </value>
-        [JsonProperty("signature")]
+        [JsonPropertyName("signature")]
         public string Signature { get; set; }
     }
 

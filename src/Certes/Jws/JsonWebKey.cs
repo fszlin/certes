@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Certes.Jws
 {
@@ -14,7 +14,8 @@ namespace Certes.Jws
         /// <value>
         /// The type of the key.
         /// </value>
-        [JsonProperty("kty", Order = 2)]
-        internal string KeyType { get; set; }
+        [JsonPropertyName("kty")]
+        [JsonPropertyOrder(2)]
+        public string KeyType { get; set; }
     }
 }

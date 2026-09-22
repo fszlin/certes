@@ -40,6 +40,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <!-- Explicit Newtonsoft.Json 13.0.4 override: Azure Fluent SDK (1.38.1) transitively
+         depends on Newtonsoft.Json 10.0.3 (GHSA-5crp-9r3c-p9vr, high severity).
+         We explicitly reference 13.0.4 here to ensure the patched version is used.
+         Note: CLI code itself uses System.Text.Json; this is purely for Azure SDK compatibility. -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NLog" Version="5.1.1" />
     <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.38.1" />
     <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.38.1" />
