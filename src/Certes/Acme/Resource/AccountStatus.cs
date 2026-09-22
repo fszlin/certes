@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using System.Text.Json.Serialization;
 using System.Runtime.Serialization;
 
 namespace Certes.Acme.Resource
@@ -7,7 +6,7 @@ namespace Certes.Acme.Resource
     /// <summary>
     /// Represents the status of <see cref="Account"/>.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum AccountStatus
     {
         /// <summary>

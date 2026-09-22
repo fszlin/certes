@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Serialization;
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -28,19 +29,37 @@ namespace Certes.Cli
             await settings.SetDefaultServer(uri);
             fileMock.Verify(m => m.ReadAllText(configPath), Times.Once);
 
-            var json = JsonConvert.SerializeObject(new UserSettings.Model { DefaultServer = uri }, JsonUtil.CreateSettings());
+            var json = JsonConvert.SerializeObject(new UserSettings.Model { DefaultServer = uri }, new JsonSerializerSettings {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            });
             fileMock.Verify(m => m.WriteAllText(configPath, json), Times.Once);
 
             fileMock.ResetCalls();
             var model = new UserSettings.Model { DefaultServer = uri, Servers = new AcmeSettings[0] };
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>()))
-                .ReturnsAsync(JsonConvert.SerializeObject(model, JsonUtil.CreateSettings()));
+                .ReturnsAsync(JsonConvert.SerializeObject(model, new JsonSerializerSettings {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            }));
 
             await settings.SetDefaultServer(uri);
 
             fileMock.Verify(m => m.ReadAllText(configPath), Times.Once);
             model.DefaultServer = uri;
-            json = JsonConvert.SerializeObject(model, JsonUtil.CreateSettings());
+            json = JsonConvert.SerializeObject(model, new JsonSerializerSettings {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            });
             fileMock.Verify(m => m.WriteAllText(configPath, json), Times.Once);
         }
 
@@ -62,7 +81,13 @@ namespace Certes.Cli
             fileMock.ResetCalls();
             var model = new UserSettings.Model { DefaultServer = uri, Servers = new AcmeSettings[0] };
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>()))
-                .ReturnsAsync(JsonConvert.SerializeObject(model, JsonUtil.CreateSettings()));
+                .ReturnsAsync(JsonConvert.SerializeObject(model, new JsonSerializerSettings {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            }));
 
             Assert.Equal(uri, await settings.GetDefaultServer());
 
@@ -76,7 +101,13 @@ namespace Certes.Cli
             var envMock = GetEnvMock(fullPath, false);
 
             var model = new UserSettings.Model { Azure = new AzureSettings { SubscriptionId = Guid.NewGuid().ToString("N") } };
-            var json = JsonConvert.SerializeObject(model, JsonUtil.CreateSettings());
+            var json = JsonConvert.SerializeObject(model, new JsonSerializerSettings {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            });
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync(json);
 
@@ -85,7 +116,13 @@ namespace Certes.Cli
             Assert.Equal(model.Azure.SubscriptionId, azSettings.SubscriptionId);
 
             model = new UserSettings.Model();
-            json = JsonConvert.SerializeObject(model, JsonUtil.CreateSettings());
+            json = JsonConvert.SerializeObject(model, new JsonSerializerSettings {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            });
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync(json);
             azSettings = await settings.GetAzureSettings();
             Assert.NotNull(azSettings);
@@ -137,7 +174,13 @@ namespace Certes.Cli
                 TenantId = Guid.NewGuid().ToString(),
             };
 
-            var json = JsonConvert.SerializeObject(new UserSettings.Model { Azure = azSettings }, JsonUtil.CreateSettings());
+            var json = JsonConvert.SerializeObject(new UserSettings.Model { Azure = azSettings }, new JsonSerializerSettings {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            });
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync((string)null);
             fileMock.Setup(m => m.WriteAllText(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
@@ -166,7 +209,13 @@ namespace Certes.Cli
                         new AcmeSettings { Key = key, ServerUri = uri }
                     }
                 },
-                JsonUtil.CreateSettings());
+                new JsonSerializerSettings {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            });
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync(json);
@@ -237,7 +286,13 @@ namespace Certes.Cli
                         new AcmeSettings { Key = key.ToDer(), ServerUri = uri }
                     }
                 },
-                JsonUtil.CreateSettings());
+                new JsonSerializerSettings {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            });
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync((string)null);
@@ -268,7 +323,13 @@ namespace Certes.Cli
                         new AcmeSettings { Key = oldKey.ToDer(), ServerUri = uri }
                     }
                 },
-                JsonUtil.CreateSettings());
+                new JsonSerializerSettings {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            });
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
             fileMock.Setup(m => m.ReadAllText(It.IsAny<string>())).ReturnsAsync(json);
@@ -285,7 +346,13 @@ namespace Certes.Cli
                         new AcmeSettings { Key = key.ToDer(), ServerUri = uri }
                     }
                 },
-                JsonUtil.CreateSettings());
+                new JsonSerializerSettings {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            });
             fileMock.Verify(m => m.WriteAllText(configPath, json), Times.Once);
         }
 

@@ -1,5 +1,7 @@
-﻿using Certes.Json;
+using Newtonsoft.Json.Serialization;
+using Certes.Json;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -25,7 +27,14 @@ namespace Certes.Acme.Resource
         [Fact]
         public void CanBeSerialized()
         {
-            var settings = JsonUtil.CreateSettings();
+            var settings = new JsonSerializerSettings {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore,
+                Converters = { new StringEnumConverter { NamingStrategy = new CamelCaseNamingStrategy() } }
+            };
             var srcJson = File.ReadAllText("./Data/account.json");
             var deserialized = JsonConvert.DeserializeObject<Account>(srcJson, settings);
             var json = JsonConvert.SerializeObject(deserialized, settings);

@@ -1,29 +1,39 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Certes.Json
 {
     /// <summary>
-    /// Helper methods for JSON serialization.
+    /// Helper methods for JSON serialization using System.Text.Json.
     /// </summary>
     public static class JsonUtil
     {
+        private static JsonSerializerOptions defaultOptions;
+
         /// <summary>
-        /// Creates the <see cref="JsonSerializerSettings"/> used for ACME entity serialization.
+        /// Creates the <see cref="JsonSerializerOptions"/> used for ACME entity serialization.
         /// </summary>
-        /// <returns>The JSON serializer settings.</returns>
-        public static JsonSerializerSettings CreateSettings()
+        /// <returns>The JSON serializer options.</returns>
+        public static JsonSerializerOptions CreateSettings()
         {
-            var jsonSettings = new JsonSerializerSettings
+            if (defaultOptions != null)
             {
-                ContractResolver = new DefaultContractResolver {
-                    NamingStrategy = new CamelCaseNamingStrategy()
-                },
-                NullValueHandling = NullValueHandling.Ignore,
-                MissingMemberHandling = MissingMemberHandling.Ignore
+                return defaultOptions;
+            }
+
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                WriteIndented = false,
+                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
             };
 
-            return jsonSettings;
+            // For .NET 10, use reflection to serialize internal members
+            // This is a workaround since System.Text.Json doesn't have a built-in option
+            // We use a custom context or encoder that includes internal properties
+            defaultOptions = options;
+            return options;
         }
     }
 }

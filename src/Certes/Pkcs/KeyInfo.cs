@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Certes.Crypto;
 using Certes.Properties;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
@@ -19,7 +19,7 @@ namespace Certes.Pkcs
         /// <value>
         /// The private key information.
         /// </value>
-        [JsonProperty("der")]
+        [JsonPropertyName("der")]
         public byte[] PrivateKeyInfo { get; set; }
 
         /// <summary>

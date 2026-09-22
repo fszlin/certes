@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 
@@ -15,7 +15,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The identifier.
         /// </value>
-        [JsonProperty("identifier")]
+        [JsonPropertyName("identifier")]
         public Identifier Identifier { get; set; }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The status.
         /// </value>
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public AuthorizationStatus? Status { get; set; }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The expires.
         /// </value>
-        [JsonProperty("expires")]
+        [JsonPropertyName("expires")]
         public DateTimeOffset? Expires { get; set; }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The scope.
         /// </value>
-        [JsonProperty("scope")]
+        [JsonPropertyName("scope")]
         public Uri Scope { get; set; }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The challenges.
         /// </value>
-        [JsonProperty("challenges")]
+        [JsonPropertyName("challenges")]
         public IList<Challenge> Challenges { get; set; }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The flag indicating if this authorization is for wildcard.
         /// </value>
-        [JsonProperty("wildcard")]
+        [JsonPropertyName("wildcard")]
         public bool? Wildcard { get; set; }
 
     }

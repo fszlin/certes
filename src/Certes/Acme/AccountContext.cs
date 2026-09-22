@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
 using Certes.Json;
@@ -100,12 +101,12 @@ namespace Certes.Acme
                     url = endpoint
                 };
 
-                var headerJson = Newtonsoft.Json.JsonConvert.SerializeObject(header, Newtonsoft.Json.Formatting.None, JsonUtil.CreateSettings());
+                var headerJson = JsonSerializer.Serialize(header, JsonUtil.CreateSettings());
                 var protectedHeaderBase64 = JwsConvert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(headerJson));
 
                 var accountKeyBase64 = JwsConvert.ToBase64String(
                     System.Text.Encoding.UTF8.GetBytes(
-                        Newtonsoft.Json.JsonConvert.SerializeObject(context.AccountKey.JsonWebKey, Newtonsoft.Json.Formatting.None)
+                        JsonSerializer.Serialize(context.AccountKey.JsonWebKey, JsonUtil.CreateSettings())
                         )
                     );
 

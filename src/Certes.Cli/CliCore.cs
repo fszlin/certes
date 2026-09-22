@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Certes.Cli.Commands;
 using Certes.Json;
-using Newtonsoft.Json;
 using NLog;
 
 namespace Certes.Cli
@@ -13,7 +13,7 @@ namespace Certes.Cli
     internal class CliCore
     {
         private readonly ILogger consoleLogger = LogManager.GetLogger(nameof(CliCore));
-        private readonly JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
+        private readonly JsonSerializerOptions jsonSettings = JsonUtil.CreateSettings();
 
         private readonly RootCommand rootCommand;
 

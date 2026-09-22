@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Certes.Jws
 {
@@ -14,8 +14,9 @@ namespace Certes.Jws
         /// <value>
         /// The curve identifies the cryptographic curve used with the key.
         /// </value>
-        [JsonProperty("crv", Order = 1)]
-        internal string Curve { get; set; }
+        [JsonPropertyName("crv")]
+        [JsonPropertyOrder(1)]
+        public string Curve { get; set; }
 
         /// <summary>
         /// Gets or sets the x coordinate for the Elliptic Curve point.
@@ -23,8 +24,9 @@ namespace Certes.Jws
         /// <value>
         /// The x coordinate for the Elliptic Curve point.
         /// </value>
-        [JsonProperty("x", Order = 3)]
-        internal string X { get; set; }
+        [JsonPropertyName("x")]
+        [JsonPropertyOrder(3)]
+        public string X { get; set; }
 
         /// <summary>
         /// Gets or sets the y coordinate for the Elliptic Curve point.
@@ -32,7 +34,8 @@ namespace Certes.Jws
         /// <value>
         /// The y coordinate for the Elliptic Curve point.
         /// </value>
-        [JsonProperty("y", Order = 4)]
-        internal string Y { get; set; }
+        [JsonPropertyName("y")]
+        [JsonPropertyOrder(4)]
+        public string Y { get; set; }
     }
 }

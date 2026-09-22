@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Serialization;
 ﻿using System;
 using System.Net;
 using System.Net.Http;
@@ -21,7 +22,13 @@ namespace Certes.Acme
         {
             private readonly string productVersion = 
                 typeof(AcmeHttpClient).GetTypeInfo().Assembly.GetName().Version.ToString();
-            private readonly JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
+            private readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {
+                ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
 
             public bool SendNonce { get; set; } = true;
 

@@ -5,11 +5,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
 using Certes.Json;
-using Newtonsoft.Json;
 using Strings = Certes.Properties.Strings;
 
 namespace Certes.Acme
@@ -34,7 +34,7 @@ namespace Certes.Acme
             new ProductInfoHeaderValue(".NET", Environment.Version.ToString()),
         };
 
-        private readonly static JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
+        private readonly static JsonSerializerOptions jsonSettings = JsonUtil.CreateSettings();
         private readonly static Lazy<HttpClient> SharedHttp = new Lazy<HttpClient>(CreateHttpClient);
         private readonly Lazy<HttpClient> http;
 
@@ -99,7 +99,7 @@ namespace Certes.Acme
         /// <returns></returns>
         public async Task<AcmeHttpResponse<T>> Post<T>(Uri uri, object payload)
         {
-            var payloadJson = JsonConvert.SerializeObject(payload, Formatting.None, jsonSettings);
+            var payloadJson = JsonSerializer.Serialize(payload, jsonSettings);
             var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
             // boulder will reject the request if sending charset=utf-8
             content.Headers.ContentType.CharSet = null;
@@ -198,7 +198,7 @@ namespace Certes.Acme
                 if (IsJsonMedia(response.Content?.Headers.ContentType?.MediaType))
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    resource = JsonConvert.DeserializeObject<T>(json);
+                    resource = JsonSerializer.Deserialize<T>(json, jsonSettings);
                 }
                 else if (typeof(T) == typeof(string))
                 {
@@ -211,7 +211,7 @@ namespace Certes.Acme
                 if (IsJsonMedia(response.Content?.Headers?.ContentType?.MediaType))
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    error = JsonConvert.DeserializeObject<AcmeError>(json);
+                    error = JsonSerializer.Deserialize<AcmeError>(json, jsonSettings);
                 }
                 else
                 {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Text.Json;
 using Certes.Acme;
 using Certes.Json;
-using Newtonsoft.Json;
 
 namespace Certes
 {
@@ -16,7 +16,7 @@ namespace Certes
         /// <summary>
         /// The json serializer settings for converting additional information.
         /// </summary>
-        private static readonly JsonSerializerSettings jsonSerializerSettings = JsonUtil.CreateSettings();
+        private static readonly JsonSerializerOptions jsonSerializerSettings = JsonUtil.CreateSettings();
 
         /// <summary>
         /// Gets the error occurred while processing ACME operations.
@@ -89,7 +89,7 @@ namespace Certes
             var errorJson = info.GetString("acme.error");
             if (!string.IsNullOrWhiteSpace(errorJson))
             {
-                Error = JsonConvert.DeserializeObject<AcmeError>(errorJson, jsonSerializerSettings);
+                Error = JsonSerializer.Deserialize<AcmeError>(errorJson, jsonSerializerSettings);
             }
         }
 
@@ -118,7 +118,7 @@ namespace Certes
             }
             else
             {
-                info.AddValue("acme.error", JsonConvert.SerializeObject(Error, jsonSerializerSettings));
+                info.AddValue("acme.error", JsonSerializer.Serialize(Error, jsonSerializerSettings));
             }
         }
 

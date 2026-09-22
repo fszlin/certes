@@ -175,7 +175,10 @@ namespace Certes.Cli.Commands
             Assert.True(errOutput.Length == 0, errOutput.ToString());
             ret = JsonConvert.DeserializeObject(stdOutput.ToString());
             Assert.NotNull(ret.data);
-            var thumbprint = ret.data["properties.thumbprint"];
+            // Access the thumbprint from the HostNameBindingInner object
+            // System.Text.Json may flatten or structure properties differently than Newtonsoft.Json
+            var thumbprint = ret.data.thumbprint ?? ret.data["properties.thumbprint"] ?? ret.data?.properties?.thumbprint;
+            Assert.NotNull(thumbprint);
             Assert.Equal(cert.Thumbprint, $"{thumbprint}");
 
             // order incompleted

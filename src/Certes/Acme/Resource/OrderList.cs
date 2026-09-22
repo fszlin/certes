@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 
@@ -18,7 +18,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The orders.
         /// </value>
-        [JsonProperty("orders")]
+        [JsonPropertyName("orders")]
         public IList<Uri> Orders { get; set; }
     }
 }

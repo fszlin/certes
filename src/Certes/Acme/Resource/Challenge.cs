@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 
@@ -15,7 +15,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The type.
         /// </value>
-        [JsonProperty("type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The URL.
         /// </value>
-        [JsonProperty("url")]
+        [JsonPropertyName("url")]
         public Uri Url { get; set; }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The status.
         /// </value>
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public ChallengeStatus? Status { get; set; }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The validation time.
         /// </value>
-        [JsonProperty("validated")]
+        [JsonPropertyName("validated")]
         public DateTimeOffset? Validated { get; set; }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The errors.
         /// </value>
-        [JsonProperty("error")]
+        [JsonPropertyName("error")]
         public AcmeError Error { get; set; }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Certes.Acme.Resource
         /// <value>
         /// The token.
         /// </value>
-        [JsonProperty("token")]
+        [JsonPropertyName("token")]
         public string Token { get; set; }
     }
 }

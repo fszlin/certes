@@ -4,6 +4,7 @@ using System.Text;
 using Certes.Cli.Settings;
 using Moq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 namespace Certes.Cli
@@ -17,7 +18,8 @@ namespace Certes.Cli
                 NamingStrategy = new CamelCaseNamingStrategy()
             },
             NullValueHandling = NullValueHandling.Ignore,
-            MissingMemberHandling = MissingMemberHandling.Ignore
+            MissingMemberHandling = MissingMemberHandling.Ignore,
+            Converters = { new StringEnumConverter { NamingStrategy = new CamelCaseNamingStrategy() } }
         };
 
         public static (Mock<IConsole> Console, StringBuilder StdOut, StringBuilder ErrOut) MockConsole()
