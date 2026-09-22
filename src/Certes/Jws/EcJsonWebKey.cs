@@ -6,7 +6,7 @@ namespace Certes.Jws
     /// Represents a JWK using Elliptic Curve.
     /// </summary>
     /// <seealso cref="Certes.Jws.JsonWebKey" />
-    internal class EcJsonWebKey : JsonWebKey
+    public class EcJsonWebKey : JsonWebKey
     {
         /// <summary>
         /// Gets or sets the curve identifies the cryptographic curve used with the key.

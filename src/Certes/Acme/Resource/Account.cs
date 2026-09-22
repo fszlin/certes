@@ -71,7 +71,7 @@ namespace Certes.Acme.Resource
             /// The only return existing flag.
             /// </value>
             [JsonPropertyName("onlyReturnExisting")]
-            internal bool? OnlyReturnExisting { get; set; }
+            public bool? OnlyReturnExisting { get; set; }
         }
     }
 }

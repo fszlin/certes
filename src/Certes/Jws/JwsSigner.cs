@@ -46,11 +46,17 @@ namespace Certes.Jws
             string nonce = null)
         {
             var jsonSettings = JsonUtil.CreateSettings();
+            var jwkElement = JsonSerializer.Deserialize<JsonElement>(
+                JsonSerializer.Serialize(
+                    keyPair.JsonWebKey,
+                    keyPair.JsonWebKey.GetType(),
+                    jsonSettings));
+
             var protectedHeader = (keyId) == null ?
                 (object)new
                 {
                     alg = keyPair.Algorithm.ToJwsAlgorithm(),
-                    jwk = keyPair.JsonWebKey,
+                    jwk = jwkElement,
                     nonce,
                     url,
                 } :

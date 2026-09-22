@@ -104,11 +104,13 @@ namespace Certes.Acme
                 var headerJson = JsonSerializer.Serialize(header, JsonUtil.CreateSettings());
                 var protectedHeaderBase64 = JwsConvert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(headerJson));
 
+                var accountKeyJson = JsonSerializer.Serialize(
+                    context.AccountKey.JsonWebKey,
+                    context.AccountKey.JsonWebKey.GetType(),
+                    JsonUtil.CreateSettings());
+
                 var accountKeyBase64 = JwsConvert.ToBase64String(
-                    System.Text.Encoding.UTF8.GetBytes(
-                        JsonSerializer.Serialize(context.AccountKey.JsonWebKey, JsonUtil.CreateSettings())
-                        )
-                    );
+                    System.Text.Encoding.UTF8.GetBytes(accountKeyJson));
 
                 var signingBytes = System.Text.Encoding.ASCII.GetBytes($"{protectedHeaderBase64}.{accountKeyBase64}");
 

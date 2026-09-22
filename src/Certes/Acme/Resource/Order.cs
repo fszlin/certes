@@ -108,7 +108,7 @@ namespace Certes.Acme.Resource
             /// The CSR.
             /// </value>
             [JsonPropertyName("csr")]
-            internal string Csr { get; set; }
+            public string Csr { get; set; }
         }
     }
 }

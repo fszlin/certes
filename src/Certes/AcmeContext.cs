@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
+using Certes.Json;
 using Certes.Jws;
 using Identifier = Certes.Acme.Resource.Identifier;
 using IdentifierType = Certes.Acme.Resource.IdentifierType;
@@ -96,10 +98,16 @@ namespace Certes
             var location = await Account().Location();
             
             var newKey = key ?? KeyFactory.NewKey(defaultKeyType);
+            var oldKeyElement = JsonSerializer.Deserialize<JsonElement>(
+                JsonSerializer.Serialize(
+                    AccountKey.JsonWebKey,
+                    AccountKey.JsonWebKey.GetType(),
+                    JsonUtil.CreateSettings()));
+
             var keyChange = new
             {
                 account = location,
-                oldKey = AccountKey.JsonWebKey,
+                oldKey = oldKeyElement,
             };
 
             var jws = new JwsSigner(newKey);

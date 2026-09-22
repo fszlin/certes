@@ -55,7 +55,7 @@ namespace Certes
         internal static byte[] GenerateThumbprint(this IKey key)
         {
             var jwk = key.JsonWebKey;
-            var json = JsonSerializer.Serialize(jwk, thumbprintSettings);
+            var json = JsonSerializer.Serialize(jwk, jwk.GetType(), thumbprintSettings);
             var bytes = Encoding.UTF8.GetBytes(json);
             var hashed = DigestUtilities.CalculateDigest("SHA256", bytes);
 
