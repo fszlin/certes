@@ -19,7 +19,7 @@ current task. Keep this guide accurate when commands, targets, or blockers chang
 | `src/Certes/Extensions/` | Convenience APIs, order generation, certificate export |
 | `src/Certes/Jws/`, `Crypto/`, `Json/` | Signing, key algorithms, wire serialization |
 | `src/Certes/Pkcs/` | CSR, certificate-chain, and PFX utilities |
-| `src/Certes.Cli/` | Commands, dependency injection, settings, Azure integrations |
+| `src/Certes.Cli/` | Commands, dependency injection, and user settings |
 | `test/Certes.Tests/` | Offline xUnit/Moq tests and ephemeral certificate fixtures |
 | `test/Certes.Tests.Integration/` | ACME integration flows using local Pebble and challtestsrv |
 | `test/Certes.Func/` | Azure Functions challenge-test helper; not part of the core library |
@@ -251,13 +251,11 @@ were updated after the .NET 10 migration:
   revocation and complete-path validity are not evaluated. The library no longer
   embeds CA roots, so issuers must be supplied by the caller or the ACME server.
   `PfxBuilder` packages the linked chain and excludes the self-signed root.
-- CLI settings contain account keys/Azure credentials. `FileUtil` currently
-  uses default file permissions and non-atomic writes.
-- CLI Azure Fluent dependencies remain legacy. A fresh audit after the .NET 10
-  retarget reported no vulnerable packages in the library or CLI graphs; the old
-  net6.0 graph had flagged `System.Text.RegularExpressions 4.3.0`. Dependencies
-  were not upgraded in this migration. Re-run audits before drawing current
-   conclusions; package findings do not prove exploitability.
+- CLI settings contain account keys. `FileUtil` currently uses default file
+  permissions and non-atomic writes.
+- Azure deployment support was removed from `dotnet-certes` (`az` command
+  group and Azure Fluent dependencies). The Functions helper remains for
+  challenge-test scenarios and is not part of the shipping CLI/runtime path.
 - Legacy CI has been retired, repository webhooks disabled, and Azure build/release
    automation disabled and verified. GitHub Actions build/package/integration checks are
    defined with automatic unit-test and local Pebble execution; all five checks are required

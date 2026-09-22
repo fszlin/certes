@@ -48,6 +48,34 @@ namespace Certes.Cli
             Assert.DoesNotContain("https://acme-v02.api.letsencrypt.org/directory", combined, StringComparison.OrdinalIgnoreCase);
         }
 
+        [Fact]
+        public async Task OrderHelpListsCommandsOnce()
+        {
+            var result = await RunCli("order", "--help");
+
+            Assert.Equal(0, result.ExitCode);
+            var text = StripAnsi(result.StdOut);
+
+            Assert.Equal(1, CountOccurrences(text, "new <domains>"));
+            Assert.Equal(1, CountOccurrences(text, "list"));
+            Assert.Equal(1, CountOccurrences(text, "show <order-id>"));
+            Assert.Equal(1, CountOccurrences(text, "authz <order-id> <domain> <challenge-type>"));
+            Assert.Equal(1, CountOccurrences(text, "validate <order-id> <domain> <challenge-type>"));
+            Assert.Equal(1, CountOccurrences(text, "finalize <order-id>"));
+        }
+
+        [Fact]
+        public async Task CertHelpListsCommandsOnce()
+        {
+            var result = await RunCli("cert", "--help");
+
+            Assert.Equal(0, result.ExitCode);
+            var text = StripAnsi(result.StdOut);
+
+            Assert.Equal(1, CountOccurrences(text, "pem <order-id>"));
+            Assert.Equal(1, CountOccurrences(text, "pfx <order-id> <password>"));
+        }
+
         private static async Task<(int ExitCode, string StdOut, string StdErr)> RunCli(params string[] args)
         {
             var cliDll = Path.GetFullPath(Path.Combine(

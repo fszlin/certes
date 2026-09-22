@@ -16,7 +16,6 @@ namespace Certes.Cli.Settings
         {
             public Uri DefaultServer { get; set; }
             public IList<AcmeSettings> Servers { get; set; }
-            public AzureSettings Azure { get; set; }
         }
 
         private readonly IFileUtil fileUtil;
@@ -82,25 +81,6 @@ namespace Certes.Cli.Settings
             return der == null ? null : KeyFactory.FromDer(der);
         }
 
-        public async Task<AzureSettings> GetAzureSettings()
-        {
-            var settings = await LoadUserSettings();
-            var azSettings = settings.Azure ?? new AzureSettings();
-
-            PopulateSettings(azSettings);
-
-            return azSettings;
-        }
-
-        public async Task SetAzureSettings(AzureSettings azSettings)
-        {
-            var settings = await LoadUserSettings();
-
-            settings.Azure = azSettings;
-            var json = JsonSerializer.Serialize(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllText(settingsFilepath.Value, json);
-        }
-
         private async Task<Model> LoadUserSettings()
         {
             var json = await fileUtil.ReadAllText(settingsFilepath.Value);
@@ -118,33 +98,6 @@ namespace Certes.Cli.Settings
             }
 
             return Path.Combine(homePath, ".certes", "certes.json");
-        }
-
-        private void PopulateSettings(AzureSettings settings)
-        {
-            var envSubscriptionId = environment.GetVar("CERTES_AZURE_SUBSCRIPTION_ID");
-            if (!string.IsNullOrWhiteSpace(envSubscriptionId))
-            {
-                settings.SubscriptionId = envSubscriptionId;
-            }
-
-            var envTenantId = environment.GetVar("CERTES_AZURE_TENANT_ID");
-            if (!string.IsNullOrWhiteSpace(envTenantId))
-            {
-                settings.TenantId = envTenantId;
-            }
-
-            var envClientId = environment.GetVar("CERTES_AZURE_CLIENT_ID");
-            if (!string.IsNullOrWhiteSpace(envClientId))
-            {
-                settings.ClientId = envClientId;
-            }
-
-            var envClientSecret = environment.GetVar("CERTES_AZURE_CLIENT_SECRET");
-            if (!string.IsNullOrWhiteSpace(envClientSecret))
-            {
-                settings.ClientSecret = envClientSecret;
-            }
         }
     }
 }

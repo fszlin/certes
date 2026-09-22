@@ -34,7 +34,8 @@ select `net8.0`, while .NET 6/7 use `netstandard2.0` instead of a dedicated
 `net6.0` build. CI runs package smoke checks on .NET 8 and 10 and compiles a
 .NET 6 consumer but does not run it on the unsupported .NET 6 runtime. The next
 CLI package requires .NET 10; this is a runtime requirement change for existing
-CLI users.
+CLI users. Azure deployment commands were removed from the CLI; use dedicated
+Azure tooling for DNS/app deployment workflows.
 
 .NET 8 remains supported by Microsoft until November 10, 2026. Its library
 asset supports existing consumers; .NET 10 is the development and CLI baseline.

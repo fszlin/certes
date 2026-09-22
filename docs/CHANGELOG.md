@@ -31,6 +31,10 @@ All notable changes to this project will be documented in this file.
   not the package release decision.
 - The library no longer ships a `net462` target in this checkout. Supported
   library targets are `net10.0`, `net8.0`, and `netstandard2.0`.
+- The `dotnet-certes` CLI no longer ships Azure deployment commands. The `az`
+  command group (`az set`, `az dns`, `az app`) has been removed. Existing
+  automation should call Azure tooling directly and keep using `certes` for
+  ACME account/order/certificate workflows.
 
 ### Changed
 - Retain cross-signed issuer alternates that share a subject name, instead of
