@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -11,14 +10,6 @@ using Certes.Acme.Resource;
 using Certes.Cli.Commands;
 using Certes.Cli.Settings;
 using Certes.Json;
-using Certes.Pkcs;
-using Microsoft.Azure.Management.AppService.Fluent;
-using Microsoft.Azure.Management.AppService.Fluent.Models;
-using Microsoft.Azure.Management.Dns.Fluent;
-using Microsoft.Azure.Management.Dns.Fluent.Models;
-using Microsoft.Azure.Management.ResourceManager.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 using NLog;
 using Spectre.Console.Cli;
 
@@ -37,28 +28,19 @@ namespace Certes.Cli
         private readonly AcmeContextFactory contextFactory;
         private readonly IFileUtil fileUtil;
         private readonly IEnvironmentVariables environmentVariables;
-        private readonly AzureClientFactory<IResourceManagementClient> resourceClientFactory;
-        private readonly AzureClientFactory<IDnsManagementClient> dnsClientFactory;
-        private readonly AzureClientFactory<IWebSiteManagementClient> webSiteClientFactory;
 
         public CliCoreSpectre(
             IEnumerable<ICliCommand> commands,
             IUserSettings userSettings,
             AcmeContextFactory contextFactory,
             IFileUtil fileUtil,
-            IEnvironmentVariables environmentVariables,
-            AzureClientFactory<IResourceManagementClient> resourceClientFactory,
-            AzureClientFactory<IDnsManagementClient> dnsClientFactory,
-            AzureClientFactory<IWebSiteManagementClient> webSiteClientFactory)
+            IEnvironmentVariables environmentVariables)
         {
             this.commands = commands;
             this.userSettings = userSettings;
             this.contextFactory = contextFactory;
             this.fileUtil = fileUtil;
             this.environmentVariables = environmentVariables;
-            this.resourceClientFactory = resourceClientFactory;
-            this.dnsClientFactory = dnsClientFactory;
-            this.webSiteClientFactory = webSiteClientFactory;
         }
 
         /// <summary>
@@ -80,7 +62,6 @@ namespace Certes.Cli
                     ConfigureAccountBranch(config);
                     ConfigureOrderBranch(config);
                     ConfigureCertificateBranch(config);
-                    ConfigureAzureBranch(config);
                 });
 
                 var result = app.Run(args);
@@ -503,133 +484,6 @@ namespace Certes.Cli
             });
         }
 
-        private void ConfigureAzureBranch(IConfigurator config)
-        {
-            config.AddBranch(CommandGroup.Azure.Command, branch =>
-            {
-                branch.AddAsyncDelegate<AzureSetSettings>("set", async (_, settings) =>
-                {
-                    var loginInfo = new ServicePrincipalLoginInformation
-                    {
-                        ClientId = settings.ClientId,
-                        ClientSecret = settings.ClientSecret,
-                    };
-
-                    var credentials = new AzureCredentials(loginInfo, settings.TenantId, AzureEnvironment.AzureGlobalCloud)
-                        .WithDefaultSubscription(settings.SubscriptionId);
-
-                    var restClient = RestClient.Configure()
-                        .WithEnvironment(AzureEnvironment.AzureGlobalCloud)
-                        .WithCredentials(credentials)
-                        .Build();
-
-                    var resourceGroups = await LoadResourceGroups(restClient);
-                    await userSettings.SetAzureSettings(new AzureSettings
-                    {
-                        TenantId = settings.TenantId,
-                        ClientId = settings.ClientId,
-                        ClientSecret = settings.ClientSecret,
-                        SubscriptionId = settings.SubscriptionId,
-                    });
-
-                    WriteJson(new
-                    {
-                        resourceGroups,
-                    });
-
-                    return 0;
-                }).WithDescription(Strings.HelpCommandAzureSet);
-
-                branch.AddAsyncDelegate<AzureDnsSettings>("dns", async (_, settings) =>
-                {
-                    var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, fallbackToSettings: true);
-                    consoleLogger.Debug("Updating account on '{0}'.", serverUri);
-                    var azureCredentials = await CreateAzureRestClient(BuildAzureSettings(settings));
-
-                    var acme = contextFactory.Invoke(serverUri, key);
-                    var orderCtx = acme.Order(settings.OrderId);
-                    var authzCtx = await orderCtx.Authorization(settings.Domain)
-                        ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, settings.Domain));
-                    var challengeCtx = await authzCtx.Dns()
-                        ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, "dns"));
-
-                    var authz = await authzCtx.Resource();
-                    var dnsValue = acme.AccountKey.DnsTxt(challengeCtx.Token);
-                    using var client = dnsClientFactory.Invoke(azureCredentials);
-                    client.SubscriptionId = azureCredentials.Credentials.DefaultSubscriptionId;
-
-                    var idValue = authz.Identifier.Value;
-                    var zone = await FindDnsZone(client, idValue);
-                    var name = zone.Name.Length == idValue.Length
-                        ? "_acme-challenge"
-                        : "_acme-challenge." + idValue.Substring(0, idValue.Length - zone.Name.Length - 1);
-
-                    consoleLogger.Debug("Adding TXT record '{0}' for '{1}' in '{2}' zone.", dnsValue, name, zone.Name);
-                    var recordSet = await client.RecordSets.CreateOrUpdateAsync(
-                        settings.ResourceGroup,
-                        zone.Name,
-                        name,
-                        RecordType.TXT,
-                        new RecordSetInner(name: name, tTL: 300, txtRecords: new[] { new TxtRecord(new[] { dnsValue }) }));
-
-                    WriteJson(new
-                    {
-                        data = recordSet,
-                    });
-
-                    return 0;
-                }).WithDescription(Strings.HelpCommandAzureDns);
-
-                branch.AddAsyncDelegate<AzureAppSettings>("app", async (_, settings) =>
-                {
-                    var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, fallbackToSettings: true);
-                    var azureCredentials = await CreateAzureRestClient(BuildAzureSettings(settings));
-                    var privKey = await CommandBase.ReadKey(settings.PrivateKey, "CERTES_CERT_KEY", fileUtil, environmentVariables);
-                    if (privKey == null)
-                    {
-                        throw new CertesCliException(Strings.ErrorNoPrivateKey);
-                    }
-
-                    var acme = contextFactory.Invoke(serverUri, key);
-                    var orderCtx = acme.Order(settings.OrderId);
-                    var order = await orderCtx.Resource();
-                    if (order.Certificate == null)
-                    {
-                        throw new CertesCliException(string.Format(Strings.ErrorOrderIncompleted, orderCtx.Location));
-                    }
-
-                    var cert = await orderCtx.Download(settings.PreferredChain);
-                    using var x509Cert = X509CertificateLoader.LoadCertificate(cert.Certificate.ToDer());
-                    var thumbprint = x509Cert.Thumbprint;
-
-                    using var client = webSiteClientFactory.Invoke(azureCredentials);
-                    client.SubscriptionId = azureCredentials.Credentials.DefaultSubscriptionId;
-                    var certUploaded = await FindCertificate(client, settings.ResourceGroup, thumbprint);
-                    if (certUploaded == null)
-                    {
-                        certUploaded = await UploadCertificate(client, settings.ResourceGroup, settings.App, settings.Slot, cert.ToPfx(privKey), thumbprint);
-                    }
-
-                    var hostNameBinding = new HostNameBindingInner
-                    {
-                        SslState = SslState.SniEnabled,
-                        Thumbprint = certUploaded.Thumbprint,
-                    };
-
-                    var hostName = string.IsNullOrWhiteSpace(settings.Slot)
-                        ? await client.WebApps.CreateOrUpdateHostNameBindingAsync(settings.ResourceGroup, settings.App, settings.Domain, hostNameBinding)
-                        : await client.WebApps.CreateOrUpdateHostNameBindingSlotAsync(settings.ResourceGroup, settings.App, settings.Domain, hostNameBinding, settings.Slot);
-
-                    WriteJson(new
-                    {
-                        data = hostName,
-                    });
-
-                    return 0;
-                }).WithDescription(Strings.HelpCommandAzureApp);
-            });
-        }
-
         private async Task<(Uri Location, CertificateChain Cert)> DownloadCertificate(Uri orderUri, string preferredChain, Uri server, string keyPath)
         {
             var (serverUri, key) = await ReadAccountKey(server, keyPath, fallbackToSettings: true, required: true);
@@ -644,130 +498,6 @@ namespace Certes.Cli
             }
 
             return (order.Certificate, await orderCtx.Download(preferredChain));
-        }
-
-        private async Task<RestClient> CreateAzureRestClient(AzureSettings options)
-        {
-            var azSettings = await userSettings.GetAzureSettings();
-            var tenantId = options.TenantId ?? azSettings.TenantId;
-            var clientId = options.ClientId ?? azSettings.ClientId;
-            var secret = options.ClientSecret ?? azSettings.ClientSecret;
-            var subscriptionId = options.SubscriptionId ?? azSettings.SubscriptionId;
-
-            ValidateOption(tenantId, AzureCommandBase.AzureTenantIdOption);
-            ValidateOption(clientId, AzureCommandBase.AzureClientIdOption);
-            ValidateOption(secret, AzureCommandBase.AzureSecretOption);
-            ValidateOption(subscriptionId, AzureCommandBase.AzureSubscriptionIdOption);
-
-            var loginInfo = new ServicePrincipalLoginInformation
-            {
-                ClientId = clientId,
-                ClientSecret = secret,
-            };
-
-            return RestClient.Configure()
-                .WithEnvironment(AzureEnvironment.AzureGlobalCloud)
-                .WithCredentials(new AzureCredentials(loginInfo, tenantId, AzureEnvironment.AzureGlobalCloud)
-                    .WithDefaultSubscription(subscriptionId))
-                .Build();
-        }
-
-        private static void ValidateOption(string value, string optionName)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new CertesCliException(string.Format(Strings.ErrorOptionMissing, optionName));
-            }
-        }
-
-        private static AzureSettings BuildAzureSettings(AzureCredentialSettings settings)
-        {
-            return new AzureSettings
-            {
-                TenantId = settings.TenantId,
-                ClientId = settings.ClientId,
-                ClientSecret = settings.ClientSecret,
-                SubscriptionId = settings.SubscriptionId,
-            };
-        }
-
-        private async Task<IList<(string Location, string Name)>> LoadResourceGroups(RestClient restClient)
-        {
-            using var client = resourceClientFactory.Invoke(restClient);
-            client.SubscriptionId = restClient.Credentials.DefaultSubscriptionId;
-            var resourceGroups = await client.ResourceGroups.ListAsync();
-            return resourceGroups.Select(g => (g.Location, g.Name)).ToArray();
-        }
-
-        private async Task<ZoneInner> FindDnsZone(IDnsManagementClient client, string identifier)
-        {
-            var zones = await client.Zones.ListAsync();
-            while (zones != null)
-            {
-                foreach (var zone in zones)
-                {
-                    if (identifier.EndsWith($".{zone.Name}", StringComparison.OrdinalIgnoreCase) ||
-                        identifier.Equals(zone.Name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        var options = new JsonSerializerOptions { WriteIndented = true };
-                        consoleLogger.Debug("DNS zone:\n{0}", JsonSerializer.Serialize(zone, options));
-                        return zone;
-                    }
-                }
-
-                zones = string.IsNullOrWhiteSpace(zones.NextPageLink)
-                    ? null
-                    : await client.Zones.ListNextAsync(zones.NextPageLink);
-            }
-
-            throw new CertesCliException(string.Format(Strings.ErrorDnsZoneNotFound, identifier));
-        }
-
-        private static async Task<CertificateInner> UploadCertificate(
-            IWebSiteManagementClient client,
-            string resourceGroup,
-            string appName,
-            string appSlot,
-            PfxBuilder pfx,
-            string thumbprint)
-        {
-            var pfxName = string.Format(CultureInfo.InvariantCulture, "[certes] {0:yyyyMMddhhmmss}", DateTime.UtcNow);
-            var pfxPassword = Guid.NewGuid().ToString("N");
-            var pfxBytes = pfx.Build(pfxName, pfxPassword);
-
-            var webApp = string.IsNullOrWhiteSpace(appSlot)
-                ? await client.WebApps.GetAsync(resourceGroup, appName)
-                : await client.WebApps.GetSlotAsync(resourceGroup, appName, appSlot);
-
-            var certData = new CertificateInner
-            {
-                PfxBlob = pfxBytes,
-                Password = pfxPassword,
-                Location = webApp.Location,
-            };
-
-            return await client.Certificates.CreateOrUpdateAsync(resourceGroup, thumbprint, certData);
-        }
-
-        private static async Task<CertificateInner> FindCertificate(IWebSiteManagementClient client, string resourceGroup, string thumbprint)
-        {
-            var certificates = await client.Certificates.ListByResourceGroupAsync(resourceGroup);
-            while (certificates != null)
-            {
-                foreach (var azCert in certificates)
-                {
-                    if (string.Equals(azCert.Thumbprint, thumbprint, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return azCert;
-                    }
-                }
-
-                certificates = certificates.NextPageLink == null
-                    ? null
-                    : await client.Certificates.ListByResourceGroupNextAsync(certificates.NextPageLink);
-            }
-
-            return null;
         }
 
         private static void WriteJson(object value)
@@ -995,81 +725,6 @@ namespace Certes.Cli
 
         [CommandArgument(1, "<password>")]
         public string Password { get; init; }
-    }
-
-    internal abstract class AzureCredentialSettings : CommandSettings
-    {
-        [CommandOption("--tenant-id <TENANT_ID>")]
-        public string TenantId { get; init; }
-
-        [CommandOption("--client-id <CLIENT_ID>")]
-        public string ClientId { get; init; }
-
-        [CommandOption("--client-secret <CLIENT_SECRET>")]
-        public string ClientSecret { get; init; }
-
-        [CommandOption("--subscription-id <SUBSCRIPTION_ID>")]
-        public string SubscriptionId { get; init; }
-
-        [CommandOption("--resource-group <RESOURCE_GROUP>")]
-        public string ResourceGroup { get; init; }
-    }
-
-    internal sealed class AzureSetSettings : CommandSettings
-    {
-        [CommandOption("--tenant-id <TENANT_ID>")]
-        public string TenantId { get; init; }
-
-        [CommandOption("--client-id <CLIENT_ID>")]
-        public string ClientId { get; init; }
-
-        [CommandOption("--client-secret <CLIENT_SECRET>")]
-        public string ClientSecret { get; init; }
-
-        [CommandOption("--subscription-id <SUBSCRIPTION_ID>")]
-        public string SubscriptionId { get; init; }
-    }
-
-    internal sealed class AzureDnsSettings : AzureCredentialSettings
-    {
-        [CommandArgument(0, "<order-id>")]
-        public Uri OrderId { get; init; }
-
-        [CommandArgument(1, "<domain>")]
-        public string Domain { get; init; }
-
-        [CommandOption("-s|--server <SERVER>")]
-        public Uri Server { get; init; }
-
-        [CommandOption("--key-path|--key|-k <KEY_PATH>")]
-        public string KeyPath { get; init; }
-    }
-
-    internal sealed class AzureAppSettings : AzureCredentialSettings
-    {
-        [CommandOption("--slot <SLOT>")]
-        public string Slot { get; init; }
-
-        [CommandOption("--private-key <PRIVATE_KEY>")]
-        public string PrivateKey { get; init; }
-
-        [CommandOption("--preferred-chain <PREFERRED_CHAIN>")]
-        public string PreferredChain { get; init; }
-
-        [CommandArgument(0, "<order-id>")]
-        public Uri OrderId { get; init; }
-
-        [CommandArgument(1, "<domain>")]
-        public string Domain { get; init; }
-
-        [CommandArgument(2, "<app>")]
-        public string App { get; init; }
-
-        [CommandOption("-s|--server <SERVER>")]
-        public Uri Server { get; init; }
-
-        [CommandOption("--key-path|--key|-k <KEY_PATH>")]
-        public string KeyPath { get; init; }
     }
 
 }

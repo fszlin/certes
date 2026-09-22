@@ -76,19 +76,6 @@ namespace Certes.Cli
             Assert.Equal(1, CountOccurrences(text, "pfx <order-id> <password>"));
         }
 
-        [Fact]
-        public async Task AzureHelpListsCommandsOnce()
-        {
-            var result = await RunCli("az", "--help");
-
-            Assert.Equal(0, result.ExitCode);
-            var text = StripAnsi(result.StdOut);
-
-            Assert.Equal(1, CountOccurrences(text, "set"));
-            Assert.Equal(1, CountOccurrences(text, "dns <order-id> <domain>"));
-            Assert.Equal(1, CountOccurrences(text, "app <order-id> <domain> <app>"));
-        }
-
         private static async Task<(int ExitCode, string StdOut, string StdErr)> RunCli(params string[] args)
         {
             var cliDll = Path.GetFullPath(Path.Combine(

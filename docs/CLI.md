@@ -141,24 +141,6 @@ On your application server you need to create file which will be available under
 TODO: TLS-ALPN-01
 -->
 
-### Configure DNS challenge on Azure DNS
-
-If you are using [Azure DNS](https://azure.microsoft.com/en-ca/services/dns) service,
-you can setup the `TXT` recod using command:
-
-```PowerShell
-certes az dns https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
-  --resource-group my-res-grp                                     `
-  --subscription-id 00000000-0000-0000-0000-000000000000          `
-  --tenant-id 00000000-0000-0000-0000-000000000000                `
-  --client-id 00000000-0000-0000-0000-000000000000                `
-  --client-secret my-pwd
-```
-
-> Azure service principal is used to deploy azure resources. If you don't have
-> one already, follow [these steps](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal?view=azure-cli-latest) to create one, and please ensure the 
-> application has `DNS Zone Contributor` role assigned.
-
 ### Completing Challenges
 
 Once the responses for challenges are ready, we can let the ACME service to
@@ -216,24 +198,4 @@ certes cert pfx https://acme-v02.api.letsencrypt.org/acme/order/2/3 pfx-password
 ```
 
 That's all, you now have your free SSL certificate ready for deploy.
-
-### Deploy SSL Certificate to Azure App Services
-
-Certes CLI also support for deploying the certificates to [Azure App Service](https://azure.microsoft.com/en-us/services/app-service/), `Web App` or `Function App`:
-
-```PowerShell
-certes az app https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
-  app-svc-name *.example.com                                      `
-  --private-key cert-key.pem                                      `
-  --resource-group my-res-grp                                     `
-  --subscription-id 00000000-0000-0000-0000-000000000000          `
-  --tenant-id 00000000-0000-0000-0000-000000000000                `
-  --client-id 00000000-0000-0000-0000-000000000000                `
-  --client-secret my-pwd
-```
-
-> The Azure service principal should have `Website Contributor` role assigned.
-
-> Use the `--slot` option to deploy the SSL certificate to non-production slots.
-
 
