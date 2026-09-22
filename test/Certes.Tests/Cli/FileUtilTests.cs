@@ -95,28 +95,21 @@ namespace Certes.Cli
         }
 
         [Fact]
-        public async Task ThrowsOnPermissionFailure()
+        public async Task SucceedsWithOverwriteOnExistingFile()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux) &&
-                !RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                // This test is Unix-specific; Windows doesn't use this code path
-                return;
-            }
-
+            // Verify that atomic writes correctly replace existing files.
+            // This exercises the File.Replace / File.Move path in WriteAllBytes.
             var file = new FileUtil();
-            var filePath = "./Data/permission-test.txt";
+            var filePath = "./Data/overwrite-test.txt";
             
-            // First write should succeed
-            await file.WriteAllText(filePath, "test data");
+            // Write initial content
+            await file.WriteAllText(filePath, "initial data");
+            Assert.Equal("initial data", await file.ReadAllText(filePath));
 
-            // Simulate permission failure by making the file immutable
-            // (This is a conceptual test; actual permission denial varies by system)
-            // For now, we verify that permission hardening is called
-            // (actual failure testing would require root/admin access)
-            
-            var content = await file.ReadAllText(filePath);
-            Assert.Equal("test data", content);
+            // Overwrite with different content
+            await file.WriteAllText(filePath, "updated data");
+            Assert.Equal("updated data", await file.ReadAllText(filePath));
+
             File.Delete(filePath);
         }
     }
