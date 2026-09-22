@@ -46,8 +46,8 @@ all four checks at `80ce393`. The .NET 8 asset/smoke additions also passed in
   Linux runner, waits for readiness, executes the 13 integration cases on .NET 10,
   and tears down the containers even on failure. Local macOS ARM64 verification
   and Linux [run 35550345812](https://github.com/fszlin/certes/actions/runs/35550345812)
-  passed at `0bc5579`; that run preceded the strict-mode follow-up. It is not yet a required
-  check. See [local setup](../scripts/Pebble/README.md) for scope and commands.
+  passed at `0bc5579`; repeated successful runs have since established stability.
+  This check is now required on `main`. See [local setup](../scripts/Pebble/README.md) for scope and commands.
 
 The six former HTTP 401 failures used a hosted CA to obtain test certificates.
 They now generate valid root/intermediate/leaf chains and matching keys locally,
@@ -75,9 +75,8 @@ receive image updates and are not immutable snapshots.
 Action references are pinned to commit SHAs. Jobs have timeouts and superseded
 PR runs are cancelled. Push and manual runs use unique concurrency groups so
 rapid merges do not replace pending or running main builds. Required branch
-checks are now configured after the successful post-merge run
-[35546812954](https://github.com/fszlin/certes/actions/runs/35546812954): all three
-`Build (...)` checks and `Package smoke checks` are required on `main`, restricted
+checks are configured after successful verification: all three `Build (...)` checks,
+`Package smoke checks`, and `Pebble integration` are required on `main`, restricted
 to the GitHub Actions app, with branches required to be up to date. Existing
 administrator bypass settings were preserved.
 
@@ -178,11 +177,11 @@ complete cleanup beyond the disabled repository webhooks:
 
 ## Replacement plan
 
-Verify the new Pebble integration job on hosted runners before making it required.
-After repeated successful strict-mode runs establish stability, promote `Pebble
-integration` to a required branch check. After production polling/nonce fixes,
-add an optional stress job with delays, nonce rejection, and authorization reuse
-enabled; baseline success does not cover those conditions.
+The Pebble integration job has been verified on hosted runners and promoted to a
+required branch check. Further improvements to expand integration coverage are
+possible; after production polling/nonce fixes, add an optional stress job with
+delays, nonce rejection, and authorization reuse enabled; baseline success does not
+cover those conditions.
 
 Use focused PRs to introduce:
 
