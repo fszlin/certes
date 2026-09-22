@@ -43,11 +43,11 @@ namespace Certes.Cli
                     config.Settings.StrictParsing = false;
                     config.Settings.ConvertFlagsToRemainingArguments = true;
 
-                    ConfigureRelay(config, legacyDispatch, CommandGroup.Server.Command, CommandGroup.Server.Help);
-                    ConfigureRelay(config, legacyDispatch, CommandGroup.Account.Command, CommandGroup.Account.Help);
-                    ConfigureRelay(config, legacyDispatch, CommandGroup.Order.Command, CommandGroup.Order.Help);
-                    ConfigureRelay(config, legacyDispatch, CommandGroup.Certificate.Command, CommandGroup.Certificate.Help);
-                    ConfigureRelay(config, legacyDispatch, CommandGroup.Azure.Command, CommandGroup.Azure.Help);
+                    ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Server);
+                    ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Account);
+                    ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Order);
+                    ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Certificate);
+                    ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Azure);
                 });
 
                 var result = app.Run(args);
@@ -61,16 +61,22 @@ namespace Certes.Cli
             }
         }
 
-        private static void ConfigureRelay(IConfigurator config, Func<string[], Task<int>> legacyDispatch, string groupName, string description)
+        private void ConfigureRelayBranch(IConfigurator config, Func<string[], Task<int>> legacyDispatch, CommandGroup group)
         {
-            config.AddDelegate(groupName, context =>
+            config.AddBranch(group.Command, branch =>
             {
-                var forwarded = new[] { groupName }
-                    .Concat(context.Remaining.Raw ?? Array.Empty<string>())
-                    .ToArray();
-                return legacyDispatch(forwarded).GetAwaiter().GetResult();
-            })
-            .WithDescription(description);
+                foreach (var commandName in commands
+                    .Where(c => c.Group == group)
+                    .Select(c => c.GetCommandName())
+                    .Distinct(StringComparer.OrdinalIgnoreCase))
+                {
+                    branch.AddDelegate(commandName, context =>
+                    {
+                        var forwarded = (context.Arguments ?? Array.Empty<string>()).ToArray();
+                        return legacyDispatch(forwarded).GetAwaiter().GetResult();
+                    });
+                }
+            });
         }
 
         /// <summary>
