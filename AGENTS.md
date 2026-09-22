@@ -60,7 +60,8 @@ appropriate guide when behavior changes; avoid duplicating long usage examples.
 
 - Use short-lived branches for focused tasks, based on current `main`. Examples:
   `docs/revival-guide`, `build/net10`, `test/offline-fixtures`,
-  `fix/order-polling`, and `deps/bouncycastle`.
+  `fix/order-polling`, and `deps/bouncycastle`. Always rebase or merge from the
+  latest `origin/main` before creating a PR.
 - Keep each branch/PR independently reviewable and verifiable. Do not collect
   the entire revival on a long-lived branch or mix unrelated changes.
 - Before creating or switching branches, inspect the working tree and current
@@ -79,7 +80,8 @@ appropriate guide when behavior changes; avoid duplicating long usage examples.
 ## AI assistance disclosure
 
 - In PR descriptions and review summaries, briefly disclose the coding harness
-  and model used, when known. Do not guess a model name or version.
+  and model used, when known. Do not guess a model name or version. Hide the
+  provider prefix (e.g., use `claude-haiku-4.5` rather than `github-copilot/claude-haiku-4.5`).
 - State whether AI assisted with implementation, review, or both. A session
   checking its own changes is a self-review, not an independent review.
 - Include checks actually run, their results, and any unresolved limitations.
@@ -226,8 +228,8 @@ and test reruns are unnecessary unless code examples or behavior also change.
 
 ## Known revival baseline and pitfalls
 
-Baseline reviewed on 2026-09-20, using SDK 10.0.301 on macOS ARM64. Protocol
-observations below originate at `ffa00c6`; build/test and audit status
+Baseline reviewed on 2026-09-20, updated 2026-09-22 to reflect Pebble integration
+promotion. Protocol observations originate at `ffa00c6`; build/test and audit status
 were updated after the .NET 10 migration:
 
 - The core library built for all targets; CLI/unit-test compilation also passed.
@@ -255,11 +257,12 @@ were updated after the .NET 10 migration:
   retarget reported no vulnerable packages in the library or CLI graphs; the old
   net6.0 graph had flagged `System.Text.RegularExpressions 4.3.0`. Dependencies
   were not upgraded in this migration. Re-run audits before drawing current
-  conclusions; package findings do not prove exploitability.
+   conclusions; package findings do not prove exploitability.
 - Legacy CI has been retired, repository webhooks disabled, and Azure build/release
-  automation disabled and verified. Initial Actions build/package checks are
-  defined with automatic unit-test execution; all four checks are required on main
-  (see `docs/ci-migration.md`).
+   automation disabled and verified. GitHub Actions build/package/integration checks are
+   defined with automatic unit-test and local Pebble execution; all five checks are required
+   on main: Build (ubuntu-24.04), Build (windows-2025), Build (macos-26), Package smoke checks,
+   and Pebble integration (see `docs/ci-migration.md`).
 - Cancellation, renewal information, certificate profiles, and IP identifiers
   are not implemented in the current APIs.
 
