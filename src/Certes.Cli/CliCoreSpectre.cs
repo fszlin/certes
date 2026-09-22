@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Certes.Cli.Commands;
+using Certes.Cli.Settings;
+using Certes.Json;
 using NLog;
 using Spectre.Console.Cli;
 
@@ -18,11 +21,19 @@ namespace Certes.Cli
     internal class CliCoreSpectre
     {
         private readonly ILogger consoleLogger = LogManager.GetLogger(nameof(CliCoreSpectre));
+        private static readonly JsonSerializerOptions jsonSerializerSettings = JsonUtil.CreateSettings();
         private readonly IEnumerable<ICliCommand> commands;
+        private readonly IUserSettings userSettings;
+        private readonly AcmeContextFactory contextFactory;
 
-        public CliCoreSpectre(IEnumerable<ICliCommand> commands)
+        public CliCoreSpectre(
+            IEnumerable<ICliCommand> commands,
+            IUserSettings userSettings,
+            AcmeContextFactory contextFactory)
         {
             this.commands = commands;
+            this.userSettings = userSettings;
+            this.contextFactory = contextFactory;
         }
 
         /// <summary>
@@ -48,7 +59,7 @@ namespace Certes.Cli
                     config.Settings.StrictParsing = false;
                     config.Settings.ConvertFlagsToRemainingArguments = true;
 
-                    ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Server);
+                    ConfigureServerBranch(config);
                     ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Account);
                     ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Order);
                     ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Certificate);
@@ -79,11 +90,53 @@ namespace Certes.Cli
                 return false;
             }
 
-            return args[0] == CommandGroup.Server.Command ||
-                args[0] == CommandGroup.Account.Command ||
+            return args[0] == CommandGroup.Account.Command ||
                 args[0] == CommandGroup.Order.Command ||
                 args[0] == CommandGroup.Certificate.Command ||
                 args[0] == CommandGroup.Azure.Command;
+        }
+
+        private void ConfigureServerBranch(IConfigurator config)
+        {
+            config.AddBranch(CommandGroup.Server.Command, branch =>
+            {
+                branch.AddAsyncDelegate<ServerSetSettings>("set", async (_, settings) =>
+                {
+                    var ctx = contextFactory.Invoke(settings.NewServer, null);
+                    consoleLogger.Debug("Loading directory from '{0}'", settings.NewServer);
+                    var directory = await ctx.GetDirectory();
+                    await userSettings.SetDefaultServer(settings.NewServer);
+
+                    WriteJson(new
+                    {
+                        location = settings.NewServer,
+                        resource = directory,
+                    });
+
+                    return 0;
+                }).WithDescription(Strings.HelpCommandServerSet);
+
+                branch.AddAsyncDelegate<ServerShowSettings>("show", async (_, settings) =>
+                {
+                    var serverUri = settings.Server ?? await userSettings.GetDefaultServer();
+                    var ctx = contextFactory.Invoke(serverUri, null);
+                    consoleLogger.Debug("Loading directory from '{0}'", serverUri);
+                    var directory = await ctx.GetDirectory();
+
+                    WriteJson(new
+                    {
+                        location = serverUri,
+                        resource = directory,
+                    });
+
+                    return 0;
+                }).WithDescription(Strings.HelpCommandServerShow);
+            });
+        }
+
+        private static void WriteJson(object value)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(value, jsonSerializerSettings));
         }
 
         private void ConfigureRelayBranch(IConfigurator config, Func<string[], Task<int>> legacyDispatch, CommandGroup group)
@@ -156,6 +209,18 @@ namespace Certes.Cli
         public string Group { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+    }
+
+    internal sealed class ServerSetSettings : CommandSettings
+    {
+        [CommandArgument(0, "<NEW_SERVER>")]
+        public Uri NewServer { get; init; }
+    }
+
+    internal sealed class ServerShowSettings : CommandSettings
+    {
+        [CommandOption("-s|--server <SERVER>")]
+        public Uri Server { get; init; }
     }
 
 }
