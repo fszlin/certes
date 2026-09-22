@@ -60,6 +60,7 @@ Use a staging CA while developing an issuance workflow.
 - [Library getting-started guide](docs/README.md)
 - [ACME API guide](docs/APIv2.md)
 - [CLI guide](docs/CLI.md)
+- [CLI Azure modernization plan](docs/cli-azure-modernization-plan.md)
 - [Historical changelog](docs/CHANGELOG.md)
 - [Contributing](.github/CONTRIBUTING.md)
 
