@@ -63,7 +63,7 @@ All notable changes to this project will be documented in this file.
   Recompile callers that rely on the optional default after upgrading, because C#
   embeds optional argument values at the call site.
 - Target .NET 10 for the CLI and modern tests. Ship library `net10.0` and `net8.0`
-  assets alongside retained `netstandard2.0` and `net462` assets. .NET 8/9 library
+  assets alongside retained `netstandard2.0` compatibility. .NET 8/9 library
   consumers select `net8.0`; .NET 6/7 consumers select `netstandard2.0` rather than
   the removed `net6.0` asset. The latter path is compile-checked, not runtime-tested.
 - Use the latest `10.0.x` SDK in CI and run the offline unit suite natively on .NET 10.

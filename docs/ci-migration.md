@@ -97,7 +97,7 @@ SourceLink maintenance. These checks do not verify debugger source retrieval.
   the latest `10.0.x` SDK and logs `dotnet --info` in both jobs. CI follows .NET 10
   SDK updates rather than pinning a patch/feature band; historical verification
   results record the exact versions used at the time.
-- Library assets are `net10.0`, `net8.0`, `netstandard2.0`, and `net462`.
+- Library assets are `net10.0`, `net8.0`, and `netstandard2.0`.
   .NET 8/9 consumers select `net8.0`; .NET 6/7 select `netstandard2.0` after removal
   of the dedicated `net6.0` asset. The .NET 8 asset is covered by a native package
   smoke run, not the full unit suite. Microsoft support for .NET 8 ends on
