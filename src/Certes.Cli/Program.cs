@@ -18,7 +18,7 @@ namespace Certes.Cli
             ConfigureConsoleLogger();
             var container = ConfigureContainer();
 
-            var succeed = await container.Resolve<CliCore>().Run(args);
+            var succeed = await container.Resolve<CliCoreSpectre>().Run(args);
             return succeed ? 0 : 1;
         }
 
@@ -29,6 +29,7 @@ namespace Certes.Cli
                 .RegisterAssemblyTypes(typeof(CliCore).GetTypeInfo().Assembly)
                 .AsImplementedInterfaces();
             builder.RegisterType<CliCore>();
+            builder.RegisterType<CliCoreSpectre>();
             builder.RegisterType<AcmeContext>().As<IAcmeContext>();
             builder.RegisterType<DnsManagementClient>().As<IDnsManagementClient>();
             builder.RegisterType<ResourceManagementClient>().As<IResourceManagementClient>();
