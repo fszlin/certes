@@ -1,15 +1,13 @@
 # CI migration to GitHub Actions
 
-## Status as of 2026-09-20
+## Status as of 2026-09-22
 
-Certes has retired its legacy automation. An initial GitHub Actions workflow is
-defined for build/package validation. All three OS builds and package smoke
-checks passed in [hosted run 35544493782](https://github.com/fszlin/certes/actions/runs/35544493782)
-at commit `0d29d32`; that initial rollout did not execute unit tests. The follow-up
-offline-fixture change adds automatic unit tests to each OS job. All 145 tests
-passed on each OS, alongside package smoke checks, in
-[hosted run 35545870442](https://github.com/fszlin/certes/actions/runs/35545870442)
-at commit `09490e1`, using .NET 10 roll-forward.
+Certes has retired its legacy automation and moved active validation to GitHub
+Actions. Build, package smoke, and Pebble integration checks are required on
+`main`. All five required checks passed in
+[hosted run 35765283787](https://github.com/fszlin/certes/actions/runs/35765283787)
+at commit `5b58435`, with the full 196-test offline unit suite and all 13 Pebble
+integration tests passing.
 Run the local checks in
 [AGENTS.md](https://github.com/fszlin/certes/blob/main/AGENTS.md) and include their
 results in PRs during the transition.
@@ -20,7 +18,7 @@ results in PRs during the transition.
 manual dispatch, with the latest `10.0.x` SDK installed by `actions/setup-dotnet` and read-only
 repository permissions. The .NET 10 migration changes the modern targets from
 `net6.0` to `net10.0` and removes diagnostic runtime roll-forward. Local verification
-passed all 145 tests on .NET 10. Hosted run
+now passes all 196 offline tests on .NET 10. Hosted run
 [35548024969](https://github.com/fszlin/certes/actions/runs/35548024969) verified
 all four checks at `80ce393`. The .NET 8 asset/smoke additions also passed in
 [run 35549055095](https://github.com/fszlin/certes/actions/runs/35549055095).
@@ -46,14 +44,17 @@ all four checks at `80ce393`. The .NET 8 asset/smoke additions also passed in
   Linux runner, waits for readiness, executes the 13 integration cases on .NET 10,
   and tears down the containers even on failure. Local macOS ARM64 verification
   and Linux [run 35550345812](https://github.com/fszlin/certes/actions/runs/35550345812)
-  passed at `0bc5579`; repeated successful runs have since established stability.
-  This check is now required on `main`. See [local setup](../scripts/Pebble/README.md) for scope and commands.
+  passed at `0bc5579`; recent runs including
+  [35765283787](https://github.com/fszlin/certes/actions/runs/35765283787) remain
+  green. This check is required on `main`. See
+  [local setup](../scripts/Pebble/README.md) for scope and commands.
 
 The six former HTTP 401 failures used a hosted CA to obtain test certificates.
 They now generate valid root/intermediate/leaf chains and matching keys locally,
 and inspect exported PFX contents. `IntegrationHelper.cs` moved to the integration
 project; unit tests no longer have access to that network helper. No test cases
-were disabled. A missing-issuer failure test brings the suite to 145 cases.
+were disabled. Subsequent additions and migration work bring the offline unit
+suite to 196 cases.
 
 The new PFX fixture covers RSA and ES256/ES384/ES512 leaf keys, all issued by
 RSA-signing CAs. It does not exercise ECDSA-signed chains, cross-signing, unordered
@@ -96,7 +97,7 @@ SourceLink maintenance. These checks do not verify debugger source retrieval.
   the latest `10.0.x` SDK and logs `dotnet --info` in both jobs. CI follows .NET 10
   SDK updates rather than pinning a patch/feature band; historical verification
   results record the exact versions used at the time.
-- Library assets are `net10.0`, `net8.0`, `netstandard2.0`, and `net462`.
+- Library assets are `net10.0`, `net8.0`, and `netstandard2.0`.
   .NET 8/9 consumers select `net8.0`; .NET 6/7 select `netstandard2.0` after removal
   of the dedicated `net6.0` asset. The .NET 8 asset is covered by a native package
   smoke run, not the full unit suite. Microsoft support for .NET 8 ends on

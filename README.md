@@ -12,14 +12,14 @@ for provisioning challenge responses and scheduling renewals.
 ## Project status
 
 Certes is being revived after a period of inactivity. The immediate goal is a
-reproducible build and reliable tests on a supported .NET runtime, followed by
-dependency updates and issuance/export fixes.
+reproducible build and reliable tests on supported .NET runtimes, followed by
+focused protocol hardening and dependency modernization.
 
 The current checkout still targets:
 
 | Component | Targets |
 | --- | --- |
-| Library | `net10.0`, `net8.0`, `netstandard2.0`, `net462` |
+| Library | `net10.0`, `net8.0`, `netstandard2.0` |
 | CLI | `net10.0` |
 | Unit and integration tests | `net10.0`, `net462` |
 | Azure Functions test helper | `net7.0` |
@@ -29,12 +29,12 @@ and logs the resolved version.
 The unused Functions helper remains on out-of-support .NET 7 pending retirement.
 Targets describe this checkout, not necessarily the latest published packages.
 
-The library retains .NET Standard 2.0 and .NET Framework 4.6.2 compatibility assets;
-consumers on .NET 8/9 select `net8.0`, while .NET 6/7 use `netstandard2.0` instead
-of a dedicated `net6.0` build. CI runs package smoke checks on .NET 8 and 10 and
-compiles a .NET 6 consumer but does not run it on the
-unsupported .NET 6 runtime. The next CLI package requires .NET 10; this is a
-runtime requirement change for existing CLI users.
+The library retains .NET Standard 2.0 compatibility assets; consumers on .NET 8/9
+select `net8.0`, while .NET 6/7 use `netstandard2.0` instead of a dedicated
+`net6.0` build. CI runs package smoke checks on .NET 8 and 10 and compiles a
+.NET 6 consumer but does not run it on the unsupported .NET 6 runtime. The next
+CLI package requires .NET 10; this is a runtime requirement change for existing
+CLI users.
 
 .NET 8 remains supported by Microsoft until November 10, 2026. Its library
 asset supports existing consumers; .NET 10 is the development and CLI baseline.
@@ -75,9 +75,9 @@ contributors and LLM coding agents.
 See the [branching and release strategy](AGENTS.md#branching-and-releases)
 before preparing a contribution or release.
 
-The initial [GitHub Actions workflow](.github/workflows/build.yml) checks
-cross-platform compilation, the full offline unit suite, and local package
-consumption. Tests run directly on .NET 10. See
+The [GitHub Actions workflow](.github/workflows/build.yml) checks
+cross-platform compilation, the full offline unit suite, package smoke
+consumption, and local Pebble integration. Tests run directly on .NET 10. See
 [CI migration status](docs/ci-migration.md) for coverage and
 remaining work. Legacy build/release automation is disabled.
 
@@ -100,11 +100,12 @@ Passing unit tests do not establish current CA interoperability.
 
 ### Revival priorities
 
-1. Expand local Pebble integration coverage as protocol and export fixes land.
-2. Fix order polling, certificate-chain export, alternate-chain handling, and
-   CLI secret-file handling.
-3. Refresh dependencies, validate package consumption, and update documentation
-   before the next release; prereleases are optional when useful for validation.
+1. Harden order lifecycle behavior (polling, retry budgets, and failure paths)
+   with focused unit and integration coverage.
+2. Refresh remaining dependencies and modernize CLI provider integrations while
+   keeping provider-specific dependencies out of the core library.
+3. Finalize release workflow and documentation updates for repeatable packaging
+   and verification.
 4. Evaluate renewal information, certificate profiles, and IP identifiers after
    the reliability baseline is established.
 
