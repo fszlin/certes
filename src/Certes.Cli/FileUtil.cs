@@ -98,10 +98,19 @@ namespace Certes.Cli
                 File.SetUnixFileMode(path, (UnixFileMode)ownerReadWrite);
 #pragma warning restore CA1416 // Validate platform compatibility
             }
-            catch
+            catch (PlatformNotSupportedException)
             {
-                // If SetUnixFileMode is not available (older .NET), silently continue
-                // This is acceptable as the file was created with a restrictive default mode
+                // SetUnixFileMode is not available on this platform (e.g., older .NET or Windows)
+                // This is acceptable; files are created with restrictive default permissions
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                // Permission hardening failed; sensitive file may be readable by others
+                // Re-throw to prevent silent security degradation
+                throw new InvalidOperationException(
+                    $"Failed to apply secure permissions (0600) to sensitive file '{path}'. " +
+                    "The file may remain readable by other users. This is a critical security issue.",
+                    ex);
             }
         }
     }
