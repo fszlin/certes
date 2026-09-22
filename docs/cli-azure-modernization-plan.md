@@ -2,8 +2,13 @@
 
 ## Goal
 
-Modernize `src/Certes.Cli/` Azure integrations to supported SDKs while keeping
-current command behavior stable for existing users.
+Modernize `src/Certes.Cli/` in two coordinated areas:
+
+1. Replace legacy Azure Fluent integrations with supported Azure SDKs.
+2. Replace legacy `System.CommandLine` usage with a modern command framework.
+
+Behavioral compatibility for existing scripts is preserved through a dedicated
+legacy-command compatibility layer with deprecation messaging.
 
 This document is a migration plan, not an implementation PR.
 
@@ -36,6 +41,31 @@ Related tests:
 - `test/Certes.Tests/Cli/Commands/AzureDnsCommandTests.cs`
 - `test/Certes.Tests/Cli/Commands/AzureAppCommandTests.cs`
 
+Command framework baseline:
+
+- Current parser package: `System.CommandLine` `2.0.0-beta1.21216.1`
+  (see `src/Certes.Cli/Certes.Cli.csproj`).
+- Existing command structure is class-based (`ICliCommand`, `Define()`) and can
+  be migrated incrementally.
+
+## Command parser direction
+
+Decision: migrate to `Spectre.Console.Cli`.
+
+Rationale:
+
+- Mature and stable command model for long-term CLI maintenance.
+- Good validation/help surface and predictable command composition.
+- Fits current command-per-class organization with manageable adapter work.
+
+Compatibility strategy:
+
+- Define a new canonical command schema for future docs and examples.
+- Add a legacy parser/alias layer that maps old command forms/options to the
+  canonical command handlers.
+- Emit clear deprecation warnings for legacy forms.
+- Remove legacy aliases in a later release window after migration notice.
+
 ## Target SDK direction
 
 Preferred modern stack:
@@ -62,15 +92,23 @@ that operation only.
 
 Must preserve in the first migration cut:
 
-- Existing commands and arguments:
+- Existing Azure command capability:
   - `certes az set`
   - `certes az dns`
   - `certes az app`
-  - `--tenant-id`, `--client-id`, `--client-secret`, `--subscription-id`,
-    `--resource-group`, `--slot`
+- Existing scriptability expectations:
+  - non-interactive execution
+  - machine-readable JSON output
+  - deterministic non-zero exit codes on failures
 - Existing settings model in `src/Certes.Cli/Settings/AzureSettings.cs`.
 - Existing JSON output shape consumed by scripts (or document any intentional
   change as breaking).
+
+Allowed with compatibility layer:
+
+- Canonical command names/options may change.
+- Legacy names/options are translated by the compatibility layer during the
+  deprecation window.
 
 May be added in a later, separate PR:
 
@@ -79,17 +117,21 @@ May be added in a later, separate PR:
 
 ## Phased implementation plan
 
-1. Introduce an internal Azure abstraction layer for CLI commands.
+1. Introduce `Spectre.Console.Cli` host and canonical command model.
+   - Keep current command handlers behind adapters where practical.
+2. Add legacy command compatibility layer.
+   - Translate old names/options to canonical settings.
+   - Add deprecation warnings for legacy invocations.
+3. Introduce an internal Azure abstraction layer for CLI Azure operations.
    - Define narrow interfaces for:
      - validating subscription/resource groups
      - creating/updating DNS TXT records
      - uploading App Service cert + binding hostname
-2. Add ARM-based implementation beside Fluent implementation.
-   - Keep commands unchanged; swap implementation via DI in `Program.cs`.
-3. Preserve command behavior with existing tests.
-   - Update command tests to target abstractions rather than Fluent types.
-4. Remove Fluent package references after behavior parity is proven.
-5. Add optional auth enhancements in follow-up PR(s).
+4. Add ARM-based implementation beside Fluent implementation.
+   - Migrate command handlers to abstraction interfaces.
+5. Remove Fluent package references after behavior parity is proven.
+6. Remove legacy command aliases after the deprecation window.
+7. Add optional auth enhancements in follow-up PR(s).
 
 ## Verification plan
 
@@ -110,6 +152,7 @@ Manual smoke checks (non-secret, local):
 - `certes az --help`
 - `certes az dns --help`
 - `certes az app --help`
+- Legacy compatibility examples from existing docs/scripts.
 
 ## Risks and mitigations
 
@@ -119,6 +162,9 @@ Manual smoke checks (non-secret, local):
 - Output or error-message drift in scripts.
   - Mitigation: snapshot/approval-style assertions for command output in CLI
     command tests.
+- Legacy option drift during parser migration.
+  - Mitigation: explicit alias mapping table + tests for legacy-to-canonical
+    translation and deprecation text.
 - API surface mismatch for App Service bindings.
   - Mitigation: isolate service-specific adapter and keep fallback package use
     minimal and explicit.
