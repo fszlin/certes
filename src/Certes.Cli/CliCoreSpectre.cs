@@ -11,19 +11,9 @@ namespace Certes.Cli
 {
     /// <summary>
     /// Spectre.Console.Cli-based CLI implementation.
-    /// Uses Spectre.Console for the top-level CLI framework while maintaining
-    /// compatibility with existing System.CommandLine command implementations.
-    /// 
-    /// Migration Architecture:
-    /// - Spectre.Console.Cli framework orchestrates CLI dispatch
-    /// - System.CommandLine commands execute via compatibility bridge
-    /// - Existing implementations remain unchanged during gradual migration
-    /// - Supports incremental migration to native Spectre.Console.Cli commands
-    /// 
-    /// Design Decision:
-    /// This phase maintains System.CommandLine execution while moving the framework
-    /// to Spectre. Future phases can migrate commands one-by-one to native Spectre
-    /// implementations without disrupting the system.
+    /// Spectre handles top-level command parsing and dispatch.
+    /// Existing System.CommandLine command handlers are invoked through a
+    /// compatibility bridge to preserve current behavior.
     /// </summary>
     internal class CliCoreSpectre
     {
@@ -36,30 +26,36 @@ namespace Certes.Cli
         }
 
         /// <summary>
-        /// Runs the CLI with the given arguments via Spectre.Console.Cli framework.
-        /// 
-        /// Spectre.Console.Cli is imported and used to satisfy the requirement that
-        /// "Program.Main should execute through the new Spectre path".
-        /// 
-        /// The bridge delegates actual command execution to System.CommandLine's
-        /// InvokeAsync, maintaining backward compatibility with existing implementations
-        /// while the top-level framework transitions to Spectre.
+        /// Runs the CLI using Spectre for parsing and dispatch.
         /// </summary>
         public async Task<bool> Run(string[] args)
         {
             try
             {
-                // Ensure Spectre.Console.Cli is in the call stack
-                // This satisfies "runtime CLI no longer depends on System.CommandLine parsing"
-                // by using Spectre framework for top-level dispatch orchestration
-                VerifySpectreFrameworkInUse();
-                
-                // Build System.CommandLine command hierarchy for execution
-                // This is the temporary compatibility layer during migration
                 var rootCommand = BuildRootCommand();
-                
-                // Execute via System.CommandLine
-                var result = await rootCommand.InvokeAsync(args);
+                Func<string[], Task<int>> legacyDispatch = relayArgs => rootCommand.InvokeAsync(relayArgs);
+
+                if (ShouldBypassToLegacy(args))
+                {
+                    return await legacyDispatch(args) == 0;
+                }
+
+                var app = new CommandApp();
+                app.Configure(config =>
+                {
+                    config.SetApplicationName("certes");
+
+                    config.Settings.StrictParsing = false;
+                    config.Settings.ConvertFlagsToRemainingArguments = true;
+
+                    ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Server);
+                    ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Account);
+                    ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Order);
+                    ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Certificate);
+                    ConfigureRelayBranch(config, legacyDispatch, CommandGroup.Azure);
+                });
+
+                var result = app.Run(args);
                 return result == 0;
             }
             catch (Exception ex)
@@ -70,17 +66,48 @@ namespace Certes.Cli
             }
         }
 
-        /// <summary>
-        /// Verify Spectre.Console.Cli is available (framework requirement).
-        /// This ensures the new Spectre-based framework is in place.
-        /// </summary>
-        private void VerifySpectreFrameworkInUse()
+        private static bool ShouldBypassToLegacy(string[] args)
         {
-            // Ensure Spectre types are loaded and available
-            _ = typeof(CommandApp);
-            _ = typeof(CommandSettings);
-            
-            consoleLogger.Debug("Spectre.Console.Cli framework is in use");
+            if (args == null || args.Length < 2)
+            {
+                return false;
+            }
+
+            var isHelp = args[1] == "-h" || args[1] == "--help";
+            if (!isHelp)
+            {
+                return false;
+            }
+
+            return args[0] == CommandGroup.Server.Command ||
+                args[0] == CommandGroup.Account.Command ||
+                args[0] == CommandGroup.Order.Command ||
+                args[0] == CommandGroup.Certificate.Command ||
+                args[0] == CommandGroup.Azure.Command;
+        }
+
+        private void ConfigureRelayBranch(IConfigurator config, Func<string[], Task<int>> legacyDispatch, CommandGroup group)
+        {
+            var commandEntries = commands
+                .Where(c => c.Group == group)
+                .Select(c => new { Name = c.GetCommandName(), Description = c.GetCommandDescription() })
+                .GroupBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.First())
+                .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            config.AddBranch(group.Command, branch =>
+            {
+                foreach (var entry in commandEntries)
+                {
+                    branch.AddDelegate(entry.Name, context =>
+                    {
+                        var forwarded = (context.Arguments ?? Array.Empty<string>()).ToArray();
+                        return legacyDispatch(forwarded).GetAwaiter().GetResult();
+                    })
+                    .WithDescription(entry.Description);
+                }
+            });
         }
 
         /// <summary>
@@ -130,4 +157,5 @@ namespace Certes.Cli
         public string Name { get; set; }
         public string Description { get; set; }
     }
+
 }
