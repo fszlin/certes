@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Certes.Acme.Resource
 {
@@ -9,7 +8,6 @@ namespace Certes.Acme.Resource
     /// <remarks>
     /// As https://tools.ietf.org/html/draft-ietf-acme-acme-07#section-7.1.3
     /// </remarks>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum OrderStatus
     {
         /// <summary>

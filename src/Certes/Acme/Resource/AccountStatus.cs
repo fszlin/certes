@@ -1,12 +1,10 @@
-﻿using System.Text.Json.Serialization;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Certes.Acme.Resource
 {
     /// <summary>
     /// Represents the status of <see cref="Account"/>.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum AccountStatus
     {
         /// <summary>

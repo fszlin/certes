@@ -1,4 +1,9 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Certes.Json
@@ -26,14 +31,94 @@ namespace Certes.Json
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = false,
-                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+                Converters = { new EnumMemberStringEnumConverter(JsonNamingPolicy.CamelCase) }
             };
 
-            // For .NET 10, use reflection to serialize internal members
-            // This is a workaround since System.Text.Json doesn't have a built-in option
-            // We use a custom context or encoder that includes internal properties
             defaultOptions = options;
             return options;
+        }
+
+        /// <summary>
+        /// Custom enum converter that respects [EnumMember(Value = "...")] attributes.
+        /// </summary>
+        private class EnumMemberStringEnumConverter : JsonConverterFactory
+        {
+            private readonly JsonNamingPolicy namingPolicy;
+            private readonly ConcurrentDictionary<Type, JsonConverter> converters = new();
+
+            public EnumMemberStringEnumConverter(JsonNamingPolicy namingPolicy = null)
+            {
+                this.namingPolicy = namingPolicy;
+            }
+
+            public override bool CanConvert(Type typeToConvert)
+            {
+                return typeToConvert.IsEnum;
+            }
+
+            public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+            {
+                return converters.GetOrAdd(typeToConvert, type =>
+                    (JsonConverter)Activator.CreateInstance(
+                        typeof(EnumMemberStringEnumValueConverter<>).MakeGenericType(type),
+                        namingPolicy));
+            }
+        }
+
+        /// <summary>
+        /// Generic enum converter that respects [EnumMember] values.
+        /// </summary>
+        private class EnumMemberStringEnumValueConverter<T> : JsonConverter<T>
+            where T : struct, Enum
+        {
+            private readonly JsonNamingPolicy namingPolicy;
+            private readonly Dictionary<T, string> enumToString = new();
+            private readonly Dictionary<string, T> stringToEnum = new(StringComparer.OrdinalIgnoreCase);
+
+            public EnumMemberStringEnumValueConverter(JsonNamingPolicy namingPolicy)
+            {
+                this.namingPolicy = namingPolicy;
+
+                foreach (var field in typeof(T).GetFields(BindingFlags.Public | BindingFlags.Static))
+                {
+                    if (Enum.TryParse<T>(field.Name, out var enumValue))
+                    {
+                        var enumMember = field.GetCustomAttribute<EnumMemberAttribute>();
+                        var stringValue = enumMember?.Value ?? namingPolicy?.ConvertName(field.Name) ?? field.Name;
+                        
+                        enumToString[enumValue] = stringValue;
+                        stringToEnum[stringValue] = enumValue;
+                    }
+                }
+            }
+
+            public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType != JsonTokenType.String)
+                {
+                    throw new JsonException($"Unexpected token {reader.TokenType} when parsing enum.");
+                }
+
+                var stringValue = reader.GetString();
+                if (stringToEnum.TryGetValue(stringValue, out var value))
+                {
+                    return value;
+                }
+
+                throw new JsonException($"Value '{stringValue}' is not valid for enum type '{typeof(T).Name}'.");
+            }
+
+            public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+            {
+                if (enumToString.TryGetValue(value, out var stringValue))
+                {
+                    writer.WriteStringValue(stringValue);
+                }
+                else
+                {
+                    writer.WriteStringValue(value.ToString());
+                }
+            }
         }
     }
 }
