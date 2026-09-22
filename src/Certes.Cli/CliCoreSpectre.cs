@@ -35,6 +35,11 @@ namespace Certes.Cli
                 var rootCommand = BuildRootCommand();
                 Func<string[], Task<int>> legacyDispatch = relayArgs => rootCommand.InvokeAsync(relayArgs);
 
+                if (ShouldBypassToLegacy(args))
+                {
+                    return await legacyDispatch(args) == 0;
+                }
+
                 var app = new CommandApp();
                 app.Configure(config =>
                 {
@@ -61,20 +66,46 @@ namespace Certes.Cli
             }
         }
 
+        private static bool ShouldBypassToLegacy(string[] args)
+        {
+            if (args == null || args.Length < 2)
+            {
+                return false;
+            }
+
+            var isHelp = args[1] == "-h" || args[1] == "--help";
+            if (!isHelp)
+            {
+                return false;
+            }
+
+            return args[0] == CommandGroup.Server.Command ||
+                args[0] == CommandGroup.Account.Command ||
+                args[0] == CommandGroup.Order.Command ||
+                args[0] == CommandGroup.Certificate.Command ||
+                args[0] == CommandGroup.Azure.Command;
+        }
+
         private void ConfigureRelayBranch(IConfigurator config, Func<string[], Task<int>> legacyDispatch, CommandGroup group)
         {
+            var commandEntries = commands
+                .Where(c => c.Group == group)
+                .Select(c => new { Name = c.GetCommandName(), Description = c.GetCommandDescription() })
+                .GroupBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.First())
+                .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
             config.AddBranch(group.Command, branch =>
             {
-                foreach (var commandName in commands
-                    .Where(c => c.Group == group)
-                    .Select(c => c.GetCommandName())
-                    .Distinct(StringComparer.OrdinalIgnoreCase))
+                foreach (var entry in commandEntries)
                 {
-                    branch.AddDelegate(commandName, context =>
+                    branch.AddDelegate(entry.Name, context =>
                     {
                         var forwarded = (context.Arguments ?? Array.Empty<string>()).ToArray();
                         return legacyDispatch(forwarded).GetAwaiter().GetResult();
-                    });
+                    })
+                    .WithDescription(entry.Description);
                 }
             });
         }
