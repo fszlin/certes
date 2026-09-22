@@ -33,23 +33,21 @@ namespace Certes.Cli
             try
             {
                 var rootCommand = BuildRootCommand();
-                SpectreRelayCommand.DispatchAsync = relayArgs => rootCommand.InvokeAsync(relayArgs);
+                Func<string[], Task<int>> legacyDispatch = relayArgs => rootCommand.InvokeAsync(relayArgs);
 
                 var app = new CommandApp();
                 app.Configure(config =>
                 {
                     config.SetApplicationName("certes");
 
-                    config.AddCommand<ServerRelayCommand>("server")
-                        .WithDescription(CommandGroup.Server.Help);
-                    config.AddCommand<AccountRelayCommand>("account")
-                        .WithDescription(CommandGroup.Account.Help);
-                    config.AddCommand<OrderRelayCommand>("order")
-                        .WithDescription(CommandGroup.Order.Help);
-                    config.AddCommand<CertificateRelayCommand>("cert")
-                        .WithDescription(CommandGroup.Certificate.Help);
-                    config.AddCommand<AzureRelayCommand>("az")
-                        .WithDescription(CommandGroup.Azure.Help);
+                    config.Settings.StrictParsing = false;
+                    config.Settings.ConvertFlagsToRemainingArguments = true;
+
+                    ConfigureRelay(config, legacyDispatch, CommandGroup.Server.Command, CommandGroup.Server.Help);
+                    ConfigureRelay(config, legacyDispatch, CommandGroup.Account.Command, CommandGroup.Account.Help);
+                    ConfigureRelay(config, legacyDispatch, CommandGroup.Order.Command, CommandGroup.Order.Help);
+                    ConfigureRelay(config, legacyDispatch, CommandGroup.Certificate.Command, CommandGroup.Certificate.Help);
+                    ConfigureRelay(config, legacyDispatch, CommandGroup.Azure.Command, CommandGroup.Azure.Help);
                 });
 
                 var result = app.Run(args);
@@ -61,6 +59,18 @@ namespace Certes.Cli
                 consoleLogger.Debug(ex);
                 return false;
             }
+        }
+
+        private static void ConfigureRelay(IConfigurator config, Func<string[], Task<int>> legacyDispatch, string groupName, string description)
+        {
+            config.AddDelegate(groupName, context =>
+            {
+                var forwarded = new[] { groupName }
+                    .Concat(context.Remaining.Raw ?? Array.Empty<string>())
+                    .ToArray();
+                return legacyDispatch(forwarded).GetAwaiter().GetResult();
+            })
+            .WithDescription(description);
         }
 
         /// <summary>
@@ -111,49 +121,4 @@ namespace Certes.Cli
         public string Description { get; set; }
     }
 
-    internal class SpectreCompatibilitySettings : CommandSettings
-    {
-        [CommandArgument(0, "[ARGS]")]
-        public string[] Args { get; init; }
-    }
-
-    internal abstract class SpectreRelayCommand : Command<SpectreCompatibilitySettings>
-    {
-        public static Func<string[], Task<int>> DispatchAsync { get; set; }
-
-        protected abstract string GroupName { get; }
-
-        public override int Execute(CommandContext context, SpectreCompatibilitySettings settings)
-        {
-            var suffix = settings.Args ?? Array.Empty<string>();
-            var args = new[] { GroupName }.Concat(suffix).ToArray();
-            var exitCode = DispatchAsync(args).GetAwaiter().GetResult();
-            return exitCode;
-        }
-    }
-
-    internal sealed class ServerRelayCommand : SpectreRelayCommand
-    {
-        protected override string GroupName => CommandGroup.Server.Command;
-    }
-
-    internal sealed class AccountRelayCommand : SpectreRelayCommand
-    {
-        protected override string GroupName => CommandGroup.Account.Command;
-    }
-
-    internal sealed class OrderRelayCommand : SpectreRelayCommand
-    {
-        protected override string GroupName => CommandGroup.Order.Command;
-    }
-
-    internal sealed class CertificateRelayCommand : SpectreRelayCommand
-    {
-        protected override string GroupName => CommandGroup.Certificate.Command;
-    }
-
-    internal sealed class AzureRelayCommand : SpectreRelayCommand
-    {
-        protected override string GroupName => CommandGroup.Azure.Command;
-    }
 }
