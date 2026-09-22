@@ -11,19 +11,9 @@ namespace Certes.Cli
 {
     /// <summary>
     /// Spectre.Console.Cli-based CLI implementation.
-    /// Uses Spectre.Console for the top-level CLI framework while maintaining
-    /// compatibility with existing System.CommandLine command implementations.
-    /// 
-    /// Migration Architecture:
-    /// - Spectre.Console.Cli framework orchestrates CLI dispatch
-    /// - System.CommandLine commands execute via compatibility bridge
-    /// - Existing implementations remain unchanged during gradual migration
-    /// - Supports incremental migration to native Spectre.Console.Cli commands
-    /// 
-    /// Design Decision:
-    /// This phase maintains System.CommandLine execution while moving the framework
-    /// to Spectre. Future phases can migrate commands one-by-one to native Spectre
-    /// implementations without disrupting the system.
+    /// Spectre handles top-level command parsing and dispatch.
+    /// Existing System.CommandLine command handlers are invoked through a
+    /// compatibility bridge to preserve current behavior.
     /// </summary>
     internal class CliCoreSpectre
     {
@@ -36,30 +26,33 @@ namespace Certes.Cli
         }
 
         /// <summary>
-        /// Runs the CLI with the given arguments via Spectre.Console.Cli framework.
-        /// 
-        /// Spectre.Console.Cli is imported and used to satisfy the requirement that
-        /// "Program.Main should execute through the new Spectre path".
-        /// 
-        /// The bridge delegates actual command execution to System.CommandLine's
-        /// InvokeAsync, maintaining backward compatibility with existing implementations
-        /// while the top-level framework transitions to Spectre.
+        /// Runs the CLI using Spectre for parsing and dispatch.
         /// </summary>
         public async Task<bool> Run(string[] args)
         {
             try
             {
-                // Ensure Spectre.Console.Cli is in the call stack
-                // This satisfies "runtime CLI no longer depends on System.CommandLine parsing"
-                // by using Spectre framework for top-level dispatch orchestration
-                VerifySpectreFrameworkInUse();
-                
-                // Build System.CommandLine command hierarchy for execution
-                // This is the temporary compatibility layer during migration
                 var rootCommand = BuildRootCommand();
-                
-                // Execute via System.CommandLine
-                var result = await rootCommand.InvokeAsync(args);
+                SpectreRelayCommand.DispatchAsync = relayArgs => rootCommand.InvokeAsync(relayArgs);
+
+                var app = new CommandApp();
+                app.Configure(config =>
+                {
+                    config.SetApplicationName("certes");
+
+                    config.AddCommand<ServerRelayCommand>("server")
+                        .WithDescription(CommandGroup.Server.Help);
+                    config.AddCommand<AccountRelayCommand>("account")
+                        .WithDescription(CommandGroup.Account.Help);
+                    config.AddCommand<OrderRelayCommand>("order")
+                        .WithDescription(CommandGroup.Order.Help);
+                    config.AddCommand<CertificateRelayCommand>("cert")
+                        .WithDescription(CommandGroup.Certificate.Help);
+                    config.AddCommand<AzureRelayCommand>("az")
+                        .WithDescription(CommandGroup.Azure.Help);
+                });
+
+                var result = app.Run(args);
                 return result == 0;
             }
             catch (Exception ex)
@@ -68,19 +61,6 @@ namespace Certes.Cli
                 consoleLogger.Debug(ex);
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Verify Spectre.Console.Cli is available (framework requirement).
-        /// This ensures the new Spectre-based framework is in place.
-        /// </summary>
-        private void VerifySpectreFrameworkInUse()
-        {
-            // Ensure Spectre types are loaded and available
-            _ = typeof(CommandApp);
-            _ = typeof(CommandSettings);
-            
-            consoleLogger.Debug("Spectre.Console.Cli framework is in use");
         }
 
         /// <summary>
@@ -129,5 +109,51 @@ namespace Certes.Cli
         public string Group { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+    }
+
+    internal class SpectreCompatibilitySettings : CommandSettings
+    {
+        [CommandArgument(0, "[ARGS]")]
+        public string[] Args { get; init; }
+    }
+
+    internal abstract class SpectreRelayCommand : Command<SpectreCompatibilitySettings>
+    {
+        public static Func<string[], Task<int>> DispatchAsync { get; set; }
+
+        protected abstract string GroupName { get; }
+
+        public override int Execute(CommandContext context, SpectreCompatibilitySettings settings)
+        {
+            var suffix = settings.Args ?? Array.Empty<string>();
+            var args = new[] { GroupName }.Concat(suffix).ToArray();
+            var exitCode = DispatchAsync(args).GetAwaiter().GetResult();
+            return exitCode;
+        }
+    }
+
+    internal sealed class ServerRelayCommand : SpectreRelayCommand
+    {
+        protected override string GroupName => CommandGroup.Server.Command;
+    }
+
+    internal sealed class AccountRelayCommand : SpectreRelayCommand
+    {
+        protected override string GroupName => CommandGroup.Account.Command;
+    }
+
+    internal sealed class OrderRelayCommand : SpectreRelayCommand
+    {
+        protected override string GroupName => CommandGroup.Order.Command;
+    }
+
+    internal sealed class CertificateRelayCommand : SpectreRelayCommand
+    {
+        protected override string GroupName => CommandGroup.Certificate.Command;
+    }
+
+    internal sealed class AzureRelayCommand : SpectreRelayCommand
+    {
+        protected override string GroupName => CommandGroup.Azure.Command;
     }
 }
