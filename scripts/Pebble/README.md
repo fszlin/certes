@@ -203,10 +203,11 @@ The isolated store still shares host ports with other stacks.
 
 The run used Debian 13/Linux x64, Podman 5.4.2, Podman Compose 1.3.0, .NET SDK
 10.0.401, and runtime 10.0.12. Both containers started and the readiness probe
-passed. The focused test failed during ES256 account setup because Pebble rejected
-both the initial nonce and its retry, exhausting the client's one-retry budget.
-It did not reach `order.Generate()`. This was an ACME failure after successful
-container startup, not a Podman startup failure.
+passed. With the default one-retry bad-nonce budget, the focused test failed
+during ES256 account setup because Pebble rejected both the initial nonce and
+its retry. With `CERTES_INTEGRATION_BADNONCE_RETRY_COUNT=8`, the same focused
+test passed and reached `order.Generate()`. This was an ACME resilience behavior
+difference after successful container startup, not a Podman startup failure.
 
 Podman also reported a missing `aardvark-dns` binary and corresponding network
 cleanup errors. The stack uses explicit container IPs and Pebble's custom DNS
