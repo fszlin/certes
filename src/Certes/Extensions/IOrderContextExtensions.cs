@@ -103,7 +103,7 @@ namespace Certes
             {
                 throw new AcmeException(string.Format(
                     Strings.ErrorInvalidOrderStatusForFinalize,
-                    order?.Status.ToString() ?? "Unknown"));
+                    order?.Status?.ToString() ?? "Unknown"));
             }
 
             order = await context.Finalize(csr, key);
