@@ -23,9 +23,8 @@ namespace Certes.Cli
         {
             var builder = new ContainerBuilder();
             builder
-                .RegisterAssemblyTypes(typeof(CliCore).GetTypeInfo().Assembly)
+                .RegisterAssemblyTypes(typeof(Program).GetTypeInfo().Assembly)
                 .AsImplementedInterfaces();
-            builder.RegisterType<CliCore>();
             builder.RegisterType<CliCoreSpectre>();
             builder.RegisterType<AcmeContext>().As<IAcmeContext>();
 
