@@ -99,14 +99,11 @@ namespace Certes
                 order = await context.Resource();
             }
 
-            if (order == null)
+            if (order?.Status != OrderStatus.Ready)
             {
-                throw new AcmeException(Strings.ErrorFinalizeFailed);
-            }
-
-            if (order.Status != OrderStatus.Ready)
-            {
-                throw new AcmeException(string.Format(Strings.ErrorInvalidOrderStatusForFinalize, order.Status));
+                throw new AcmeException(string.Format(
+                    Strings.ErrorInvalidOrderStatusForFinalize,
+                    order?.Status.ToString() ?? "Unknown"));
             }
 
             order = await context.Finalize(csr, key);

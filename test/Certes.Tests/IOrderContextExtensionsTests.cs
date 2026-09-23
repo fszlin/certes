@@ -828,6 +828,42 @@ namespace Certes
             orderCtxMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Once);
         }
 
+        [Fact]
+        public async Task PendingBeforeReadyNullResourceSkipsFinalizeAndThrowsStatusError()
+        {
+            var pending = new Order
+            {
+                Identifiers = new[] { new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns } },
+                Status = OrderStatus.Pending,
+            };
+
+            var orderCtxMock = new Mock<IOrderContext>();
+            orderCtxMock.SetupSequence(m => m.Resource())
+                .ReturnsAsync(pending)
+                .ReturnsAsync((Order)null);
+            orderCtxMock.SetupGet(m => m.RetryAfter).Returns(2);
+
+            var delays = new List<TimeSpan>();
+            var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+
+            var exception = await Assert.ThrowsAsync<AcmeException>(() => IOrderContextExtensions.Generate(
+                orderCtxMock.Object,
+                new CsrInfo { CommonName = "www.certes.com" },
+                key,
+                null,
+                3,
+                delay =>
+                {
+                    delays.Add(delay);
+                    return Task.CompletedTask;
+                }));
+
+            Assert.Equal(string.Format(Properties.Strings.ErrorInvalidOrderStatusForFinalize, "Unknown"), exception.Message);
+            Assert.Single(delays);
+            Assert.Equal(TimeSpan.FromSeconds(2), delays[0]);
+            orderCtxMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Never);
+        }
+
     }
 
 }

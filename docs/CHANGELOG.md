@@ -17,7 +17,8 @@ All notable changes to this project will be documented in this file.
   before sending finalize. Previously it could finalize while the order was still
   `pending`, which ACME servers reject. The `retryCount` budget remains shared
   between this pre-finalize wait and post-finalize polling of `pending`/
-  `processing`.
+  `processing`. If challenge validation was never triggered, this can wait up to
+  60 server-directed `Retry-After` intervals by default.
 
 ### Changed
 - `CertificateChainExtensions.ToPem` now always emits LF (`\n`) line endings,
