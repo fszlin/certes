@@ -115,6 +115,10 @@ var pfxBuilder = cert.ToPfx(privateKey);
 var pfx = pfxBuilder.Build("my-cert", "abcd1234");
 ```
 
+The PFX is encrypted with AES-256 by default. For consumers that cannot read it,
+such as Windows Server 2016 and earlier, set
+`pfxBuilder.Encryption = PfxEncryption.Legacy` before calling `Build`.
+
 Check the [APIs](APIv2.md) for more details.
 
 *Historical ACME v1 documentation is available on the

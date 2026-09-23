@@ -197,5 +197,8 @@ certes cert pfx https://acme-v02.api.letsencrypt.org/acme/order/2/3 pfx-password
   --out my-cert.pfx
 ```
 
+The PFX is encrypted with AES-256. Add `--legacy-encryption` for consumers that
+cannot read AES-encrypted PFX files, such as Windows Server 2016 and earlier.
+
 That's all, you now have your free SSL certificate ready for deploy.
 

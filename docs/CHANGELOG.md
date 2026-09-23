@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Breaking changes
+- PFX export now encrypts the private key and certificates with AES-256-CBC
+  (PBES2, PBKDF2 with HMAC-SHA256) instead of 3DES and 40-bit RC2. OpenSSL 3 and
+  Android reject the old algorithms, so PFX files from earlier versions failed to
+  load there without OpenSSL's legacy provider. Windows Server 2016 and earlier
+  cannot read AES-encrypted PFX files; set `PfxBuilder.Encryption` to
+  `PfxEncryption.Legacy`, or pass `--legacy-encryption` to `certes cert pfx`, to
+  keep the old algorithms. The PFX integrity check remains HMAC-SHA1 with 1024
+  iterations, because BouncyCastle does not expose other settings.
 
 ## [4.0.0-beta.1] - 2026-09-23
 First prerelease of the revived project. The major version reflects the breaking

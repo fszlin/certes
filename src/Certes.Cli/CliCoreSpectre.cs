@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ using Certes.Acme.Resource;
 using Certes.Cli.Commands;
 using Certes.Cli.Settings;
 using Certes.Json;
+using Certes.Pkcs;
 using NLog;
 using Spectre.Console.Cli;
 
@@ -450,6 +452,11 @@ namespace Certes.Cli
                     }
 
                     var pfxBuilder = cert.ToPfx(privKey);
+                    if (settings.LegacyEncryption)
+                    {
+                        pfxBuilder.Encryption = PfxEncryption.Legacy;
+                    }
+
                     if (!string.IsNullOrWhiteSpace(settings.Issuer))
                     {
                         var issuerPem = await fileUtil.ReadAllText(settings.Issuer);
@@ -709,6 +716,10 @@ namespace Certes.Cli
 
         [CommandOption("--preferred-chain <PREFERRED_CHAIN>")]
         public string PreferredChain { get; init; }
+
+        [CommandOption("--legacy-encryption")]
+        [Description("Use 3DES/RC2 instead of AES-256, for consumers such as Windows Server 2016 and earlier that cannot read AES-encrypted PFX files.")]
+        public bool LegacyEncryption { get; init; }
 
         [CommandArgument(0, "<order-id>")]
         public Uri OrderId { get; init; }
