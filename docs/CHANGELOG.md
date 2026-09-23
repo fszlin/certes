@@ -6,8 +6,8 @@ All notable changes to this project will be documented in this file.
 ## [4.0.0-beta.1] - 2026-09-23
 First prerelease of the revived project. The major version reflects the breaking
 changes below. Issuance was verified against a local Pebble test CA
-(14 integration tests, including a bad-nonce resilience run) and 183 offline unit
-tests; interoperability with public CAs such as Let's Encrypt has not been
+(14 integration tests, plus a separate bad-nonce resilience run) and 186 offline
+unit tests; interoperability with public CAs such as Let's Encrypt has not been
 re-verified for this prerelease. Please report issues before the stable release.
 
 ### Breaking changes
@@ -21,7 +21,7 @@ re-verified for this prerelease. Please report issues before the stable release.
   PFX output is unaffected: the self-signed root was already excluded, and
   `PfxBuilder.AddIssuer`/`AddIssuers` supply chain material for linking rather
   than causing a root to be exported.
-  Missing roots stopped being fatal in the same release, so chains now simply end
+  Missing roots also stop being fatal in this release, so chains now simply end
   at the highest issuer available.
 - `PfxBuilder` packages the linked certificate chain and no longer runs PKIX path
   validation when a self-signed root happens to be present. Validation previously
@@ -33,11 +33,9 @@ re-verified for this prerelease. Please report issues before the stable release.
   certificate instead of creating unusable output. The PFX ownership check
   applies with or without the full chain. These checks do not validate
   certificate trust.
-- The next `dotnet-certes` CLI release requires .NET 10 instead of .NET 6.
-  Install the .NET 10 runtime before upgrading the tool. Choose the release
-  version with this runtime requirement change in mind; the assembly version is
-  not the package release decision.
-- The library no longer ships a `net462` target in this checkout. Supported
+- The `dotnet-certes` CLI requires .NET 10 instead of .NET 6. Install the .NET 10
+  runtime before upgrading the tool.
+- The library no longer ships a `net462` target. Supported
   library targets are `net10.0`, `net8.0`, and `netstandard2.0`.
 - The `dotnet-certes` CLI no longer ships Azure deployment commands. The `az`
   command group (`az set`, `az dns`, `az app`) has been removed. Existing
@@ -88,8 +86,14 @@ re-verified for this prerelease. Please report issues before the stable release.
 - Migrate JSON handling from Newtonsoft.Json to System.Text.Json for ACME wire
   entities and JWS payload serialization, including enum handling for
   `[EnumMember]` values and numeric enum tokens when required by ACME payloads.
-- Promote Pebble integration to a required check on `main`; the local and hosted
-  suite currently runs 14 integration tests alongside 183 offline unit tests.
+- [CLI] Write settings files, which contain account keys, atomically, with
+  owner-only (`0600`) permissions on Linux and macOS.
+
+## [3.0.0] - 2021-07-18
+Versions 3.0.1 to 3.0.4 were published to nuget.org without matching tags or
+changelog entries. Changes made after `v3.0.0` and before the 2026 revival, such
+as the optional RSA key size and network error propagation, may be included in
+those releases and are not repeated under 4.0.0-beta.1.
 
 ### Added
 - Support alternate link relations ([#232][i232])
@@ -208,7 +212,8 @@ re-verified for this prerelease. Please report issues before the stable release.
 [2.3.0]: https://github.com/fszlin/certes/compare/v2.2.2...v2.3.0
 [2.3.1]: https://github.com/fszlin/certes/compare/v2.3.0...v2.3.1
 [2.3.2]: https://github.com/fszlin/certes/compare/v2.3.1...v2.3.2
-[2.3.2]: https://github.com/fszlin/certes/compare/v2.3.2...v2.3.3
+[2.3.3]: https://github.com/fszlin/certes/compare/v2.3.2...v2.3.3
+[3.0.0]: https://github.com/fszlin/certes/compare/v2.3.3...v3.0.0
 [4.0.0-beta.1]: https://github.com/fszlin/certes/compare/v3.0.0...v4.0.0-beta.1
 [Unreleased]: https://github.com/fszlin/certes/compare/v4.0.0-beta.1...HEAD
 
@@ -228,3 +233,5 @@ re-verified for this prerelease. Please report issues before the stable release.
 [i142]: https://github.com/fszlin/certes/issues/142
 [i145]: https://github.com/fszlin/certes/issues/145
 [i158]: https://github.com/fszlin/certes/issues/158
+[i231]: https://github.com/fszlin/certes/issues/231
+[i232]: https://github.com/fszlin/certes/issues/232
