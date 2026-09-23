@@ -156,5 +156,38 @@ namespace Certes.Acme
             await Assert.ThrowsAsync<AcmeRequestException>(() => ctx.NewAccount("", true));
             httpMock.Verify(m => m.Post<Account>(MockDirectoryV2.NewAccount, It.IsAny<object>()), Times.AtMost(2));
         }
+
+        [Fact]
+        public async Task RetriesOnceOnBadNonceWhenRetryBudgetIsZero()
+        {
+            var accountLoc = new Uri("https://acme.d/acct/1");
+            var httpMock = new Mock<IAcmeHttpClient>();
+            httpMock.Setup(m => m.Get<Directory>(It.IsAny<Uri>()))
+                .ReturnsAsync(new AcmeHttpResponse<Directory>(
+                    accountLoc, MockDirectoryV2, null, null));
+            httpMock.SetupSequence(
+                m => m.Post<Account>(MockDirectoryV2.NewAccount, It.IsAny<object>()))
+                .ReturnsAsync(new AcmeHttpResponse<Account>(
+                    accountLoc, null, null, new AcmeError
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Type = "urn:ietf:params:acme:error:badNonce"
+                    }))
+                .ReturnsAsync(new AcmeHttpResponse<Account>(
+                    accountLoc, new Account
+                    {
+                        Status = AccountStatus.Valid
+                    }, null, null));
+
+            var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+            var ctx = new AcmeContext(
+                WellKnownServers.LetsEncryptStagingV2,
+                key,
+                httpMock.Object,
+                badNonceRetryCount: 0);
+
+            await ctx.NewAccount("", true);
+            httpMock.Verify(m => m.Post<Account>(MockDirectoryV2.NewAccount, It.IsAny<object>()), Times.Exactly(2));
+        }
     }
 }

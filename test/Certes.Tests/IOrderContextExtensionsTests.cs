@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
@@ -612,6 +613,48 @@ namespace Certes
             Assert.NotNull(chain);
             Assert.Single(delays);
             Assert.Equal(3, resourceCalls);
+        }
+
+        [Fact]
+        public async Task PollingBubblesTransientNetworkError()
+        {
+            var order = new Order
+            {
+                Identifiers = new[] { new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns } },
+                Status = OrderStatus.Ready,
+            };
+            var processing = new Order
+            {
+                Identifiers = order.Identifiers,
+                Status = OrderStatus.Processing,
+            };
+
+            var orderCtxMock = new Mock<IOrderContext>();
+            orderCtxMock
+                .SetupSequence(m => m.Resource())
+                .ReturnsAsync(order)
+                .ReturnsAsync(order)
+                .ThrowsAsync(new HttpRequestException("transient"));
+            orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>())).ReturnsAsync(processing);
+            orderCtxMock.SetupGet(m => m.RetryAfter).Returns(3);
+
+            var delays = new List<TimeSpan>();
+            var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+
+            await Assert.ThrowsAsync<HttpRequestException>(() => IOrderContextExtensions.Generate(
+                orderCtxMock.Object,
+                new CsrInfo { CommonName = "www.certes.com" },
+                key,
+                null,
+                5,
+                delay =>
+                {
+                    delays.Add(delay);
+                    return Task.CompletedTask;
+                }));
+
+            Assert.Single(delays);
+            Assert.Equal(TimeSpan.FromSeconds(3), delays[0]);
         }
 
     }
