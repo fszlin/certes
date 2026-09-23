@@ -228,10 +228,13 @@ Release notes and package pages:
   where `VERSION` matches the tag without the `v`. The workflow extracts it with
   `scripts/release-notes.sh` and stops before packing if the section is missing or
   empty. The same text becomes the NuGet `releaseNotes` and the GitHub release body.
-  Preview it locally with `bash scripts/release-notes.sh 4.0.0-beta.2`.
+  Preview it locally with `bash scripts/release-notes.sh 4.0.0-beta.2`. Definitions
+  for reference-style links used in the section (such as `[i232]`) are appended
+  automatically. The script also fails when the notes exceed 30,000 characters.
 - `src/Certes/README.md` and `src/Certes.Cli/README.md` are the package readmes
   shown on nuget.org. Use absolute links. Review them in the release-notes PR
-  whenever supported targets, runtime requirements, or usage change.
+  whenever supported targets, runtime requirements, or usage change. Remove the
+  CLI readme's `--prerelease` install note when the first stable 4.x ships.
 - Package metadata cannot be edited after publishing; fixes need a new version.
 
 To prepare a prerelease, merge the reviewed release notes and version decision to

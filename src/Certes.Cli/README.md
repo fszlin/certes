@@ -7,9 +7,12 @@ accounts, orders and challenges, and exports issued certificates as PEM or PFX.
 Requires the .NET 10 runtime.
 
 ```sh
-dotnet tool install --global dotnet-certes
+dotnet tool install --global dotnet-certes --prerelease
 certes --help
 ```
+
+`--prerelease` is needed while 4.x is in prerelease; without it, the tool
+installs the latest stable version (3.x).
 
 Settings, including the account key, are stored in a user settings file. Keep
 that file private.
