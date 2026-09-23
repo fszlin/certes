@@ -23,20 +23,17 @@ namespace Certes.Cli
     {
         private readonly ILogger consoleLogger = LogManager.GetLogger(nameof(CliCoreSpectre));
         private static readonly JsonSerializerOptions jsonSerializerSettings = JsonUtil.CreateSettings();
-        private readonly IEnumerable<ICliCommand> commands;
         private readonly IUserSettings userSettings;
         private readonly AcmeContextFactory contextFactory;
         private readonly IFileUtil fileUtil;
         private readonly IEnvironmentVariables environmentVariables;
 
         public CliCoreSpectre(
-            IEnumerable<ICliCommand> commands,
             IUserSettings userSettings,
             AcmeContextFactory contextFactory,
             IFileUtil fileUtil,
             IEnvironmentVariables environmentVariables)
         {
-            this.commands = commands;
             this.userSettings = userSettings;
             this.contextFactory = contextFactory;
             this.fileUtil = fileUtil;
@@ -129,7 +126,7 @@ namespace Certes.Cli
                     if (!string.IsNullOrWhiteSpace(settings.OutPath))
                     {
                         consoleLogger.Debug("Saving new account key to '{0}'.", settings.OutPath);
-                        await System.IO.File.WriteAllTextAsync(settings.OutPath, key.ToPem());
+                        await fileUtil.WriteAllText(settings.OutPath, key.ToPem());
                     }
                     else
                     {
@@ -361,7 +358,7 @@ namespace Certes.Cli
                 branch.AddAsyncDelegate<OrderFinalizeSettings>("finalize", async (_, settings) =>
                 {
                     var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, fallbackToSettings: true);
-                    var providedKey = await CommandBase.ReadKey(settings.PrivateKey, "CERTES_CERT_KEY", fileUtil, environmentVariables);
+                    var providedKey = await ReadKey(settings.PrivateKey, "CERTES_CERT_KEY");
                     var certificateKey = providedKey ?? KeyFactory.NewKey(settings.KeyAlgorithm);
 
                     consoleLogger.Debug("Finalizing order from '{0}'.", serverUri);
@@ -440,7 +437,7 @@ namespace Certes.Cli
                 branch.AddAsyncDelegate<CertificatePfxSettings>("pfx", async (_, settings) =>
                 {
                     var (location, cert) = await DownloadCertificate(settings.OrderId, settings.PreferredChain, settings.Server, settings.KeyPath);
-                    var privKey = await CommandBase.ReadKey(settings.PrivateKey, "CERTES_CERT_KEY", fileUtil, environmentVariables);
+                    var privKey = await ReadKey(settings.PrivateKey, "CERTES_CERT_KEY");
                     if (privKey == null)
                     {
                         throw new CertesCliException(Strings.ErrorNoPrivateKey);
@@ -505,28 +502,21 @@ namespace Certes.Cli
             Console.WriteLine(JsonSerializer.Serialize(value, jsonSerializerSettings));
         }
 
-        /// <summary>
-        /// Gets the registered command metadata for documentation purposes.
-        /// </summary>
-        public IEnumerable<CommandMetadata> GetCommandMetadata()
+        private async Task<IKey> ReadKey(string keyPath, string environmentVariableName)
         {
-            return commands.Select(cmd => new CommandMetadata
+            if (!string.IsNullOrWhiteSpace(keyPath))
             {
-                Group = cmd.Group.Command,
-                Name = cmd.GetCommandName(),
-                Description = cmd.GetCommandDescription()
-            });
-        }
-    }
+                return KeyFactory.FromPem(await fileUtil.ReadAllText(keyPath));
+            }
 
-    /// <summary>
-    /// Metadata about a registered command, used for documentation and help.
-    /// </summary>
-    internal class CommandMetadata
-    {
-        public string Group { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+            var keyData = environmentVariables.GetVar(environmentVariableName);
+            if (!string.IsNullOrWhiteSpace(keyData))
+            {
+                return KeyFactory.FromDer(Convert.FromBase64String(keyData));
+            }
+
+            return null;
+        }
     }
 
     internal sealed class ServerSetSettings : CommandSettings
