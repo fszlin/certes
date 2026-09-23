@@ -76,6 +76,15 @@ namespace Certes.Cli
             Assert.Equal(1, CountOccurrences(text, "pfx <order-id> <password>"));
         }
 
+        [Fact]
+        public async Task CertPfxHelpListsLegacyEncryptionOption()
+        {
+            var result = await RunCli("cert", "pfx", "--help");
+
+            Assert.Equal(0, result.ExitCode);
+            Assert.Contains("--legacy-encryption", StripAnsi(result.StdOut));
+        }
+
         private static async Task<(int ExitCode, string StdOut, string StdErr)> RunCli(params string[] args)
         {
             // The test output is test/Certes.Tests/bin/<configuration>/<tfm>/; use the

@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Certes.Crypto;
+using Org.BouncyCastle.Asn1.Nist;
+using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
@@ -37,6 +40,18 @@ namespace Certes.Pkcs
         /// self-signed root. It is not a validated certification path.
         /// </remarks>
         public bool FullChain { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the algorithms used to protect the private key and certificates.
+        /// </summary>
+        /// <value>
+        /// Defaults to <see cref="PfxEncryption.Aes256"/>.
+        /// </value>
+        /// <remarks>
+        /// The integrity check (MAC) uses HMAC-SHA1 in both modes; BouncyCastle does not
+        /// expose another MAC algorithm. OpenSSL 3 and .NET accept it.
+        /// </remarks>
+        public PfxEncryption Encryption { get; set; } = PfxEncryption.Aes256;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PfxBuilder"/> class.
@@ -86,7 +101,7 @@ namespace Certes.Pkcs
         public byte[] Build(string friendlyName, string password)
         {
             var keyPair = privateKey.GetKeyPairFor(certificate);
-            var store = new Pkcs12StoreBuilder().Build();
+            var store = CreateStoreBuilder(Encryption).Build();
 
             var entry = new X509CertificateEntry(certificate);
             store.SetCertificateEntry(friendlyName, entry);
@@ -108,6 +123,23 @@ namespace Certes.Pkcs
             {
                 store.Save(buffer, password.ToCharArray(), new SecureRandom());
                 return buffer.ToArray();
+            }
+        }
+
+        private static Pkcs12StoreBuilder CreateStoreBuilder(PfxEncryption encryption)
+        {
+            switch (encryption)
+            {
+                case PfxEncryption.Aes256:
+                    return new Pkcs12StoreBuilder()
+                        .SetKeyAlgorithm(NistObjectIdentifiers.IdAes256Cbc, PkcsObjectIdentifiers.IdHmacWithSha256)
+                        .SetCertAlgorithm(NistObjectIdentifiers.IdAes256Cbc, PkcsObjectIdentifiers.IdHmacWithSha256);
+                case PfxEncryption.Legacy:
+                    return new Pkcs12StoreBuilder()
+                        .SetKeyAlgorithm(PkcsObjectIdentifiers.PbeWithShaAnd3KeyTripleDesCbc)
+                        .SetCertAlgorithm(PkcsObjectIdentifiers.PbewithShaAnd40BitRC2Cbc);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(Encryption), encryption, null);
             }
         }
 

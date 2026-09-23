@@ -3,6 +3,9 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Certes.Properties;
+using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.Nist;
+using Org.BouncyCastle.Asn1.Pkcs;
 using Xunit;
 
 namespace Certes.Pkcs
@@ -142,6 +145,94 @@ namespace Certes.Pkcs
 
             fixture.AssertPfx(pfx, "abcd1234", "my-cert", fullChain: false);
             fixture.AssertPfxChain(pfx, "abcd1234", fixture.Leaf);
+        }
+
+        [Theory]
+        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256)]
+        public void DefaultEncryptionUsesAes256(KeyAlgorithm algorithm)
+        {
+            var fixture = new CertificateFixture(algorithm);
+            var builder = fixture.Chain.ToPfx(fixture.Key);
+
+            Assert.Equal(PfxEncryption.Aes256, builder.Encryption);
+            var pfx = builder.Build("my-cert", "abcd1234");
+
+            var (keyAlgorithm, certAlgorithm) = ReadPfxAlgorithms(pfx);
+            AssertPbes2Aes256(keyAlgorithm);
+            AssertPbes2Aes256(certAlgorithm);
+            fixture.AssertPfx(pfx, "abcd1234", "my-cert");
+        }
+
+        [Theory]
+        [InlineData(KeyAlgorithm.RS256)]
+        [InlineData(KeyAlgorithm.ES256)]
+        public void LegacyEncryptionUsesTripleDesAndRc2(KeyAlgorithm algorithm)
+        {
+            var fixture = new CertificateFixture(algorithm);
+            var builder = fixture.Chain.ToPfx(fixture.Key);
+            builder.Encryption = PfxEncryption.Legacy;
+
+            var pfx = builder.Build("my-cert", "abcd1234");
+
+            var (keyAlgorithm, certAlgorithm) = ReadPfxAlgorithms(pfx);
+            Assert.Equal(PkcsObjectIdentifiers.PbeWithShaAnd3KeyTripleDesCbc, keyAlgorithm.Algorithm);
+            Assert.Equal(PkcsObjectIdentifiers.PbewithShaAnd40BitRC2Cbc, certAlgorithm.Algorithm);
+            fixture.AssertPfx(pfx, "abcd1234", "my-cert");
+        }
+
+        [Fact]
+        public void RejectsUnknownEncryption()
+        {
+            var fixture = new CertificateFixture(KeyAlgorithm.ES256);
+            var builder = fixture.Chain.ToPfx(fixture.Key);
+            builder.Encryption = (PfxEncryption)42;
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => builder.Build("my-cert", "abcd1234"));
+        }
+
+        private static void AssertPbes2Aes256(Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier algorithm)
+        {
+            Assert.Equal(PkcsObjectIdentifiers.IdPbeS2, algorithm.Algorithm);
+            var parameters = PbeS2Parameters.GetInstance(algorithm.Parameters);
+            Assert.Equal(NistObjectIdentifiers.IdAes256Cbc, parameters.EncryptionScheme.Algorithm);
+            Assert.Equal(PkcsObjectIdentifiers.IdPbkdf2, parameters.KeyDerivationFunc.Algorithm);
+            var kdf = Pbkdf2Params.GetInstance(parameters.KeyDerivationFunc.Parameters);
+            Assert.Equal(PkcsObjectIdentifiers.IdHmacWithSha256, kdf.Prf.Algorithm);
+        }
+
+        /// <summary>
+        /// Reads the encryption algorithms from the PFX structure: the shrouded key bag and the
+        /// encrypted certificate content.
+        /// </summary>
+        private static (Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier Key, Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier Cert)
+            ReadPfxAlgorithms(byte[] pfx)
+        {
+            Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier key = null, cert = null;
+            var authSafe = Pfx.GetInstance(pfx).AuthSafe;
+            var safe = AuthenticatedSafe.GetInstance(Asn1OctetString.GetInstance(authSafe.Content).GetOctets());
+            foreach (var info in safe.GetContentInfo())
+            {
+                if (info.ContentType.Equals(PkcsObjectIdentifiers.EncryptedData))
+                {
+                    cert = EncryptedData.GetInstance(info.Content).EncryptionAlgorithm;
+                    continue;
+                }
+
+                var bags = Asn1Sequence.GetInstance(Asn1OctetString.GetInstance(info.Content).GetOctets());
+                foreach (Asn1Encodable item in bags)
+                {
+                    var bag = SafeBag.GetInstance(item);
+                    if (bag.BagID.Equals(PkcsObjectIdentifiers.Pkcs8ShroudedKeyBag))
+                    {
+                        key = EncryptedPrivateKeyInfo.GetInstance(bag.BagValue).EncryptionAlgorithm;
+                    }
+                }
+            }
+
+            Assert.NotNull(key);
+            Assert.NotNull(cert);
+            return (key, cert);
         }
     }
 }
