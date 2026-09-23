@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
@@ -6,6 +7,7 @@ using Moq;
 using Xunit;
 
 using static Certes.Helper;
+using Directory = Certes.Acme.Resource.Directory;
 
 namespace Certes.Acme
 {
@@ -90,6 +92,18 @@ namespace Certes.Acme
 
             var client = new AcmeContext(directoryUri, http: httpClientMock.Object);
             await client.RevokeCertificate(certData, RevocationReason.KeyCompromise, certKey);
+        }
+
+        [Fact]
+        public async Task CanCreateARICertificateId()
+        {
+            const string filePath = "./Sample/example.pfx.base64";
+            var base64Pfx = await File.ReadAllTextAsync(filePath);
+            var pfxBytes = Convert.FromBase64String(base64Pfx);
+
+            var result = AcmeContext.GetAriCertificateId(pfxBytes, "abc123");
+
+            Assert.Equal("MBaAFCc2NSiyPMHMMB9tRrZeS+Y963by.B1vNFQ", result);
         }
     }
 }

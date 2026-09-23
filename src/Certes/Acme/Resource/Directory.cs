@@ -61,6 +61,12 @@ namespace Certes.Acme.Resource
         /// </value>
         [JsonPropertyName("meta")]
         public DirectoryMeta Meta { get; }
+        
+        /// <summary>
+        /// Gets or sets the renewal info.
+        /// </summary>
+        [JsonProperty("renewalInfo")]
+        public Uri RenewalInfo { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Directory"/> class.
@@ -71,13 +77,15 @@ namespace Certes.Acme.Resource
         /// <param name="revokeCert">The revoke cert.</param>
         /// <param name="keyChange">The key change.</param>
         /// <param name="meta">The meta.</param>
+        /// <param name="renewalInfo">The renewal info.</param>
         public Directory(
             Uri newNonce,
             Uri newAccount,
             Uri newOrder,
             Uri revokeCert, 
             Uri keyChange,
-            DirectoryMeta meta)
+            DirectoryMeta meta,
+            Uri renewalInfo)
         {
             NewNonce = newNonce;
             NewAccount = newAccount;
@@ -85,6 +93,7 @@ namespace Certes.Acme.Resource
             RevokeCert = revokeCert;
             KeyChange = keyChange;
             Meta = meta;
+            RenewalInfo = renewalInfo;
         }
     }
 }

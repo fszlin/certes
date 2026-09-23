@@ -94,7 +94,14 @@ namespace Certes.Acme.Resource
         /// </value>
         [JsonPropertyName("certificate")]
         public Uri Certificate { get; set; }
-
+        
+        /// <summary>
+        /// An optional string uniquely identifying a previously-issued
+        /// certificate which this order is intended to replace.
+        /// </summary>
+        [JsonProperty("replaces")]
+        public string Replaces { get; set; }
+        
         /// <summary>
         /// Represents the payload to finalize an order.
         /// </summary>

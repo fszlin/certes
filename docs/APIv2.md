@@ -270,6 +270,37 @@ Revoke certificate with certificate private key.
 context.RevokeCertificate(cert.ToDer(), RevocationReason.KeyCompromise, certKey);
 ```
 
+## Renewals via ACME Renewal Info (ARI)
+The ACME Renewal Info allows clients to periodically check with Let's Encrypt servers to determine
+if your existing certificate should be renewed. After your certificate is issued, generate an 
+ARI Certificate ID using `AcmeContext.GetAriCertificateId()` by passing in the bytes of the PFX 
+certificate and its password.
+
+```C#
+//Starting from the last section when the certificate is issued...
+var pfx = cert.ToPfx("cert-name", "password");
+var ariCertificateId = AcmeContext.GetAriCertificateId(pfx, "password");
+```
+
+Periodically check the `RenewalInfo` endpoint in the `Directory` by
+appending this ARI Certificate ID as a suffix to that URL and when eligible, schedule your certificate's
+renewal within the suggested window given.
+
+```C#
+var renewalInfoUrl = AcmeContext.GetDirectory().RenewalInfo;
+var combinedUrl = new Uri(renewalInfoUrl, $"/{ariCertificateId}");
+//Query this URL for a suggested renewal interval
+``` 
+
+During renewal, proceed as you normally would. When you get to the step where you'd typically have called
+`NewOrder`, instead use the new overload to pass the ARI Certificate ID into the second argument so the
+renewal request can be correlated.
+
+```C#
+var order = await context.NewOrder(new [] { "*.example.com" }, ariCertificateId);
+//Proceed normally
+```
+
 <!---
 ## Not Implemented
 * Account
