@@ -125,6 +125,10 @@ Check the [APIs](APIv2.md) for more details.
 The CLI is available as a dotnet global tool. This checkout requires .NET 10.
 The next CLI release raises the requirement from .NET 6; install .NET 10 before
 upgrading, even if your application uses the library on .NET 8.
+Azure deployment commands were removed from the CLI (`az set`, `az dns`, `az app`).
+Use dedicated Azure tooling for DNS/app deployment workflows.
+The parser migration is complete and legacy `System.CommandLine` command paths
+are no longer shipped.
 For a published tool version,
 check its runtime requirements on [NuGet](https://www.nuget.org/packages/dotnet-certes/).
 
