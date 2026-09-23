@@ -570,6 +570,53 @@ namespace Certes
         }
 
         [Fact]
+        public async Task SucceedsWhenOrderBecomesValidWithinPollingBudget()
+        {
+            var pem = File.ReadAllText("./Data/cert-es256.pem");
+            var ready = new Order
+            {
+                Identifiers = new[] { new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns } },
+                Status = OrderStatus.Ready,
+            };
+            var processing = new Order
+            {
+                Identifiers = ready.Identifiers,
+                Status = OrderStatus.Processing,
+            };
+            var valid = new Order
+            {
+                Identifiers = ready.Identifiers,
+                Status = OrderStatus.Valid,
+            };
+
+            var orderCtxMock = new Mock<IOrderContext>();
+            var resourceCalls = 0;
+            orderCtxMock.Setup(m => m.Resource()).ReturnsAsync(() => ++resourceCalls <= 1 ? ready : resourceCalls == 2 ? processing : valid);
+            orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>())).ReturnsAsync(processing);
+            orderCtxMock.SetupGet(m => m.RetryAfter).Returns(2);
+            orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
+
+            var delays = new List<TimeSpan>();
+            var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+
+            var result = await IOrderContextExtensions.Generate(
+                orderCtxMock.Object,
+                new CsrInfo { CommonName = "www.certes.com" },
+                key,
+                null,
+                2,
+                delay =>
+                {
+                    delays.Add(delay);
+                    return Task.CompletedTask;
+                });
+
+            Assert.NotNull(result);
+            Assert.Single(delays);
+            Assert.Equal(3, resourceCalls);
+        }
+
+        [Fact]
         public async Task CanRecoverWhenFinalizeReturnsNullAndOrderLaterBecomesValid()
         {
             var pem = File.ReadAllText("./Data/cert-es256.pem");

@@ -2,6 +2,7 @@ using Newtonsoft.Json.Serialization;
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -67,6 +68,19 @@ namespace Certes.Acme
 
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
+        }
+
+        private class StaticResponseHttpMessageHandler : HttpMessageHandler
+        {
+            private readonly HttpResponseMessage response;
+
+            public StaticResponseHttpMessageHandler(HttpResponseMessage response)
+            {
+                this.response = response;
+            }
+
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+                => Task.FromResult(response);
         }
 
         [Fact]
@@ -188,6 +202,40 @@ namespace Certes.Acme
 
             await ctx.NewAccount("", true);
             httpMock.Verify(m => m.Post<Account>(MockDirectoryV2.NewAccount, It.IsAny<object>()), Times.Exactly(2));
+        }
+
+        [Fact]
+        public async Task ParsesMissingOrMalformedRetryAfterAsZero()
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("ok", Encoding.UTF8, "text/plain"),
+            };
+            response.Headers.TryAddWithoutValidation("Retry-After", "not-a-valid-header");
+
+            using (var http = new HttpClient(new StaticResponseHttpMessageHandler(response)))
+            {
+                var client = new AcmeHttpClient(new Uri("https://acme.d/directory"), http);
+                var result = await client.Get<string>(new Uri("https://acme.d/order/1"));
+                Assert.Equal(0, result.RetryAfter);
+            }
+        }
+
+        [Fact]
+        public async Task ClampsLargeRetryAfterToInt32Max()
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("ok", Encoding.UTF8, "text/plain"),
+            };
+            response.Headers.RetryAfter = new RetryConditionHeaderValue(DateTimeOffset.UtcNow.AddYears(200));
+
+            using (var http = new HttpClient(new StaticResponseHttpMessageHandler(response)))
+            {
+                var client = new AcmeHttpClient(new Uri("https://acme.d/directory"), http);
+                var result = await client.Get<string>(new Uri("https://acme.d/order/1"));
+                Assert.Equal(int.MaxValue, result.RetryAfter);
+            }
         }
     }
 }
