@@ -64,7 +64,7 @@ namespace Certes.Cli.Commands
             else
             {
                 logger.Debug("Saving certificate to '{0}'.", outPath);
-                await File.WriteAllText(outPath, cert.ToPem());
+                await this.File.WriteAllText(outPath, cert.ToPem());
 
                 var output = new
                 {

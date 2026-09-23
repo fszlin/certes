@@ -96,7 +96,7 @@ namespace Certes.Cli.Commands
                 else
                 {
                     logger.Debug("Saving certificate to '{0}'.", outPath);
-                    await File.WriteAllBytes(outPath, pfx);
+                    await this.File.WriteAllBytes(outPath, pfx);
 
                     var output = new
                     {

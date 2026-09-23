@@ -87,7 +87,7 @@ namespace Certes.Cli.Commands
             {
                 if (providedKey == null)
                 {
-                    await File.WriteAllText(outPath, privKey.ToPem());
+                    await this.File.WriteAllText(outPath, privKey.ToPem());
                 }
 
                 var output = new

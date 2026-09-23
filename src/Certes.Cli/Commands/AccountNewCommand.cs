@@ -45,7 +45,7 @@ namespace Certes.Cli.Commands
                 {
                     logger.Debug("Saving new account key to '{0}'.", outPath);
                     var pem = key.ToPem();
-                    await File.WriteAllText(outPath, pem);
+                    await this.File.WriteAllText(outPath, pem);
                 }
                 else
                 {
