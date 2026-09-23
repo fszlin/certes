@@ -35,6 +35,8 @@ All notable changes to this project will be documented in this file.
   command group (`az set`, `az dns`, `az app`) has been removed. Existing
   automation should call Azure tooling directly and keep using `certes` for
   ACME account/order/certificate workflows.
+- The legacy `System.CommandLine` command implementations were removed from the
+  CLI codebase. Runtime command parsing/dispatch now uses the Spectre path only.
 
 ### Changed
 - Retain cross-signed issuer alternates that share a subject name, instead of
@@ -71,13 +73,15 @@ All notable changes to this project will be documented in this file.
   consumers select `net8.0`; .NET 6/7 consumers select `netstandard2.0` rather than
   the removed `net6.0` asset. The latter path is compile-checked, not runtime-tested.
 - Use the latest `10.0.x` SDK in CI and run the offline unit suite natively on .NET 10.
+- Move from `Portable.BouncyCastle` to `BouncyCastle.Cryptography` and update
+  tests/helpers to the newer PFX-loading APIs and DN validation behavior.
 - Mark formatter-based exception serialization APIs obsolete on the .NET 8/10
   library asset, matching the platform APIs; legacy-target APIs remain available.
 - Migrate JSON handling from Newtonsoft.Json to System.Text.Json for ACME wire
   entities and JWS payload serialization, including enum handling for
   `[EnumMember]` values and numeric enum tokens when required by ACME payloads.
 - Promote Pebble integration to a required check on `main`; the local and hosted
-  suite currently runs 13 integration tests alongside 196 offline unit tests.
+  suite currently runs 13 integration tests alongside 181 offline unit tests.
 
 ### Added
 - Support alternate link relations ([#232][i232])

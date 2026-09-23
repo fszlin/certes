@@ -40,6 +40,19 @@ Azure tooling for DNS/app deployment workflows.
 .NET 8 remains supported by Microsoft until November 10, 2026. Its library
 asset supports existing consumers; .NET 10 is the development and CLI baseline.
 
+## Upgrade guide
+
+If you automate `dotnet-certes`, review these changes before upgrading:
+
+- CLI runtime now requires .NET 10.
+- The `az` command group was removed (`az set`, `az dns`, `az app`). Use dedicated Azure tooling for DNS/app deployment flows.
+- The CLI parser migration is complete; legacy `System.CommandLine` command paths were removed in favor of the Spectre runtime path.
+
+If you build/extend Certes from source:
+
+- The library dependency moved from `Portable.BouncyCastle` to `BouncyCastle.Cryptography`.
+- Tests and helper code now follow the newer BouncyCastle APIs and stricter DN validation semantics.
+
 ## Use Certes
 
 Install the library into your application:
