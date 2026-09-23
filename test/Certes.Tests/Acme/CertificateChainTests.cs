@@ -37,6 +37,17 @@ namespace Certes.Acme
             Assert.Equal(expectedPem.Replace("\r", "").Trim(), result.Replace("\r", "").Trim());
         }
 
+        [Fact]
+        public void ToPemUsesLfLineEndings()
+        {
+            var fixture = new CertificateFixture(KeyAlgorithm.ES256);
+
+            var result = fixture.Chain.ToPem(fixture.Key);
+
+            Assert.DoesNotContain("\r", result);
+            Assert.Contains("\n", result);
+        }
+
         [Theory]
         [InlineData(KeyAlgorithm.RS256, KeyAlgorithm.RS256)]
         [InlineData(KeyAlgorithm.ES256, KeyAlgorithm.ES256)]

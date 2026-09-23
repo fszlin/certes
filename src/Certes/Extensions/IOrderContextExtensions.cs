@@ -65,7 +65,11 @@ namespace Certes
         /// <param name="context">The order context.</param>
         /// <param name="csr">The CSR.</param>
         /// <param name="key">The private key for the certificate.</param>
-        /// <param name="retryCount">Maximum number of polling retries while the Order is pending or processing. (default = 60; negative values are treated as zero)</param>
+        /// <param name="retryCount">
+        /// Maximum number of polling retries shared by both phases: waiting for the order
+        /// to become ready before finalize, and waiting for pending/processing states after
+        /// finalize. (default = 60; negative values are treated as zero)
+        /// </param>
         /// <param name="preferredChain">The preferred Root Certificate.</param>
         /// <returns>
         /// The certificate generated.
@@ -82,15 +86,28 @@ namespace Certes
             Func<TimeSpan, Task> delay)
         {
             var order = await context.Resource();
-            if (order.Status != OrderStatus.Ready && // draft-11
-                order.Status != OrderStatus.Pending) // pre draft-11
+            if (order.Status != OrderStatus.Ready &&
+                order.Status != OrderStatus.Pending)
             {
                 throw new AcmeException(string.Format(Strings.ErrorInvalidOrderStatusForFinalize, order.Status));
             }
 
+            retryCount = Math.Max(retryCount, 0);
+            while (order?.Status == OrderStatus.Pending && retryCount-- > 0)
+            {
+                await delay(TimeSpan.FromSeconds(Math.Min(Math.Max(context.RetryAfter, 1), MaxRetryAfterSeconds)));
+                order = await context.Resource();
+            }
+
+            if (order?.Status != OrderStatus.Ready)
+            {
+                throw new AcmeException(string.Format(
+                    Strings.ErrorInvalidOrderStatusForFinalize,
+                    order?.Status?.ToString() ?? "Unknown"));
+            }
+
             order = await context.Finalize(csr, key);
 
-            retryCount = Math.Max(retryCount, 0);
             while ((order == null || order.Status == OrderStatus.Pending || order.Status == OrderStatus.Processing) && retryCount-- > 0)
             {
                 await delay(TimeSpan.FromSeconds(Math.Min(Math.Max(context.RetryAfter, 1), MaxRetryAfterSeconds)));
