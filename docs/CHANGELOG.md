@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [4.0.0] - 2026-09-23
 ### Breaking changes
 - PFX export now encrypts the private key and certificates with AES-256-CBC
   (PBES2, PBKDF2 with HMAC-SHA256) instead of 3DES and 40-bit RC2. OpenSSL 3 and
