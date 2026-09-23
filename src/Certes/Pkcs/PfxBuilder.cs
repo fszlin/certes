@@ -28,6 +28,7 @@ namespace Certes.Pkcs
         private readonly X509Certificate certificate;
         private readonly IKey privateKey;
         private readonly CertificateStore certificateStore = new CertificateStore();
+        private PfxEncryption encryption = PfxEncryption.Aes256;
 
         /// <summary>
         /// Gets or sets a value indicating whether to include the full certificate chain in the PFX.
@@ -51,7 +52,22 @@ namespace Certes.Pkcs
         /// The integrity check (MAC) uses HMAC-SHA1 in both modes; BouncyCastle does not
         /// expose another MAC algorithm. OpenSSL 3 and .NET accept it.
         /// </remarks>
-        public PfxEncryption Encryption { get; set; } = PfxEncryption.Aes256;
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// The value is not a defined <see cref="PfxEncryption"/> member.
+        /// </exception>
+        public PfxEncryption Encryption
+        {
+            get => encryption;
+            set
+            {
+                if (value != PfxEncryption.Aes256 && value != PfxEncryption.Legacy)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+                }
+
+                encryption = value;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PfxBuilder"/> class.
@@ -101,7 +117,7 @@ namespace Certes.Pkcs
         public byte[] Build(string friendlyName, string password)
         {
             var keyPair = privateKey.GetKeyPairFor(certificate);
-            var store = CreateStoreBuilder(Encryption).Build();
+            var store = CreateStoreBuilder(encryption).Build();
 
             var entry = new X509CertificateEntry(certificate);
             store.SetCertificateEntry(friendlyName, entry);
@@ -126,9 +142,9 @@ namespace Certes.Pkcs
             }
         }
 
-        private static Pkcs12StoreBuilder CreateStoreBuilder(PfxEncryption encryption)
+        private static Pkcs12StoreBuilder CreateStoreBuilder(PfxEncryption pfxEncryption)
         {
-            switch (encryption)
+            switch (pfxEncryption)
             {
                 case PfxEncryption.Aes256:
                     return new Pkcs12StoreBuilder()
@@ -139,7 +155,8 @@ namespace Certes.Pkcs
                         .SetKeyAlgorithm(PkcsObjectIdentifiers.PbeWithShaAnd3KeyTripleDesCbc)
                         .SetCertAlgorithm(PkcsObjectIdentifiers.PbewithShaAnd40BitRC2Cbc);
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(Encryption), encryption, null);
+                    // Unreachable: the Encryption setter rejects undefined values.
+                    throw new ArgumentOutOfRangeException(nameof(pfxEncryption), pfxEncryption, null);
             }
         }
 

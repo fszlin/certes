@@ -186,9 +186,12 @@ namespace Certes.Pkcs
         {
             var fixture = new CertificateFixture(KeyAlgorithm.ES256);
             var builder = fixture.Chain.ToPfx(fixture.Key);
-            builder.Encryption = (PfxEncryption)42;
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => builder.Build("my-cert", "abcd1234"));
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(
+                () => builder.Encryption = (PfxEncryption)42);
+
+            Assert.Equal("value", exception.ParamName);
+            Assert.Equal(PfxEncryption.Aes256, builder.Encryption);
         }
 
         private static void AssertPbes2Aes256(Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier algorithm)
