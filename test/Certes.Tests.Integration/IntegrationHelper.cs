@@ -232,7 +232,8 @@ namespace Certes
             var builder = chain.ToPfx(key);
             builder.AddTestCerts();
             using var stream = new MemoryStream(builder.Build("integration", "test-password"));
-            var store = new Pkcs12Store(stream, "test-password".ToCharArray());
+            var store = new Pkcs12StoreBuilder().Build();
+            store.Load(stream, "test-password".ToCharArray());
             Assert.True(store.IsKeyEntry("integration"));
             Assert.Equal(key.ToDer(), PrivateKeyInfoFactory.CreatePrivateKeyInfo(store.GetKey("integration").Key).GetDerEncoded());
             Assert.Equal(chain.Certificate.ToDer(), store.GetCertificate("integration").Certificate.GetEncoded());

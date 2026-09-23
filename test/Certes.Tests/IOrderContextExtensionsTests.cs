@@ -38,7 +38,7 @@ namespace Certes
             var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
             var certInfo = await orderCtxMock.Object.Generate(new CsrInfo
             {
-                CountryName = "C",
+                CountryName = "CA",
                 CommonName = "www.certes.com",
             }, key, null);
 
@@ -48,7 +48,7 @@ namespace Certes
 
             var certInfoNoCn = await orderCtxMock.Object.Generate(new CsrInfo
             {
-                CountryName = "C",
+                CountryName = "CA",
             }, key, null);
 
             Assert.Equal(
@@ -82,7 +82,7 @@ namespace Certes
             var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
             var certInfo = await orderCtxMock.Object.Generate(new CsrInfo
             {
-                CountryName = "C",
+                CountryName = "CA",
                 CommonName = "www.certes.com",
             }, key, null);
 
@@ -92,7 +92,7 @@ namespace Certes
 
             var certInfoNoCn = await orderCtxMock.Object.Generate(new CsrInfo
             {
-                CountryName = "C",
+                CountryName = "CA",
             }, key, null);
 
             Assert.Equal(
@@ -169,7 +169,7 @@ namespace Certes
             var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
             var certInfo = await orderCtxMock.Object.Generate(new CsrInfo
             {
-                CountryName = "C",
+                CountryName = "CA",
                 CommonName = "www.certes.com",
             }, key, null, 5);
 
@@ -179,7 +179,7 @@ namespace Certes
 
             var certInfoNoCn = await orderCtxMock.Object.Generate(new CsrInfo
             {
-                CountryName = "C",
+                CountryName = "CA",
             }, key);
 
             Assert.Equal(
@@ -255,7 +255,7 @@ namespace Certes
             var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
             var certInfoDefaultRoot = await orderCtxMock.Object.Generate(new CsrInfo
             {
-                CountryName = "C",
+                CountryName = "CA",
                 CommonName = "www.certes.com",
             }, key, null);
 
@@ -265,7 +265,7 @@ namespace Certes
 
             var certInfoAlternateRoot = await orderCtxMock.Object.Generate(new CsrInfo
             {
-                CountryName = "C",
+                CountryName = "CA",
                 CommonName = "www.certes.com",
             }, key, "AlternateRoot");
 
@@ -275,7 +275,7 @@ namespace Certes
 
             var certInfoUnknownRoot = await orderCtxMock.Object.Generate(new CsrInfo
             {
-                CountryName = "C",
+                CountryName = "CA",
                 CommonName = "www.certes.com",
             }, key, "UnknownRoot");
 
@@ -302,7 +302,7 @@ namespace Certes
             await Assert.ThrowsAsync<AcmeException>(() =>
                 orderCtxMock.Object.Generate(new CsrInfo
                 {
-                    CountryName = "C",
+                    CountryName = "CA",
                     CommonName = "www.certes.com",
                 }, key, null));
         }
@@ -334,7 +334,7 @@ namespace Certes
             await Assert.ThrowsAsync<AcmeException>(() =>
                 orderCtxMock.Object.Generate(new CsrInfo
                 {
-                    CountryName = "C",
+                    CountryName = "CA",
                     CommonName = "www.certes.com",
                 }, key, null));
         }
@@ -477,7 +477,7 @@ namespace Certes
                 orderCtxMock.Object,
                 new CsrInfo
                 {
-                    CountryName = "C",
+                    CountryName = "CA",
                     CommonName = "www.certes.com",
                 },
                 key,

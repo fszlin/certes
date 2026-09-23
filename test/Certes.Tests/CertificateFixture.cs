@@ -76,7 +76,8 @@ namespace Certes
         {
             using (var stream = new MemoryStream(pfx))
             {
-                var store = new Pkcs12Store(stream, password.ToCharArray());
+                var store = new Pkcs12StoreBuilder().Build();
+                store.Load(stream, password.ToCharArray());
                 var alias = store.Aliases.Cast<string>().Single(store.IsKeyEntry);
                 var chain = store.GetCertificateChain(alias);
 
@@ -90,7 +91,8 @@ namespace Certes
         {
             using (var stream = new MemoryStream(pfx))
             {
-                var store = new Pkcs12Store(stream, password.ToCharArray());
+                var store = new Pkcs12StoreBuilder().Build();
+                store.Load(stream, password.ToCharArray());
                 var keyAliases = store.Aliases.Cast<string>().Where(store.IsKeyEntry).ToArray();
                 var actualAlias = Assert.Single(keyAliases);
                 if (alias != null)
