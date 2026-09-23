@@ -27,6 +27,10 @@
     <InformationalVersion Condition="$(CERTES_INFORMATIONAL_VERSION) != ''">
       $(CERTES_INFORMATIONAL_VERSION)</InformationalVersion>
   </PropertyGroup>
+  <!-- Release notes extracted from docs/CHANGELOG.md by the release workflow. -->
+  <PropertyGroup Condition="'$(CERTES_RELEASE_NOTES_FILE)' != '' and Exists('$(CERTES_RELEASE_NOTES_FILE)')">
+    <PackageReleaseNotes>$([MSBuild]::Escape($([System.IO.File]::ReadAllText('$(CERTES_RELEASE_NOTES_FILE)'))))</PackageReleaseNotes>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>

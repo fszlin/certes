@@ -90,6 +90,13 @@ jobs:
               exit 1
             fi
           done
+      - name: Extract release notes from changelog
+        env:
+          PACKAGE_VERSION: ${{ steps.version.outputs.package-version }}
+        run: |
+          mkdir -p artifacts/release-notes
+          bash scripts/release-notes.sh "$PACKAGE_VERSION" > artifacts/release-notes/release-notes.md
+          cat artifacts/release-notes/release-notes.md >> "$GITHUB_STEP_SUMMARY"
       - name: Check package version availability
         shell: bash
         env:
@@ -130,9 +137,23 @@ jobs:
           CERTES_FILE_VERSION: ${{ steps.version.outputs.file-version }}
           CERTES_INFORMATIONAL_VERSION: ${{ steps.version.outputs.package-version }}
           CERTES_PACKAGE_VERSION: ${{ steps.version.outputs.package-version }}
+          CERTES_RELEASE_NOTES_FILE: ${{ github.workspace }}/artifacts/release-notes/release-notes.md
         run: |
           dotnet pack src/Certes/Certes.csproj -c Release -p:ContinuousIntegrationBuild=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg --output artifacts/packages
           dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:ContinuousIntegrationBuild=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg --output artifacts/packages
+      - name: Verify package readme and release notes
+        shell: bash
+        env:
+          PACKAGE_VERSION: ${{ steps.version.outputs.package-version }}
+        run: |
+          for package_id in Certes dotnet-certes; do
+            package="artifacts/packages/${package_id}.${PACKAGE_VERSION}.nupkg"
+            nuspec="$(unzip -p "$package" "${package_id}.nuspec")"
+            unzip -l "$package" README.md > /dev/null
+            grep -q '<readme>README.md</readme>' <<< "$nuspec"
+            grep -q '<releaseNotes>' <<< "$nuspec"
+            printf '%s: readme and release notes present\n' "$package_id"
+          done
       - name: Consume release library package
         env:
           CERTES_PACKAGE_VERSION: ${{ steps.version.outputs.package-version }}
@@ -160,6 +181,13 @@ jobs:
             artifacts/packages/*.snupkg
           if-no-files-found: error
           retention-days: 14
+      - name: Upload release notes
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-notes-${{ steps.version.outputs.package-version }}
+          path: artifacts/release-notes/release-notes.md
+          if-no-files-found: error
+          retention-days: 14
 
   publish:
     name: Publish to NuGet and GitHub
@@ -175,6 +203,10 @@ jobs:
         with:
           name: packages-${{ needs.prepare.outputs.package-version }}
           path: artifacts/packages
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: release-notes-${{ needs.prepare.outputs.package-version }}
+          path: artifacts/release-notes
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: 10.0.x
@@ -216,5 +248,5 @@ jobs:
           gh release create "$GITHUB_REF_NAME" artifacts/packages/* \
             --repo "$GITHUB_REPOSITORY" \
             --title "$GITHUB_REF_NAME" \
-            --generate-notes \
+            --notes-file artifacts/release-notes/release-notes.md \
             "${prerelease_flag[@]}"

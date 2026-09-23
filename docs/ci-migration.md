@@ -222,6 +222,18 @@ One-time repository setup:
    and environment `nuget-release`. Scope it to the `Certes` and `dotnet-certes`
    package IDs if the policy UI offers package scopes.
 
+Release notes and package pages:
+
+- Every release needs a `## [VERSION] - DATE` section in `docs/CHANGELOG.md`,
+  where `VERSION` matches the tag without the `v`. The workflow extracts it with
+  `scripts/release-notes.sh` and stops before packing if the section is missing or
+  empty. The same text becomes the NuGet `releaseNotes` and the GitHub release body.
+  Preview it locally with `bash scripts/release-notes.sh 4.0.0-beta.2`.
+- `src/Certes/README.md` and `src/Certes.Cli/README.md` are the package readmes
+  shown on nuget.org. Use absolute links. Review them in the release-notes PR
+  whenever supported targets, runtime requirements, or usage change.
+- Package metadata cannot be edited after publishing; fixes need a new version.
+
 To prepare a prerelease, merge the reviewed release notes and version decision to
 `main`, wait for the required checks on that `main` commit to pass, then create and push an annotated tag such
 as `v4.0.0-beta.1`. Review the `Verify and package` job and approve the environment
