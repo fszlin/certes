@@ -1,0 +1,6 @@
+services:
+  pebble:
+    environment:
+      PEBBLE_VA_NOSLEEP: "0"
+      PEBBLE_WFE_NONCEREJECT: "15"
+      PEBBLE_AUTHZREUSE: "1"

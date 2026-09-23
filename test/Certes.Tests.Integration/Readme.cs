@@ -12,9 +12,7 @@ namespace Certes
         {
             var acmeDir = await IntegrationHelper.GetAcmeUriV2();
             var accountKey = Helper.GetKeyV2(KeyAlgorithm.RS256);
-            var httpClient = IntegrationHelper.GetAcmeHttpClient(acmeDir);
-
-            var acme = new AcmeContext(acmeDir, accountKey, httpClient);
+            var acme = IntegrationHelper.NewAcmeContext(acmeDir, accountKey);
             var account = await acme.Account();
 
             var order = await acme.NewOrder(new[] { "readme.example.test" });
@@ -43,7 +41,7 @@ namespace Certes
             }
             await IntegrationHelper.WaitForOrder(order, OrderStatus.Ready);
 
-            acme = new AcmeContext(acmeDir, accountKey, httpClient);
+            acme = IntegrationHelper.NewAcmeContext(acmeDir, accountKey);
             order = acme.Order(orderUri);
             var privateKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
             // Keep the number of polling retries bounded independently of elapsed delay.

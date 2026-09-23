@@ -19,6 +19,8 @@ namespace Certes
 {
     public static class IntegrationHelper
     {
+        private const int DefaultBadNonceRetryCount = 1;
+        private const string BadNonceRetryCountEnvironmentVariable = "CERTES_INTEGRATION_BADNONCE_RETRY_COUNT";
         private static readonly Uri directory = new Uri("https://localhost:14000/dir");
         private static readonly Uri management = new Uri("https://localhost:15000/");
         private static readonly Uri challenges = new Uri("http://localhost:8055/");
@@ -60,6 +62,20 @@ namespace Certes
             return new AcmeHttpClient(uri, http.Value);
         }
 
+        public static int ResolveBadNonceRetryCount()
+        {
+            var configured = Environment.GetEnvironmentVariable(BadNonceRetryCountEnvironmentVariable);
+            if (!int.TryParse(configured, out var retryCount))
+            {
+                return DefaultBadNonceRetryCount;
+            }
+
+            return Math.Max(retryCount, 0);
+        }
+
+        public static AcmeContext NewAcmeContext(Uri uri, IKey accountKey = null)
+            => new AcmeContext(uri, accountKey, GetAcmeHttpClient(uri), ResolveBadNonceRetryCount());
+
         public static Task<Uri> GetAcmeUriV2() => initialize.Value;
 
         private static async Task<Uri> Initialize()
@@ -75,7 +91,7 @@ namespace Certes
                 foreach (var algorithm in new[] { KeyAlgorithm.RS256, KeyAlgorithm.ES256, KeyAlgorithm.ES384 })
                 {
                     stage = $"provisioning the {algorithm} test account";
-                    var context = new AcmeContext(directory, Helper.GetKeyV2(algorithm), GetAcmeHttpClient(directory));
+                    var context = NewAcmeContext(directory, Helper.GetKeyV2(algorithm));
                     await context.NewAccount(new[] { "mailto:ci@example.test" }, true);
                 }
 

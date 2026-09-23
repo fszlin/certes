@@ -15,7 +15,7 @@ namespace Certes
         public async Task MissingResponseFailsValidation(string type)
         {
             var directory = await IntegrationHelper.GetAcmeUriV2();
-            var context = new AcmeContext(directory, http: IntegrationHelper.GetAcmeHttpClient(directory));
+            var context = IntegrationHelper.NewAcmeContext(directory);
             await context.NewAccount(new[] { "mailto:negative@example.test" }, true);
             var order = await context.NewOrder(new[] { $"missing-{Guid.NewGuid():N}.example.test" });
             var authorization = (await order.Authorizations()).Single();

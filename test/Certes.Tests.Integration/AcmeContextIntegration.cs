@@ -24,7 +24,7 @@ namespace Certes
         {
             var dirUri = await GetAcmeUriV2();
             var hosts = new[] { $"www-ec-{algo}.example.test".ToLowerInvariant() };
-            var ctx = new AcmeContext(dirUri, GetKeyV2(algo), http: GetAcmeHttpClient(dirUri));
+            var ctx = NewAcmeContext(dirUri, GetKeyV2(algo));
             var orderCtx = await AuthorizeHttp(ctx, hosts);
 
             var certKey = KeyFactory.NewKey(algo);

@@ -159,7 +159,11 @@ docker compose -f scripts/Pebble/compose.yml down
 Inspect `test/Certes.Tests.Integration/IntegrationHelper.cs` and the relevant integration
 test before changing the setup. See `scripts/Pebble/README.md` for prerequisites,
 TLS certificate pinning, fixed loopback ports, and coverage limits. Docker Desktop
-is verified on macOS ARM64; Linux CI uses Docker. Podman is not yet verified.
+is verified on macOS ARM64; Linux CI uses Docker. Rootless Podman on Linux has
+started the stack and reached account setup using an isolated temporary store;
+the resilience test failed on repeated `badNonce` responses before issuance.
+A complete passing Podman integration run remains unverified. See the Podman
+troubleshooting section in `scripts/Pebble/README.md` for commands and limitations.
 The local harness runs only on .NET 10; `net462` remains compile-only and rejects
 network initialization. Never add a global TLS bypass or public-CA fallback.
 Keep unit tests network-independent: `CertificateFixture` generates

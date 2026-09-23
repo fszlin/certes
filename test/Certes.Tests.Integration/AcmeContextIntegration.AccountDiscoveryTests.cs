@@ -21,7 +21,7 @@ namespace Certes
             {
                 var dirUri = await GetAcmeUriV2();
 
-                var ctx = new AcmeContext(dirUri, GetKeyV2(), GetAcmeHttpClient(dirUri));
+                var ctx = NewAcmeContext(dirUri, GetKeyV2());
                 var acct = await ctx.Account();
 
                 Assert.NotNull(acct.Location);
