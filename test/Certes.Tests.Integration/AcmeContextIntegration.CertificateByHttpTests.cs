@@ -23,7 +23,7 @@ namespace Certes
             {
                 var dirUri = await GetAcmeUriV2();
                 var hosts = new[] { "www-http.example.test", "mail-http.example.test" };
-                var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
+                var ctx = NewAcmeContext(dirUri, GetKeyV2());
                 var orderCtx = await AuthorizeHttp(ctx, hosts);
 
                 var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
@@ -53,6 +53,29 @@ namespace Certes
                 await ctx.RevokeCertificate(der, RevocationReason.Unspecified, null);
 
                 // deactivate authz so the subsequence can trigger challenge validation
+                await ClearAuthorizations(orderCtx);
+            }
+
+            [Fact]
+            public async Task CanGenerateCertificateHttpWithGenerateApi()
+            {
+                var dirUri = await GetAcmeUriV2();
+                var hosts = new[] { "www-http-generate.example.test", "mail-http-generate.example.test" };
+                var ctx = NewAcmeContext(dirUri, GetKeyV2());
+                var orderCtx = await AuthorizeHttp(ctx, hosts);
+
+                var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
+                var certChain = await orderCtx.Generate(new CsrInfo
+                {
+                    CountryName = "CA",
+                    State = "Ontario",
+                    Locality = "Toronto",
+                    Organization = "Certes",
+                    OrganizationUnit = "Dev",
+                    CommonName = hosts[0],
+                }, certKey, preferredChain: null, retryCount: 120);
+                AssertExport(certChain, certKey);
+
                 await ClearAuthorizations(orderCtx);
             }
         }

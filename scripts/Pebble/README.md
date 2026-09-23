@@ -10,8 +10,10 @@ docker compose -f scripts/Pebble/compose.yml down
 ```
 
 Docker Desktop on macOS ARM64 is verified locally. GitHub Actions uses Docker on
-Linux x64. Podman with a running machine and Compose provider may work with the
-same file, but has not been verified. Unit tests do not need containers.
+Linux x64. Rootless Podman on Linux has started the stack and reached ACME account
+setup; a complete passing integration run is still unverified. See
+[Podman troubleshooting](#podman-troubleshooting) for the tested workaround.
+Unit tests do not need containers.
 
 ## Topology and trust
 
@@ -87,3 +89,132 @@ fix a pin mismatch. Management and account errors retain their inner exception.
 Failures are errors, not skipped tests. CI always tears the stack down, and prints
 container logs on failure. The legacy Functions helper is retained for a separate
 retirement change; integration tests no longer call it.
+
+## Optional resilience mode
+
+To exercise delayed validation, random nonce rejection, and authorization reuse,
+use the resilience override file:
+
+```sh
+docker compose -f scripts/Pebble/compose.yml -f scripts/Pebble/compose.resilience.yml up -d
+bash scripts/Pebble/wait.sh
+dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -f net10.0 -p:SkipSigning=true --filter FullyQualifiedName~CanGenerateCertificateHttpWithGenerateApi
+docker compose -f scripts/Pebble/compose.yml -f scripts/Pebble/compose.resilience.yml down
+```
+
+This mode intentionally increases run-time variance and is currently intended for
+manual or opt-in CI checks.
+
+For local resilience runs, raise bad-nonce retries so random nonce rejection is
+treated as recoverable noise instead of immediate test failure:
+
+```sh
+CERTES_INTEGRATION_BADNONCE_RETRY_COUNT=8 \
+dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -f net10.0 -p:SkipSigning=true --filter FullyQualifiedName~CanGenerateCertificateHttpWithGenerateApi
+```
+
+Integration tests default to one bad-nonce retry when this variable is unset.
+
+## Podman troubleshooting
+
+### Check the runtime and Compose provider
+
+Record `podman --version`, `podman info`, `podman-compose --version`, and
+`dotnet --info` before diagnosing a failed run. In some environments,
+`docker compose` delegates to `podman-compose`. Calling `podman-compose` directly
+makes the provider explicit. Use absolute Compose paths if the provider reports
+`FileNotFoundError` for a relative path that exists in the checkout.
+
+For Podman Compose 1.3.0, disable log colors with the global `--no-ansi` option:
+`podman-compose --no-ansi ... logs`. Docker Compose's `logs --no-color` option is
+not accepted by that provider version.
+
+### Stale rootless pause process
+
+The error `invalid internal status ... could not find any running process`
+indicates stale rootless runtime state: Podman cannot find the pause process used
+to retain its user namespace. The error alone does not establish what caused the
+process to disappear.
+
+Podman recommends `podman system migrate`. This command can stop containers in
+the current store, so account for existing workloads before running it. In the
+observed Podman 5.4.2 environment it crashed with a nil-pointer panic during
+network cleanup, and `podman info` continued to fail. The isolated-store workaround
+below succeeded without resetting the original store; it does not repair that
+store. A destructive `podman system reset` was not needed.
+
+### Run with an isolated temporary store
+
+The following Bash example runs the focused resilience test. Run it from the
+repository root, with the fixed Pebble ports free. Every Podman command must use
+the same storage, runtime, and temporary-directory arguments, including cleanup.
+The `vfs` storage driver avoids nested overlay-storage requirements but uses more
+disk space. The fresh store pulls its own copies of the pinned images.
+
+```bash
+(
+    set -e
+    repo="$(pwd -P)"
+    podman_test_dir="$(mktemp -d /tmp/certes-podman.XXXXXX)"
+    podman_args="--root $podman_test_dir/storage --runroot $podman_test_dir/run --tmpdir $podman_test_dir/tmp --storage-driver vfs"
+    printf 'Temporary Podman store: %s\n' "$podman_test_dir"
+
+    test_podman() {
+        podman --root "$podman_test_dir/storage" \
+            --runroot "$podman_test_dir/run" --tmpdir "$podman_test_dir/tmp" \
+            --storage-driver vfs "$@"
+    }
+    compose() {
+        podman-compose --no-ansi --podman-args="$podman_args" \
+            -f "$repo/scripts/Pebble/compose.yml" \
+            -f "$repo/scripts/Pebble/compose.resilience.yml" "$@"
+    }
+    cleanup() {
+        status=$?
+        trap - EXIT
+        set +e
+        compose logs
+        compose down
+        cleanup_status=$?
+        test_podman ps -a
+        if [ "$status" -eq 0 ]; then
+            status=$cleanup_status
+        fi
+        exit "$status"
+    }
+    trap cleanup EXIT
+
+    test_podman info
+    compose up -d
+    bash "$repo/scripts/Pebble/wait.sh"
+    CERTES_INTEGRATION_BADNONCE_RETRY_COUNT=8 \
+    dotnet test "$repo/test/Certes.Tests.Integration/Certes.Tests.Integration.csproj" \
+        -f net10.0 -p:SkipSigning=true \
+        --filter FullyQualifiedName~CanGenerateCertificateHttpWithGenerateApi
+)
+```
+
+The subshell preserves the test failure status and attempts teardown even when
+startup or tests fail. `compose down` removes the stack, while the printed
+temporary directory retains downloaded images and runtime files for inspection.
+The isolated store still shares host ports with other stacks.
+
+### Observed result and remaining limits
+
+The run used Debian 13/Linux x64, Podman 5.4.2, Podman Compose 1.3.0, .NET SDK
+10.0.401, and runtime 10.0.12. Both containers started and the readiness probe
+passed. With the default one-retry bad-nonce budget, the focused test failed
+during ES256 account setup because Pebble rejected both the initial nonce and
+its retry. With `CERTES_INTEGRATION_BADNONCE_RETRY_COUNT=8`, the same focused
+test passed and reached `order.Generate()`. This was an ACME resilience behavior
+difference after successful container startup, not a Podman startup failure.
+
+Podman also reported a missing `aardvark-dns` binary and corresponding network
+cleanup errors. The stack uses explicit container IPs and Pebble's custom DNS
+resolver, and reached account setup despite that warning; challenge validation
+was not reached. After teardown, `podman ps -a` with the isolated-store arguments
+confirmed that no test containers remained.
+
+Pebble logs confirmed that `PEBBLE_AUTHZREUSE=1` means a **1% probability**, not a
+boolean switch. The current single-order resilience test does not verify
+authorization reuse; that needs repeated orders and explicit reuse assertions.

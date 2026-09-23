@@ -20,7 +20,7 @@ namespace Certes
             {
                 var dirUri = await GetAcmeUriV2();
 
-                var ctx = new AcmeContext(dirUri, http: GetAcmeHttpClient(dirUri));
+                var ctx = NewAcmeContext(dirUri);
                 var account = await ctx.NewAccount(
                     new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@certes.app" }, true);
                 var location = await ctx.Account().Location();
@@ -28,7 +28,7 @@ namespace Certes
                 var newKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
                 await ctx.ChangeKey(newKey);
 
-                var ctxWithNewKey = new AcmeContext(dirUri, newKey, http: GetAcmeHttpClient(dirUri));
+                var ctxWithNewKey = NewAcmeContext(dirUri, newKey);
                 var locationWithNewKey = await ctxWithNewKey.Account().Location();
                 Assert.Equal(location, locationWithNewKey);
             }

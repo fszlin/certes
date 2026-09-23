@@ -159,7 +159,13 @@ docker compose -f scripts/Pebble/compose.yml down
 Inspect `test/Certes.Tests.Integration/IntegrationHelper.cs` and the relevant integration
 test before changing the setup. See `scripts/Pebble/README.md` for prerequisites,
 TLS certificate pinning, fixed loopback ports, and coverage limits. Docker Desktop
-is verified on macOS ARM64; Linux CI uses Docker. Podman is not yet verified.
+is verified on macOS ARM64; Linux CI uses Docker. Rootless Podman on Linux has
+started the stack using an isolated temporary store. With the default
+bad-nonce retry budget, the focused resilience test failed before issuance on
+repeated `badNonce` responses; with `CERTES_INTEGRATION_BADNONCE_RETRY_COUNT=8`,
+the same focused resilience test passed. A complete passing Podman run for the
+full integration suite remains unverified. See the Podman troubleshooting
+section in `scripts/Pebble/README.md` for commands and limitations.
 The local harness runs only on .NET 10; `net462` remains compile-only and rejects
 network initialization. Never add a global TLS bypass or public-CA fallback.
 Keep unit tests network-independent: `CertificateFixture` generates
@@ -237,7 +243,7 @@ were updated after the .NET 10 migration:
   offline TLS-ALPN certificate-generation cases cover RSA/ECDSA keys, SANs,
   self-signatures, and the critical ACME identifier extension. The six
   former hosted-Pebble failures now use local certificate fixtures with matching
-  keys and PFX assertions; a missing-issuer test was added. The 13 integration tests
+  keys and PFX assertions; a missing-issuer test was added. The 14 integration tests
   pass locally against pinned Pebble 2.10.1 on Docker Desktop/macOS ARM64. This
   verifies the local test CA, not public CA interoperability. Production polling
   issues below are not fixed by the bounded polling in the test helper.

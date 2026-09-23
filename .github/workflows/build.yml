@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      run_resilience_integration:
+        description: Run the optional Pebble resilience integration check
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -113,3 +119,32 @@ jobs:
       - name: Stop local CA
         if: always()
         run: docker compose -f scripts/Pebble/compose.yml down
+
+  integration-resilience:
+    name: Pebble resilience integration (optional)
+    if: github.event_name == 'workflow_dispatch' && inputs.run_resilience_integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
+        with:
+          dotnet-version: 10.0.x
+      - name: Runtime information
+        run: dotnet --info
+      - name: Start local CA in resilience mode
+        run: |
+          docker compose -f scripts/Pebble/compose.yml -f scripts/Pebble/compose.resilience.yml up -d
+          bash scripts/Pebble/wait.sh
+      - name: Run Generate API integration check in resilience mode
+        env:
+          CERTES_INTEGRATION_BADNONCE_RETRY_COUNT: 8
+        run: dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -f net10.0 -p:SkipSigning=true --filter FullyQualifiedName~CanGenerateCertificateHttpWithGenerateApi
+      - name: Container diagnostics
+        if: failure()
+        run: docker compose -f scripts/Pebble/compose.yml -f scripts/Pebble/compose.resilience.yml logs --no-color
+      - name: Stop local CA
+        if: always()
+        run: docker compose -f scripts/Pebble/compose.yml -f scripts/Pebble/compose.resilience.yml down

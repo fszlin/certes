@@ -81,7 +81,7 @@ All notable changes to this project will be documented in this file.
   entities and JWS payload serialization, including enum handling for
   `[EnumMember]` values and numeric enum tokens when required by ACME payloads.
 - Promote Pebble integration to a required check on `main`; the local and hosted
-  suite currently runs 13 integration tests alongside 183 offline unit tests.
+  suite currently runs 14 integration tests alongside 183 offline unit tests.
 
 ### Added
 - Support alternate link relations ([#232][i232])

@@ -24,7 +24,7 @@ namespace Certes
                 var dirUri = await GetAcmeUriV2();
 
                 var hosts = new[] { "www-dns.example.test", "mail-dns.example.test" };
-                var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
+                var ctx = NewAcmeContext(dirUri, GetKeyV2());
                 var orderCtx = await AuthzDns(ctx, hosts);
 
                 var csr = new CertificationRequestBuilder();
