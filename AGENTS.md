@@ -233,7 +233,7 @@ promotion. Protocol observations originate at `ffa00c6`; build/test and audit st
 were updated after the .NET 10 migration:
 
 - The core library built for all targets; CLI/unit-test compilation also passed.
-- On the native `net10.0` target, all 181 unit tests pass, with no skips. Four
+- On the native `net10.0` target, all 183 unit tests pass, with no skips. Four
   offline TLS-ALPN certificate-generation cases cover RSA/ECDSA keys, SANs,
   self-signatures, and the critical ACME identifier extension. The six
   former hosted-Pebble failures now use local certificate fixtures with matching
@@ -251,8 +251,9 @@ were updated after the .NET 10 migration:
   revocation and complete-path validity are not evaluated. The library no longer
   embeds CA roots, so issuers must be supplied by the caller or the ACME server.
   `PfxBuilder` packages the linked chain and excludes the self-signed root.
-- CLI settings contain account keys. `FileUtil` currently uses default file
-  permissions and non-atomic writes.
+- CLI settings contain account keys. `FileUtil` writes through a temp file and
+  replaces the destination atomically, and on Linux/macOS applies owner-only
+  (`0600`) file permissions.
 - Azure deployment support was removed from `dotnet-certes` (`az` command
   group and Azure Fluent dependencies). The Functions helper remains for
   challenge-test scenarios and is not part of the shipping CLI/runtime path.
