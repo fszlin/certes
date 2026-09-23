@@ -80,12 +80,12 @@ jobs:
             'Package smoke checks'
             'Pebble integration'
           )
+          successful_checks="$(gh api \
+            -H 'Accept: application/vnd.github+json' \
+            "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/check-runs?per_page=100" \
+            --jq '.check_runs[] | select(.app.slug == "github-actions" and .conclusion == "success") | .name')"
           for check in "${required_checks[@]}"; do
-            successful_runs="$(gh api \
-              -H 'Accept: application/vnd.github+json' \
-              "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/check-runs?per_page=100" \
-              --jq "[.check_runs[] | select(.name == \"$check\" and .conclusion == \"success\")] | length")"
-            if [[ "$successful_runs" == 0 ]]; then
+            if ! grep -Fxq -- "$check" <<< "$successful_checks"; then
               printf 'Required check has no successful run on %s: %s\n' "$GITHUB_SHA" "$check" >&2
               exit 1
             fi

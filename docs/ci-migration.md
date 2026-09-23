@@ -223,7 +223,7 @@ One-time repository setup:
    package IDs if the policy UI offers package scopes.
 
 To prepare a prerelease, merge the reviewed release notes and version decision to
-`main`, confirm required checks pass, then create and push an annotated tag such
+`main`, wait for the required checks on that `main` commit to pass, then create and push an annotated tag such
 as `v4.0.0-beta.1`. Review the `Verify and package` job and approve the environment
 deployment only when its package version and artifacts are correct. NuGet does not
 provide an atomic multi-package transaction, so approval authorizes publication of
@@ -232,4 +232,5 @@ If publication is interrupted after only one package reaches NuGet, re-run the
 failed `Publish to NuGet and GitHub` job. Pushes use `--skip-duplicate`, so the
 existing package is left unchanged while the missing package and GitHub release
 are completed. Do not re-run the full workflow or reuse the version for different
-artifacts.
+artifacts. If the tag was pushed before the `main` checks finished, the prepare job
+fails without publishing; re-run it once those checks succeed.
