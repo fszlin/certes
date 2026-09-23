@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [4.0.0-beta.1] - 2026-09-23
+First prerelease of the revived project. The major version reflects the breaking
+changes below. Issuance was verified against a local Pebble test CA
+(14 integration tests, including a bad-nonce resilience run) and 183 offline unit
+tests; interoperability with public CAs such as Let's Encrypt has not been
+re-verified for this prerelease. Please report issues before the stable release.
+
 ### Breaking changes
 - Stop shipping and consulting embedded CA roots. `Resources/Certificates` carried
   DST Root CA X3, which expired on 2021-09-30, the Let's Encrypt **staging** root,
@@ -201,7 +209,8 @@ All notable changes to this project will be documented in this file.
 [2.3.1]: https://github.com/fszlin/certes/compare/v2.3.0...v2.3.1
 [2.3.2]: https://github.com/fszlin/certes/compare/v2.3.1...v2.3.2
 [2.3.2]: https://github.com/fszlin/certes/compare/v2.3.2...v2.3.3
-[Unreleased]: https://github.com/fszlin/certes/compare/v2.3.3...HEAD
+[4.0.0-beta.1]: https://github.com/fszlin/certes/compare/v3.0.0...v4.0.0-beta.1
+[Unreleased]: https://github.com/fszlin/certes/compare/v4.0.0-beta.1...HEAD
 
 [i5]: https://github.com/fszlin/certes/issues/5
 [i22]: https://github.com/fszlin/certes/issues/22
