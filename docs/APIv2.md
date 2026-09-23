@@ -230,14 +230,16 @@ await challenge.Validate();
 Download certificate for a pending order.
 
 ```C#
-var cert = await order.Generate(
+var certKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
+var certChain = await order.Generate(
     new CsrInfo
     {
         CountryName = "CA",
         State = "State",
         Locality = "City",
         Organization = "Dept",
-    });
+    },
+    certKey);
 ```
 
 Download the certifcate for a finalized order.
@@ -249,25 +251,24 @@ var certChain = await order.Download();
 Export the certificate to PEM, DER, or PFX.
 
 ```C#
-var cert = new CertificateInfo(certChain, certKey);
+var pem = certChain.ToPem();                // certificate and issuers
+var pemWithKey = certChain.ToPem(certKey);  // private key first, then certificates
+var der = certChain.Certificate.ToDer();    // leaf certificate only
+var pfx = certChain.ToPfx(certKey).Build("cert-name", "abcd1234");
 
-var pem = cert.ToPem();
-var der = cert.ToDer();
-var pfx = cert.ToPfx("cert-name", "abcd1234");
-
-var keyPem = cert.Key.ToPem();
+var keyPem = certKey.ToPem();
 ```
 
 Revoke certificate with account key.
 
 ```C#
-context.RevokeCertificate(cert.ToDer(), RevocationReason.KeyCompromise);
+await context.RevokeCertificate(certChain.Certificate.ToDer(), RevocationReason.KeyCompromise);
 ```
 
 Revoke certificate with certificate private key.
 
 ```C#
-context.RevokeCertificate(cert.ToDer(), RevocationReason.KeyCompromise, certKey);
+await context.RevokeCertificate(certChain.Certificate.ToDer(), RevocationReason.KeyCompromise, certKey);
 ```
 
 <!---
