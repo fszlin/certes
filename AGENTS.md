@@ -233,7 +233,7 @@ promotion. Protocol observations originate at `ffa00c6`; build/test and audit st
 were updated after the .NET 10 migration:
 
 - The core library built for all targets; CLI/unit-test compilation also passed.
-- On the native `net10.0` target, all 149 unit tests pass, with no skips. Four
+- On the native `net10.0` target, all 181 unit tests pass, with no skips. Four
   offline TLS-ALPN certificate-generation cases cover RSA/ECDSA keys, SANs,
   self-signatures, and the critical ACME identifier extension. The six
   former hosted-Pebble failures now use local certificate fixtures with matching
