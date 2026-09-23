@@ -78,6 +78,8 @@ jobs:
             10.0.x
       - name: Runtime information
         run: dotnet --info
+      - name: Run offline unit tests in Release (matches the release workflow)
+        run: dotnet test test/Certes.Tests/Certes.Tests.csproj -c Release -f net10.0 -p:SkipSigning=true
       - name: Pack signed library and CLI
         run: |
           dotnet pack src/Certes/Certes.csproj -c Release -p:ContinuousIntegrationBuild=true --output artifacts/packages

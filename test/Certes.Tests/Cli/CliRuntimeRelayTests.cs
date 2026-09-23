@@ -78,9 +78,14 @@ namespace Certes.Cli
 
         private static async Task<(int ExitCode, string StdOut, string StdErr)> RunCli(params string[] args)
         {
+            // The test output is test/Certes.Tests/bin/<configuration>/<tfm>/; use the
+            // CLI built with the same configuration and target framework.
+            var testOutput = new DirectoryInfo(AppContext.BaseDirectory);
+            var configuration = testOutput.Parent.Name;
             var cliDll = Path.GetFullPath(Path.Combine(
                 AppContext.BaseDirectory,
-                "../../../../../src/Certes.Cli/bin/Debug/net10.0/dotnet-certes.dll"));
+                "../../../../../src/Certes.Cli/bin", configuration, testOutput.Name, "dotnet-certes.dll"));
+            Assert.True(File.Exists(cliDll), $"CLI not built at {cliDll}");
 
             var psi = new ProcessStartInfo("dotnet")
             {
