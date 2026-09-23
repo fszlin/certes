@@ -129,7 +129,7 @@ namespace Certes.Cli
                     if (!string.IsNullOrWhiteSpace(settings.OutPath))
                     {
                         consoleLogger.Debug("Saving new account key to '{0}'.", settings.OutPath);
-                        await System.IO.File.WriteAllTextAsync(settings.OutPath, key.ToPem());
+                        await fileUtil.WriteAllText(settings.OutPath, key.ToPem());
                     }
                     else
                     {
