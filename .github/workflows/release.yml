@@ -6,6 +6,7 @@ on:
       - 'v*'
 
 permissions:
+  checks: read
   contents: read
 
 concurrency:
@@ -40,7 +41,10 @@ jobs:
         shell: bash
         run: |
           version="${GITHUB_REF_NAME#v}"
-          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]; then
+          number='(0|[1-9][0-9]*)'
+          identifier='(0|[1-9][0-9]*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)'
+          semver="^${number}\.${number}\.${number}(-${identifier}(\.${identifier})*)?$"
+          if [[ ! "$version" =~ $semver ]]; then
             printf 'Invalid release tag: %s\n' "$GITHUB_REF_NAME" >&2
             printf 'Expected vMAJOR.MINOR.PATCH or vMAJOR.MINOR.PATCH-PRERELEASE.\n' >&2
             exit 1
@@ -53,13 +57,39 @@ jobs:
           fi
 
           major="${version%%.*}"
-          printf 'package-version=%s\n' "$version" >> "$GITHUB_OUTPUT"
-          printf 'assembly-version=%s.0.0\n' "$major" >> "$GITHUB_OUTPUT"
-          if [[ "$version" == *-* ]]; then
-            printf 'prerelease=true\n' >> "$GITHUB_OUTPUT"
-          else
-            printf 'prerelease=false\n' >> "$GITHUB_OUTPUT"
-          fi
+          release_version="${version%%-*}"
+          {
+            printf 'package-version=%s\n' "$version"
+            printf 'assembly-version=%s.0.0\n' "$major"
+            printf 'file-version=%s.0\n' "$release_version"
+            if [[ "$version" == *-* ]]; then
+              printf 'prerelease=true\n'
+            else
+              printf 'prerelease=false\n'
+            fi
+          } >> "$GITHUB_OUTPUT"
+      - name: Require successful main checks
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          required_checks=(
+            'Build (ubuntu-24.04)'
+            'Build (windows-2025)'
+            'Build (macos-26)'
+            'Package smoke checks'
+            'Pebble integration'
+          )
+          for check in "${required_checks[@]}"; do
+            successful_runs="$(gh api \
+              -H 'Accept: application/vnd.github+json' \
+              "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/check-runs?per_page=100" \
+              --jq "[.check_runs[] | select(.name == \"$check\" and .conclusion == \"success\")] | length")"
+            if [[ "$successful_runs" == 0 ]]; then
+              printf 'Required check has no successful run on %s: %s\n' "$GITHUB_SHA" "$check" >&2
+              exit 1
+            fi
+          done
       - name: Check package version availability
         shell: bash
         env:
@@ -97,7 +127,7 @@ jobs:
       - name: Pack signed release artifacts
         env:
           CERTES_ASSEMBLY_VERSION: ${{ steps.version.outputs.assembly-version }}
-          CERTES_FILE_VERSION: ${{ steps.version.outputs.assembly-version }}
+          CERTES_FILE_VERSION: ${{ steps.version.outputs.file-version }}
           CERTES_INFORMATIONAL_VERSION: ${{ steps.version.outputs.package-version }}
           CERTES_PACKAGE_VERSION: ${{ steps.version.outputs.package-version }}
         run: |
@@ -122,7 +152,7 @@ jobs:
           dotnet list src/Certes.Cli/Certes.Cli.csproj package --vulnerable --include-transitive --no-restore
           dotnet list src/Certes.Cli/Certes.Cli.csproj package --deprecated --include-transitive --no-restore
       - name: Upload release artifacts
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: packages-${{ steps.version.outputs.package-version }}
           path: |
@@ -141,7 +171,7 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: packages-${{ needs.prepare.outputs.package-version }}
           path: artifacts/packages
@@ -169,8 +199,9 @@ jobs:
             printf 'Expected two symbol packages, found %s.\n' "${#symbols[@]}" >&2
             exit 1
           fi
+          # dotnet nuget push publishes the adjacent .snupkg with each .nupkg.
           for package in "${packages[@]}"; do
-            dotnet nuget push "$package" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
+            dotnet nuget push "$package" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
           done
       - name: Create GitHub release
         env:

@@ -212,10 +212,12 @@ One-time repository setup:
 
 1. Create the `nuget-release` GitHub environment and add required reviewers. Do
    not allow administrators to bypass its protection for routine releases.
-2. Add an environment secret named `NUGET_USER` containing the nuget.org profile
+2. Add a repository ruleset that restricts creation, update, and deletion of
+   tags matching `v*` to release administrators.
+3. Add an environment secret named `NUGET_USER` containing the nuget.org profile
    name that owns or can publish both `Certes` and `dotnet-certes`. This is the
    profile name, not an email address or API key.
-3. In that nuget.org account's Trusted Publishing settings, add a GitHub Actions
+4. In that nuget.org account's Trusted Publishing settings, add a GitHub Actions
    policy for owner `fszlin`, repository `certes`, workflow file `release.yml`,
    and environment `nuget-release`. Scope it to the `Certes` and `dotnet-certes`
    package IDs if the policy UI offers package scopes.
@@ -226,3 +228,8 @@ as `v4.0.0-beta.1`. Review the `Verify and package` job and approve the environm
 deployment only when its package version and artifacts are correct. NuGet does not
 provide an atomic multi-package transaction, so approval authorizes publication of
 both packages. The workflow creates the GitHub prerelease after NuGet accepts them.
+If publication is interrupted after only one package reaches NuGet, re-run the
+failed `Publish to NuGet and GitHub` job. Pushes use `--skip-duplicate`, so the
+existing package is left unchanged while the missing package and GitHub release
+are completed. Do not re-run the full workflow or reuse the version for different
+artifacts.
