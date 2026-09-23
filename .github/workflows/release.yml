@@ -1,0 +1,220 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  checks: read
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  NUGET_PACKAGES: ${{ github.workspace }}/artifacts/nuget-release
+
+jobs:
+  prepare:
+    name: Verify and package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      package-version: ${{ steps.version.outputs.package-version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - name: Validate release tag
+        id: version
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          number='(0|[1-9][0-9]*)'
+          identifier='(0|[1-9][0-9]*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)'
+          semver="^${number}\.${number}\.${number}(-${identifier}(\.${identifier})*)?$"
+          if [[ ! "$version" =~ $semver ]]; then
+            printf 'Invalid release tag: %s\n' "$GITHUB_REF_NAME" >&2
+            printf 'Expected vMAJOR.MINOR.PATCH or vMAJOR.MINOR.PATCH-PRERELEASE.\n' >&2
+            exit 1
+          fi
+
+          git fetch --no-tags origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            printf 'Release tag %s does not point to a commit contained in origin/main.\n' "$GITHUB_REF_NAME" >&2
+            exit 1
+          fi
+
+          major="${version%%.*}"
+          release_version="${version%%-*}"
+          {
+            printf 'package-version=%s\n' "$version"
+            printf 'assembly-version=%s.0.0\n' "$major"
+            printf 'file-version=%s.0\n' "$release_version"
+            if [[ "$version" == *-* ]]; then
+              printf 'prerelease=true\n'
+            else
+              printf 'prerelease=false\n'
+            fi
+          } >> "$GITHUB_OUTPUT"
+      - name: Require successful main checks
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          required_checks=(
+            'Build (ubuntu-24.04)'
+            'Build (windows-2025)'
+            'Build (macos-26)'
+            'Package smoke checks'
+            'Pebble integration'
+          )
+          successful_checks="$(gh api \
+            -H 'Accept: application/vnd.github+json' \
+            "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/check-runs?per_page=100" \
+            --jq '.check_runs[] | select(.app.slug == "github-actions" and .conclusion == "success") | .name')"
+          for check in "${required_checks[@]}"; do
+            if ! grep -Fxq -- "$check" <<< "$successful_checks"; then
+              printf 'Required check has no successful run on %s: %s\n' "$GITHUB_SHA" "$check" >&2
+              exit 1
+            fi
+          done
+      - name: Check package version availability
+        shell: bash
+        env:
+          PACKAGE_VERSION: ${{ steps.version.outputs.package-version }}
+        run: |
+          normalized_version="${PACKAGE_VERSION,,}"
+          for package_id in certes dotnet-certes; do
+            url="https://api.nuget.org/v3-flatcontainer/${package_id}/${normalized_version}/${package_id}.${normalized_version}.nupkg"
+            status="$(curl --silent --output /dev/null --write-out '%{http_code}' "$url")"
+            if [[ "$status" == 200 ]]; then
+              printf '%s %s already exists on nuget.org.\n' "$package_id" "$PACKAGE_VERSION" >&2
+              exit 1
+            fi
+            if [[ "$status" != 404 ]]; then
+              printf 'Could not verify %s %s availability (HTTP %s).\n' "$package_id" "$PACKAGE_VERSION" "$status" >&2
+              exit 1
+            fi
+          done
+      - name: Runtime information
+        run: dotnet --info
+      - name: Build and run offline tests
+        run: dotnet test test/Certes.Tests/Certes.Tests.csproj -c Release -f net10.0 -p:SkipSigning=true
+      - name: Start pinned local CA and challenge responder
+        run: |
+          docker compose -f scripts/Pebble/compose.yml up -d
+          bash scripts/Pebble/wait.sh
+      - name: Run ACME integration tests
+        run: dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -c Release -f net10.0 -p:SkipSigning=true
+      - name: Container diagnostics
+        if: failure()
+        run: docker compose -f scripts/Pebble/compose.yml logs --no-color
+      - name: Stop local CA
+        if: always()
+        run: docker compose -f scripts/Pebble/compose.yml down
+      - name: Pack signed release artifacts
+        env:
+          CERTES_ASSEMBLY_VERSION: ${{ steps.version.outputs.assembly-version }}
+          CERTES_FILE_VERSION: ${{ steps.version.outputs.file-version }}
+          CERTES_INFORMATIONAL_VERSION: ${{ steps.version.outputs.package-version }}
+          CERTES_PACKAGE_VERSION: ${{ steps.version.outputs.package-version }}
+        run: |
+          dotnet pack src/Certes/Certes.csproj -c Release -p:ContinuousIntegrationBuild=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg --output artifacts/packages
+          dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:ContinuousIntegrationBuild=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg --output artifacts/packages
+      - name: Consume release library package
+        env:
+          CERTES_PACKAGE_VERSION: ${{ steps.version.outputs.package-version }}
+        run: |
+          dotnet run --project scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net10.0
+          dotnet run --project scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net8.0
+          dotnet build scripts/PackageSmoke/PackageSmoke.csproj -c Release -f net6.0
+      - name: Install and launch release CLI package
+        env:
+          CERTES_PACKAGE_VERSION: ${{ steps.version.outputs.package-version }}
+        run: |
+          dotnet tool install dotnet-certes --version "$CERTES_PACKAGE_VERSION" --tool-path artifacts/tools --add-source artifacts/packages
+          artifacts/tools/certes --help
+      - name: Audit release dependencies
+        run: |
+          dotnet list src/Certes/Certes.csproj package --vulnerable --include-transitive --no-restore
+          dotnet list src/Certes.Cli/Certes.Cli.csproj package --vulnerable --include-transitive --no-restore
+          dotnet list src/Certes.Cli/Certes.Cli.csproj package --deprecated --include-transitive --no-restore
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: packages-${{ steps.version.outputs.package-version }}
+          path: |
+            artifacts/packages/*.nupkg
+            artifacts/packages/*.snupkg
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish to NuGet and GitHub
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: nuget-release
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: packages-${{ needs.prepare.outputs.package-version }}
+          path: artifacts/packages
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
+        with:
+          dotnet-version: 10.0.x
+      - name: Get temporary NuGet API key
+        id: nuget-login
+        uses: NuGet/login@ebc737b6fc418a6ca0073cf116ec8dc156d8b81e # v1.2.0
+        with:
+          user: ${{ secrets.NUGET_USER }}
+      - name: Publish packages
+        shell: bash
+        env:
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+        run: |
+          shopt -s nullglob
+          packages=(artifacts/packages/*.nupkg)
+          symbols=(artifacts/packages/*.snupkg)
+          if (( ${#packages[@]} != 2 )); then
+            printf 'Expected two release packages, found %s.\n' "${#packages[@]}" >&2
+            exit 1
+          fi
+          if (( ${#symbols[@]} != 2 )); then
+            printf 'Expected two symbol packages, found %s.\n' "${#symbols[@]}" >&2
+            exit 1
+          fi
+          # dotnet nuget push publishes the adjacent .snupkg with each .nupkg.
+          for package in "${packages[@]}"; do
+            dotnet nuget push "$package" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          done
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IS_PRERELEASE: ${{ needs.prepare.outputs.prerelease }}
+        shell: bash
+        run: |
+          prerelease_flag=()
+          if [[ "$IS_PRERELEASE" == true ]]; then
+            prerelease_flag+=(--prerelease)
+          fi
+          gh release create "$GITHUB_REF_NAME" artifacts/packages/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            "${prerelease_flag[@]}"

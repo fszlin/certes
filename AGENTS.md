@@ -70,8 +70,9 @@ appropriate guide when behavior changes; avoid duplicating long usage examples.
   Until the baseline is repaired, report known failures explicitly and distinguish
   them from regressions; do not hide failures to make a PR appear green.
 - `main` represents development toward the next release. Merging a PR does not
-  authorize publishing a package. Use an explicit release/tag workflow, with
-  prereleases when useful; the consolidated release pipeline is still planned.
+  authorize publishing a package. The tag-driven release workflow verifies and
+  packages first, then requires approval through the `nuget-release` environment;
+  see `docs/ci-migration.md`. Use prereleases when useful.
 - Create a release/maintenance branch only when parallel support is needed, such
   as maintaining an existing version while `main` develops breaking changes.
 - Commit, push, open/merge PRs, tag, or publish only when requested. Summarize the
