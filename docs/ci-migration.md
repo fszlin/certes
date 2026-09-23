@@ -190,13 +190,39 @@ Use focused PRs to introduce:
    failure reporting rather than weakening assertions to obtain a green build.
 2. Maintain required status checks on `main` as CI coverage evolves.
 3. DocFX builds and GitHub Pages deployment for documentation changes.
-4. Explicit release/tag-driven package publishing, gated on successful
-   verification, with prerelease support and preserved assembly signing.
-5. Dependency updates and scheduled vulnerability checks.
-6. Retire the unused `test/Certes.Func` hosted challenge helper in a focused change;
+4. Dependency updates and scheduled vulnerability checks.
+5. Retire the unused `test/Certes.Func` hosted challenge helper in a focused change;
    local Pebble now replaces it for integration tests. Its .NET 7 target remains
    outside current CI coverage.
 
 Use minimal workflow permissions and pin third-party actions to reviewed commit
 SHAs. PR validation must not publish packages or require publishing credentials.
 Update this document and the root README as each replacement becomes operational.
+
+## Release workflow
+
+`.github/workflows/release.yml` prepares releases from tags named
+`vMAJOR.MINOR.PATCH` or `vMAJOR.MINOR.PATCH-PRERELEASE`. It rejects tags whose
+commit is not contained in `main`, verifies that both package versions are unused,
+runs the offline and Pebble suites, creates signed packages, and repeats the package
+consumer checks. Publishing then waits on the protected `nuget-release` GitHub
+environment before obtaining a short-lived NuGet credential through OIDC.
+
+One-time repository setup:
+
+1. Create the `nuget-release` GitHub environment and add required reviewers. Do
+   not allow administrators to bypass its protection for routine releases.
+2. Add an environment secret named `NUGET_USER` containing the nuget.org profile
+   name that owns or can publish both `Certes` and `dotnet-certes`. This is the
+   profile name, not an email address or API key.
+3. In that nuget.org account's Trusted Publishing settings, add a GitHub Actions
+   policy for owner `fszlin`, repository `certes`, workflow file `release.yml`,
+   and environment `nuget-release`. Scope it to the `Certes` and `dotnet-certes`
+   package IDs if the policy UI offers package scopes.
+
+To prepare a prerelease, merge the reviewed release notes and version decision to
+`main`, confirm required checks pass, then create and push an annotated tag such
+as `v4.0.0-beta.1`. Review the `Verify and package` job and approve the environment
+deployment only when its package version and artifacts are correct. NuGet does not
+provide an atomic multi-package transaction, so approval authorizes publication of
+both packages. The workflow creates the GitHub prerelease after NuGet accepts them.

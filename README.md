@@ -93,7 +93,9 @@ The [GitHub Actions workflow](.github/workflows/build.yml) checks
 cross-platform compilation, the full offline unit suite, package smoke
 consumption, and local Pebble integration. Tests run directly on .NET 10. See
 [CI migration status](docs/ci-migration.md) for coverage and
-remaining work. Legacy build/release automation is disabled.
+remaining work. Legacy build/release automation is disabled. Releases use the
+approval-gated, tag-driven workflow documented in
+[CI migration status](docs/ci-migration.md#release-workflow).
 
 Run commands from the repository root:
 
@@ -118,8 +120,8 @@ Passing unit tests do not establish current CA interoperability.
    with focused unit and integration coverage.
 2. Refresh remaining dependencies and modernize CLI provider integrations while
    keeping provider-specific dependencies out of the core library.
-3. Finalize release workflow and documentation updates for repeatable packaging
-   and verification.
+3. Exercise the tag-driven release workflow and maintain repeatable package
+   verification.
 4. Evaluate renewal information, certificate profiles, and IP identifiers after
    the reliability baseline is established.
 
