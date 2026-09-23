@@ -15,7 +15,11 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - `IOrderContextExtensions.Generate` now waits for an order to become `ready`
   before sending finalize. Previously it could finalize while the order was still
-  `pending`, which ACME servers reject.
+  `pending`, which ACME servers reject. The `retryCount` budget remains shared
+  between this pre-finalize wait and post-finalize polling of `pending`/
+  `processing`.
+
+### Changed
 - `CertificateChainExtensions.ToPem` now always emits LF (`\n`) line endings,
   avoiding mixed `\r\n`/`\n` output across platforms.
 

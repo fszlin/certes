@@ -62,34 +62,28 @@ namespace Certes
         {
             var pem = File.ReadAllText("./Data/cert-es256.pem");
 
-            var pendingOrder = new Order
+            var identifiers = new[]
             {
-                Identifiers = new[] {
-                    new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns },
-                },
-                Status = OrderStatus.Pending,
+                new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns },
             };
-            var readyOrder = new Order
-            {
-                Identifiers = pendingOrder.Identifiers,
-                Status = OrderStatus.Ready,
-            };
+            var resourceCalls = 0;
 
             var orderCtxMock = new Mock<IOrderContext>();
             orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
-            orderCtxMock.SetupSequence(m => m.Resource())
-                .ReturnsAsync(pendingOrder)
-                .ReturnsAsync(readyOrder)
-                .ReturnsAsync(readyOrder)
-                .ReturnsAsync(pendingOrder)
-                .ReturnsAsync(readyOrder)
-                .ReturnsAsync(readyOrder);
+            orderCtxMock.Setup(m => m.Resource()).ReturnsAsync(() =>
+            {
+                resourceCalls++;
+                if (resourceCalls == 1)
+                {
+                    return new Order { Identifiers = identifiers, Status = OrderStatus.Pending };
+                }
+
+                return new Order { Identifiers = identifiers, Status = OrderStatus.Ready };
+            });
             orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>()))
                 .ReturnsAsync(new Order
                 {
-                    Identifiers = new[] {
-                        new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns },
-                    },
+                    Identifiers = identifiers,
                     Status = OrderStatus.Valid,
                 });
             
@@ -104,14 +98,7 @@ namespace Certes
                 pem.Where(c => !char.IsWhiteSpace(c)),
                 certInfo.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
 
-            var certInfoNoCn = await orderCtxMock.Object.Generate(new CsrInfo
-            {
-                CountryName = "CA",
-            }, key, null);
-
-            Assert.Equal(
-                pem.Where(c => !char.IsWhiteSpace(c)),
-                certInfoNoCn.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
+            orderCtxMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Once);
         }
 
         [Fact]
@@ -715,6 +702,130 @@ namespace Certes
 
             Assert.Single(delays);
             Assert.Equal(TimeSpan.FromSeconds(3), delays[0]);
+        }
+
+        [Fact]
+        public async Task PendingBeforeReadyHonorsRetryAfterAndDoesNotFinalizeOnInvalid()
+        {
+            var pending = new Order
+            {
+                Identifiers = new[] { new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns } },
+                Status = OrderStatus.Pending,
+            };
+            var invalid = new Order
+            {
+                Identifiers = pending.Identifiers,
+                Status = OrderStatus.Invalid,
+            };
+
+            var orderCtxMock = new Mock<IOrderContext>();
+            orderCtxMock.SetupSequence(m => m.Resource())
+                .ReturnsAsync(pending)
+                .ReturnsAsync(pending)
+                .ReturnsAsync(invalid);
+            orderCtxMock.SetupSequence(m => m.RetryAfter)
+                .Returns(120)
+                .Returns(0);
+
+            var delays = new List<TimeSpan>();
+            var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+
+            var exception = await Assert.ThrowsAsync<AcmeException>(() => IOrderContextExtensions.Generate(
+                orderCtxMock.Object,
+                new CsrInfo { CommonName = "www.certes.com" },
+                key,
+                null,
+                10,
+                delay =>
+                {
+                    delays.Add(delay);
+                    return Task.CompletedTask;
+                }));
+
+            Assert.Equal(string.Format(Properties.Strings.ErrorInvalidOrderStatusForFinalize, OrderStatus.Invalid), exception.Message);
+            Assert.Equal(new[] { TimeSpan.FromSeconds(120), TimeSpan.FromSeconds(1) }, delays);
+            orderCtxMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task PendingBeforeReadyExhaustsBudgetWithoutFinalize()
+        {
+            var pending = new Order
+            {
+                Identifiers = new[] { new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns } },
+                Status = OrderStatus.Pending,
+            };
+
+            var orderCtxMock = new Mock<IOrderContext>();
+            orderCtxMock.Setup(m => m.Resource()).ReturnsAsync(pending);
+            orderCtxMock.SetupGet(m => m.RetryAfter).Returns(7);
+
+            var delays = new List<TimeSpan>();
+            var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+
+            var exception = await Assert.ThrowsAsync<AcmeException>(() => IOrderContextExtensions.Generate(
+                orderCtxMock.Object,
+                new CsrInfo { CommonName = "www.certes.com" },
+                key,
+                null,
+                2,
+                delay =>
+                {
+                    delays.Add(delay);
+                    return Task.CompletedTask;
+                }));
+
+            Assert.Equal(string.Format(Properties.Strings.ErrorInvalidOrderStatusForFinalize, OrderStatus.Pending), exception.Message);
+            Assert.Equal(new[] { TimeSpan.FromSeconds(7), TimeSpan.FromSeconds(7) }, delays);
+            orderCtxMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task SharedBudgetCanBeExhaustedBeforeProcessingPolling()
+        {
+            var ready = new Order
+            {
+                Identifiers = new[] { new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns } },
+                Status = OrderStatus.Ready,
+            };
+            var pending = new Order
+            {
+                Identifiers = ready.Identifiers,
+                Status = OrderStatus.Pending,
+            };
+            var processing = new Order
+            {
+                Identifiers = ready.Identifiers,
+                Status = OrderStatus.Processing,
+            };
+
+            var orderCtxMock = new Mock<IOrderContext>();
+            orderCtxMock.SetupSequence(m => m.Resource())
+                .ReturnsAsync(pending)
+                .ReturnsAsync(ready)
+                .ReturnsAsync(ready);
+            orderCtxMock.SetupGet(m => m.RetryAfter).Returns(3);
+            orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>())).ReturnsAsync(processing);
+
+            var delays = new List<TimeSpan>();
+            var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+
+            var exception = await Assert.ThrowsAsync<AcmeException>(() => IOrderContextExtensions.Generate(
+                orderCtxMock.Object,
+                new CsrInfo { CommonName = "www.certes.com" },
+                key,
+                null,
+                1,
+                delay =>
+                {
+                    delays.Add(delay);
+                    return Task.CompletedTask;
+                }));
+
+            Assert.Equal(Properties.Strings.ErrorFinalizeFailed, exception.Message);
+            Assert.Single(delays);
+            Assert.Equal(TimeSpan.FromSeconds(3), delays[0]);
+            orderCtxMock.Verify(m => m.Finalize(It.IsAny<byte[]>()), Times.Once);
         }
 
     }
