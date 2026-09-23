@@ -12,6 +12,13 @@ All notable changes to this project will be documented in this file.
   keep the old algorithms. The PFX integrity check remains HMAC-SHA1 with 1024
   iterations, because BouncyCastle does not expose other settings.
 
+### Fixed
+- `IOrderContextExtensions.Generate` now waits for an order to become `ready`
+  before sending finalize. Previously it could finalize while the order was still
+  `pending`, which ACME servers reject.
+- `CertificateChainExtensions.ToPem` now always emits LF (`\n`) line endings,
+  avoiding mixed `\r\n`/`\n` output across platforms.
+
 ## [4.0.0-beta.1] - 2026-09-23
 First prerelease of the revived project. The major version reflects the breaking
 changes below. Issuance was verified against a local Pebble test CA

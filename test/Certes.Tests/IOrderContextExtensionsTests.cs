@@ -62,15 +62,28 @@ namespace Certes
         {
             var pem = File.ReadAllText("./Data/cert-es256.pem");
 
-            var orderCtxMock = new Mock<IOrderContext>();
-            orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
-            orderCtxMock.Setup(m => m.Resource()).ReturnsAsync(new Order
+            var pendingOrder = new Order
             {
                 Identifiers = new[] {
                     new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns },
                 },
                 Status = OrderStatus.Pending,
-            });
+            };
+            var readyOrder = new Order
+            {
+                Identifiers = pendingOrder.Identifiers,
+                Status = OrderStatus.Ready,
+            };
+
+            var orderCtxMock = new Mock<IOrderContext>();
+            orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
+            orderCtxMock.SetupSequence(m => m.Resource())
+                .ReturnsAsync(pendingOrder)
+                .ReturnsAsync(readyOrder)
+                .ReturnsAsync(readyOrder)
+                .ReturnsAsync(pendingOrder)
+                .ReturnsAsync(readyOrder)
+                .ReturnsAsync(readyOrder);
             orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>()))
                 .ReturnsAsync(new Order
                 {
@@ -250,7 +263,7 @@ namespace Certes
                 },
                 Certificate = certDefaultLoc,
                 Finalize = finalizeLoc,
-                Status = OrderStatus.Pending,
+                Status = OrderStatus.Ready,
             });
             
             var key = KeyFactory.NewKey(KeyAlgorithm.RS256);

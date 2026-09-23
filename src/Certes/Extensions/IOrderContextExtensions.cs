@@ -88,9 +88,20 @@ namespace Certes
                 throw new AcmeException(string.Format(Strings.ErrorInvalidOrderStatusForFinalize, order.Status));
             }
 
+            retryCount = Math.Max(retryCount, 0);
+            while (order?.Status == OrderStatus.Pending && retryCount-- > 0)
+            {
+                await delay(TimeSpan.FromSeconds(Math.Min(Math.Max(context.RetryAfter, 1), MaxRetryAfterSeconds)));
+                order = await context.Resource();
+            }
+
+            if (order?.Status != OrderStatus.Ready)
+            {
+                throw new AcmeException(Strings.ErrorFinalizeFailed);
+            }
+
             order = await context.Finalize(csr, key);
 
-            retryCount = Math.Max(retryCount, 0);
             while ((order == null || order.Status == OrderStatus.Pending || order.Status == OrderStatus.Processing) && retryCount-- > 0)
             {
                 await delay(TimeSpan.FromSeconds(Math.Min(Math.Max(context.RetryAfter, 1), MaxRetryAfterSeconds)));

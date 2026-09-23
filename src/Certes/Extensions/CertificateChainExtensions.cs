@@ -58,14 +58,14 @@ namespace Certes
 
             var issuers = certStore.GetIssuers(certificateChain.Certificate.ToDer());
 
-            using (var writer = new StringWriter())
+            using (var writer = new StringWriter { NewLine = "\n" })
             {
                 if (certKey != null)
                 {
-                    writer.WriteLine(certKey.ToPem().TrimEnd());
+                    writer.WriteLine(NormalizePem(certKey.ToPem()));
                 }
 
-                writer.WriteLine(certificateChain.Certificate.ToPem().TrimEnd());
+                writer.WriteLine(NormalizePem(certificateChain.Certificate.ToPem()));
 
                 var certParser = new X509CertificateParser();
                 var pemWriter = new PemWriter(writer);
@@ -78,5 +78,11 @@ namespace Certes
                 return writer.ToString();
             }
         }
+
+        private static string NormalizePem(string pem)
+            => pem
+                .Replace("\r\n", "\n")
+                .Replace("\r", "\n")
+                .TrimEnd('\n');
     }
 }
