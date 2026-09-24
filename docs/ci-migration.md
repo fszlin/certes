@@ -120,7 +120,9 @@ SourceLink maintenance. These checks do not verify debugger source retrieval.
 - Removed `continuous-integration/appveyor/pr` and `certes` from required status
   checks on `main`. Other branch-protection settings were preserved.
 - Switched GitHub Pages from branch-based builds to GitHub Actions deployment.
-  No replacement documentation deployment workflow is installed yet.
+  `.github/workflows/docs-pages.yml` now builds DocFX and deploys the generated
+  site artifact to GitHub Pages from `main`. Pull requests run the same DocFX
+  build without deployment.
 
 Disabling webhooks prevents new event deliveries through those hooks. It does
 not cancel existing runs, disable service-side schedules, uninstall GitHub Apps,
@@ -189,7 +191,7 @@ Use focused PRs to introduce:
 1. Documentation validation and broader local Pebble integration coverage. Preserve known
    failure reporting rather than weakening assertions to obtain a green build.
 2. Maintain required status checks on `main` as CI coverage evolves.
-3. DocFX builds and GitHub Pages deployment for documentation changes.
+3. Keep DocFX/Pages workflow dependencies and pinned action SHAs current.
 4. Dependency updates and scheduled vulnerability checks.
 5. Retire the unused `test/Certes.Func` hosted challenge helper in a focused change;
    local Pebble now replaces it for integration tests. Its .NET 7 target remains
