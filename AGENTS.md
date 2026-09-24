@@ -25,6 +25,7 @@ current task. Keep this guide accurate when commands, targets, or blockers chang
 | `test/Certes.Func/` | Azure Functions challenge-test helper; not part of the core library |
 | `misc/certes.props` | Shared build settings, signing, versions, warnings-as-errors |
 | `docs/` | Usage/API documentation and DocFX site |
+| `docs/releasing.md` | Release setup, tagging flow, and publish recovery runbook |
 | `.github/workflows/build.yml` | Cross-platform compilation and unit tests, package smoke checks |
 | `scripts/PackageSmoke/` | Consumer of the locally packed library; not a solution project |
 | `scripts/Pebble/` | Pinned container stack, readiness probe, and local integration instructions |

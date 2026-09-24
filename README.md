@@ -74,6 +74,7 @@ Use a staging CA while developing an issuance workflow.
 - [Library getting-started guide](docs/README.md)
 - [ACME API guide](docs/APIv2.md)
 - [CLI guide](docs/CLI.md)
+- [Release guide](docs/releasing.md)
 - [Historical changelog](docs/CHANGELOG.md)
 - [Contributing](.github/CONTRIBUTING.md)
 
@@ -94,6 +95,7 @@ cross-platform compilation, the full offline unit suite, package smoke
 consumption, and local Pebble integration. Tests run directly on .NET 10.
 Legacy build/release automation is disabled. Releases use the approval-gated,
 tag-driven workflow in `.github/workflows/release.yml`.
+See the [release guide](docs/releasing.md) for setup and operating steps.
 
 Run commands from the repository root:
 

@@ -2,5 +2,7 @@
   href: api/
 - name: Changelog
   href: CHANGELOG.md
+- name: Release guide
+  href: releasing.md
 - name: GitHub
   href: https://github.com/fszlin/certes

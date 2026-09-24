@@ -20,6 +20,7 @@
     <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' != 'true'">
+    <!-- Keep local builds quiet when docs/docstrap submodule metadata is absent. -->
     <EnableSourceLink>false</EnableSourceLink>
     <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
   </PropertyGroup>
