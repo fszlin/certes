@@ -91,11 +91,9 @@ before preparing a contribution or release.
 
 The [GitHub Actions workflow](.github/workflows/build.yml) checks
 cross-platform compilation, the full offline unit suite, package smoke
-consumption, and local Pebble integration. Tests run directly on .NET 10. See
-[CI migration status](docs/ci-migration.md) for coverage and
-remaining work. Legacy build/release automation is disabled. Releases use the
-approval-gated, tag-driven workflow documented in
-[CI migration status](docs/ci-migration.md#release-workflow).
+consumption, and local Pebble integration. Tests run directly on .NET 10.
+Legacy build/release automation is disabled. Releases use the approval-gated,
+tag-driven workflow in `.github/workflows/release.yml`.
 
 Run commands from the repository root:
 

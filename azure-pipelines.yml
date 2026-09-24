@@ -1,6 +1,6 @@
-# Retired: CI is moving to GitHub Actions. The Azure build and release pipelines
-# are disabled service-side. Keep explicit opt-outs to avoid implied CI if the
-# build pipeline is accidentally re-enabled. See docs/ci-migration.md.
+# Retired: CI runs in GitHub Actions. The Azure build and release pipelines are
+# disabled service-side. Keep explicit opt-outs to avoid implied CI if the build
+# pipeline is accidentally re-enabled.
 trigger: none
 pr: none
 

@@ -19,6 +19,10 @@
     <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
     <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' != 'true'">
+    <EnableSourceLink>false</EnableSourceLink>
+    <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
+  </PropertyGroup>
   <!-- Overwrite versions if specified via env -->
   <PropertyGroup>
     <AssemblyVersion Condition="$(CERTES_ASSEMBLY_VERSION) != ''">$(CERTES_ASSEMBLY_VERSION)</AssemblyVersion>

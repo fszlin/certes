@@ -29,7 +29,7 @@ current task. Keep this guide accurate when commands, targets, or blockers chang
 | `scripts/PackageSmoke/` | Consumer of the locally packed library; not a solution project |
 | `scripts/Pebble/` | Pinned container stack, readiness probe, and local integration instructions |
 | `azure-pipelines.yml` | Disabled legacy pipeline placeholder |
-| `docs/ci-migration.md` | CI retirement state and GitHub Actions migration follow-ups |
+| `.github/workflows/release.yml` | Tag-driven package release workflow |
 
 `README.md` is the repository landing page. `docs/README.md` is the detailed usage
 guide and is included by `docs/index.md` in the documentation site. Update the
@@ -71,8 +71,8 @@ appropriate guide when behavior changes; avoid duplicating long usage examples.
   them from regressions; do not hide failures to make a PR appear green.
 - `main` represents development toward the next release. Merging a PR does not
   authorize publishing a package. The tag-driven release workflow verifies and
-  packages first, then requires approval through the `nuget-release` environment;
-  see `docs/ci-migration.md`. Use prereleases when useful.
+  packages first, then requires approval through the `nuget-release` environment.
+  Use prereleases when useful.
 - Create a release/maintenance branch only when parallel support is needed, such
   as maintaining an existing version while `main` develops breaking changes.
 - Commit, push, open/merge PRs, tag, or publish only when requested. Summarize the
@@ -104,12 +104,11 @@ Example review disclosure:
 ## Build and verification
 
 Legacy repository webhooks and obsolete required checks are disabled. The
-GitHub Actions workflow checks compilation, the full offline unit suite, and
-package consumption. Unit tests run on all three OS runners without filters or
-failure suppression. The former `run_legacy_tests` opt-in is removed. Consult
-`docs/ci-migration.md` before changing automation. Run relevant checks locally and
-report results during this transition; hosted workflow success must be verified
-after pushing the workflow.
+GitHub Actions workflow checks compilation, the full offline unit suite, package
+consumption, and Pebble integration. Unit tests run on all three OS runners
+without filters or failure suppression. The former `run_legacy_tests` opt-in is
+removed. Run relevant checks locally and report results; hosted workflow success
+must be verified after pushing workflow changes.
 
 Run commands from the repository root. Check `dotnet --info` before diagnosing
 runtime failures. Install a .NET 10 SDK for development. There is no `global.json`;
@@ -268,7 +267,7 @@ were updated after the .NET 10 migration:
    automation disabled and verified. GitHub Actions build/package/integration checks are
    defined with automatic unit-test and local Pebble execution; all five checks are required
    on main: Build (ubuntu-24.04), Build (windows-2025), Build (macos-26), Package smoke checks,
-   and Pebble integration (see `docs/ci-migration.md`).
+   and Pebble integration.
 - Cancellation, renewal information, certificate profiles, and IP identifiers
   are not implemented in the current APIs.
 
