@@ -47,7 +47,8 @@ all four checks at `80ce393`. The .NET 8 asset/smoke additions also passed in
   passed at `0bc5579`; recent runs including
   [35765283787](https://github.com/fszlin/certes/actions/runs/35765283787) remain
   green. This check is required on `main`. See
-  [local setup](../scripts/Pebble/README.md) for scope and commands.
+  [local setup](https://github.com/fszlin/certes/blob/main/scripts/Pebble/README.md)
+  for scope and commands.
 
 The six former HTTP 401 failures used a hosted CA to obtain test certificates.
 They now generate valid root/intermediate/leaf chains and matching keys locally,
@@ -120,9 +121,9 @@ SourceLink maintenance. These checks do not verify debugger source retrieval.
 - Removed `continuous-integration/appveyor/pr` and `certes` from required status
   checks on `main`. Other branch-protection settings were preserved.
 - Switched GitHub Pages from branch-based builds to GitHub Actions deployment.
-  `.github/workflows/docs-pages.yml` now builds DocFX and deploys the generated
-  site artifact to GitHub Pages from `main`. Pull requests run the same DocFX
-  build without deployment.
+  `.github/workflows/docs-pages.yml` now builds DocFX, fails on warnings, and
+  deploys the generated site artifact to GitHub Pages from `main`. Pull
+  requests run the same DocFX build without deployment.
 
 Disabling webhooks prevents new event deliveries through those hooks. It does
 not cancel existing runs, disable service-side schedules, uninstall GitHub Apps,
