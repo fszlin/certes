@@ -28,7 +28,6 @@ current task. Keep this guide accurate when commands, targets, or blockers chang
 | `.github/workflows/build.yml` | Cross-platform compilation and unit tests, package smoke checks |
 | `scripts/PackageSmoke/` | Consumer of the locally packed library; not a solution project |
 | `scripts/Pebble/` | Pinned container stack, readiness probe, and local integration instructions |
-| `azure-pipelines.yml` | Disabled legacy pipeline placeholder |
 | `.github/workflows/release.yml` | Tag-driven package release workflow |
 
 `README.md` is the repository landing page. `docs/README.md` is the detailed usage
