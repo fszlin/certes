@@ -1,63 +1,63 @@
 # Releasing Certes
 
-Certes releases are driven by `.github/workflows/release.yml` and tags named
-`vMAJOR.MINOR.PATCH` or `vMAJOR.MINOR.PATCH-PRERELEASE`.
-
-The workflow verifies that the tag commit is on `main`, requires successful
-required checks, runs offline and Pebble test suites, packs signed artifacts,
-verifies package metadata, and then waits for approval in the `nuget-release`
-environment before publishing.
+`.github/workflows/release.yml` prepares releases from tags named
+`vMAJOR.MINOR.PATCH` or `vMAJOR.MINOR.PATCH-PRERELEASE`. It rejects tags whose
+commit is not contained in `main`, verifies that both package versions are
+unused, runs the offline and Pebble suites, creates signed packages, and repeats
+the package consumer checks. Publishing then waits on the protected
+`nuget-release` GitHub environment before obtaining a short-lived NuGet
+credential through OIDC.
 
 ## One-time repository setup
 
-1. Create the `nuget-release` GitHub environment and set required reviewers.
-2. Add a repository ruleset that restricts create/update/delete operations for
+1. Create the `nuget-release` GitHub environment and add required reviewers. Do
+   not allow administrators to bypass its protection for routine releases.
+2. Add a repository ruleset that restricts creation, update, and deletion of
    tags matching `v*` to release administrators.
-3. Add repository environment secret `NUGET_USER` in `nuget-release` with the
-   nuget.org profile name authorized to publish both `Certes` and
-   `dotnet-certes`.
-4. In nuget.org Trusted Publishing, add a GitHub Actions policy for:
-   - owner `fszlin`
-   - repository `certes`
-   - workflow `release.yml`
-   - environment `nuget-release`
-   - package IDs `Certes` and `dotnet-certes` (if package scoping is available)
+3. Add an environment secret named `NUGET_USER` containing the nuget.org profile
+   name that owns or can publish both `Certes` and `dotnet-certes`. This is the
+   profile name, not an email address or API key.
+4. In that nuget.org account's Trusted Publishing settings, add a GitHub Actions
+   policy for owner `fszlin`, repository `certes`, workflow file `release.yml`,
+   and environment `nuget-release`. Scope it to the `Certes` and
+   `dotnet-certes` package IDs if the policy UI offers package scopes.
 
-## Changelog and package metadata requirements
+## Release notes and package pages
 
-- Each release requires a `## [VERSION] - DATE` section in
-  `docs/CHANGELOG.md` where `VERSION` matches the tag without the leading `v`.
-- The workflow uses `scripts/release-notes.sh` to extract that section and fails
-  if the section is missing or empty.
-- The extracted notes become both NuGet package release notes and the GitHub
-  release body.
-- Package readmes in `src/Certes/README.md` and `src/Certes.Cli/README.md` are
-  validated during release packaging.
-
-You can preview notes locally:
-
-```sh
-bash scripts/release-notes.sh 4.0.0
-```
+- Every release needs a `## [VERSION] - DATE` section in `docs/CHANGELOG.md`,
+  where `VERSION` matches the tag without the `v`. The workflow extracts it with
+  `scripts/release-notes.sh` and stops before packing if the section is missing
+  or empty. The same text becomes the NuGet `releaseNotes` and the GitHub
+  release body. Preview it locally with
+  `bash scripts/release-notes.sh 4.0.0-beta.2`.
+- Definitions for reference-style links used in the section (such as `[i232]`)
+  are appended automatically.
+- `scripts/release-notes.sh` fails when the generated notes exceed 30,000
+  characters.
+- `src/Certes/README.md` and `src/Certes.Cli/README.md` are the package readmes
+  shown on nuget.org. Use absolute links. Review them in the release-notes PR
+  whenever supported targets, runtime requirements, or usage change.
+- Package validation in the workflow checks presence of package readme and
+  release-notes metadata, not the semantic quality of their text.
+- Package metadata cannot be edited after publishing; fixes need a new version.
 
 ## Release flow
 
-1. Merge release notes/version preparation to `main`.
-2. Wait for required checks on that `main` commit.
-3. Create and push an annotated tag, for example `v4.0.1` or
-   `v4.1.0-beta.1`.
-4. In GitHub Actions, review `Verify and package` output.
-5. Approve `nuget-release` only after verifying package version and artifacts.
-
-NuGet does not provide an atomic multi-package transaction; approval authorizes
-publishing both packages.
+To prepare a prerelease, merge the reviewed release notes and version decision to
+`main`, wait for the required checks on that `main` commit to pass, then create
+and push an annotated tag such as `v4.0.0-beta.1`. Review the
+`Verify and package` job and approve the environment deployment only when its
+package version and artifacts are correct. NuGet does not provide an atomic
+multi-package transaction, so approval authorizes publication of both packages.
+The workflow creates the GitHub prerelease after NuGet accepts them.
 
 ## Failure recovery
 
-- If publish fails after one package is already accepted by NuGet, re-run only
-  `Publish to NuGet and GitHub`.
-- Do not re-run the full workflow to publish different artifacts under the same
-  version.
-- Do not reuse a published version.
-- If a tag was pushed before required checks on `main` completed, re-run the
-  failed prepare job after checks finish.
+- If publication is interrupted after only one package reaches NuGet, re-run the
+  failed `Publish to NuGet and GitHub` job. Pushes use `--skip-duplicate`, so
+  the existing package is left unchanged while the missing package and GitHub
+  release are completed.
+- Do not re-run the full workflow after a partial publish.
+- Never reuse a version for different artifacts.
+- If the tag was pushed before the `main` checks finished, the prepare job fails
+  without publishing; re-run it once those checks succeed.
