@@ -105,7 +105,9 @@ namespace Certes
         /// Creates a new order that replaces a previously issued certificate, as defined in RFC 9773.
         /// </summary>
         /// <param name="context">The ACME context.</param>
-        /// <param name="identifiers">The identifiers.</param>
+        /// <param name="identifiers">
+        /// The identifiers. Values that parse as IP addresses are sent as IP identifiers; others as DNS.
+        /// </param>
         /// <param name="replacedCertificateId">
         /// The ARI certificate identifier of the certificate being replaced, from
         /// <see cref="RenewalInfoExtensions.GetRenewalInfoCertificateId(CertificateChain)"/>.
@@ -122,7 +124,7 @@ namespace Certes
             string replacedCertificateId,
             DateTimeOffset? notBefore = null,
             DateTimeOffset? notAfter = null)
-            => context.NewReplacementOrder(ToDnsIdentifiers(identifiers), replacedCertificateId, notBefore, notAfter);
+            => context.NewReplacementOrder(ToIdentifiers(identifiers), replacedCertificateId, notBefore, notAfter);
 
         /// <summary>
         /// Creates a new order with explicitly typed identifiers (for example, IP addresses per RFC 8738)
@@ -176,7 +178,9 @@ namespace Certes
         /// Creates an order using an advertised certificate profile.
         /// </summary>
         /// <param name="context">The ACME context.</param>
-        /// <param name="identifiers">The DNS identifiers.</param>
+        /// <param name="identifiers">
+        /// The identifiers. Values that parse as IP addresses are sent as IP identifiers; others as DNS.
+        /// </param>
         /// <param name="profile">The exact, case-sensitive profile name advertised in directory metadata.</param>
         /// <param name="notBefore">The requested certificate validity start.</param>
         /// <param name="notAfter">The requested certificate validity end.</param>
@@ -198,7 +202,7 @@ namespace Certes
             DateTimeOffset? notAfter = null,
             string replacedCertificateId = null,
             bool allowUnadvertisedProfile = false)
-            => context.NewOrderWithProfile(ToDnsIdentifiers(identifiers), profile, notBefore, notAfter, replacedCertificateId, allowUnadvertisedProfile);
+            => context.NewOrderWithProfile(ToIdentifiers(identifiers), profile, notBefore, notAfter, replacedCertificateId, allowUnadvertisedProfile);
 
         /// <summary>
         /// Creates an order with explicitly typed identifiers using an advertised certificate profile.
@@ -255,12 +259,12 @@ namespace Certes
         }
 
         /// <summary>
-        /// Builds a new-order request body with DNS identifiers and optional validity bounds.
+        /// Builds a new-order request body from identifier strings (IP addresses detected) and optional validity bounds.
         /// </summary>
         internal static Order CreateOrderBody(IList<string> identifiers, DateTimeOffset? notBefore, DateTimeOffset? notAfter)
             => new Order
             {
-                Identifiers = ToDnsIdentifiers(identifiers),
+                Identifiers = ToIdentifiers(identifiers),
                 NotBefore = notBefore,
                 NotAfter = notAfter,
             };
@@ -302,9 +306,15 @@ namespace Certes
             };
         }
 
-        private static Identifier[] ToDnsIdentifiers(IList<string> identifiers)
+        /// <summary>
+        /// Converts plain identifier strings: values that strictly parse as IP addresses become
+        /// canonical <see cref="IdentifierType.Ip"/> identifiers (RFC 8738); all others are DNS.
+        /// </summary>
+        internal static Identifier[] ToIdentifiers(IList<string> identifiers)
             => identifiers
-                .Select(id => new Identifier { Type = IdentifierType.Dns, Value = id })
+                .Select(id => IpAddressUtil.TryNormalize(id, out var ip)
+                    ? new Identifier { Type = IdentifierType.Ip, Value = ip }
+                    : new Identifier { Type = IdentifierType.Dns, Value = id })
                 .ToArray();
 
         private static void ValidateCertificateId(string certificateId, string paramName)

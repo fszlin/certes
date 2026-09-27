@@ -149,9 +149,9 @@ namespace Certes
             foreach (var authzCtx in await context.Authorizations())
             {
                 var authz = await authzCtx.Resource();
-                if (string.Equals(authz.Identifier.Value, value, StringComparison.OrdinalIgnoreCase) &&
+                if (authz.Identifier.Type == type &&
                     wildcard == authz.Wildcard.GetValueOrDefault() &&
-                    authz.Identifier.Type == type)
+                    IdentifierValueEquals(type, authz.Identifier.Value, value))
                 {
                     return authzCtx;
                 }
@@ -159,5 +159,13 @@ namespace Certes
 
             return null;
         }
+
+        // IP identifiers are compared by address, so any valid spelling of the address matches.
+        private static bool IdentifierValueEquals(IdentifierType type, string actual, string expected)
+            => type == IdentifierType.Ip &&
+                IpAddressUtil.TryParse(actual, out var actualIp) &&
+                IpAddressUtil.TryParse(expected, out var expectedIp)
+                ? actualIp.Equals(expectedIp)
+                : string.Equals(actual, expected, StringComparison.OrdinalIgnoreCase);
     }
 }

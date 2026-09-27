@@ -93,7 +93,10 @@ namespace Certes
         /// <summary>
         /// Creates a new the order.
         /// </summary>
-        /// <param name="identifiers">The identifiers.</param>
+        /// <param name="identifiers">
+        /// The identifiers. Values that strictly parse as IP addresses are sent as IP
+        /// identifiers (RFC 8738) in canonical form; all others are sent as DNS identifiers.
+        /// </param>
         /// <param name="notBefore">Th value of not before field for the certificate.</param>
         /// <param name="notAfter">The value of not after field for the certificate.</param>
         /// <returns>

@@ -25,13 +25,16 @@ namespace Certes
             {
             }
 
-            [Fact]
-            public async Task CanIssueShortlivedIpAddressCertificate()
+            [Theory]
+            [InlineData(true)]
+            [InlineData(false)]
+            public async Task CanIssueShortlivedIpAddressCertificate(bool typedIdentifiers)
             {
                 var ctx = NewAcmeContext(await GetAcmeUriV2(), GetKeyV2());
-                var identifiers = new[] { new Identifier { Type = IdentifierType.Ip, Value = ChallengeServerAddress } };
-
-                var order = await Authorize(ctx, identifiers, ChallengeTypes.Http01, "shortlived");
+                var order = typedIdentifiers
+                    ? await Authorize(ctx, new[] { new Identifier { Type = IdentifierType.Ip, Value = ChallengeServerAddress } },
+                        ChallengeTypes.Http01, "shortlived")
+                    : await Authorize(ctx, new[] { ChallengeServerAddress }, ChallengeTypes.Http01, "shortlived");
                 var authz = Assert.Single(await order.Authorizations());
                 var identifier = (await authz.Resource()).Identifier;
                 Assert.Equal(IdentifierType.Ip, identifier.Type);

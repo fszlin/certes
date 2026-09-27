@@ -211,25 +211,33 @@ fields; consult the CA's description before selecting one.
 ### IP address identifiers
 
 Servers supporting [RFC 8738](https://www.rfc-editor.org/rfc/rfc8738) can issue
-certificates for IP addresses. Pass typed identifiers to the `NewOrder`,
-`NewOrderWithProfile`, or `NewReplacementOrder` overloads that accept
-`Identifier` values; the existing string overloads still create DNS identifiers.
+certificates for IP addresses. The string overloads of `NewOrder`,
+`NewOrderWithProfile`, and `NewReplacementOrder` detect IP addresses: values that
+strictly parse as an IP address are sent as `ip` identifiers, and everything else
+as `dns`. To set the type explicitly, pass `Identifier` values instead.
 
 ```C#
+// Let's Encrypt issues IP address certificates only under its shortlived profile.
+var order = await context.NewOrderWithProfile(new[] { "203.0.113.10", "your.domain.name" }, "shortlived");
+
+// Equivalent, with explicit types:
 var identifiers = new[]
 {
     new Identifier { Type = IdentifierType.Ip, Value = "203.0.113.10" },
     new Identifier { Type = IdentifierType.Dns, Value = "your.domain.name" },
 };
 
-// Let's Encrypt issues IP address certificates only under its shortlived profile.
-var order = await context.NewOrderWithProfile(identifiers, "shortlived");
+order = await context.NewOrderWithProfile(identifiers, "shortlived");
 var authz = await order.Authorization("203.0.113.10", IdentifierType.Ip);
 ```
 
 - IPv4 addresses must be dotted-quad without leading zeros; IPv6 addresses must
   not include a zone ID. Values are sent in canonical form (RFC 5952 for IPv6), and
-  invalid values throw `ArgumentException` before any request is made.
+  invalid typed IP values throw `ArgumentException` before any request is made.
+  With the string overloads, values that are not valid IP addresses (such as
+  `01.2.3.4` or `fe80::1%eth0`) are sent as `dns` identifiers.
+- `Authorization(value, IdentifierType.Ip)` matches by address, so any valid
+  spelling of the address finds the authorization.
 - Use `http-01` or `tls-alpn-01`; `dns-01` cannot validate IP addresses. For
   `http-01`, serve the key authorization on port 80 of the address. For
   `tls-alpn-01`, the server connects to the address using a reverse-DNS SNI name

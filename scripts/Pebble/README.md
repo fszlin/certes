@@ -49,12 +49,13 @@ root, which is fetched at startup and supplied to the existing export APIs.
 
 ## Scope and troubleshooting
 
-The 17 integration cases cover account discovery/update/deactivation/key change,
+The 18 integration cases cover account discovery/update/deactivation/key change,
 HTTP-01, DNS-01, TLS-ALPN-01, wildcard issuance, RSA/ECDSA leaf keys, certificate
 download, PEM/PFX export, revocation, failed validation, and ARI renewal information
 and replacement-order creation. Certificate profile coverage checks discovery,
-six-day `shortlived` issuance, and a profiled ARI replacement order. An IP
-identifier case issues a `shortlived` certificate for challtestsrv's IPv4 address over HTTP-01. They do not prove
+six-day `shortlived` issuance, and a profiled ARI replacement order. IP
+identifier cases issue `shortlived` certificates for challtestsrv's IPv4 address over
+HTTP-01, using both typed identifiers and string auto-detection. They do not prove
 public-CA interoperability. Test-only helpers
 use a 10-second HTTP request timeout; the README `Generate` example explicitly
 requests up to 60 retries. Production polling honors server-directed `Retry-After`

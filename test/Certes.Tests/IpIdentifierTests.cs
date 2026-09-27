@@ -110,6 +110,64 @@ namespace Certes
             Assert.Equal("abc.AQ", replacement.RootElement.GetProperty("replaces").GetString());
         }
 
+        [Fact]
+        public async Task StringOverloadsDetectIpAddresses()
+        {
+            var (ctx, http, directory) = CreateContext(new Dictionary<string, string> { ["shortlived"] = "Six days" });
+            var payloads = new List<JwsPayload>();
+            http.Setup(m => m.Post<Order>(directory.NewOrder, It.IsAny<object>()))
+                .Callback<Uri, object>((_, body) => payloads.Add(Assert.IsType<JwsPayload>(body)))
+                .ReturnsAsync(new AcmeHttpResponse<Order>(new Uri("http://acme.d/order/1"), new Order(), null, null));
+            var values = new[]
+            {
+                "192.0.2.1", "2001:DB8:0::1", "www.example.com", "*.example.com",
+                "1", "01.2.3.4", "0x7f.0.0.1", "fe80::1%eth0", "1.2.3.4.example",
+            };
+            var expected = new[]
+            {
+                ("ip", "192.0.2.1"), ("ip", "2001:db8::1"), ("dns", "www.example.com"), ("dns", "*.example.com"),
+                ("dns", "1"), ("dns", "01.2.3.4"), ("dns", "0x7f.0.0.1"), ("dns", "fe80::1%eth0"), ("dns", "1.2.3.4.example"),
+            };
+
+            await ctx.NewOrder(values);
+            await ctx.NewOrderWithProfile(values, "shortlived");
+            await ctx.NewReplacementOrder(values, "abc.AQ");
+
+            Assert.Equal(3, payloads.Count);
+            foreach (var payload in payloads)
+            {
+                using var wire = JsonDocument.Parse(JwsConvert.FromBase64String(payload.Payload));
+                var sent = wire.RootElement.GetProperty("identifiers").EnumerateArray()
+                    .Select(e => (e.GetProperty("type").GetString(), e.GetProperty("value").GetString())).ToArray();
+                Assert.Equal(expected, sent);
+            }
+        }
+
+        [Theory]
+        [InlineData("2001:db8::1", "2001:DB8:0:0:0:0:0:1", IdentifierType.Ip, true)]
+        [InlineData("2001:db8::1", "2001:db8::2", IdentifierType.Ip, false)]
+        [InlineData("192.0.2.1", "192.0.2.1", IdentifierType.Ip, true)]
+        [InlineData("192.0.2.1", "192.0.2.1", IdentifierType.Dns, false)]
+        [InlineData("www.example.com", "WWW.example.com", IdentifierType.Dns, true)]
+        public async Task AuthorizationLookupMatchesIpByAddress(string serverValue, string lookup, IdentifierType lookupType, bool found)
+        {
+            var authz = new Mock<IAuthorizationContext>(MockBehavior.Strict);
+            authz.Setup(m => m.Resource()).ReturnsAsync(new Certes.Acme.Resource.Authorization
+            {
+                Identifier = new Identifier
+                {
+                    Type = IpAddressUtil.TryParse(serverValue, out _) ? IdentifierType.Ip : IdentifierType.Dns,
+                    Value = serverValue,
+                },
+            });
+            var order = new Mock<IOrderContext>(MockBehavior.Strict);
+            order.Setup(m => m.Authorizations()).ReturnsAsync(new[] { authz.Object });
+
+            var result = await order.Object.Authorization(lookup, lookupType);
+
+            Assert.Equal(found, result != null);
+        }
+
         [Theory]
         [InlineData(IdentifierType.Ip, "1")]
         [InlineData(IdentifierType.Ip, "example.com")]

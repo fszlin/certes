@@ -276,8 +276,8 @@ were updated after the .NET 10 migration:
   exposed through `DirectoryMeta.Profiles`, `NewOrderWithProfile`, and `Order.Profile`.
   Profile selection also accepts an ARI replacement ID; Pebble coverage verifies
   six-day issuance with its `shortlived` profile. IP identifiers (RFC 8738) use
-  `IdentifierType.Ip` with typed `Identifier` order overloads; Pebble coverage issues
-  a `shortlived` IPv4 certificate over HTTP-01. IPv6 and IP TLS-ALPN-01 are unit-tested
+  `IdentifierType.Ip` with typed `Identifier` order overloads, and string overloads
+  detect IP values; Pebble coverage issues a `shortlived` IPv4 certificate over HTTP-01. IPv6 and IP TLS-ALPN-01 are unit-tested
   only. Cancellation is deferred to 5.0 (see #299).
 
 Recheck these observations before using them as the basis for a change. Remove
