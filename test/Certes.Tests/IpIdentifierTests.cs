@@ -59,6 +59,10 @@ namespace Certes
         [InlineData("fe80::1%eth0")]
         [InlineData("example.com")]
         [InlineData("2001:db8::g")]
+        [InlineData("[2001:db8::1]")]
+        [InlineData("[2001:db8::1]:443")]
+        [InlineData("[::1]")]
+        [InlineData("192.0.2.1:443")]
         public void InvalidAddressesAreRejected(string input)
             => Assert.False(IpAddressUtil.TryNormalize(input, out _));
 
@@ -121,12 +125,13 @@ namespace Certes
             var values = new[]
             {
                 "192.0.2.1", "2001:DB8:0::1", "www.example.com", "*.example.com",
-                "1", "01.2.3.4", "0x7f.0.0.1", "fe80::1%eth0", "1.2.3.4.example",
+                "1", "01.2.3.4", "0x7f.0.0.1", "fe80::1%eth0", "1.2.3.4.example", "[2001:db8::1]:443",
             };
             var expected = new[]
             {
                 ("ip", "192.0.2.1"), ("ip", "2001:db8::1"), ("dns", "www.example.com"), ("dns", "*.example.com"),
                 ("dns", "1"), ("dns", "01.2.3.4"), ("dns", "0x7f.0.0.1"), ("dns", "fe80::1%eth0"), ("dns", "1.2.3.4.example"),
+                ("dns", "[2001:db8::1]:443"),
             };
 
             await ctx.NewOrder(values);
@@ -172,6 +177,7 @@ namespace Certes
         [InlineData(IdentifierType.Ip, "1")]
         [InlineData(IdentifierType.Ip, "example.com")]
         [InlineData(IdentifierType.Ip, "fe80::1%eth0")]
+        [InlineData(IdentifierType.Ip, "[2001:db8::1]:443")]
         [InlineData(IdentifierType.Dns, "")]
         [InlineData(IdentifierType.Ip, null)]
         public async Task InvalidTypedIdentifiersAreRejectedBeforeAnyRequest(IdentifierType type, string value)

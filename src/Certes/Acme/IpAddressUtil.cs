@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 
@@ -38,7 +38,17 @@ namespace Certes.Acme
 
             if (value.IndexOf(':') >= 0)
             {
-                if (value.IndexOf('%') >= 0 || !IPAddress.TryParse(value, out var v6) ||
+                // IPAddress.TryParse also accepts endpoint forms such as "[::1]" and "[::1]:443"
+                // and zone IDs ("%eth0"); allow only address literal characters.
+                foreach (var c in value)
+                {
+                    if (!(c == ':' || c == '.' || (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')))
+                    {
+                        return false;
+                    }
+                }
+
+                if (!IPAddress.TryParse(value, out var v6) ||
                     v6.AddressFamily != AddressFamily.InterNetworkV6)
                 {
                     return false;
