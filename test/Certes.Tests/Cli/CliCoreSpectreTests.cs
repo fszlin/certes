@@ -141,6 +141,19 @@ namespace Certes.Cli
                 order.Identifiers.Select(i => (i.Type, i.Value)));
         }
 
+        [Theory]
+        [InlineData("--profile", "")]
+        [InlineData("--profile", " ")]
+        [InlineData("--replaces", "")]
+        [InlineData("--replaces", "\t")]
+        public async Task OrderNewRejectsEmptyOptionValues(string option, string value)
+        {
+            var (acme, sent) = CreateOrderingContext();
+            var succeed = await CreateCli(acme).Run(new[] { "order", "new", "www.example.com", option, value });
+            Assert.False(succeed);
+            Assert.Empty(sent);
+        }
+
         [Fact]
         public async Task OrderNewRejectsUnadvertisedProfile()
         {
@@ -150,8 +163,10 @@ namespace Certes.Cli
             Assert.Empty(sent);
         }
 
-        [Fact]
-        public async Task CertRenewalInfoPrintsWindowForCertificateFile()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task CertRenewalInfoPrintsWindowForCertificateFile(bool privateKeyFirst)
         {
             var serverUri = new Uri("https://example.com/directory");
             var directory = new Directory(null, null, null, null, null, null, new Uri("https://example.com/renewal-info"));
@@ -174,7 +189,14 @@ namespace Certes.Cli
             var settingsMock = new Mock<IUserSettings>(MockBehavior.Strict);
             settingsMock.Setup(m => m.GetDefaultServer()).ReturnsAsync(serverUri);
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
-            fileMock.Setup(m => m.ReadAllText("cert.pem")).ReturnsAsync(Rfc9773ExampleCertificatePem());
+            var pem = Rfc9773ExampleCertificatePem();
+            if (privateKeyFirst)
+            {
+                // Some tools write the private key before the certificate in one PEM file.
+                pem = KeyFactory.NewKey(KeyAlgorithm.ES256).ToPem() + pem;
+            }
+
+            fileMock.Setup(m => m.ReadAllText("cert.pem")).ReturnsAsync(pem);
             Uri requestedServer = null;
             var cli = new CliCoreSpectre(settingsMock.Object, (u, k) => { requestedServer = u; return acmeMock.Object; },
                 fileMock.Object, new Mock<IEnvironmentVariables>(MockBehavior.Strict).Object);

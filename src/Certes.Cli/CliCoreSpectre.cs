@@ -13,6 +13,7 @@ using Certes.Cli.Settings;
 using Certes.Json;
 using Certes.Pkcs;
 using NLog;
+using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace Certes.Cli
@@ -253,10 +254,11 @@ namespace Certes.Cli
                     consoleLogger.Debug("Creating order from '{0}'.", serverUri);
 
                     var acme = contextFactory.Invoke(serverUri, key);
+                    // Empty values are rejected in OrderNewSettings.Validate, so null means "not supplied".
                     var orderCtx =
-                        !string.IsNullOrWhiteSpace(settings.Profile)
+                        settings.Profile != null
                             ? await acme.NewOrderWithProfile(settings.Domains, settings.Profile, replacedCertificateId: settings.Replaces)
-                        : !string.IsNullOrWhiteSpace(settings.Replaces)
+                        : settings.Replaces != null
                             ? await acme.NewReplacementOrder(settings.Domains, settings.Replaces)
                         : await acme.NewOrder(settings.Domains);
 
@@ -647,6 +649,15 @@ namespace Certes.Cli
         [CommandOption("--replaces <CERTIFICATE_ID>")]
         [Description("ARI certificate ID of the certificate this order replaces; see 'cert renewal-info'.")]
         public string Replaces { get; init; }
+
+        // Reject supplied-but-empty values (for example an unset shell variable) instead of
+        // silently creating an order without the requested profile or replacement.
+        public override ValidationResult Validate()
+            => Profile != null && string.IsNullOrWhiteSpace(Profile)
+                ? ValidationResult.Error("--profile requires a non-empty value.")
+                : Replaces != null && string.IsNullOrWhiteSpace(Replaces)
+                    ? ValidationResult.Error("--replaces requires a non-empty value.")
+                    : ValidationResult.Success();
     }
 
     internal sealed class OrderListSettings : CommandSettings
