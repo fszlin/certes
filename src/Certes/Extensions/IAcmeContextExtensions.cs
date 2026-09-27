@@ -75,10 +75,7 @@ namespace Certes
         /// <exception cref="AcmeRequestException">If the server returns an error.</exception>
         public static async Task<RenewalInfo> GetRenewalInfo(this IAcmeContext context, string certificateId)
         {
-            if (string.IsNullOrWhiteSpace(certificateId) || certificateId.IndexOfAny(new[] { '/', '?', '#' }) >= 0)
-            {
-                throw new ArgumentException("Invalid ARI certificate identifier.", nameof(certificateId));
-            }
+            ValidateCertificateId(certificateId, nameof(certificateId));
 
             var endpoint = await context.GetResourceUri(d => d.RenewalInfo);
             var uri = new Uri($"{endpoint.AbsoluteUri.TrimEnd('/')}/{certificateId}");
@@ -112,7 +109,7 @@ namespace Certes
         /// <returns>
         /// The order context created.
         /// </returns>
-        /// <exception cref="ArgumentException">If <paramref name="replacedCertificateId"/> is empty.</exception>
+        /// <exception cref="ArgumentException">If <paramref name="replacedCertificateId"/> is empty or malformed.</exception>
         public static async Task<IOrderContext> NewReplacementOrder(
             this IAcmeContext context,
             IList<string> identifiers,
@@ -120,10 +117,7 @@ namespace Certes
             DateTimeOffset? notBefore = null,
             DateTimeOffset? notAfter = null)
         {
-            if (string.IsNullOrWhiteSpace(replacedCertificateId))
-            {
-                throw new ArgumentException("Invalid ARI certificate identifier.", nameof(replacedCertificateId));
-            }
+            ValidateCertificateId(replacedCertificateId, nameof(replacedCertificateId));
 
             var endpoint = await context.GetResourceUri(d => d.NewOrder);
 
@@ -139,6 +133,14 @@ namespace Certes
 
             var order = await context.HttpClient.Post<Order>(context, endpoint, body, true);
             return new OrderContext(context, order.Location);
+        }
+
+        private static void ValidateCertificateId(string certificateId, string paramName)
+        {
+            if (string.IsNullOrWhiteSpace(certificateId) || certificateId.IndexOfAny(new[] { '/', '?', '#' }) >= 0)
+            {
+                throw new ArgumentException("Invalid ARI certificate identifier.", paramName);
+            }
         }
     }
 }

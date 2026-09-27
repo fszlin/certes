@@ -159,6 +159,28 @@ namespace Certes
                 () => ctx.Object.NewReplacementOrder(new[] { "www.certes.com" }, null));
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" \t")]
+        [InlineData("abc/AQ")]
+        [InlineData("abc?AQ")]
+        [InlineData("abc#AQ")]
+        public async Task InvalidCertificateIdsAreRejectedBeforeAnyRequest(string certificateId)
+        {
+            var ctx = new Mock<IAcmeContext>(MockBehavior.Strict);
+
+            var renewalError = await Assert.ThrowsAsync<ArgumentException>(
+                () => ctx.Object.GetRenewalInfo(certificateId));
+            Assert.Equal("certificateId", renewalError.ParamName);
+
+            var replacementError = await Assert.ThrowsAsync<ArgumentException>(
+                () => ctx.Object.NewReplacementOrder(new[] { "ari.example" }, certificateId));
+            Assert.Equal("replacedCertificateId", replacementError.ParamName);
+
+            ctx.VerifyNoOtherCalls();
+        }
+
         private static Mock<IAcmeContext> CreateContext(Mock<IAcmeHttpClient> http, Directory dir)
         {
             var ctx = new Mock<IAcmeContext>();
