@@ -33,6 +33,9 @@ All notable changes to this project will be documented in this file.
   name of at most 64 characters as the common name, instead of always the first
   identifier. IP-only orders produce a CSR without a common name.
 
+### Fixed
+- CLI: `cert pfx --help` described the command as exporting PEM.
+
 ## [4.0.0] - 2026-09-23
 ### Breaking changes
 - PFX export now encrypts the private key and certificates with AES-256-CBC
