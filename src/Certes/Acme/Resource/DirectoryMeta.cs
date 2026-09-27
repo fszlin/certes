@@ -47,6 +47,13 @@ namespace Certes.Acme.Resource
         public bool? ExternalAccountRequired { get; }
 
         /// <summary>
+        /// Gets the advertised certificate profile names and their human-readable descriptions.
+        /// Descriptions may be prose or URLs. A null value means profiles were not advertised.
+        /// </summary>
+        [JsonPropertyName("profiles")]
+        public IDictionary<string, string> Profiles { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DirectoryMeta"/> class.
         /// </summary>
         /// <param name="termsOfService">The terms of service.</param>
@@ -58,6 +65,25 @@ namespace Certes.Acme.Resource
             Uri website,
             IList<string> caaIdentities,
             bool? externalAccountRequired)
+            : this(termsOfService, website, caaIdentities, externalAccountRequired, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes directory metadata including certificate profiles.
+        /// </summary>
+        /// <param name="termsOfService">The terms of service.</param>
+        /// <param name="website">The website.</param>
+        /// <param name="caaIdentities">The CAA identities.</param>
+        /// <param name="externalAccountRequired">Whether external account binding is required.</param>
+        /// <param name="profiles">The advertised profile names and descriptions.</param>
+        [JsonConstructor]
+        public DirectoryMeta(
+            Uri termsOfService,
+            Uri website,
+            IList<string> caaIdentities,
+            bool? externalAccountRequired,
+            IDictionary<string, string> profiles)
         {
             TermsOfService = termsOfService;
             Website = website;
@@ -65,6 +91,8 @@ namespace Certes.Acme.Resource
                 (IList<string>)new string[0] :
                 new ReadOnlyCollection<string>(caaIdentities);
             ExternalAccountRequired = externalAccountRequired;
+            Profiles = profiles == null ? null : new ReadOnlyDictionary<string, string>(
+                new Dictionary<string, string>(profiles, StringComparer.Ordinal));
         }
     }
 }

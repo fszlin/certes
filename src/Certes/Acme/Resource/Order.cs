@@ -106,6 +106,13 @@ namespace Certes.Acme.Resource
         public string Replaces { get; set; }
 
         /// <summary>
+        /// Gets or sets the certificate profile selected for this order.
+        /// Null leaves profile selection to the server.
+        /// </summary>
+        [JsonPropertyName("profile")]
+        public string Profile { get; set; }
+
+        /// <summary>
         /// Represents the payload to finalize an order.
         /// </summary>
         /// <seealso cref="Certes.Acme.Resource.Order" />

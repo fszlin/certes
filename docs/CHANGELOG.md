@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
+- Certificate profile discovery through `DirectoryMeta.Profiles`, selection via
+  `NewOrderWithProfile`, and the selected `Order.Profile` (#330). Profile orders
+  can also include an ARI replacement certificate ID.
 - ACME Renewal Information (ARI, RFC 9773): `Directory.RenewalInfo`,
   `GetRenewalInfoCertificateId()` for `CertificateChain` and `IEncodable`,
   `IAcmeContext.GetRenewalInfo()` (suggested window, explanation URL and
