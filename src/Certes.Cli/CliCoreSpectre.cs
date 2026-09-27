@@ -234,6 +234,15 @@ namespace Certes.Cli
                 ?? await orderCtx.Authorization(value, IdentifierType.Ip)
                 ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, value));
 
+        private static string ParseChallengeType(string value)
+            => value?.ToLowerInvariant() switch
+            {
+                "dns" or "dns-01" => ChallengeTypes.Dns01,
+                "http" or "http-01" => ChallengeTypes.Http01,
+                "tls-alpn" or "tls-alpn-01" => ChallengeTypes.TlsAlpn01,
+                _ => throw new CertesCliException(string.Format(Strings.ErrorInvalidChallengeType, value)),
+            };
+
         private void ConfigureOrderBranch(IConfigurator config)
         {
             config.AddBranch(CommandGroup.Order.Command, branch =>
@@ -244,7 +253,12 @@ namespace Certes.Cli
                     consoleLogger.Debug("Creating order from '{0}'.", serverUri);
 
                     var acme = contextFactory.Invoke(serverUri, key);
-                    var orderCtx = await acme.NewOrder(settings.Domains);
+                    var orderCtx =
+                        !string.IsNullOrWhiteSpace(settings.Profile)
+                            ? await acme.NewOrderWithProfile(settings.Domains, settings.Profile, replacedCertificateId: settings.Replaces)
+                        : !string.IsNullOrWhiteSpace(settings.Replaces)
+                            ? await acme.NewReplacementOrder(settings.Domains, settings.Replaces)
+                        : await acme.NewOrder(settings.Domains);
 
                     WriteJson(new
                     {
@@ -298,10 +312,7 @@ namespace Certes.Cli
                 branch.AddAsyncDelegate<OrderAuthzSettings>("authz", async (_, settings) =>
                 {
                     var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, fallbackToSettings: true);
-                    var type =
-                        string.Equals(settings.ChallengeType, "dns", StringComparison.OrdinalIgnoreCase) ? ChallengeTypes.Dns01 :
-                        string.Equals(settings.ChallengeType, "http", StringComparison.OrdinalIgnoreCase) ? ChallengeTypes.Http01 :
-                        throw new CertesCliException(string.Format(Strings.ErrorInvalidChallengeType, settings.ChallengeType));
+                    var type = ParseChallengeType(settings.ChallengeType);
 
                     consoleLogger.Debug("Loading authz from '{0}'.", serverUri);
                     var acme = contextFactory.Invoke(serverUri, key);
@@ -317,6 +328,17 @@ namespace Certes.Cli
                         {
                             location = challengeCtx.Location,
                             dnsTxt = key.DnsTxt(challenge.Token),
+                            resource = challenge,
+                        });
+                    }
+                    else if (string.Equals(type, ChallengeTypes.TlsAlpn01, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // RFC 8737: serve a self-signed certificate carrying the SHA-256 digest of keyAuthz
+                        // in the critical acmeIdentifier extension, over ALPN protocol "acme-tls/1".
+                        WriteJson(new
+                        {
+                            location = challengeCtx.Location,
+                            keyAuthz = challengeCtx.KeyAuthz,
                             resource = challenge,
                         });
                     }
@@ -338,10 +360,7 @@ namespace Certes.Cli
                 branch.AddAsyncDelegate<OrderValidateSettings>("validate", async (_, settings) =>
                 {
                     var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, fallbackToSettings: true);
-                    var type =
-                        string.Equals(settings.ChallengeType, "dns", StringComparison.OrdinalIgnoreCase) ? ChallengeTypes.Dns01 :
-                        string.Equals(settings.ChallengeType, "http", StringComparison.OrdinalIgnoreCase) ? ChallengeTypes.Http01 :
-                        throw new CertesCliException(string.Format(Strings.ErrorInvalidChallengeType, settings.ChallengeType));
+                    var type = ParseChallengeType(settings.ChallengeType);
 
                     consoleLogger.Debug("Validating authz on '{0}'.", serverUri);
                     var acme = contextFactory.Invoke(serverUri, key);
@@ -440,6 +459,28 @@ namespace Certes.Cli
 
                     return 0;
                 }).WithDescription(Strings.HelpCommandCertificatePem);
+
+                branch.AddAsyncDelegate<CertificateRenewalInfoSettings>("renewal-info", async (_, settings) =>
+                {
+                    var (serverUri, _) = await ReadAccountKey(settings.Server);
+                    consoleLogger.Debug("Loading certificate from '{0}'.", settings.CertPath);
+                    var chain = new CertificateChain(await fileUtil.ReadAllText(settings.CertPath));
+                    var certificateId = chain.GetRenewalInfoCertificateId();
+
+                    consoleLogger.Debug("Loading renewal information from '{0}'.", serverUri);
+                    var acme = contextFactory.Invoke(serverUri, null);
+                    var info = await acme.GetRenewalInfo(certificateId);
+
+                    WriteJson(new
+                    {
+                        certificateId,
+                        suggestedWindow = info.SuggestedWindow,
+                        explanationUrl = info.ExplanationUrl,
+                        retryAfterSeconds = info.RetryAfter?.TotalSeconds,
+                    });
+
+                    return 0;
+                }).WithDescription("Get the ACME Renewal Information (ARI) suggested renewal window for a certificate.");
 
                 branch.AddAsyncDelegate<CertificatePfxSettings>("pfx", async (_, settings) =>
                 {
@@ -598,6 +639,14 @@ namespace Certes.Cli
 
         [CommandArgument(0, "<domains>")]
         public string[] Domains { get; init; }
+
+        [CommandOption("--profile <PROFILE>")]
+        [Description("Certificate profile advertised by the server, for example 'shortlived'.")]
+        public string Profile { get; init; }
+
+        [CommandOption("--replaces <CERTIFICATE_ID>")]
+        [Description("ARI certificate ID of the certificate this order replaces; see 'cert renewal-info'.")]
+        public string Replaces { get; init; }
     }
 
     internal sealed class OrderListSettings : CommandSettings
@@ -697,6 +746,16 @@ namespace Certes.Cli
 
         [CommandOption("--key-path|--key|-k <KEY_PATH>")]
         public string KeyPath { get; init; }
+    }
+
+    internal sealed class CertificateRenewalInfoSettings : CommandSettings
+    {
+        [CommandArgument(0, "<cert-path>")]
+        [Description("Path to the certificate PEM; the first certificate is used.")]
+        public string CertPath { get; init; }
+
+        [CommandOption("-s|--server <SERVER>")]
+        public Uri Server { get; init; }
     }
 
     internal sealed class CertificatePfxSettings : CommandSettings

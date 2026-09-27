@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
   `IAcmeContext.GetRenewalInfo()` (suggested window, explanation URL and
   `Retry-After`), `IAcmeContext.NewReplacementOrder()` and `Order.Replaces`.
   Based on the proposal in #329 by @WhitWaldo.
+- CLI: `order new --profile` and `--replaces`, `cert renewal-info <cert-path>`,
+  and the `tls-alpn` challenge type for `order authz`/`order validate` (with
+  `dns-01`, `http-01` and `tls-alpn-01` aliases). IP addresses passed to
+  `order new` are ordered as IP identifiers.
 
 ### Changed
 - `NewOrder`, `NewOrderWithProfile` and `NewReplacementOrder` string overloads
