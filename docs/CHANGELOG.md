@@ -2,18 +2,22 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [4.1.0] - 2026-09-27
 ### Added
 - IP address identifiers (RFC 8738): `IdentifierType.Ip`, and `NewOrder`,
   `NewOrderWithProfile` and `NewReplacementOrder` overloads accepting typed
   `Identifier` lists. IP values are validated and sent in canonical form.
 - Certificate profile discovery through `DirectoryMeta.Profiles`, selection via
-  `NewOrderWithProfile`, and the selected `Order.Profile` (#330). Profile orders
-  can also include an ARI replacement certificate ID.
+  `NewOrderWithProfile`, and the selected `Order.Profile`
+  ([#330](https://github.com/fszlin/certes/issues/330)). Profile orders can also
+  include an ARI replacement certificate ID.
 - ACME Renewal Information (ARI, RFC 9773): `Directory.RenewalInfo`,
   `GetRenewalInfoCertificateId()` for `CertificateChain` and `IEncodable`,
-  `IAcmeContext.GetRenewalInfo()` (suggested window, explanation URL and
-  `Retry-After`), `IAcmeContext.NewReplacementOrder()` and `Order.Replaces`.
-  Based on the proposal in #329 by @WhitWaldo.
+  `GetRenewalInfo()` (suggested window, explanation URL and `Retry-After`) and
+  `NewReplacementOrder()` extension methods on `IAcmeContext`, and `Order.Replaces`.
+  Based on the proposal in [#329](https://github.com/fszlin/certes/issues/329)
+  by @WhitWaldo.
 - CLI: `order new --profile` and `--replaces`, `cert renewal-info <cert-path>`,
   and the `tls-alpn` challenge type for `order authz`/`order validate` (with
   `dns-01`, `http-01` and `tls-alpn-01` aliases). IP addresses passed to

@@ -122,7 +122,7 @@ the latest available `10.0.x` SDK in `.github/workflows/build.yml` and logs
 The CLI and modern unit tests target and run on .NET 10 directly, without
 `DOTNET_ROLL_FORWARD`. Workflow syntax can be checked with `actionlint`.
 
-Current targets are `net10.0;net8.0;netstandard2.0;net462` for the library, `net10.0` for
+Current targets are `net10.0;net8.0;netstandard2.0` for the library, `net10.0` for
 the CLI, and `net10.0;net462` for tests. The Functions helper still targets the
 out-of-support `net7.0` and remains outside CI pending retirement; the integration
 suite now uses local Pebble instead.

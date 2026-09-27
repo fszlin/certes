@@ -6,6 +6,20 @@ TLS-ALPN-01 challenges, and exports issued certificates as PEM or PFX.
 
 Supported targets: `net10.0`, `net8.0` and `netstandard2.0`.
 
+## New in 4.1
+
+- ACME Renewal Information (ARI, RFC 9773): retrieve suggested renewal windows
+  and create replacement orders.
+- Discover certificate profiles and select a profile when creating an order.
+- Order certificates for IPv4 and IPv6 addresses (RFC 8738), with IP subject
+  alternative names in CSRs and TLS-ALPN validation certificates.
+
+These features require support from the ACME server. See the
+[API guide](https://github.com/fszlin/certes/blob/main/docs/APIv2.md) for usage
+and challenge requirements.
+
+## Getting started
+
 ```csharp
 var acme = new AcmeContext(WellKnownServers.LetsEncryptStagingV2);
 var account = await acme.NewAccount("admin@example.com", true);
