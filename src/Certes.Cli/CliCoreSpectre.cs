@@ -482,7 +482,7 @@ namespace Certes.Cli
                     });
 
                     return 0;
-                }).WithDescription("Get the ACME Renewal Information (ARI) suggested renewal window for a certificate.");
+                }).WithDescription(Strings.HelpCommandCertificateRenewalInfo);
 
                 branch.AddAsyncDelegate<CertificatePfxSettings>("pfx", async (_, settings) =>
                 {
@@ -532,7 +532,7 @@ namespace Certes.Cli
                     }
 
                     return 0;
-                }).WithDescription(Strings.HelpCommandCertificatePem);
+                }).WithDescription(Strings.HelpCommandCertificatePfx);
             });
         }
 

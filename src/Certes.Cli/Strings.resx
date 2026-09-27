@@ -171,6 +171,9 @@
   <data name="HelpCommandCertificatePfx" xml:space="preserve">
     <value>Export certificate to PFX for an order.</value>
   </data>
+  <data name="HelpCommandCertificateRenewalInfo" xml:space="preserve">
+    <value>Get the ACME Renewal Information (ARI) suggested renewal window for a certificate.</value>
+  </data>
   <data name="HelpCommandOrder" xml:space="preserve">
     <value>Manage certificate orders.</value>
   </data>

@@ -51,6 +51,9 @@ appropriate guide when behavior changes; avoid duplicating long usage examples.
   of the task. `SkipSigning=true` is a local/test aid, not a release setting.
 - Do not hand-edit generated `Strings.Designer.cs` files, build outputs, or
   generated API documentation. Change the source resource/generator input.
+  `Strings.Designer.cs` is regenerated at design time only (Visual Studio, or
+  MSBuild's `GenerateResource` task with the `StronglyTyped*` parameters);
+  `StringsTests.EveryDesignerMemberHasAResource` fails if the CLI copy is stale.
 - Add focused regression tests for behavior fixes. Assert observable behavior,
   especially failure paths, rather than duplicating implementation details.
 - Report files changed, checks actually run, outcomes, and blockers. Distinguish
