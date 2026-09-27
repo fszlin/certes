@@ -30,7 +30,13 @@ namespace Certes
                 Assert.NotNull(account);
                 Assert.Equal(AccountStatus.Valid, account.Status);
 
-                await accountCtx.Update(contact: new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@certes.app" });
+                var newContact = $"mailto:certes-updated-{DateTime.UtcNow.Ticks}@certes.app";
+                var updated = await accountCtx.Update(contact: new[] { newContact });
+                Assert.Equal(new[] { newContact }, updated.Contact);
+
+                // The same context reflects the update without being recreated (#286).
+                Assert.Same(accountCtx, await ctx.Account());
+                Assert.Equal(new[] { newContact }, (await (await ctx.Account()).Resource()).Contact);
 
                 account = await accountCtx.Deactivate();
                 Assert.NotNull(account);
