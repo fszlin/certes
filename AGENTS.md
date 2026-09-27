@@ -272,8 +272,11 @@ were updated after the .NET 10 migration:
    and Pebble integration.
 - ACME Renewal Information (RFC 9773) is exposed through `IAcmeContextExtensions`
   (`GetRenewalInfo`, `NewReplacementOrder`) and `RenewalInfoExtensions`; the
-  certificate ID is checked against the RFC example. Cancellation, certificate
-  profiles, and IP identifiers are not implemented in the current APIs.
+  certificate ID is checked against the RFC example. Certificate profiles are
+  exposed through `DirectoryMeta.Profiles`, `NewOrderWithProfile`, and `Order.Profile`.
+  Profile selection also accepts an ARI replacement ID; Pebble coverage verifies
+  six-day issuance with its `shortlived` profile. Cancellation and IP identifiers
+  are not implemented in the current APIs.
 
 Recheck these observations before using them as the basis for a change. Remove
 or revise each entry when fixed, and update the root README's baseline/status

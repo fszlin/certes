@@ -124,9 +124,11 @@ namespace Certes
         public static Task<IOrderContext> AuthorizeHttp(AcmeContext context, IList<string> hosts)
             => Authorize(context, hosts, ChallengeTypes.Http01);
 
-        public static async Task<IOrderContext> Authorize(AcmeContext context, IList<string> hosts, string type)
+        public static async Task<IOrderContext> Authorize(AcmeContext context, IList<string> hosts, string type, string profile = null)
         {
-            var order = await context.NewOrder(hosts);
+            var order = profile == null
+                ? await context.NewOrder(hosts)
+                : await context.NewOrderWithProfile(hosts, profile);
             var initial = await order.Resource();
             Assert.NotNull(initial);
             Assert.Equal(hosts.Count, initial.Authorizations?.Count);

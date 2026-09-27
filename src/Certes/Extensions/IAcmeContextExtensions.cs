@@ -127,19 +127,82 @@ namespace Certes
 
             var endpoint = await context.GetResourceUri(d => d.NewOrder);
 
-            var body = new Order
+            var body = CreateOrderBody(identifiers, notBefore, notAfter);
+            body.Replaces = replacedCertificateId;
+
+            var order = await context.HttpClient.Post<Order>(context, endpoint, body, true);
+            return new OrderContext(context, order.Location);
+        }
+
+        /// <summary>
+        /// Creates an order using an advertised certificate profile.
+        /// </summary>
+        /// <param name="context">The ACME context.</param>
+        /// <param name="identifiers">The DNS identifiers.</param>
+        /// <param name="profile">The exact, case-sensitive profile name advertised in directory metadata.</param>
+        /// <param name="notBefore">The requested certificate validity start.</param>
+        /// <param name="notAfter">The requested certificate validity end.</param>
+        /// <param name="replacedCertificateId">Optional ARI identifier of the certificate being replaced.</param>
+        /// <param name="allowUnadvertisedProfile">
+        /// Set to <c>true</c> to send a profile name that the directory does not list, such as a
+        /// private profile agreed with the CA or a deprecated profile during replacement. The server
+        /// must still advertise profile support. Defaults to <c>false</c>.
+        /// </param>
+        /// <returns>The created order context.</returns>
+        /// <exception cref="ArgumentException">The profile is empty or not advertised, or the replacement ID is malformed.</exception>
+        /// <exception cref="NotSupportedException">The server does not advertise profiles or a new-order endpoint.</exception>
+        /// <exception cref="AcmeRequestException">The server rejects the order, for example with invalidProfile.</exception>
+        public static async Task<IOrderContext> NewOrderWithProfile(
+            this IAcmeContext context,
+            IList<string> identifiers,
+            string profile,
+            DateTimeOffset? notBefore = null,
+            DateTimeOffset? notAfter = null,
+            string replacedCertificateId = null,
+            bool allowUnadvertisedProfile = false)
+        {
+            if (string.IsNullOrWhiteSpace(profile))
+            {
+                throw new ArgumentException("A certificate profile is required.", nameof(profile));
+            }
+
+            if (replacedCertificateId != null)
+            {
+                ValidateCertificateId(replacedCertificateId, nameof(replacedCertificateId));
+            }
+
+            var directory = await context.GetDirectory();
+            var profiles = directory.Meta?.Profiles;
+            if (profiles == null || profiles.Count == 0 || directory.NewOrder == null)
+            {
+                throw new NotSupportedException("Certificate profile selection is not supported by this server.");
+            }
+
+            if (!allowUnadvertisedProfile && !profiles.ContainsKey(profile))
+            {
+                throw new ArgumentException("The certificate profile is not advertised by this server.", nameof(profile));
+            }
+
+            var body = CreateOrderBody(identifiers, notBefore, notAfter);
+            body.Profile = profile;
+            body.Replaces = replacedCertificateId;
+
+            var order = await context.HttpClient.Post<Order>(context, directory.NewOrder, body, true);
+            return new OrderContext(context, order.Location);
+        }
+
+        /// <summary>
+        /// Builds a new-order request body with DNS identifiers and optional validity bounds.
+        /// </summary>
+        internal static Order CreateOrderBody(IList<string> identifiers, DateTimeOffset? notBefore, DateTimeOffset? notAfter)
+            => new Order
             {
                 Identifiers = identifiers
                     .Select(id => new Identifier { Type = IdentifierType.Dns, Value = id })
                     .ToArray(),
                 NotBefore = notBefore,
                 NotAfter = notAfter,
-                Replaces = replacedCertificateId,
             };
-
-            var order = await context.HttpClient.Post<Order>(context, endpoint, body, true);
-            return new OrderContext(context, order.Location);
-        }
 
         private static void ValidateCertificateId(string certificateId, string paramName)
         {

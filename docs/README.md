@@ -120,7 +120,8 @@ such as Windows Server 2016 and earlier, set
 `pfxBuilder.Encryption = PfxEncryption.Legacy` before calling `Build`.
 
 Check the [APIs](APIv2.md) for more details, including
-[renewal information (ARI)](APIv2.md#renewal-information-ari).
+[renewal information (ARI)](APIv2.md#renewal-information-ari) and
+[certificate profiles](APIv2.md#certificate-profiles).
 
 *Historical ACME v1 documentation is available on the
 [v1 branch](https://github.com/fszlin/certes/tree/v1/master).*

@@ -167,6 +167,47 @@ var cert = await order.Generate(
 ```
 
 
+### Certificate profiles
+
+Servers supporting the [ACME profiles extension (Internet-Draft)](https://datatracker.ietf.org/doc/draft-ietf-acme-profiles/)
+advertise available profiles in directory metadata. Profile descriptions are
+strings: they can contain prose or a documentation URL.
+
+```C#
+var directory = await context.GetDirectory();
+var profiles = directory.Meta?.Profiles;
+if (profiles != null && profiles.ContainsKey("tlsserver"))
+{
+    var order = await context.NewOrderWithProfile(new[] { "your.domain.name" }, "tlsserver");
+    // Validate authorizations and generate the certificate as usual.
+    var selectedProfile = (await order.Resource()).Profile;
+}
+```
+
+Names are case-sensitive and server-specific; Certes does not hard-code any CA's
+profiles. `NewOrderWithProfile` throws `NotSupportedException` when profiles are
+not advertised and `ArgumentException` for empty or unadvertised names, rather
+than silently falling back. A server may still reject an advertised profile for
+an account or requested identifier; its ACME problem details are preserved in
+`AcmeRequestException`. The directory is cached by the context; use a new context
+when refreshed profile discovery is needed.
+
+To send a name the directory does not list, such as a private profile agreed
+with the CA, pass `allowUnadvertisedProfile: true`. The server must still
+advertise profile support, and it may reject the name with `invalidProfile`.
+
+Use the optional `replacedCertificateId` parameter to combine profile selection
+with [ARI replacement orders](#renewal-information-ari):
+
+```C#
+var order = await context.NewOrderWithProfile(new[] { "your.domain.name" }, "tlsserver",
+    replacedCertificateId: previousChain.GetRenewalInfoCertificateId());
+```
+
+Existing `NewOrder` and `NewReplacementOrder` calls omit `profile`, leaving the
+choice to the CA. A profile can affect certificate lifetime and permitted CSR
+fields; consult the CA's description before selecting one.
+
 ## Authorizations
  
 Retrieve authorizations of the order.

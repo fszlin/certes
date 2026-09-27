@@ -198,14 +198,7 @@ namespace Certes
         {
             var endpoint = await this.GetResourceUri(d => d.NewOrder);
 
-            var body = new Order
-            {
-                Identifiers = identifiers
-                    .Select(id => new Identifier { Type = IdentifierType.Dns, Value = id })
-                    .ToArray(),
-                NotBefore = notBefore,
-                NotAfter = notAfter,
-            };
+            var body = IAcmeContextExtensions.CreateOrderBody(identifiers, notBefore, notAfter);
 
             var order = await HttpClient.Post<Order>(this, endpoint, body, true);
             return new OrderContext(this, order.Location);
