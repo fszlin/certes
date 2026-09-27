@@ -127,15 +127,8 @@ namespace Certes
 
             var endpoint = await context.GetResourceUri(d => d.NewOrder);
 
-            var body = new Order
-            {
-                Identifiers = identifiers
-                    .Select(id => new Identifier { Type = IdentifierType.Dns, Value = id })
-                    .ToArray(),
-                NotBefore = notBefore,
-                NotAfter = notAfter,
-                Replaces = replacedCertificateId,
-            };
+            var body = CreateOrderBody(identifiers, notBefore, notAfter);
+            body.Replaces = replacedCertificateId;
 
             var order = await context.HttpClient.Post<Order>(context, endpoint, body, true);
             return new OrderContext(context, order.Location);
@@ -150,6 +143,11 @@ namespace Certes
         /// <param name="notBefore">The requested certificate validity start.</param>
         /// <param name="notAfter">The requested certificate validity end.</param>
         /// <param name="replacedCertificateId">Optional ARI identifier of the certificate being replaced.</param>
+        /// <param name="allowUnadvertisedProfile">
+        /// Set to <c>true</c> to send a profile name that the directory does not list, such as a
+        /// private profile agreed with the CA or a deprecated profile during replacement. The server
+        /// must still advertise profile support. Defaults to <c>false</c>.
+        /// </param>
         /// <returns>The created order context.</returns>
         /// <exception cref="ArgumentException">The profile is empty or not advertised, or the replacement ID is malformed.</exception>
         /// <exception cref="NotSupportedException">The server does not advertise profiles or a new-order endpoint.</exception>
@@ -160,7 +158,8 @@ namespace Certes
             string profile,
             DateTimeOffset? notBefore = null,
             DateTimeOffset? notAfter = null,
-            string replacedCertificateId = null)
+            string replacedCertificateId = null,
+            bool allowUnadvertisedProfile = false)
         {
             if (string.IsNullOrWhiteSpace(profile))
             {
@@ -179,25 +178,31 @@ namespace Certes
                 throw new NotSupportedException("Certificate profile selection is not supported by this server.");
             }
 
-            if (!profiles.Keys.Contains(profile, StringComparer.Ordinal))
+            if (!allowUnadvertisedProfile && !profiles.ContainsKey(profile))
             {
                 throw new ArgumentException("The certificate profile is not advertised by this server.", nameof(profile));
             }
 
-            var body = new Order
-            {
-                Identifiers = identifiers
-                    .Select(id => new Identifier { Type = IdentifierType.Dns, Value = id })
-                    .ToArray(),
-                Profile = profile,
-                NotBefore = notBefore,
-                NotAfter = notAfter,
-                Replaces = replacedCertificateId,
-            };
+            var body = CreateOrderBody(identifiers, notBefore, notAfter);
+            body.Profile = profile;
+            body.Replaces = replacedCertificateId;
 
             var order = await context.HttpClient.Post<Order>(context, directory.NewOrder, body, true);
             return new OrderContext(context, order.Location);
         }
+
+        /// <summary>
+        /// Builds a new-order request body with DNS identifiers and optional validity bounds.
+        /// </summary>
+        internal static Order CreateOrderBody(IList<string> identifiers, DateTimeOffset? notBefore, DateTimeOffset? notAfter)
+            => new Order
+            {
+                Identifiers = identifiers
+                    .Select(id => new Identifier { Type = IdentifierType.Dns, Value = id })
+                    .ToArray(),
+                NotBefore = notBefore,
+                NotAfter = notAfter,
+            };
 
         private static void ValidateCertificateId(string certificateId, string paramName)
         {

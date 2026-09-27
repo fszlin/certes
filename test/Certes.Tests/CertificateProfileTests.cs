@@ -133,6 +133,34 @@ namespace Certes
         }
 
         [Fact]
+        public async Task UnadvertisedProfileCanBeSentWhenExplicitlyAllowed()
+        {
+            var http = new Mock<IAcmeHttpClient>(MockBehavior.Strict);
+            var directory = CreateDirectory(new Dictionary<string, string> { ["shortlived"] = "Six days" });
+            var ctx = CreateContext(http, directory);
+            JwsPayload payload = null;
+            http.Setup(m => m.Post<Order>(directory.NewOrder, It.IsAny<object>()))
+                .Callback<Uri, object>((_, body) => payload = Assert.IsType<JwsPayload>(body))
+                .ReturnsAsync(new AcmeHttpResponse<Order>(new Uri("http://acme.d/order/1"), new Order(), null, null));
+
+            await ctx.NewOrderWithProfile(new[] { "profile.example" }, "private-profile", allowUnadvertisedProfile: true);
+
+            using var wire = JsonDocument.Parse(JwsConvert.FromBase64String(payload.Payload));
+            Assert.Equal("private-profile", wire.RootElement.GetProperty("profile").GetString());
+        }
+
+        [Fact]
+        public async Task OptOutStillRequiresProfileSupportAndName()
+        {
+            var ctx = new Mock<IAcmeContext>(MockBehavior.Strict);
+            ctx.Setup(m => m.GetDirectory()).ReturnsAsync(CreateDirectory(null));
+            await Assert.ThrowsAsync<NotSupportedException>(() => ctx.Object.NewOrderWithProfile(
+                new[] { "profile.example" }, "private-profile", allowUnadvertisedProfile: true));
+            await Assert.ThrowsAsync<ArgumentException>(() => ctx.Object.NewOrderWithProfile(
+                new[] { "profile.example" }, " ", allowUnadvertisedProfile: true));
+        }
+
+        [Fact]
         public async Task InvalidReplacementIdIsRejectedBeforeDirectoryLookup()
         {
             var ctx = new Mock<IAcmeContext>(MockBehavior.Strict);

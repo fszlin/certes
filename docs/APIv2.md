@@ -192,6 +192,10 @@ an account or requested identifier; its ACME problem details are preserved in
 `AcmeRequestException`. The directory is cached by the context; use a new context
 when refreshed profile discovery is needed.
 
+To send a name the directory does not list, such as a private profile agreed
+with the CA, pass `allowUnadvertisedProfile: true`. The server must still
+advertise profile support, and it may reject the name with `invalidProfile`.
+
 Use the optional `replacedCertificateId` parameter to combine profile selection
 with [ARI replacement orders](#renewal-information-ari):
 
