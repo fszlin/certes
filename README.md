@@ -122,8 +122,8 @@ Passing unit tests do not establish current CA interoperability.
    keeping provider-specific dependencies out of the core library.
 3. Exercise the tag-driven release workflow and maintain repeatable package
    verification.
-4. Evaluate renewal information, certificate profiles, and IP identifiers after
-   the reliability baseline is established.
+4. Evaluate certificate profiles and IP identifiers after the reliability
+   baseline is established. Renewal information (ARI) is available.
 
 ## License
 

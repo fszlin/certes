@@ -63,6 +63,15 @@ namespace Certes.Acme.Resource
         public DirectoryMeta Meta { get; }
 
         /// <summary>
+        /// Gets the ACME Renewal Information (ARI) endpoint, as defined in RFC 9773.
+        /// </summary>
+        /// <value>
+        /// The renewal information endpoint, or <c>null</c> if the server does not support ARI.
+        /// </value>
+        [JsonPropertyName("renewalInfo")]
+        public Uri RenewalInfo { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Directory"/> class.
         /// </summary>
         /// <param name="newNonce">The new nonce.</param>
@@ -78,6 +87,29 @@ namespace Certes.Acme.Resource
             Uri revokeCert, 
             Uri keyChange,
             DirectoryMeta meta)
+            : this(newNonce, newAccount, newOrder, revokeCert, keyChange, meta, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Directory"/> class.
+        /// </summary>
+        /// <param name="newNonce">The new nonce.</param>
+        /// <param name="newAccount">The new account.</param>
+        /// <param name="newOrder">The new order.</param>
+        /// <param name="revokeCert">The revoke cert.</param>
+        /// <param name="keyChange">The key change.</param>
+        /// <param name="meta">The meta.</param>
+        /// <param name="renewalInfo">The renewal information endpoint.</param>
+        [JsonConstructor]
+        public Directory(
+            Uri newNonce,
+            Uri newAccount,
+            Uri newOrder,
+            Uri revokeCert,
+            Uri keyChange,
+            DirectoryMeta meta,
+            Uri renewalInfo)
         {
             NewNonce = newNonce;
             NewAccount = newAccount;
@@ -85,6 +117,7 @@ namespace Certes.Acme.Resource
             RevokeCert = revokeCert;
             KeyChange = keyChange;
             Meta = meta;
+            RenewalInfo = renewalInfo;
         }
     }
 }
