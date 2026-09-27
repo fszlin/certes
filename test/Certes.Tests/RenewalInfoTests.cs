@@ -101,9 +101,17 @@ namespace Certes
         {
             var dir = new Directory(null, null, null, null, null, null, new Uri("http://acme.d/acme/renewal-info/"));
             var expectedUri = new Uri("http://acme.d/acme/renewal-info/abc.AQ");
+            var info = new RenewalInfo
+            {
+                SuggestedWindow = new SuggestedWindow
+                {
+                    Start = new DateTimeOffset(2025, 1, 2, 4, 0, 0, TimeSpan.Zero),
+                    End = new DateTimeOffset(2025, 1, 3, 4, 0, 0, TimeSpan.Zero),
+                },
+            };
             var http = new Mock<IAcmeHttpClient>();
             http.Setup(m => m.Get<RenewalInfo>(expectedUri))
-                .ReturnsAsync(new AcmeHttpResponse<RenewalInfo>(null, new RenewalInfo(), null, null));
+                .ReturnsAsync(new AcmeHttpResponse<RenewalInfo>(null, info, null, null));
             var ctx = CreateContext(http, dir);
 
             var result = await ctx.Object.GetRenewalInfo("abc.AQ");
@@ -129,6 +137,29 @@ namespace Certes
 
             var unsupported = CreateContext(http, new Directory(null, null, null, null, null, null));
             await Assert.ThrowsAsync<NotSupportedException>(() => unsupported.Object.GetRenewalInfo("abc.AQ"));
+        }
+
+        [Theory]
+        [InlineData("null")]
+        [InlineData("{}")]
+        [InlineData("{\"suggestedWindow\":null}")]
+        [InlineData("{\"suggestedWindow\":{}}")]
+        [InlineData("{\"suggestedWindow\":{\"start\":\"2025-01-02T04:00:00Z\",\"end\":\"2025-01-02T04:00:00Z\"}}")]
+        [InlineData("{\"suggestedWindow\":{\"start\":\"2025-01-03T04:00:00Z\",\"end\":\"2025-01-02T04:00:00Z\"}}")]
+        [InlineData("{\"suggestedWindow\":{\"start\":\"2025-01-02T04:00:00Z\",\"end\":\"2025-01-02T05:00:00+01:00\"}}")]
+        public async Task GetRenewalInfoRejectsMissingOrInvalidWindows(string json)
+        {
+            var info = JsonSerializer.Deserialize<RenewalInfo>(json, JsonUtil.CreateSettings());
+            var uri = new Uri("http://acme.d/renewalInfo/abc.AQ");
+            var http = new Mock<IAcmeHttpClient>(MockBehavior.Strict);
+            http.Setup(m => m.Get<RenewalInfo>(uri))
+                .ReturnsAsync(new AcmeHttpResponse<RenewalInfo>(null, info, null, null, 21600));
+            var ctx = CreateContext(http, Helper.MockDirectoryV2);
+
+            await Assert.ThrowsAsync<AcmeException>(() => ctx.Object.GetRenewalInfo("abc.AQ"));
+
+            http.Verify(m => m.Get<RenewalInfo>(uri), Times.Once);
+            http.VerifyNoOtherCalls();
         }
 
         [Fact]

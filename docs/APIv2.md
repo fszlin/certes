@@ -284,8 +284,15 @@ var certId = certChain.GetRenewalInfoCertificateId();
 
 var info = await context.GetRenewalInfo(certId);
 // Renew at a random time within info.SuggestedWindow.Start..End.
-// Poll again after info.RetryAfter (when set) to pick up window changes.
+// Bound info.RetryAfter before scheduling the next poll (see below).
 ```
+
+The application schedules renewal-info polling. `RetryAfter` exposes the positive
+delay reported by the HTTP client without clamping it. Per RFC 9773 section 4.3.2,
+callers must set reasonable limits on the checking interval, for example **one
+minute to one day**. When no delay is available (`null`), use a locally configured
+fallback, such as **six hours**. Error backoff takes priority over this interval.
+Stop polling after the certificate expires or is considered replaced.
 
 When renewing, create the order with `NewReplacementOrder` so the server knows
 which certificate it replaces, then proceed as usual.
@@ -297,6 +304,13 @@ var order = await context.NewReplacementOrder(new[] { "your.domain.name" }, cert
 `GetRenewalInfo` throws `NotSupportedException` when the directory has no
 `renewalInfo` endpoint. The request is an unauthenticated GET and does not
 require an account.
+
+A missing suggested window, or one whose end is at or before its start, causes
+`GetRenewalInfo` to throw `AcmeException`. Treat that as a failed renewal-info
+request: use a fallback renewal schedule and retry after the locally configured
+default interval (RFC 9773 section 4.3.3). A valid window entirely in the past is
+accepted; if the chosen renewal time is already past, attempt renewal immediately,
+subject to error backoff.
 
 <!---
 ## Not Implemented

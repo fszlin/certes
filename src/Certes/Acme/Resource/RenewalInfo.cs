@@ -31,8 +31,14 @@ namespace Certes.Acme.Resource
         /// from the <c>Retry-After</c> response header.
         /// </summary>
         /// <value>
-        /// The retry delay, or <c>null</c> if the server did not send one.
+        /// The positive retry delay reported by the HTTP client, or <c>null</c> if none is available.
         /// </value>
+        /// <remarks>
+        /// This value is not clamped and this API does not schedule polling. Callers must
+        /// apply reasonable checking-interval limits (RFC 9773 section 4.3.2), for example
+        /// one minute to one day. If no delay is available, use a locally configured
+        /// fallback, such as six hours. Error backoff takes priority over polling.
+        /// </remarks>
         [JsonIgnore]
         public TimeSpan? RetryAfter { get; set; }
     }

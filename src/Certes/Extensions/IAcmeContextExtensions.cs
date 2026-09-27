@@ -73,6 +73,7 @@ namespace Certes
         /// <exception cref="ArgumentException">If <paramref name="certificateId"/> is empty or malformed.</exception>
         /// <exception cref="NotSupportedException">If the server does not advertise a renewal information endpoint.</exception>
         /// <exception cref="AcmeRequestException">If the server returns an error.</exception>
+        /// <exception cref="AcmeException">If the response or suggested window is missing, or the window ends at or before it starts.</exception>
         public static async Task<RenewalInfo> GetRenewalInfo(this IAcmeContext context, string certificateId)
         {
             ValidateCertificateId(certificateId, nameof(certificateId));
@@ -90,6 +91,11 @@ namespace Certes
 
             var info = resp.Resource ?? throw new AcmeException(
                 string.Format(Properties.Strings.ErrorFetchResource, uri));
+
+            if (info.SuggestedWindow == null || info.SuggestedWindow.End <= info.SuggestedWindow.Start)
+            {
+                throw new AcmeException("The renewal information response contains a missing or invalid suggested window.");
+            }
 
             info.RetryAfter = resp.RetryAfter > 0 ? TimeSpan.FromSeconds(resp.RetryAfter) : (TimeSpan?)null;
             return info;
