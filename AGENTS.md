@@ -160,11 +160,13 @@ Inspect `test/Certes.Tests.Integration/IntegrationHelper.cs` and the relevant in
 test before changing the setup. See `scripts/Pebble/README.md` for prerequisites,
 TLS certificate pinning, fixed loopback ports, and coverage limits. Docker Desktop
 is verified on macOS ARM64; Linux CI uses Docker. Rootless Podman on Linux has
-started the stack using an isolated temporary store. With the default
+passed all 15 baseline integration tests, including ARI, using an isolated
+temporary store and a fresh `XDG_RUNTIME_DIR` on 2026-09-26 (.NET SDK 10.0.401,
+runtime 10.0.12). A subsequent run with default Podman runtime state also passed
+all 15 tests; Compose required an absolute file path. With the default
 bad-nonce retry budget, the focused resilience test failed before issuance on
 repeated `badNonce` responses; with `CERTES_INTEGRATION_BADNONCE_RETRY_COUNT=8`,
-the same focused resilience test passed. A complete passing Podman run for the
-full integration suite remains unverified. See the Podman troubleshooting
+the same focused resilience test passed. See the Podman troubleshooting
 section in `scripts/Pebble/README.md` for commands and limitations.
 The local harness runs only on .NET 10; `net462` remains compile-only and rejects
 network initialization. Never add a global TLS bypass or public-CA fallback.
@@ -268,8 +270,10 @@ were updated after the .NET 10 migration:
    defined with automatic unit-test and local Pebble execution; all five checks are required
    on main: Build (ubuntu-24.04), Build (windows-2025), Build (macos-26), Package smoke checks,
    and Pebble integration.
-- Cancellation, renewal information, certificate profiles, and IP identifiers
-  are not implemented in the current APIs.
+- ACME Renewal Information (RFC 9773) is exposed through `IAcmeContextExtensions`
+  (`GetRenewalInfo`, `NewReplacementOrder`) and `RenewalInfoExtensions`; the
+  certificate ID is checked against the RFC example. Cancellation, certificate
+  profiles, and IP identifiers are not implemented in the current APIs.
 
 Recheck these observations before using them as the basis for a change. Remove
 or revise each entry when fixed, and update the root README's baseline/status

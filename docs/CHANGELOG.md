@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Added
+- ACME Renewal Information (ARI, RFC 9773): `Directory.RenewalInfo`,
+  `GetRenewalInfoCertificateId()` for `CertificateChain` and `IEncodable`,
+  `IAcmeContext.GetRenewalInfo()` (suggested window, explanation URL and
+  `Retry-After`), `IAcmeContext.NewReplacementOrder()` and `Order.Replaces`.
+  Based on the proposal in #329 by @WhitWaldo.
 
 ## [4.0.0] - 2026-09-23
 ### Breaking changes

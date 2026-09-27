@@ -96,6 +96,16 @@ namespace Certes.Acme.Resource
         public Uri Certificate { get; set; }
 
         /// <summary>
+        /// Gets or sets the ARI certificate identifier of a previously issued
+        /// certificate which this order is intended to replace (RFC 9773).
+        /// </summary>
+        /// <value>
+        /// The certificate identifier, or <c>null</c>.
+        /// </value>
+        [JsonPropertyName("replaces")]
+        public string Replaces { get; set; }
+
+        /// <summary>
         /// Represents the payload to finalize an order.
         /// </summary>
         /// <seealso cref="Certes.Acme.Resource.Order" />

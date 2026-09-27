@@ -119,7 +119,8 @@ The PFX is encrypted with AES-256 by default. For consumers that cannot read it,
 such as Windows Server 2016 and earlier, set
 `pfxBuilder.Encryption = PfxEncryption.Legacy` before calling `Build`.
 
-Check the [APIs](APIv2.md) for more details.
+Check the [APIs](APIv2.md) for more details, including
+[renewal information (ARI)](APIv2.md#renewal-information-ari).
 
 *Historical ACME v1 documentation is available on the
 [v1 branch](https://github.com/fszlin/certes/tree/v1/master).*

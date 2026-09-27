@@ -271,6 +271,33 @@ Revoke certificate with certificate private key.
 await context.RevokeCertificate(certChain.Certificate.ToDer(), RevocationReason.KeyCompromise, certKey);
 ```
 
+## Renewal Information (ARI)
+
+When the server supports [RFC 9773](https://www.rfc-editor.org/rfc/rfc9773)
+(its directory lists `renewalInfo`), ask it when to renew a certificate. The
+certificate identifier is derived from the certificate's authority key identifier
+and serial number.
+
+```C#
+var certChain = new CertificateChain(savedPem); // or the chain from order.Generate()
+var certId = certChain.GetRenewalInfoCertificateId();
+
+var info = await context.GetRenewalInfo(certId);
+// Renew at a random time within info.SuggestedWindow.Start..End.
+// Poll again after info.RetryAfter (when set) to pick up window changes.
+```
+
+When renewing, create the order with `NewReplacementOrder` so the server knows
+which certificate it replaces, then proceed as usual.
+
+```C#
+var order = await context.NewReplacementOrder(new[] { "your.domain.name" }, certId);
+```
+
+`GetRenewalInfo` throws `NotSupportedException` when the directory has no
+`renewalInfo` endpoint. The request is an unauthenticated GET and does not
+require an account.
+
 <!---
 ## Not Implemented
 * Account

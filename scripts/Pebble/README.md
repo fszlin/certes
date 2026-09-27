@@ -10,8 +10,8 @@ docker compose -f scripts/Pebble/compose.yml down
 ```
 
 Docker Desktop on macOS ARM64 is verified locally. GitHub Actions uses Docker on
-Linux x64. Rootless Podman on Linux has started the stack and reached ACME account
-setup; a complete passing integration run is still unverified. See
+Linux x64. Rootless Podman on Linux passed all 15 integration tests, including ARI,
+with both isolated and default runtime state on 2026-09-26. See
 [Podman troubleshooting](#podman-troubleshooting) for the tested workaround.
 Unit tests do not need containers.
 
@@ -49,9 +49,10 @@ root, which is fetched at startup and supplied to the existing export APIs.
 
 ## Scope and troubleshooting
 
-The 13 integration cases cover account discovery/update/deactivation/key change,
+The 15 integration cases cover account discovery/update/deactivation/key change,
 HTTP-01, DNS-01, TLS-ALPN-01, wildcard issuance, RSA/ECDSA leaf keys, certificate
-download, PEM/PFX export, revocation, and failed validation. They do not prove
+download, PEM/PFX export, revocation, failed validation, and ARI renewal information
+and replacement-order creation. They do not prove
 public-CA interoperability. Test-only helpers
 use a 10-second HTTP request timeout; the README `Generate` example explicitly
 requests up to 60 retries. Production polling honors server-directed `Retry-After`
@@ -143,6 +144,14 @@ network cleanup, and `podman info` continued to fail. The isolated-store workaro
 below succeeded without resetting the original store; it does not repair that
 store. A destructive `podman system reset` was not needed.
 
+`cannot re-exec process to join the existing user namespace` can also indicate
+stale rootless state. On 2026-09-26, `/run/user/1000/libpod/tmp/pause.pid` pointed
+to PID 10112, which was absent from the session. Isolating only `--root`,
+`--runroot`, and `--tmpdir` still failed; a fresh `XDG_RUNTIME_DIR` fixed startup.
+The example below isolates that directory too, without changing the original
+store. Whether the original process had exited or belonged to a different process
+namespace was not established.
+
 ### Run with an isolated temporary store
 
 The following Bash example runs the focused resilience test. Run it from the
@@ -156,6 +165,8 @@ disk space. The fresh store pulls its own copies of the pinned images.
     set -e
     repo="$(pwd -P)"
     podman_test_dir="$(mktemp -d /tmp/certes-podman.XXXXXX)"
+    export XDG_RUNTIME_DIR="$podman_test_dir/xdg"
+    mkdir -m 700 "$XDG_RUNTIME_DIR"
     podman_args="--root $podman_test_dir/storage --runroot $podman_test_dir/run --tmpdir $podman_test_dir/tmp --storage-driver vfs"
     printf 'Temporary Podman store: %s\n' "$podman_test_dir"
 
@@ -197,9 +208,23 @@ disk space. The fresh store pulls its own copies of the pinned images.
 The subshell preserves the test failure status and attempts teardown even when
 startup or tests fail. `compose down` removes the stack, while the printed
 temporary directory retains downloaded images and runtime files for inspection.
-The isolated store still shares host ports with other stacks.
+The isolated store still shares host ports with other stacks. To run the baseline
+full suite instead, omit the resilience Compose override, the bad-nonce environment
+override, and the test filter.
 
 ### Observed result and remaining limits
+
+On 2026-09-26, the baseline Compose configuration passed the focused ARI test
+(1/1) and then the full integration suite (15/15, no skips) on rootless Podman
+with a fresh `XDG_RUNTIME_DIR` and isolated vfs store. This run used Debian 13/Linux
+x64, Podman 5.4.2, Podman Compose 1.3.0, .NET SDK 10.0.401 and runtime 10.0.12.
+It used the default bad-nonce retry budget. Teardown printed missing
+`aardvark-dns` cleanup errors, but `podman ps -a` confirmed no containers remained.
+A subsequent run with default Podman runtime state also passed all 15 tests,
+without the isolated-directory workaround. Compose required an absolute file path;
+the missing `aardvark-dns` warnings and cleanup errors remained, and no test
+containers remained after teardown. The results below describe the earlier,
+separate resilience run.
 
 The run used Debian 13/Linux x64, Podman 5.4.2, Podman Compose 1.3.0, .NET SDK
 10.0.401, and runtime 10.0.12. Both containers started and the readiness probe
@@ -211,8 +236,8 @@ difference after successful container startup, not a Podman startup failure.
 
 Podman also reported a missing `aardvark-dns` binary and corresponding network
 cleanup errors. The stack uses explicit container IPs and Pebble's custom DNS
-resolver, and reached account setup despite that warning; challenge validation
-was not reached. After teardown, `podman ps -a` with the isolated-store arguments
+resolver, so missing container-name DNS did not block the later baseline suite.
+After teardown, `podman ps -a` with the isolated-store arguments
 confirmed that no test containers remained.
 
 Pebble logs confirmed that `PEBBLE_AUTHZREUSE=1` means a **1% probability**, not a

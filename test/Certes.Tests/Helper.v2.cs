@@ -14,7 +14,8 @@ namespace Certes
             new Uri("http://acme.d/newOrder"),
             new Uri("http://acme.d/revokeCert"),
             new Uri("http://acme.d/keyChange"),
-            new DirectoryMeta(new Uri("http://acme.d/tos"), null, null, false));
+            new DirectoryMeta(new Uri("http://acme.d/tos"), null, null, false),
+            new Uri("http://acme.d/renewalInfo"));
 
         public static IKey GetKeyV2(KeyAlgorithm algo = KeyAlgorithm.ES256)
             => KeyFactory.FromPem(algo.GetTestKey());
