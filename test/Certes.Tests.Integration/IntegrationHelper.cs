@@ -129,9 +129,22 @@ namespace Certes
             var order = profile == null
                 ? await context.NewOrder(hosts)
                 : await context.NewOrderWithProfile(hosts, profile);
+            return await AuthorizeOrder(context, order, hosts.Count, type);
+        }
+
+        public static async Task<IOrderContext> Authorize(AcmeContext context, IList<Identifier> identifiers, string type, string profile = null)
+        {
+            var order = profile == null
+                ? await context.NewOrder(identifiers)
+                : await context.NewOrderWithProfile(identifiers, profile);
+            return await AuthorizeOrder(context, order, identifiers.Count, type);
+        }
+
+        private static async Task<IOrderContext> AuthorizeOrder(AcmeContext context, IOrderContext order, int expectedAuthorizations, string type)
+        {
             var initial = await order.Resource();
             Assert.NotNull(initial);
-            Assert.Equal(hosts.Count, initial.Authorizations?.Count);
+            Assert.Equal(expectedAuthorizations, initial.Authorizations?.Count);
             Assert.True(initial.Status == OrderStatus.Pending || initial.Status == OrderStatus.Ready,
                 $"Unexpected initial order status: {initial.Status}");
             foreach (var authz in await order.Authorizations())

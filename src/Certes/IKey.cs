@@ -126,7 +126,13 @@ namespace Certes
             gen.SetPublicKey(keyPair.Public);
 
             // SAN for validation
-            var gns = new[] { new GeneralName(GeneralName.DnsName, subjectName) };
+            // RFC 8738 section 6: IP identifiers use an iPAddress SAN.
+            var gns = new[]
+            {
+                Certes.Acme.IpAddressUtil.TryParse(subjectName, out var ip)
+                    ? new GeneralName(GeneralName.IPAddress, ip.ToString())
+                    : new GeneralName(GeneralName.DnsName, subjectName),
+            };
             gen.AddExtension(X509Extensions.SubjectAlternativeName.Id, false, new GeneralNames(gns));
 
             // ACME-TLS/1

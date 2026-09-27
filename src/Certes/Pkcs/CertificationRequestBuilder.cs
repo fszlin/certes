@@ -135,7 +135,9 @@ namespace Certes.Pkcs
 
             var altNames = this.SubjectAlternativeNames
                 .Distinct()
-                .Select(n => new GeneralName(GeneralName.DnsName, n))
+                .Select(n => Certes.Acme.IpAddressUtil.TryParse(n, out var ip)
+                    ? new GeneralName(GeneralName.IPAddress, ip.ToString())
+                    : new GeneralName(GeneralName.DnsName, n))
                 .ToArray();
 
             var extensions = new X509Extensions(new Dictionary<DerObjectIdentifier, X509Extension>

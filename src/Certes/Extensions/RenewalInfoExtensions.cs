@@ -19,7 +19,7 @@ namespace Certes
         /// <returns>
         /// The certificate identifier, for use with
         /// <see cref="IAcmeContextExtensions.GetRenewalInfo(IAcmeContext, string)"/> and
-        /// <see cref="IAcmeContextExtensions.NewReplacementOrder"/>.
+        /// <see cref="IAcmeContextExtensions.NewReplacementOrder(IAcmeContext, System.Collections.Generic.IList{string}, string, System.DateTimeOffset?, System.DateTimeOffset?)"/>.
         /// </returns>
         /// <exception cref="ArgumentNullException">If <paramref name="certificateChain"/> is <c>null</c>.</exception>
         /// <exception cref="AcmeException">If the certificate has no authority key identifier.</exception>
@@ -40,7 +40,7 @@ namespace Certes
         /// <returns>
         /// The certificate identifier, for use with
         /// <see cref="IAcmeContextExtensions.GetRenewalInfo(IAcmeContext, string)"/> and
-        /// <see cref="IAcmeContextExtensions.NewReplacementOrder"/>.
+        /// <see cref="IAcmeContextExtensions.NewReplacementOrder(IAcmeContext, System.Collections.Generic.IList{string}, string, System.DateTimeOffset?, System.DateTimeOffset?)"/>.
         /// </returns>
         /// <exception cref="ArgumentNullException">If <paramref name="certificate"/> is <c>null</c>.</exception>
         /// <exception cref="AcmeException">If the certificate has no authority key identifier.</exception>

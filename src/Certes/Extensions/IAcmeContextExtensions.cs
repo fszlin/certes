@@ -116,20 +116,58 @@ namespace Certes
         /// The order context created.
         /// </returns>
         /// <exception cref="ArgumentException">If <paramref name="replacedCertificateId"/> is empty or malformed.</exception>
-        public static async Task<IOrderContext> NewReplacementOrder(
+        public static Task<IOrderContext> NewReplacementOrder(
             this IAcmeContext context,
             IList<string> identifiers,
             string replacedCertificateId,
             DateTimeOffset? notBefore = null,
             DateTimeOffset? notAfter = null)
+            => context.NewReplacementOrder(ToDnsIdentifiers(identifiers), replacedCertificateId, notBefore, notAfter);
+
+        /// <summary>
+        /// Creates a new order with explicitly typed identifiers (for example, IP addresses per RFC 8738)
+        /// that replaces a previously issued certificate, as defined in RFC 9773.
+        /// </summary>
+        /// <param name="context">The ACME context.</param>
+        /// <param name="identifiers">The DNS or IP identifiers.</param>
+        /// <param name="replacedCertificateId">The ARI certificate identifier of the certificate being replaced.</param>
+        /// <param name="notBefore">The value of not before field for the certificate.</param>
+        /// <param name="notAfter">The value of not after field for the certificate.</param>
+        /// <returns>The order context created.</returns>
+        /// <exception cref="ArgumentException">An identifier or <paramref name="replacedCertificateId"/> is empty or malformed.</exception>
+        public static async Task<IOrderContext> NewReplacementOrder(
+            this IAcmeContext context,
+            IList<Identifier> identifiers,
+            string replacedCertificateId,
+            DateTimeOffset? notBefore = null,
+            DateTimeOffset? notAfter = null)
         {
             ValidateCertificateId(replacedCertificateId, nameof(replacedCertificateId));
-
-            var endpoint = await context.GetResourceUri(d => d.NewOrder);
-
             var body = CreateOrderBody(identifiers, notBefore, notAfter);
             body.Replaces = replacedCertificateId;
 
+            var endpoint = await context.GetResourceUri(d => d.NewOrder);
+            var order = await context.HttpClient.Post<Order>(context, endpoint, body, true);
+            return new OrderContext(context, order.Location);
+        }
+
+        /// <summary>
+        /// Creates a new order with explicitly typed identifiers, for example IP addresses (RFC 8738).
+        /// </summary>
+        /// <param name="context">The ACME context.</param>
+        /// <param name="identifiers">The DNS or IP identifiers. IP values are normalized to their canonical text form.</param>
+        /// <param name="notBefore">The value of not before field for the certificate.</param>
+        /// <param name="notAfter">The value of not after field for the certificate.</param>
+        /// <returns>The order context created.</returns>
+        /// <exception cref="ArgumentException">An identifier is missing, empty, or not a valid IP address for type <see cref="IdentifierType.Ip"/>.</exception>
+        public static async Task<IOrderContext> NewOrder(
+            this IAcmeContext context,
+            IList<Identifier> identifiers,
+            DateTimeOffset? notBefore = null,
+            DateTimeOffset? notAfter = null)
+        {
+            var body = CreateOrderBody(identifiers, notBefore, notAfter);
+            var endpoint = await context.GetResourceUri(d => d.NewOrder);
             var order = await context.HttpClient.Post<Order>(context, endpoint, body, true);
             return new OrderContext(context, order.Location);
         }
@@ -152,9 +190,34 @@ namespace Certes
         /// <exception cref="ArgumentException">The profile is empty or not advertised, or the replacement ID is malformed.</exception>
         /// <exception cref="NotSupportedException">The server does not advertise profiles or a new-order endpoint.</exception>
         /// <exception cref="AcmeRequestException">The server rejects the order, for example with invalidProfile.</exception>
-        public static async Task<IOrderContext> NewOrderWithProfile(
+        public static Task<IOrderContext> NewOrderWithProfile(
             this IAcmeContext context,
             IList<string> identifiers,
+            string profile,
+            DateTimeOffset? notBefore = null,
+            DateTimeOffset? notAfter = null,
+            string replacedCertificateId = null,
+            bool allowUnadvertisedProfile = false)
+            => context.NewOrderWithProfile(ToDnsIdentifiers(identifiers), profile, notBefore, notAfter, replacedCertificateId, allowUnadvertisedProfile);
+
+        /// <summary>
+        /// Creates an order with explicitly typed identifiers using an advertised certificate profile.
+        /// Some CAs, such as Let's Encrypt, issue IP address certificates only under specific profiles.
+        /// </summary>
+        /// <param name="context">The ACME context.</param>
+        /// <param name="identifiers">The DNS or IP identifiers.</param>
+        /// <param name="profile">The exact, case-sensitive profile name advertised in directory metadata.</param>
+        /// <param name="notBefore">The requested certificate validity start.</param>
+        /// <param name="notAfter">The requested certificate validity end.</param>
+        /// <param name="replacedCertificateId">Optional ARI identifier of the certificate being replaced.</param>
+        /// <param name="allowUnadvertisedProfile">Set to <c>true</c> to send a profile name that the directory does not list.</param>
+        /// <returns>The created order context.</returns>
+        /// <exception cref="ArgumentException">The profile, an identifier, or the replacement ID is empty or malformed, or the profile is not advertised.</exception>
+        /// <exception cref="NotSupportedException">The server does not advertise profiles or a new-order endpoint.</exception>
+        /// <exception cref="AcmeRequestException">The server rejects the order, for example with invalidProfile.</exception>
+        public static async Task<IOrderContext> NewOrderWithProfile(
+            this IAcmeContext context,
+            IList<Identifier> identifiers,
             string profile,
             DateTimeOffset? notBefore = null,
             DateTimeOffset? notAfter = null,
@@ -171,6 +234,10 @@ namespace Certes
                 ValidateCertificateId(replacedCertificateId, nameof(replacedCertificateId));
             }
 
+            var body = CreateOrderBody(identifiers, notBefore, notAfter);
+            body.Profile = profile;
+            body.Replaces = replacedCertificateId;
+
             var directory = await context.GetDirectory();
             var profiles = directory.Meta?.Profiles;
             if (profiles == null || profiles.Count == 0 || directory.NewOrder == null)
@@ -183,10 +250,6 @@ namespace Certes
                 throw new ArgumentException("The certificate profile is not advertised by this server.", nameof(profile));
             }
 
-            var body = CreateOrderBody(identifiers, notBefore, notAfter);
-            body.Profile = profile;
-            body.Replaces = replacedCertificateId;
-
             var order = await context.HttpClient.Post<Order>(context, directory.NewOrder, body, true);
             return new OrderContext(context, order.Location);
         }
@@ -197,12 +260,52 @@ namespace Certes
         internal static Order CreateOrderBody(IList<string> identifiers, DateTimeOffset? notBefore, DateTimeOffset? notAfter)
             => new Order
             {
-                Identifiers = identifiers
-                    .Select(id => new Identifier { Type = IdentifierType.Dns, Value = id })
-                    .ToArray(),
+                Identifiers = ToDnsIdentifiers(identifiers),
                 NotBefore = notBefore,
                 NotAfter = notAfter,
             };
+
+        /// <summary>
+        /// Builds a new-order request body from typed identifiers, validating and normalizing IP values.
+        /// The caller's identifier objects are not modified.
+        /// </summary>
+        internal static Order CreateOrderBody(IList<Identifier> identifiers, DateTimeOffset? notBefore, DateTimeOffset? notAfter)
+        {
+            if (identifiers == null)
+            {
+                throw new ArgumentNullException(nameof(identifiers));
+            }
+
+            var copies = new Identifier[identifiers.Count];
+            for (var i = 0; i < copies.Length; i++)
+            {
+                var id = identifiers[i];
+                if (id == null || string.IsNullOrWhiteSpace(id.Value))
+                {
+                    throw new ArgumentException("Identifiers must have a value.", nameof(identifiers));
+                }
+
+                var value = id.Value;
+                if (id.Type == IdentifierType.Ip && !IpAddressUtil.TryNormalize(value, out value))
+                {
+                    throw new ArgumentException($"'{id.Value}' is not a valid IP address identifier.", nameof(identifiers));
+                }
+
+                copies[i] = new Identifier { Type = id.Type, Value = value };
+            }
+
+            return new Order
+            {
+                Identifiers = copies,
+                NotBefore = notBefore,
+                NotAfter = notAfter,
+            };
+        }
+
+        private static Identifier[] ToDnsIdentifiers(IList<string> identifiers)
+            => identifiers
+                .Select(id => new Identifier { Type = IdentifierType.Dns, Value = id })
+                .ToArray();
 
         private static void ValidateCertificateId(string certificateId, string paramName)
         {
