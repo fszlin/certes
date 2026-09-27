@@ -56,6 +56,23 @@ With an `valid` ACME account, we can start generating SSL certificates now.
 certes order new *.example.com api.example.net
 ```
 
+Values that are IP addresses, such as `203.0.113.10`, are ordered as IP
+identifiers (RFC 8738); everything else is a DNS name. IP identifiers cannot use
+the DNS challenge.
+
+To select a certificate profile advertised by the server (listed under
+`meta.profiles` in `certes server show`), or to mark the order as a renewal of an
+earlier certificate (see [Renewal information](#renewal-information)):
+
+```PowerShell
+certes order new 203.0.113.10 --profile shortlived
+certes order new api.example.net --replaces aYhba4dGQEHhs3uEe6CuLN4ByNQ.AIdlQyE
+```
+
+A profile name that the server does not advertise is rejected before the order
+is sent. Let's Encrypt issues IP address certificates only under its `shortlived`
+profile.
+
 Keep note of the order location, which we will use it in the next steps:
 
 ```json
@@ -137,9 +154,20 @@ The output will contain the two value fields we need to use for order validation
 ```
 
 On your application server you need to create file which will be available under *http://api.example.com/.well-known/acme-challenge/iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest* (resource.token value for last url segment). File content needs to be set as *iuaJR4CdLFxvt4RsmVsgfSU46rqYsrQpzxasdactest.Qed9-4Ek4ot3idslj89tmCMGEYlfY5I463X37hCd9i4* (keyAuthz value).
-<!--
-TODO: TLS-ALPN-01
--->
+#### TLS-ALPN-01 challenge
+
+```PowerShell
+certes order authz https://acme-v02.api.letsencrypt.org/acme/order/2/3 api.example.com tls-alpn
+```
+
+The output includes `keyAuthz`. The TLS server must answer the `acme-tls/1`
+ALPN protocol on port 443 with a self-signed certificate for the identifier that
+carries the SHA-256 digest of `keyAuthz` in the critical acmeIdentifier extension
+(RFC 8737). The CLI does not produce that certificate; the library's
+`IKey.TlsAlpnCertificate` helper can.
+
+Challenge types are `dns`, `http` and `tls-alpn`; `dns-01`, `http-01` and
+`tls-alpn-01` are accepted too.
 
 ### Completing Challenges
 
@@ -201,4 +229,31 @@ The PFX is encrypted with AES-256. Add `--legacy-encryption` for consumers that
 cannot read AES-encrypted PFX files, such as Windows Server 2016 and earlier.
 
 That's all, you now have your free SSL certificate ready for deploy.
+
+## Renewal information
+
+Servers supporting ACME Renewal Information (RFC 9773) suggest when to renew each
+certificate. Pass the certificate PEM, for example the file written by
+`certes cert pem`:
+
+```PowerShell
+certes cert renewal-info my-cert.pem
+```
+
+```json
+{
+  "certificateId": "aYhba4dGQEHhs3uEe6CuLN4ByNQ.AIdlQyE",
+  "suggestedWindow": { "start": "2025-01-02T04:00:00+00:00", "end": "2025-01-03T04:00:00+00:00" },
+  "explanationUrl": null,
+  "retryAfterSeconds": 21600
+}
+```
+
+Renew at a random time within `suggestedWindow`, and create the new order with
+`--replaces <certificateId>`. Check again after `retryAfterSeconds`, bounded to a
+reasonable range such as one minute to one day. No account key is needed.
+
+Certificate lifetimes are shrinking (Let's Encrypt: 64 days from February 2027,
+45 days from February 2028), so scheduling renewals from the suggested window is
+more reliable than renewing a fixed number of days before expiry.
 
