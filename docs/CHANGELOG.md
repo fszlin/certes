@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [4.1.0] - 2026-09-27
 ### Added
 - IP address identifiers (RFC 8738): `IdentifierType.Ip`, and `NewOrder`,
   `NewOrderWithProfile` and `NewReplacementOrder` overloads accepting typed
