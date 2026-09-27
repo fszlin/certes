@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -227,6 +227,13 @@ namespace Certes.Cli
             return (serverUri, key);
         }
 
+        // Orders created from plain strings may contain IP identifiers (RFC 8738), so fall back
+        // to an IP lookup, which matches by address, when no DNS authorization matches.
+        private static async Task<IAuthorizationContext> FindAuthorization(IOrderContext orderCtx, string value)
+            => await orderCtx.Authorization(value)
+                ?? await orderCtx.Authorization(value, IdentifierType.Ip)
+                ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, value));
+
         private void ConfigureOrderBranch(IConfigurator config)
         {
             config.AddBranch(CommandGroup.Order.Command, branch =>
@@ -299,8 +306,7 @@ namespace Certes.Cli
                     consoleLogger.Debug("Loading authz from '{0}'.", serverUri);
                     var acme = contextFactory.Invoke(serverUri, key);
                     var orderCtx = acme.Order(settings.OrderId);
-                    var authzCtx = await orderCtx.Authorization(settings.Domain)
-                        ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, settings.Domain));
+                    var authzCtx = await FindAuthorization(orderCtx, settings.Domain);
                     var challengeCtx = await authzCtx.Challenge(type)
                         ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, type));
 
@@ -340,8 +346,7 @@ namespace Certes.Cli
                     consoleLogger.Debug("Validating authz on '{0}'.", serverUri);
                     var acme = contextFactory.Invoke(serverUri, key);
                     var orderCtx = acme.Order(settings.OrderId);
-                    var authzCtx = await orderCtx.Authorization(settings.Domain)
-                        ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, settings.Domain));
+                    var authzCtx = await FindAuthorization(orderCtx, settings.Domain);
                     var challengeCtx = await authzCtx.Challenge(type)
                         ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, settings.ChallengeType));
 

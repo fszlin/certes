@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
@@ -13,6 +14,7 @@ namespace Certes
     public static class IOrderContextExtensions
     {
         private const int DefaultRetryCount = 60;
+        private const int MaxCommonNameLength = 64;
         private const int MaxRetryAfterSeconds = 15 * 60;
 
         /// <summary>
@@ -35,7 +37,14 @@ namespace Certes
 
             if (string.IsNullOrWhiteSpace(csr.CommonName))
             {
-                builder.AddName("CN", builder.SubjectAlternativeNames[0]);
+                // Use the first DNS name that fits the 64-character CN limit (RFC 5280).
+                // IP addresses are not placed in the CN; the CSR then relies on SANs only.
+                var commonName = builder.SubjectAlternativeNames.FirstOrDefault(
+                    n => n != null && n.Length <= MaxCommonNameLength && !IpAddressUtil.TryParse(n, out _));
+                if (commonName != null)
+                {
+                    builder.AddName("CN", commonName);
+                }
             }
 
             return await context.Finalize(builder.Generate());
@@ -140,9 +149,9 @@ namespace Certes
             foreach (var authzCtx in await context.Authorizations())
             {
                 var authz = await authzCtx.Resource();
-                if (string.Equals(authz.Identifier.Value, value, StringComparison.OrdinalIgnoreCase) &&
+                if (authz.Identifier.Type == type &&
                     wildcard == authz.Wildcard.GetValueOrDefault() &&
-                    authz.Identifier.Type == type)
+                    IdentifierValueEquals(type, authz.Identifier.Value, value))
                 {
                     return authzCtx;
                 }
@@ -150,5 +159,13 @@ namespace Certes
 
             return null;
         }
+
+        // IP identifiers are compared by address, so any valid spelling of the address matches.
+        private static bool IdentifierValueEquals(IdentifierType type, string actual, string expected)
+            => type == IdentifierType.Ip &&
+                IpAddressUtil.TryParse(actual, out var actualIp) &&
+                IpAddressUtil.TryParse(expected, out var expectedIp)
+                ? actualIp.Equals(expectedIp)
+                : string.Equals(actual, expected, StringComparison.OrdinalIgnoreCase);
     }
 }

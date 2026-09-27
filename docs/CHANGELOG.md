@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
+- IP address identifiers (RFC 8738): `IdentifierType.Ip`, and `NewOrder`,
+  `NewOrderWithProfile` and `NewReplacementOrder` overloads accepting typed
+  `Identifier` lists. IP values are validated and sent in canonical form.
 - Certificate profile discovery through `DirectoryMeta.Profiles`, selection via
   `NewOrderWithProfile`, and the selected `Order.Profile` (#330). Profile orders
   can also include an ARI replacement certificate ID.
@@ -11,6 +14,20 @@ All notable changes to this project will be documented in this file.
   `IAcmeContext.GetRenewalInfo()` (suggested window, explanation URL and
   `Retry-After`), `IAcmeContext.NewReplacementOrder()` and `Order.Replaces`.
   Based on the proposal in #329 by @WhitWaldo.
+
+### Changed
+- `NewOrder`, `NewOrderWithProfile` and `NewReplacementOrder` string overloads
+  now send values that strictly parse as IP addresses as `ip` identifiers in
+  canonical form, instead of `dns`. CAs reject IP addresses as DNS identifiers, so
+  previously such orders always failed.
+- `IOrderContext.Authorization(value, IdentifierType.Ip)` compares IP identifiers
+  by address rather than by text.
+- `CertificationRequestBuilder` encodes subject alternative names that are IP
+  addresses as IP SANs instead of DNS names, and `TlsAlpnCertificate` does the same
+  for its subject name.
+- When `CsrInfo.CommonName` is not set, `Finalize`/`Generate` use the first DNS
+  name of at most 64 characters as the common name, instead of always the first
+  identifier. IP-only orders produce a CSR without a common name.
 
 ## [4.0.0] - 2026-09-23
 ### Breaking changes
