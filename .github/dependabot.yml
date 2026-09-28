@@ -13,6 +13,9 @@ updates:
     # Keep core runtime dependency floors deliberate. SemVer ignores apply to
     # version updates, not security updates; do not ignore all versions by name.
     ignore:
+      # Major migrations are maintainer-driven; security updates still apply.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
       - dependency-name: BouncyCastle.Cryptography
         update-types: ["version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch"]
       - dependency-name: System.Text.Json
@@ -38,6 +41,9 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 3
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       actions-minor-patch:
         applies-to: version-updates
