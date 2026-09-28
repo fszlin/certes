@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <CodeCoverage>
+    <ModulePaths>
+      <Include>
+        <ModulePath>.*[/\\](Certes|dotnet-certes)\.dll$</ModulePath>
+      </Include>
+    </ModulePaths>
+    <Attributes>
+      <Exclude>
+        <Attribute>^System\.CodeDom\.Compiler\.GeneratedCodeAttribute$</Attribute>
+        <Attribute>^System\.Diagnostics\.CodeAnalysis\.ExcludeFromCodeCoverageAttribute$</Attribute>
+      </Exclude>
+    </Attributes>
+    <EnableDynamicManagedInstrumentation>True</EnableDynamicManagedInstrumentation>
+    <EnableStaticManagedInstrumentation>False</EnableStaticManagedInstrumentation>
+  </CodeCoverage>
+</Configuration>
