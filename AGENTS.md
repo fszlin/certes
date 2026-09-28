@@ -22,7 +22,6 @@ current task. Keep this guide accurate when commands, targets, or blockers chang
 | `src/Certes.Cli/` | Commands, dependency injection, and user settings |
 | `test/Certes.Tests/` | Offline xUnit/Moq tests and ephemeral certificate fixtures |
 | `test/Certes.Tests.Integration/` | ACME integration flows using local Pebble and challtestsrv |
-| `test/Certes.Func/` | Azure Functions challenge-test helper; not part of the core library |
 | `misc/certes.props` | Shared build settings, signing, versions, warnings-as-errors |
 | `docs/` | Usage/API documentation and DocFX site |
 | `docs/releasing.md` | Release setup, tagging flow, and publish recovery runbook |
@@ -123,9 +122,8 @@ The CLI and modern unit tests target and run on .NET 10 directly, without
 `DOTNET_ROLL_FORWARD`. Workflow syntax can be checked with `actionlint`.
 
 Current targets are `net10.0;net8.0;netstandard2.0` for the library, `net10.0` for
-the CLI, and `net10.0;net462` for tests. The Functions helper still targets the
-out-of-support `net7.0` and remains outside CI pending retirement; the integration
-suite now uses local Pebble instead.
+the CLI, and `net10.0;net462` for tests. The legacy Azure Functions helper has
+been retired; the integration suite uses local Pebble and challtestsrv.
 The package smoke project runs on .NET 8 and 10 and also compiles (but does not
 run) a `net6.0` consumer. MSBuild assertions verify the selected package asset
 and version for each target, including `netstandard2.0` selection on .NET 6.
@@ -266,8 +264,8 @@ were updated after the .NET 10 migration:
   replaces the destination atomically, and on Linux/macOS applies owner-only
   (`0600`) file permissions.
 - Azure deployment support was removed from `dotnet-certes` (`az` command
-  group and Azure Fluent dependencies). The Functions helper remains for
-  challenge-test scenarios and is not part of the shipping CLI/runtime path.
+  group and Azure Fluent dependencies). The legacy Azure Functions challenge-test
+  helper and its dependencies have also been removed; integration tests use local Pebble.
 - Legacy CI has been retired, repository webhooks disabled, and Azure build/release
    automation disabled and verified. GitHub Actions build/package/integration checks are
    defined with automatic unit-test and local Pebble execution; all five checks are required

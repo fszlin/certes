@@ -1,0 +1,39 @@
+version: 2
+
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    # The smoke consumer uses the locally built package version, not a release.
+    exclude-paths:
+      - scripts/PackageSmoke/**
+    groups:
+      nuget-minor-patch:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        # Cryptography updates warrant their own review and interoperability checks.
+        exclude-patterns:
+          - "BouncyCastle*"
+          - "Portable.BouncyCastle"
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    groups:
+      actions-minor-patch:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch

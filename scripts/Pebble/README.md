@@ -91,8 +91,8 @@ connection errors. For TLS errors, check the server certificate expiry and updat
 the image/certificate pins together; starting an already-running stack will not
 fix a pin mismatch. Management and account errors retain their inner exception.
 Failures are errors, not skipped tests. CI always tears the stack down, and prints
-container logs on failure. The legacy Functions helper is retained for a separate
-retirement change; integration tests no longer call it.
+container logs on failure. The legacy Azure Functions helper has been retired;
+integration tests use this local stack for challenge provisioning.
 
 ## Optional resilience mode
 
