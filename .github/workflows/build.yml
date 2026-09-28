@@ -65,9 +65,7 @@ jobs:
           "dotnet test test/Certes.Tests/Certes.Tests.csproj -f net10.0 -p:SkipSigning=true --no-build --no-restore"
       - name: Summarize unit-test coverage
         if: runner.os == 'Linux'
-        run: |
-          python3 -B -m unittest discover -s scripts/Coverage
-          python3 scripts/Coverage/summary.py artifacts/coverage/coverage.cobertura.xml
+        run: dotnet run --file scripts/Coverage/Summary.cs -- artifacts/coverage/coverage.cobertura.xml
       - name: Upload unit-test coverage
         if: runner.os == 'Linux' && !cancelled()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

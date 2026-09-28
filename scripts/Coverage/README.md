@@ -11,7 +11,7 @@ Download the `unit-coverage-net10-linux` Actions artifact for `summary.md` and
 use the XML for per-file and per-line detail. No external coverage service or
 credentials are needed.
 
-## Reproduce locally (Linux x64, .NET 10 SDK, Python 3)
+## Reproduce locally (Linux x64, .NET 10 SDK)
 
 From the repository root:
 
@@ -19,12 +19,13 @@ From the repository root:
 dotnet tool restore
 dotnet build test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -p:SkipSigning=true
 dotnet coverage collect --settings scripts/Coverage/settings.xml --output artifacts/coverage/coverage.cobertura.xml --output-format cobertura "dotnet test test/Certes.Tests/Certes.Tests.csproj -f net10.0 -p:SkipSigning=true --no-build --no-restore"
-python3 scripts/Coverage/summary.py artifacts/coverage/coverage.cobertura.xml
+dotnet run --file scripts/Coverage/Summary.cs -- artifacts/coverage/coverage.cobertura.xml
 ```
 
 The test command's exit status is propagated by the collector. The summary
 validator rejects empty reports or reports missing either shipping assembly.
-Run its checks with `python3 -B -m unittest discover -s scripts/Coverage`.
+The summary is a .NET 10 file-based app using only the SDK's standard libraries;
+no additional scripting runtime or reporting package is required.
 
 ## Interpretation
 
