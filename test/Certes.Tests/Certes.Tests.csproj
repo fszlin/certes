@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
     <PackageReference Include="Moq" Version="4.21.0" />
     <!-- Explicit Newtonsoft.Json 13.0.4 override: CLI tests include Azure SDK which
          transitively depends on Newtonsoft.Json 10.0.3 (GHSA-5crp-9r3c-p9vr, high severity).

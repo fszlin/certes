@@ -45,6 +45,12 @@ appropriate guide when behavior changes; avoid duplicating long usage examples.
   braces, existing namespaces and naming. Do not mass-reformat files.
 - Prefer existing abstractions and test helpers. Add dependencies only for a
   concrete need; keep provider-specific dependencies out of the core library.
+- Keep core-library runtime dependency minimums at the lowest supported, secure
+  versions that provide required behavior. Raise them for security fixes or a
+  concrete compatibility/feature need, not simply because newer versions exist.
+  Review consumer impact separately from CLI, test, and build-tool updates.
+  Dependabot skips routine SemVer updates for the core runtime packages while
+  preserving security updates; review those dependency floors deliberately.
 - Public API changes must account for interfaces, extension methods, downstream
   implementers, serialization, and all retained target frameworks. Explain
   intended breaking changes rather than introducing them incidentally.
