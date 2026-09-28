@@ -213,7 +213,7 @@ jobs:
           dotnet-version: 10.0.x
       - name: Get temporary NuGet API key
         id: nuget-login
-        uses: NuGet/login@ebc737b6fc418a6ca0073cf116ec8dc156d8b81e # v1.2.0
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
         with:
           user: ${{ secrets.NUGET_USER }}
       - name: Publish packages
