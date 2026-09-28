@@ -16,10 +16,10 @@ namespace Certes.Cli
             ConfigureConsoleLogger();
             using var container = ConfigureContainer();
             using var cancellation = new CancellationTokenSource();
+            var interruptCount = 0;
             ConsoleCancelEventHandler cancel = (_, e) =>
             {
-                e.Cancel = true;
-                cancellation.Cancel();
+                e.Cancel = CancelInvocation(cancellation, ref interruptCount);
             };
             Console.CancelKeyPress += cancel;
             try
@@ -42,6 +42,14 @@ namespace Certes.Cli
             builder.RegisterType<AcmeContext>().As<IAcmeContext>();
 
             return builder.Build();
+        }
+
+        internal static bool CancelInvocation(CancellationTokenSource cancellation, ref int interruptCount)
+        {
+            // A second interrupt restores the console's default termination.
+            if (Interlocked.Increment(ref interruptCount) > 1) return false;
+            cancellation.Cancel();
+            return true;
         }
 
         private static void ConfigureConsoleLogger()

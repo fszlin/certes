@@ -90,6 +90,7 @@ namespace Certes.Cli
         {
             var result = await RunCli("unknown-command");
             Assert.Equal(1, result.ExitCode);
+            Assert.Contains("Unknown command 'unknown-command'", StripAnsi(result.StdOut + result.StdErr));
         }
 
         [Fact]

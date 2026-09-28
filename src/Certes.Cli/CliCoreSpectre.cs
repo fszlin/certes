@@ -133,6 +133,14 @@ namespace Certes.Cli
                     var account = await ReadAccountKey(settings.Server, cancellationToken, settings.KeyPath);
                     var key = account.Key ?? KeyFactory.NewKey(KeyAlgorithm.ES256);
 
+                    if (!string.IsNullOrWhiteSpace(settings.OutPath))
+                    {
+                        // Persist before sending: cancellation in flight cannot tell
+                        // us whether the CA accepted the new account.
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await fileUtil.WriteAllText(settings.OutPath, key.ToPem(), cancellationToken);
+                    }
+                    cancellationToken.ThrowIfCancellationRequested();
                     consoleLogger.Debug("Creating new account on '{0}'.", account.Server);
                     var acme = contextFactory.Invoke(account.Server, key);
                     var acctCtx = await acme.NewAccount(settings.Email, true, cancellationToken: cancellationToken);
@@ -140,12 +148,7 @@ namespace Certes.Cli
                     // Once the CA accepted the account, persist its key even if
                     // cancellation raced with the response. Do not lose credentials.
 
-                    if (!string.IsNullOrWhiteSpace(settings.OutPath))
-                    {
-                        consoleLogger.Debug("Saving new account key to '{0}'.", settings.OutPath);
-                        await fileUtil.WriteAllText(settings.OutPath, key.ToPem(), CancellationToken.None);
-                    }
-                    else
+                    if (string.IsNullOrWhiteSpace(settings.OutPath))
                     {
                         consoleLogger.Debug("Saving new account key to user settings.");
                         await userSettings.SetAccountKey(account.Server, key, CancellationToken.None);
@@ -406,7 +409,16 @@ namespace Certes.Cli
                         csr.AddName(settings.Dn);
                     }
 
-                    var order = await orderCtx.Finalize(csr.Generate(), cancellationToken);
+                    var encodedCsr = csr.Generate();
+                    if (providedKey == null && !string.IsNullOrWhiteSpace(settings.OutPath))
+                    {
+                        // Keep the matching key even if the finalization response
+                        // is lost to cancellation after the CA accepted the CSR.
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await fileUtil.WriteAllText(settings.OutPath, certificateKey.ToPem(), cancellationToken);
+                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var order = await orderCtx.Finalize(encodedCsr, cancellationToken);
 
                     if (string.IsNullOrWhiteSpace(settings.OutPath) && providedKey == null)
                     {
@@ -419,13 +431,6 @@ namespace Certes.Cli
                     }
                     else
                     {
-                        if (providedKey == null)
-                        {
-                            // Preserve a generated key after successful finalization,
-                            // even if cancellation raced with the CA response.
-                            await fileUtil.WriteAllText(settings.OutPath, certificateKey.ToPem(), CancellationToken.None);
-                        }
-
                         WriteJson(new
                         {
                             location = orderCtx.Location,

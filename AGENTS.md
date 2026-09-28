@@ -317,8 +317,9 @@ were updated after the .NET 10 migration:
   cancellation tokens, propagated through HTTP, retries and polling (#299).
   See `docs/v5-upgrade.md` for the binary/interface migration and cancellation
   semantics. The v5 CLI uses Spectre 0.55.0 with asynchronous dispatch and Ctrl+C
-  cancellation (exit 130); accepted account/finalization results retain generated
-  keys before stopping. See the upgrade guide for persistence and recovery semantics.
+  cancellation (exit 130). Explicit key-output files are saved before account
+  creation/finalization requests; a second Ctrl+C permits force termination.
+  See the upgrade guide for persistence and recovery limits without explicit output.
 
 Recheck these observations before using them as the basis for a change. Remove
 or revise each entry when fixed, and update the root README's baseline/status

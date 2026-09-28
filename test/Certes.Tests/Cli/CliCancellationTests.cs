@@ -17,6 +17,16 @@ namespace Certes.Cli
         private static readonly Uri Server = new Uri("https://example.test/directory");
         private static readonly Uri Location = new Uri("https://example.test/order/1");
 
+        [Fact]
+        public void SecondInterruptAllowsDefaultTermination()
+        {
+            using var cancellation = new CancellationTokenSource();
+            var count = 0;
+            Assert.True(Program.CancelInvocation(cancellation, ref count));
+            Assert.True(cancellation.IsCancellationRequested);
+            Assert.False(Program.CancelInvocation(cancellation, ref count));
+        }
+
         [Theory]
         [InlineData("server")]
         [InlineData("order")]
@@ -95,7 +105,7 @@ namespace Certes.Cli
             var files = new Mock<IFileUtil>(MockBehavior.Strict);
             if (toFile)
             {
-                files.Setup(f => f.WriteAllText("new.pem", It.IsAny<string>(), CancellationToken.None)).Returns(Task.CompletedTask);
+                files.Setup(f => f.WriteAllText("new.pem", It.IsAny<string>(), token)).Returns(Task.CompletedTask);
             }
             else
             {
@@ -104,7 +114,7 @@ namespace Certes.Cli
             var args = new List<string> { "account", "new", "test@example.test", "--server", Server.ToString() };
             if (toFile) args.AddRange(new[] { "--out", "new.pem" });
             Assert.Equal(130, await Create(acme, settings, files).RunWithExitCode(args.ToArray(), token));
-            if (toFile) files.Verify(f => f.WriteAllText("new.pem", It.IsAny<string>(), CancellationToken.None), Times.Once);
+            if (toFile) files.Verify(f => f.WriteAllText("new.pem", It.IsAny<string>(), token), Times.Once);
             else settings.Verify(s => s.SetAccountKey(Server, It.IsAny<IKey>(), CancellationToken.None), Times.Once);
             account.Verify(a => a.Resource(It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -127,12 +137,12 @@ namespace Certes.Cli
             var acme = new Mock<IAcmeContext>(MockBehavior.Strict);
             acme.Setup(c => c.Order(Location)).Returns(order.Object);
             var files = new Mock<IFileUtil>(MockBehavior.Strict);
-            files.Setup(f => f.WriteAllText("cert.pem", It.IsAny<string>(), CancellationToken.None)).Returns(Task.CompletedTask);
+            files.Setup(f => f.WriteAllText("cert.pem", It.IsAny<string>(), token)).Returns(Task.CompletedTask);
             var env = new Mock<IEnvironmentVariables>(MockBehavior.Strict);
             env.Setup(e => e.GetVar("CERTES_CERT_KEY")).Returns((string)null);
             var cli = new CliCoreSpectre(settings.Object, (_, _) => acme.Object, files.Object, env.Object);
             Assert.Equal(0, await cli.RunWithExitCode(new[] { "order", "finalize", Location.ToString(), "--server", Server.ToString(), "--out", "cert.pem" }, token));
-            files.Verify(f => f.WriteAllText("cert.pem", It.IsAny<string>(), CancellationToken.None), Times.Once);
+            files.Verify(f => f.WriteAllText("cert.pem", It.IsAny<string>(), token), Times.Once);
         }
 
         [Fact]
@@ -214,5 +224,98 @@ namespace Certes.Cli
             => new CliCoreSpectre((settings ?? new Mock<IUserSettings>(MockBehavior.Strict)).Object,
                 (_, _) => acme.Object, (files ?? new Mock<IFileUtil>(MockBehavior.Strict)).Object,
                 new Mock<IEnvironmentVariables>(MockBehavior.Strict).Object);
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task ExplicitOutputKeySurvivesInFlightCancellation(bool finalize)
+        {
+            using var cancellation = new CancellationTokenSource();
+            var token = cancellation.Token;
+            var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".pem");
+            var settings = new Mock<IUserSettings>(MockBehavior.Strict);
+            settings.Setup(s => s.GetAccountKey(Server, token)).ReturnsAsync(Helper.GetKeyV2());
+            var env = new Mock<IEnvironmentVariables>();
+            var acme = new Mock<IAcmeContext>(MockBehavior.Strict);
+            IKey accountKey = null;
+            string savedPem = null;
+            var entered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            async Task<T> InFlight<T>()
+            {
+                savedPem = await File.ReadAllTextAsync(path);
+                Assert.NotNull(KeyFactory.FromPem(savedPem));
+                entered.TrySetResult(true);
+                await Task.Delay(Timeout.Infinite, token);
+                throw new InvalidOperationException();
+            }
+            var order = new Mock<IOrderContext>(MockBehavior.Strict);
+            order.Setup(o => o.Resource(token)).ReturnsAsync(new Order
+            {
+                Identifiers = new[] { new Identifier { Type = IdentifierType.Dns, Value = "example.test" } },
+            });
+            order.Setup(o => o.Finalize(It.IsAny<byte[]>(), token)).Returns(() => InFlight<Order>());
+            acme.Setup(c => c.Order(Location)).Returns(order.Object);
+            acme.Setup(c => c.NewAccount(It.IsAny<IList<string>>(), true, null, null, null, token))
+                .Returns(() => InFlight<IAccountContext>());
+            var cli = new CliCoreSpectre(settings.Object, (_, key) => { accountKey = key; return acme.Object; }, new FileUtil(), env.Object);
+            var args = finalize
+                ? new[] { "order", "finalize", Location.ToString(), "--server", Server.ToString(), "--out", path }
+                : new[] { "account", "new", "test@example.test", "--server", Server.ToString(), "--out", path };
+            try
+            {
+                var pending = cli.RunWithExitCode(args, token);
+                await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+                cancellation.Cancel();
+                Assert.Equal(130, await pending.WaitAsync(TimeSpan.FromSeconds(5)));
+                Assert.Equal(savedPem, await File.ReadAllTextAsync(path));
+                if (!finalize) Assert.Equal(accountKey.Thumbprint(), KeyFactory.FromPem(savedPem).Thumbprint());
+                if (!OperatingSystem.IsWindows())
+                {
+                    Assert.Equal(UnixFileMode.UserRead | UnixFileMode.UserWrite, File.GetUnixFileMode(path));
+                }
+            }
+            finally
+            {
+                cancellation.Cancel();
+                File.Delete(path);
+            }
+        }
+
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public async Task FailedOrCancelledKeyPersistencePreventsRequest(bool finalize, bool cancelled)
+        {
+            using var cancellation = new CancellationTokenSource();
+            var token = cancellation.Token;
+            var settings = new Mock<IUserSettings>(MockBehavior.Strict);
+            settings.Setup(s => s.GetAccountKey(Server, token)).ReturnsAsync(Helper.GetKeyV2());
+            var order = new Mock<IOrderContext>(MockBehavior.Strict);
+            order.Setup(o => o.Resource(token)).ReturnsAsync(new Order
+            {
+                Identifiers = new[] { new Identifier { Type = IdentifierType.Dns, Value = "example.test" } },
+            });
+            var acme = new Mock<IAcmeContext>(MockBehavior.Strict);
+            acme.Setup(c => c.Order(Location)).Returns(order.Object);
+            var files = new Mock<IFileUtil>(MockBehavior.Strict);
+            files.Setup(f => f.WriteAllText("key.pem", It.IsAny<string>(), token)).Returns(() =>
+            {
+                if (!cancelled) throw new IOException("Cannot save key");
+                cancellation.Cancel();
+                // Also verifies the check after a completed save, before sending.
+                return Task.CompletedTask;
+            });
+            var env = new Mock<IEnvironmentVariables>();
+            var cli = new CliCoreSpectre(settings.Object, (_, _) => acme.Object, files.Object, env.Object);
+            var args = finalize
+                ? new[] { "order", "finalize", Location.ToString(), "--server", Server.ToString(), "--out", "key.pem" }
+                : new[] { "account", "new", "test@example.test", "--server", Server.ToString(), "--out", "key.pem" };
+            Assert.Equal(cancelled ? 130 : 1, await cli.RunWithExitCode(args, token));
+            files.Verify(f => f.WriteAllText("key.pem", It.IsAny<string>(), token), Times.Once);
+            acme.Verify(c => c.NewAccount(It.IsAny<IList<string>>(), true, null, null, null, token), Times.Never);
+            order.Verify(o => o.Finalize(It.IsAny<byte[]>(), token), Times.Never);
+        }
     }
 }
