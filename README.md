@@ -11,11 +11,11 @@ for provisioning challenge responses and scheduling renewals.
 
 ## Project status
 
-Certes is being revived after a period of inactivity. The immediate goal is a
-reproducible build and reliable tests on supported .NET runtimes, followed by
-focused protocol hardening and dependency modernization.
+Certes v4.1.0 is released. v4.x is in maintenance mode for security fixes and
+reported regressions. Next-major planning is tracked in the
+[5.0.0 milestone](https://github.com/fszlin/certes/milestone/2).
 
-The current checkout still targets:
+The current checkout targets:
 
 | Component | Targets |
 | --- | --- |
@@ -31,8 +31,8 @@ Targets describe this checkout, not necessarily the latest published packages.
 The library retains .NET Standard 2.0 compatibility assets; consumers on .NET 8/9
 select `net8.0`, while .NET 6/7 use `netstandard2.0` instead of a dedicated
 `net6.0` build. CI runs package smoke checks on .NET 8 and 10 and compiles a
-.NET 6 consumer but does not run it on the unsupported .NET 6 runtime. The next
-CLI package requires .NET 10; this is a runtime requirement change for existing
+.NET 6 consumer but does not run it on the unsupported .NET 6 runtime. The v4
+CLI package requires .NET 10; this is a runtime requirement change for pre-v4
 CLI users. Azure deployment commands were removed from the CLI; use dedicated
 Azure tooling for DNS/app deployment workflows.
 
@@ -118,16 +118,18 @@ The dated build/test results and known blockers are maintained in
 [AGENTS.md's revival baseline](AGENTS.md#known-revival-baseline-and-pitfalls).
 Passing unit tests do not establish current CA interoperability.
 
-### Revival priorities
+### Roadmap
 
-1. Harden order lifecycle behavior (polling, retry budgets, and failure paths)
-   with focused unit and integration coverage.
-2. Refresh remaining dependencies and modernize CLI provider integrations while
-   keeping provider-specific dependencies out of the core library.
-3. Exercise the tag-driven release workflow and maintain repeatable package
-   verification.
-4. Renewal information (ARI), certificate profile selection, and IP address
-   identifiers are available.
+- **v4.x maintenance:** security fixes and reported regressions; no planned
+  feature work remains for v4.
+- **v5:** [cancellation support (#299)](https://github.com/fszlin/certes/issues/299)
+  and the coordinated [Spectre CLI migration (#405)](https://github.com/fszlin/certes/issues/405).
+  Routine Spectre version updates are deferred; security updates remain enabled.
+- **Unscheduled:** [Native AOT support (#313)](https://github.com/fszlin/certes/issues/313),
+  pending investigation.
+
+The [5.0.0 milestone](https://github.com/fszlin/certes/milestone/2) tracks the next
+major release. No release date is committed.
 
 ## License
 
