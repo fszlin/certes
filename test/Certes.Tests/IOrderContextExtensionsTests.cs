@@ -383,11 +383,11 @@ namespace Certes
                 key,
                 null,
                 3,
-                delay =>
+                (delay, _) =>
                 {
                     delays.Add(delay);
                     return Task.CompletedTask;
-                });
+                }, default);
 
             Assert.Equal(3, delays.Count);
             Assert.Equal(TimeSpan.FromSeconds(120), delays[0]);
@@ -422,7 +422,7 @@ namespace Certes
                 key,
                 null,
                 100,
-                _ => Task.CompletedTask));
+                (_, _) => Task.CompletedTask, default));
 
             Assert.Equal(102, resourceCalls);
         }
@@ -484,7 +484,7 @@ namespace Certes
                 key,
                 null,
                 1,
-                _ => Task.CompletedTask));
+                (_, _) => Task.CompletedTask, default));
         }
 
         [Fact]
@@ -521,11 +521,11 @@ namespace Certes
                 key,
                 null,
                 10,
-                delay =>
+                (delay, _) =>
                 {
                     delays.Add(delay);
                     return Task.CompletedTask;
-                }));
+                }, default));
 
             Assert.Equal(2, delays.Count);
             Assert.Equal(4, resourceCalls);
@@ -559,11 +559,11 @@ namespace Certes
                 key,
                 null,
                 -5,
-                _ =>
+                (_, _) =>
                 {
                     delayCalled = true;
                     return Task.CompletedTask;
-                }));
+                }, default));
 
             Assert.False(delayCalled);
             Assert.Equal(2, resourceCalls);
@@ -605,11 +605,11 @@ namespace Certes
                 key,
                 null,
                 2,
-                delay =>
+                (delay, _) =>
                 {
                     delays.Add(delay);
                     return Task.CompletedTask;
-                });
+                }, default);
 
             Assert.NotNull(result);
             Assert.Single(delays);
@@ -651,11 +651,11 @@ namespace Certes
                 key,
                 null,
                 2,
-                delay =>
+                (delay, _) =>
                 {
                     delays.Add(delay);
                     return Task.CompletedTask;
-                });
+                }, default);
 
             Assert.NotNull(chain);
             Assert.Single(delays);
@@ -694,11 +694,11 @@ namespace Certes
                 key,
                 null,
                 5,
-                delay =>
+                (delay, _) =>
                 {
                     delays.Add(delay);
                     return Task.CompletedTask;
-                }));
+                }, default));
 
             Assert.Single(delays);
             Assert.Equal(TimeSpan.FromSeconds(3), delays[0]);
@@ -736,11 +736,11 @@ namespace Certes
                 key,
                 null,
                 10,
-                delay =>
+                (delay, _) =>
                 {
                     delays.Add(delay);
                     return Task.CompletedTask;
-                }));
+                }, default));
 
             Assert.Equal(string.Format(Properties.Strings.ErrorInvalidOrderStatusForFinalize, OrderStatus.Invalid), exception.Message);
             Assert.Equal(new[] { TimeSpan.FromSeconds(120), TimeSpan.FromSeconds(1) }, delays);
@@ -769,11 +769,11 @@ namespace Certes
                 key,
                 null,
                 2,
-                delay =>
+                (delay, _) =>
                 {
                     delays.Add(delay);
                     return Task.CompletedTask;
-                }));
+                }, default));
 
             Assert.Equal(string.Format(Properties.Strings.ErrorInvalidOrderStatusForFinalize, OrderStatus.Pending), exception.Message);
             Assert.Equal(new[] { TimeSpan.FromSeconds(7), TimeSpan.FromSeconds(7) }, delays);
@@ -816,11 +816,11 @@ namespace Certes
                 key,
                 null,
                 1,
-                delay =>
+                (delay, _) =>
                 {
                     delays.Add(delay);
                     return Task.CompletedTask;
-                }));
+                }, default));
 
             Assert.Equal(Properties.Strings.ErrorFinalizeFailed, exception.Message);
             Assert.Single(delays);
@@ -852,11 +852,11 @@ namespace Certes
                 key,
                 null,
                 3,
-                delay =>
+                (delay, _) =>
                 {
                     delays.Add(delay);
                     return Task.CompletedTask;
-                }));
+                }, default));
 
             Assert.Equal(string.Format(Properties.Strings.ErrorInvalidOrderStatusForFinalize, "Unknown"), exception.Message);
             Assert.Single(delays);

@@ -52,7 +52,7 @@ namespace Certes.Acme
                 .Returns(1);
             contextMock
                 .Setup(c => c.Sign(It.IsAny<object>(), location))
-                .Callback((object payload, Uri loc) =>
+                .Callback((object payload, Uri loc, System.Threading.CancellationToken _) =>
                 {
                     Assert.Null(payload);
                     Assert.Equal(location, loc);
@@ -61,7 +61,7 @@ namespace Certes.Acme
             contextMock.SetupGet(c => c.HttpClient).Returns(httpClientMock.Object);
             httpClientMock
                 .Setup(m => m.Post<Authorization>(location, It.IsAny<JwsPayload>()))
-                .Callback((Uri _, object o) =>
+                .Callback((Uri _, object o, System.Threading.CancellationToken _) =>
                 {
                     var p = (JwsPayload)o;
                     Assert.Equal(expectedPayload.Payload, p.Payload);

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Threading;
 using Certes.Acme.Resource;
 
 namespace Certes.Acme
@@ -15,6 +16,7 @@ namespace Certes.Acme
         /// <returns>
         /// The orders.
         /// </returns>
-        Task<IEnumerable<IOrderContext>> Orders();
+        /// <param name="cancellationToken">Cancels requests for all pages.</param>
+        Task<IEnumerable<IOrderContext>> Orders(CancellationToken cancellationToken = default);
     }
 }

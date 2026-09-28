@@ -282,7 +282,7 @@ namespace Certes.Cli
             http.Setup(m => m.Post<Account>(newAccount, It.IsAny<object>()))
                 .ReturnsAsync(new AcmeHttpResponse<Account>(new Uri("https://example.com/acct/1"), new Account(), null, null));
             http.Setup(m => m.Post<Order>(newOrder, It.IsAny<object>()))
-                .Callback<Uri, object>((_, body) => sent.Add(System.Text.Json.JsonSerializer.Deserialize<Order>(
+                .Callback<Uri, object, System.Threading.CancellationToken>((_, body, _) => sent.Add(System.Text.Json.JsonSerializer.Deserialize<Order>(
                     Jws.JwsConvert.FromBase64String(((Jws.JwsPayload)body).Payload), Json.JsonUtil.CreateSettings())))
                 .ReturnsAsync(new AcmeHttpResponse<Order>(orderUri, new Order(), null, null));
             http.Setup(m => m.Post<Order>(orderUri, It.IsAny<object>()))

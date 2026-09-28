@@ -41,7 +41,7 @@ namespace Certes
             var location = new Uri("http://acme.d/order/1");
             JwsPayload payload = null;
             http.Setup(m => m.Post<Order>(directory.NewOrder, It.IsAny<object>()))
-                .Callback<Uri, object>((_, body) => payload = Assert.IsType<JwsPayload>(body))
+                .Callback<Uri, object, System.Threading.CancellationToken>((_, body, _) => payload = Assert.IsType<JwsPayload>(body))
                 .ReturnsAsync(new AcmeHttpResponse<Order>(location, new Order { Profile = "tlsserver" }, null, null));
             var start = new DateTimeOffset(2026, 9, 27, 0, 0, 0, TimeSpan.Zero);
             var end = start.AddDays(6);
@@ -76,7 +76,7 @@ namespace Certes
             var directory = CreateDirectory(null);
             var ctx = CreateContext(http, directory);
             http.Setup(m => m.Post<Order>(directory.NewOrder, It.IsAny<object>()))
-                .Callback<Uri, object>((uri, body) =>
+                .Callback<Uri, object, System.Threading.CancellationToken>((uri, body, token) =>
                 {
                     var payload = Assert.IsType<JwsPayload>(body);
                     using var wire = JsonDocument.Parse(JwsConvert.FromBase64String(payload.Payload));
@@ -140,7 +140,7 @@ namespace Certes
             var ctx = CreateContext(http, directory);
             JwsPayload payload = null;
             http.Setup(m => m.Post<Order>(directory.NewOrder, It.IsAny<object>()))
-                .Callback<Uri, object>((_, body) => payload = Assert.IsType<JwsPayload>(body))
+                .Callback<Uri, object, System.Threading.CancellationToken>((_, body, _) => payload = Assert.IsType<JwsPayload>(body))
                 .ReturnsAsync(new AcmeHttpResponse<Order>(new Uri("http://acme.d/order/1"), new Order(), null, null));
 
             await ctx.NewOrderWithProfile(new[] { "profile.example" }, "private-profile", allowUnadvertisedProfile: true);

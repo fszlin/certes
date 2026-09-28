@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Threading;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Json;
@@ -76,14 +77,15 @@ namespace Certes
         /// Gets the ACME account context.
         /// </summary>
         /// <returns>The ACME account context.</returns>
-        public async Task<IAccountContext> Account()
+        public async Task<IAccountContext> Account(CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (accountContext != null)
             {
                 return accountContext;
             }
 
-            var resp = await AccountContext.NewAccount(this, new Account.Payload { OnlyReturnExisting = true }, true);
+            var resp = await AccountContext.NewAccount(this, new Account.Payload { OnlyReturnExisting = true }, true, null, null, null, cancellationToken);
             return accountContext = new AccountContext(this, resp.Location);
         }
 
@@ -91,11 +93,12 @@ namespace Certes
         /// Changes the account key.
         /// </summary>
         /// <param name="key">The new account key.</param>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         /// <returns>The account resource.</returns>
-        public async Task<Account> ChangeKey(IKey key)
+        public async Task<Account> ChangeKey(IKey key, CancellationToken cancellationToken = default)
         {
-            var endpoint = await this.GetResourceUri(d => d.KeyChange);
-            var location = await Account().Location();
+            var endpoint = await this.GetResourceUri(d => d.KeyChange, false, cancellationToken);
+            var location = (await Account(cancellationToken)).Location;
             
             var newKey = key ?? KeyFactory.NewKey(defaultKeyType);
             var oldKeyElement = JsonSerializer.Deserialize<JsonElement>(
@@ -113,7 +116,7 @@ namespace Certes
             var jws = new JwsSigner(newKey);
             var body = jws.Sign(keyChange, url: endpoint);
 
-            var resp = await HttpClient.Post<Account>(this, endpoint, body, true);
+            var resp = await HttpClient.Post<Account>(this, endpoint, body, true, cancellationToken);
 
             AccountKey = newKey;
             return resp.Resource;
@@ -125,7 +128,7 @@ namespace Certes
         /// <returns>
         /// The account created.
         /// </returns>
-        public async Task<IAccountContext> NewAccount(IList<string> contact, bool termsOfServiceAgreed, string eabKeyId = null, string eabKey = null, string eabKeyAlg = null)
+        public async Task<IAccountContext> NewAccount(IList<string> contact, bool termsOfServiceAgreed, string eabKeyId = null, string eabKey = null, string eabKeyAlg = null, CancellationToken cancellationToken = default)
         {
             var body = new Account
             {
@@ -133,7 +136,7 @@ namespace Certes
                 TermsOfServiceAgreed = termsOfServiceAgreed
             };
 
-            var resp = await AccountContext.NewAccount(this, body, true, eabKeyId, eabKey, eabKeyAlg);
+            var resp = await AccountContext.NewAccount(this, body, true, eabKeyId, eabKey, eabKeyAlg, cancellationToken);
             return accountContext = new AccountContext(this, resp.Location);
         }
 
@@ -143,11 +146,12 @@ namespace Certes
         /// <returns>
         /// The ACME directory.
         /// </returns>
-        public async Task<Directory> GetDirectory()
+        public async Task<Directory> GetDirectory(CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (directory == null)
             {
-                var resp = await HttpClient.Get<Directory>(DirectoryUri);
+                var resp = await HttpClient.Get<Directory>(DirectoryUri, cancellationToken);
                 directory = resp.Resource;
             }
 
@@ -160,12 +164,13 @@ namespace Certes
         /// <param name="certificate">The certificate in DER format.</param>
         /// <param name="reason">The reason for revocation.</param>
         /// <param name="certificatePrivateKey">The certificate's private key.</param>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         /// <returns>
         /// The awaitable.
         /// </returns>
-        public async Task RevokeCertificate(byte[] certificate, RevocationReason reason, IKey certificatePrivateKey)
+        public async Task RevokeCertificate(byte[] certificate, RevocationReason reason, IKey certificatePrivateKey, CancellationToken cancellationToken = default)
         {
-            var endpoint = await this.GetResourceUri(d => d.RevokeCert);
+            var endpoint = await this.GetResourceUri(d => d.RevokeCert, false, cancellationToken);
 
             var body = new CertificateRevocation
             {
@@ -176,11 +181,11 @@ namespace Certes
             if (certificatePrivateKey != null)
             {
                 var jws = new JwsSigner(certificatePrivateKey);
-                await HttpClient.Post<string>(jws, endpoint, body, true);
+                await HttpClient.Post<string>(jws, endpoint, body, true, 1, cancellationToken);
             }
             else
             {
-                await HttpClient.Post<string>(this, endpoint, body, true);
+                await HttpClient.Post<string>(this, endpoint, body, true, cancellationToken);
 
             }
         }
@@ -194,16 +199,17 @@ namespace Certes
         /// </param>
         /// <param name="notBefore">Th value of not before field for the certificate.</param>
         /// <param name="notAfter">The value of not after field for the certificate.</param>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         /// <returns>
         /// The order context created.
         /// </returns>
-        public async Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null)
+        public async Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null, CancellationToken cancellationToken = default)
         {
-            var endpoint = await this.GetResourceUri(d => d.NewOrder);
+            var endpoint = await this.GetResourceUri(d => d.NewOrder, false, cancellationToken);
 
             var body = IAcmeContextExtensions.CreateOrderBody(identifiers, notBefore, notAfter);
 
-            var order = await HttpClient.Post<Order>(this, endpoint, body, true);
+            var order = await HttpClient.Post<Order>(this, endpoint, body, true, cancellationToken);
             return new OrderContext(this, order.Location);
         }
 
@@ -212,11 +218,13 @@ namespace Certes
         /// </summary>
         /// <param name="entity">The data to sign.</param>
         /// <param name="uri">The URI for the request.</param>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         /// <returns>The JWS payload.</returns>
-        public async Task<JwsPayload> Sign(object entity, Uri uri)
+        public async Task<JwsPayload> Sign(object entity, Uri uri, CancellationToken cancellationToken = default)
         {
-            var nonce = await HttpClient.ConsumeNonce();
-            var location = await Account().Location();
+            cancellationToken.ThrowIfCancellationRequested();
+            var nonce = await HttpClient.ConsumeNonce(cancellationToken);
+            var location = (await Account(cancellationToken)).Location;
             var jws = new JwsSigner(AccountKey);
             return jws.Sign(entity, location, uri, nonce);
         }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Threading;
 using Certes.Acme.Resource;
 
 namespace Certes.Acme
@@ -13,7 +14,8 @@ namespace Certes.Acme
         /// Gets the challenges for this authorization.
         /// </summary>
         /// <returns>The list fo challenges.</returns>
-        Task<IEnumerable<IChallengeContext>> Challenges();
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        Task<IEnumerable<IChallengeContext>> Challenges(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Deactivates this authzorization.
@@ -21,6 +23,7 @@ namespace Certes.Acme
         /// <returns>
         /// The authorization deactivated.
         /// </returns>
-        Task<Authorization> Deactivate();
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        Task<Authorization> Deactivate(CancellationToken cancellationToken = default);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Threading;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Jws;
@@ -49,7 +50,8 @@ namespace Certes
         /// Gets the ACME account context.
         /// </summary>
         /// <returns>The ACME account context.</returns>
-        Task<IAccountContext> Account();
+        /// <param name="cancellationToken">Cancels this operation, including cached lookups.</param>
+        Task<IAccountContext> Account(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the ACME directory.
@@ -57,7 +59,8 @@ namespace Certes
         /// <returns>
         /// The ACME directory.
         /// </returns>
-        Task<Directory> GetDirectory();
+        /// <param name="cancellationToken">Cancels this operation, including cached lookups.</param>
+        Task<Directory> GetDirectory(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Creates an account.
@@ -67,10 +70,11 @@ namespace Certes
         /// <param name="eabKeyId">Optional key identifier, if using external account binding.</param>
         /// <param name="eabKey">Optional EAB key, if using external account binding.</param>
         /// <param name="eabKeyAlg">Optional EAB key algorithm, if using external account binding, defaults to HS256 if not specified</param>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         /// <returns>
         /// The account created.
         /// </returns>
-        Task<IAccountContext> NewAccount(IList<string> contact, bool termsOfServiceAgreed = false, string eabKeyId = null, string eabKey = null, string eabKeyAlg = null);
+        Task<IAccountContext> NewAccount(IList<string> contact, bool termsOfServiceAgreed = false, string eabKeyId = null, string eabKey = null, string eabKeyAlg = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Revokes the certificate.
@@ -78,17 +82,19 @@ namespace Certes
         /// <param name="certificate">The certificate in DER format.</param>
         /// <param name="reason">The reason for revocation.</param>
         /// <param name="certificatePrivateKey">The certificate's private key.</param>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         /// <returns>
         /// The awaitable.
         /// </returns>
-        Task RevokeCertificate(byte[] certificate, RevocationReason reason = RevocationReason.Unspecified, IKey certificatePrivateKey = null);
+        Task RevokeCertificate(byte[] certificate, RevocationReason reason = RevocationReason.Unspecified, IKey certificatePrivateKey = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Changes the account key.
         /// </summary>
         /// <param name="key">The new account key.</param>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         /// <returns>The account resource.</returns>
-        Task<Account> ChangeKey(IKey key = null);
+        Task<Account> ChangeKey(IKey key = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Creates a new the order.
@@ -99,18 +105,20 @@ namespace Certes
         /// </param>
         /// <param name="notBefore">Th value of not before field for the certificate.</param>
         /// <param name="notAfter">The value of not after field for the certificate.</param>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         /// <returns>
         /// The order context created.
         /// </returns>
-        Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null);
+        Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Signs the data with account key.
         /// </summary>
         /// <param name="entity">The data to sign.</param>
         /// <param name="uri">The URI for the request.</param>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         /// <returns>The JWS payload.</returns>
-        Task<JwsPayload> Sign(object entity, Uri uri);
+        Task<JwsPayload> Sign(object entity, Uri uri, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the order by specified location.

@@ -313,7 +313,10 @@ were updated after the .NET 10 migration:
   six-day issuance with its `shortlived` profile. IP identifiers (RFC 8738) use
   `IdentifierType.Ip` with typed `Identifier` order overloads, and string overloads
   detect IP values; Pebble coverage issues a `shortlived` IPv4 certificate over HTTP-01. IPv6 and IP TLS-ALPN-01 are unit-tested
-  only. Cancellation is deferred to 5.0 (see #299).
+  only. Core async APIs in the v5 development tree accept final optional
+  cancellation tokens, propagated through HTTP, retries and polling (#299).
+  See `docs/v5-upgrade.md` for the binary/interface migration and cancellation
+  semantics. CLI cancellation wiring remains part of #405.
 
 Recheck these observations before using them as the basis for a change. Remove
 or revise each entry when fixed, and update the root README's baseline/status

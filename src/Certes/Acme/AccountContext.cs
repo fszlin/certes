@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Threading;
 using Certes.Acme.Resource;
 using Certes.Json;
 using Certes.Jws;
@@ -31,10 +32,10 @@ namespace Certes.Acme
         /// <returns>
         /// The account deactivated.
         /// </returns>
-        public async Task<Account> Deactivate()
+        public async Task<Account> Deactivate(CancellationToken cancellationToken = default)
         {
             var payload = new Account { Status = AccountStatus.Deactivated };
-            var resp = await Context.HttpClient.Post<Account>(Context, Location, payload, true);
+            var resp = await Context.HttpClient.Post<Account>(Context, Location, payload, true, cancellationToken);
             return resp.Resource;
         }
 
@@ -44,9 +45,9 @@ namespace Certes.Acme
         /// <returns>
         /// The orders list.
         /// </returns>
-        public async Task<IOrderListContext> Orders()
+        public async Task<IOrderListContext> Orders(CancellationToken cancellationToken = default)
         {
-            var account = await Resource();
+            var account = await Resource(cancellationToken);
             return new OrderListContext(Context, account.Orders);
         }
 
@@ -58,9 +59,11 @@ namespace Certes.Acme
         /// <returns>
         /// The account.
         /// </returns>
-        public async Task<Account> Update(IList<string> contact = null, bool agreeTermsOfService = false)
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        public async Task<Account> Update(IList<string> contact = null, bool agreeTermsOfService = false, CancellationToken cancellationToken = default)
         {
-            var location = await Context.Account().Location();
+            cancellationToken.ThrowIfCancellationRequested();
+            var location = (await Context.Account(cancellationToken)).Location;
             var account = new Account
             {
                 Contact = contact
@@ -71,7 +74,7 @@ namespace Certes.Acme
                 account.TermsOfServiceAgreed = true;
             }
 
-            var response = await Context.HttpClient.Post<Account>(Context, location, account, true);
+            var response = await Context.HttpClient.Post<Account>(Context, location, account, true, cancellationToken);
             return response.Resource;
         }
 
@@ -85,11 +88,12 @@ namespace Certes.Acme
         /// <param name="eabKey">Optional EAB key, if using external account binding.</param>
         /// <param name="eabKeyAlg">Optional EAB key algorithm, if using external account binding, defaults to HS256 if not specified</param>
         /// <returns>The ACME response.</returns>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         internal static async Task<AcmeHttpResponse<Account>> NewAccount(
             IAcmeContext context, Account body, bool ensureSuccessStatusCode,
-            string eabKeyId = null, string eabKey = null, string eabKeyAlg = null)
+            string eabKeyId, string eabKey, string eabKeyAlg, CancellationToken cancellationToken)
         {
-            var endpoint = await context.GetResourceUri(d => d.NewAccount);
+            var endpoint = await context.GetResourceUri(d => d.NewAccount, false, cancellationToken);
             var jws = new JwsSigner(context.AccountKey);
             
             if (eabKeyId != null && eabKey != null)
@@ -140,7 +144,7 @@ namespace Certes.Acme
                 };
             }
 
-            return await context.HttpClient.Post<Account>(jws, endpoint, body, ensureSuccessStatusCode);
+            return await context.HttpClient.Post<Account>(jws, endpoint, body, ensureSuccessStatusCode, 1, cancellationToken);
         }
     }
 }

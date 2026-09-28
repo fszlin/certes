@@ -28,7 +28,7 @@ namespace Certes.Acme
                 .ReturnsAsync(Helper.MockDirectoryV2);
             contextMock
                 .Setup(c => c.Sign(It.IsAny<object>(), location))
-                .Callback((object payload, Uri loc) =>
+                .Callback((object payload, Uri loc, System.Threading.CancellationToken _) =>
                 {
                     Assert.Equal(
                         JsonConvert.SerializeObject(new Account { Status = AccountStatus.Deactivated }),
@@ -68,7 +68,7 @@ namespace Certes.Acme
             contextMock.SetupGet(c => c.HttpClient).Returns(httpClientMock.Object);
             contextMock
                 .Setup(c => c.Sign(It.IsAny<object>(), location))
-                .Callback((object payload, Uri loc) =>
+                .Callback((object payload, Uri loc, System.Threading.CancellationToken _) =>
                 {
                     Assert.Null(payload);
                     Assert.Equal(location, loc);
@@ -79,7 +79,7 @@ namespace Certes.Acme
                 .ReturnsAsync("nonce");
             httpClientMock
                 .Setup(c => c.Post<Account>(location, It.IsAny<JwsPayload>()))
-                .Callback((Uri _, object o) =>
+                .Callback((Uri _, object o, System.Threading.CancellationToken _) =>
                 {
                     var p = (JwsPayload)o;
                     Assert.Equal(expectedPayload.Payload, p.Payload);

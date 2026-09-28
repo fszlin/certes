@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 using Certes.Acme.Resource;
 
 namespace Certes.Acme
@@ -30,9 +31,9 @@ namespace Certes.Acme
         /// <returns>
         /// The list fo challenges.
         /// </returns>
-        public async Task<IEnumerable<IChallengeContext>> Challenges()
+        public async Task<IEnumerable<IChallengeContext>> Challenges(CancellationToken cancellationToken = default)
         {
-            var authz = await Resource();
+            var authz = await Resource(cancellationToken);
             return authz
                 .Challenges?
                 .Select(c => new ChallengeContext(Context, c.Url, c.Type, c.Token)) ??
@@ -45,10 +46,10 @@ namespace Certes.Acme
         /// <returns>
         /// The authorization deactivated.
         /// </returns>
-        public async Task<Authorization> Deactivate()
+        public async Task<Authorization> Deactivate(CancellationToken cancellationToken = default)
         {
             var payload = new Authorization { Status = AuthorizationStatus.Deactivated };
-            var resp = await Context.HttpClient.Post<Authorization>(Context, Location, payload, true);
+            var resp = await Context.HttpClient.Post<Authorization>(Context, Location, payload, true, cancellationToken);
             return resp.Resource;
         }
     }
