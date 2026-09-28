@@ -51,6 +51,11 @@ appropriate guide when behavior changes; avoid duplicating long usage examples.
   Review consumer impact separately from CLI, test, and build-tool updates.
   Dependabot skips routine SemVer updates for the core runtime packages while
   preserving security updates; review those dependency floors deliberately.
+  Routine major-version updates for NuGet and GitHub Actions are also ignored;
+  plan those migrations explicitly. Weekly patch/minor updates remain enabled
+  outside the core runtime exclusions. SemVer ignore rules do not suppress
+  security updates. Pre-1.0 minor releases can still break APIs; Spectre updates
+  remain separate from the routine group for that reason.
 - Public API changes must account for interfaces, extension methods, downstream
   implementers, serialization, and all retained target frameworks. Explain
   intended breaking changes rather than introducing them incidentally.
