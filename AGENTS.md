@@ -26,6 +26,7 @@ current task. Keep this guide accurate when commands, targets, or blockers chang
 | `docs/` | Usage/API documentation and DocFX site |
 | `docs/releasing.md` | Release setup, tagging flow, and publish recovery runbook |
 | `.github/workflows/build.yml` | Cross-platform compilation and unit tests, package smoke checks |
+| `.github/workflows/codeql.yml` | C# and GitHub Actions static security analysis |
 | `scripts/PackageSmoke/` | Consumer of the locally packed library; not a solution project |
 | `scripts/Pebble/` | Pinned container stack, readiness probe, and local integration instructions |
 | `.github/workflows/release.yml` | Tag-driven package release workflow |
@@ -111,6 +112,13 @@ consumption, and Pebble integration. Unit tests run on all three OS runners
 without filters or failure suppression. The former `run_legacy_tests` opt-in is
 removed. Run relevant checks locally and report results; hosted workflow success
 must be verified after pushing workflow changes.
+
+The CodeQL workflow analyzes C# and GitHub Actions on pull requests, pushes to
+`main`, and weekly. C# uses the .NET 10 SDK to rebuild the solution across all
+retained targets under the CodeQL tracer; Actions analysis needs no build.
+Results appear in GitHub code scanning. Verify both analysis jobs after changing
+this workflow; a successful local build alone does not verify CodeQL extraction
+or result upload.
 
 Run commands from the repository root. Check `dotnet --info` before diagnosing
 runtime failures. Install a .NET 10 SDK for development. There is no `global.json`;
