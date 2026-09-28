@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Threading;
 using Certes.Jws;
 using Certes.Properties;
 
@@ -16,7 +17,8 @@ namespace Certes.Acme
         /// <returns>
         /// The nonce.
         /// </returns>
-        Task<string> ConsumeNonce();
+        /// <param name="cancellationToken">Cancels nonce acquisition.</param>
+        Task<string> ConsumeNonce(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Posts the data to the specified URI.
@@ -25,7 +27,8 @@ namespace Certes.Acme
         /// <param name="uri">The URI.</param>
         /// <param name="payload">The payload.</param>
         /// <returns>The response from ACME server.</returns>
-        Task<AcmeHttpResponse<T>> Post<T>(Uri uri, object payload);
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        Task<AcmeHttpResponse<T>> Post<T>(Uri uri, object payload, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the data from specified URI.
@@ -33,7 +36,8 @@ namespace Certes.Acme
         /// <typeparam name="T">The type of expected result</typeparam>
         /// <param name="uri">The URI.</param>
         /// <returns>The response from ACME server.</returns>
-        Task<AcmeHttpResponse<T>> Get<T>(Uri uri);
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        Task<AcmeHttpResponse<T>> Get<T>(Uri uri, CancellationToken cancellationToken = default);
     }
 
     /// <summary>
@@ -56,24 +60,29 @@ namespace Certes.Acme
         /// <exception cref="Exception">
         /// If the HTTP request failed and <paramref name="ensureSuccessStatusCode"/> is <c>true</c>.
         /// </exception>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         internal static async Task<AcmeHttpResponse<T>> Post<T>(this IAcmeHttpClient client,
             IAcmeContext context,
             Uri location,
             object entity,
-            bool ensureSuccessStatusCode)
+            bool ensureSuccessStatusCode,
+            CancellationToken cancellationToken)
         {
 
-            var payload = await context.Sign(entity, location);
-            var response = await client.Post<T>(location, payload);
+            cancellationToken.ThrowIfCancellationRequested();
+            var payload = await context.Sign(entity, location, cancellationToken);
+            var response = await client.Post<T>(location, payload, cancellationToken);
             var retryCount = context.BadNonceRetryCount;
             while (response.Error?.Status == System.Net.HttpStatusCode.BadRequest &&
                 response.Error.Type?.CompareTo("urn:ietf:params:acme:error:badNonce") == 0 &&
                 retryCount-- > 0)
             {
-                payload = await context.Sign(entity, location);
-                response = await client.Post<T>(location, payload);
+                cancellationToken.ThrowIfCancellationRequested();
+                payload = await context.Sign(entity, location, cancellationToken);
+                response = await client.Post<T>(location, payload, cancellationToken);
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
             if (ensureSuccessStatusCode && response.Error != null)
             {
                 throw new AcmeRequestException(
@@ -94,6 +103,7 @@ namespace Certes.Acme
         /// <param name="entity">The payload.</param>
         /// <param name="ensureSuccessStatusCode">if set to <c>true</c>, throw exception if the request failed.</param>
         /// <param name="retryCount">Number of retries on badNonce errors (default = 1)</param>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         /// <returns>
         /// The response from ACME server.
         /// </returns>
@@ -105,19 +115,23 @@ namespace Certes.Acme
             Uri location,
             object entity,
             bool ensureSuccessStatusCode,
-            int retryCount = 1)
+            int retryCount,
+            CancellationToken cancellationToken)
         {
-            var payload = jwsSigner.Sign(entity, url: location, nonce: await client.ConsumeNonce());
-            var response = await client.Post<T>(location, payload);
+            cancellationToken.ThrowIfCancellationRequested();
+            var payload = jwsSigner.Sign(entity, url: location, nonce: await client.ConsumeNonce(cancellationToken));
+            var response = await client.Post<T>(location, payload, cancellationToken);
 
             while (response.Error?.Status == System.Net.HttpStatusCode.BadRequest &&
                 response.Error.Type?.CompareTo("urn:ietf:params:acme:error:badNonce") == 0 &&
                 retryCount-- > 0)
             {
-                payload = jwsSigner.Sign(entity, url: location, nonce: await client.ConsumeNonce());
-                response = await client.Post<T>(location, payload);
+                cancellationToken.ThrowIfCancellationRequested();
+                payload = jwsSigner.Sign(entity, url: location, nonce: await client.ConsumeNonce(cancellationToken));
+                response = await client.Post<T>(location, payload, cancellationToken);
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
             if (ensureSuccessStatusCode && response.Error != null)
             {
                 throw new AcmeRequestException(

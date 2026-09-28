@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Threading;
 using Certes.Properties;
 
 namespace Certes.Acme
@@ -49,9 +50,9 @@ namespace Certes.Acme
         /// Gets the resource entity data.
         /// </summary>
         /// <returns>The resource entity data.</returns>
-        public virtual async Task<T> Resource()
+        public virtual async Task<T> Resource(CancellationToken cancellationToken = default)
         {
-            var resp = await Context.HttpClient.Post<T>(Context, Location, null, true);
+            var resp = await Context.HttpClient.Post<T>(Context, Location, null, true, cancellationToken);
             RetryAfter = resp.RetryAfter;
             return resp.Resource;
         }

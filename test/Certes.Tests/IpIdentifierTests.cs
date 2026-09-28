@@ -72,7 +72,7 @@ namespace Certes
             var (ctx, http, directory) = CreateContext(null);
             JwsPayload payload = null;
             http.Setup(m => m.Post<Order>(directory.NewOrder, It.IsAny<object>()))
-                .Callback<Uri, object>((_, body) => payload = Assert.IsType<JwsPayload>(body))
+                .Callback<Uri, object, System.Threading.CancellationToken>((_, body, _) => payload = Assert.IsType<JwsPayload>(body))
                 .ReturnsAsync(new AcmeHttpResponse<Order>(new Uri("http://acme.d/order/1"), new Order(), null, null));
             var identifiers = new List<Identifier>
             {
@@ -97,7 +97,7 @@ namespace Certes
             var (ctx, http, directory) = CreateContext(new Dictionary<string, string> { ["shortlived"] = "Six days" });
             var payloads = new List<JwsPayload>();
             http.Setup(m => m.Post<Order>(directory.NewOrder, It.IsAny<object>()))
-                .Callback<Uri, object>((_, body) => payloads.Add(Assert.IsType<JwsPayload>(body)))
+                .Callback<Uri, object, System.Threading.CancellationToken>((_, body, _) => payloads.Add(Assert.IsType<JwsPayload>(body)))
                 .ReturnsAsync(new AcmeHttpResponse<Order>(new Uri("http://acme.d/order/1"), new Order(), null, null));
             var ip = new[] { new Identifier { Type = IdentifierType.Ip, Value = "192.0.2.1" } };
 
@@ -120,7 +120,7 @@ namespace Certes
             var (ctx, http, directory) = CreateContext(new Dictionary<string, string> { ["shortlived"] = "Six days" });
             var payloads = new List<JwsPayload>();
             http.Setup(m => m.Post<Order>(directory.NewOrder, It.IsAny<object>()))
-                .Callback<Uri, object>((_, body) => payloads.Add(Assert.IsType<JwsPayload>(body)))
+                .Callback<Uri, object, System.Threading.CancellationToken>((_, body, _) => payloads.Add(Assert.IsType<JwsPayload>(body)))
                 .ReturnsAsync(new AcmeHttpResponse<Order>(new Uri("http://acme.d/order/1"), new Order(), null, null));
             var values = new[]
             {
@@ -260,7 +260,7 @@ namespace Certes
                 }).ToArray(),
             });
             byte[] der = null;
-            order.Setup(m => m.Finalize(It.IsAny<byte[]>())).Callback<byte[]>(d => der = d).ReturnsAsync(new Order());
+            order.Setup(m => m.Finalize(It.IsAny<byte[]>())).Callback<byte[], System.Threading.CancellationToken>((d, _) => der = d).ReturnsAsync(new Order());
 
             await order.Object.Finalize(new CsrInfo(), KeyFactory.NewKey(KeyAlgorithm.ES256));
 

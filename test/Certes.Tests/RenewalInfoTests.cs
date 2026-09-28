@@ -172,7 +172,7 @@ namespace Certes
             var ctx = CreateContext(http, Helper.MockDirectoryV2);
             object signed = null;
             ctx.Setup(m => m.Sign(It.IsAny<object>(), Helper.MockDirectoryV2.NewOrder))
-                .Callback<object, Uri>((e, _) => signed = e)
+                .Callback<object, Uri, System.Threading.CancellationToken>((e, _, _) => signed = e)
                 .ReturnsAsync(new Jws.JwsPayload());
 
             var order = await ctx.Object.NewReplacementOrder(new[] { "www.certes.com" }, "abc.AQ");

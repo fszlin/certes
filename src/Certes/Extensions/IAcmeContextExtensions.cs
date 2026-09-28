@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 using Certes.Acme;
 using Certes.Acme.Resource;
 
@@ -20,9 +21,11 @@ namespace Certes
         /// <param name="optional">if set to <c>true</c>, the resource is optional.</param>
         /// <returns>The resource URI, or <c>null</c> if not found</returns>
         /// <exception cref="NotSupportedException">If the ACME operation not supported.</exception>
-        internal static async Task<Uri> GetResourceUri(this IAcmeContext context, Func<Directory, Uri> getter, bool optional = false)
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        internal static async Task<Uri> GetResourceUri(this IAcmeContext context, Func<Directory, Uri> getter, bool optional, CancellationToken cancellationToken)
         {
-            var dir = await context.GetDirectory();
+            cancellationToken.ThrowIfCancellationRequested();
+            var dir = await context.GetDirectory(cancellationToken);
             var uri = getter(dir);
             if (!optional && uri == null)
             {
@@ -44,17 +47,20 @@ namespace Certes
         /// <returns>
         /// The account created.
         /// </returns>
-        public static Task<IAccountContext> NewAccount(this IAcmeContext context, string email, bool termsOfServiceAgreed = false, string eabKeyId = null, string eabKey = null, string eabKeyAlg = null)
-            => context.NewAccount(new[] { $"mailto:{email}" }, termsOfServiceAgreed, eabKeyId, eabKey, eabKeyAlg);
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        public static Task<IAccountContext> NewAccount(this IAcmeContext context, string email, bool termsOfServiceAgreed = false, string eabKeyId = null, string eabKey = null, string eabKeyAlg = null, CancellationToken cancellationToken = default)
+            => context.NewAccount(new[] { $"mailto:{email}" }, termsOfServiceAgreed, eabKeyId, eabKey, eabKeyAlg, cancellationToken);
 
         /// <summary>
         /// Gets the terms of service link from the ACME server.
         /// </summary>
         /// <param name="context">The ACME context.</param>
         /// <returns>The terms of service link.</returns>
-        public static async Task<Uri> TermsOfService(this IAcmeContext context)
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        public static async Task<Uri> TermsOfService(this IAcmeContext context, CancellationToken cancellationToken = default)
         {
-            var dir = await context.GetDirectory();
+            cancellationToken.ThrowIfCancellationRequested();
+            var dir = await context.GetDirectory(cancellationToken);
             return dir.Meta?.TermsOfService;
         }
 
@@ -74,14 +80,15 @@ namespace Certes
         /// <exception cref="NotSupportedException">If the server does not advertise a renewal information endpoint.</exception>
         /// <exception cref="AcmeRequestException">If the server returns an error.</exception>
         /// <exception cref="AcmeException">If the response or suggested window is missing, or the window ends at or before it starts.</exception>
-        public static async Task<RenewalInfo> GetRenewalInfo(this IAcmeContext context, string certificateId)
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        public static async Task<RenewalInfo> GetRenewalInfo(this IAcmeContext context, string certificateId, CancellationToken cancellationToken = default)
         {
             ValidateCertificateId(certificateId, nameof(certificateId));
 
-            var endpoint = await context.GetResourceUri(d => d.RenewalInfo);
+            var endpoint = await context.GetResourceUri(d => d.RenewalInfo, false, cancellationToken);
             var uri = new Uri($"{endpoint.AbsoluteUri.TrimEnd('/')}/{certificateId}");
 
-            var resp = await context.HttpClient.Get<RenewalInfo>(uri);
+            var resp = await context.HttpClient.Get<RenewalInfo>(uri, cancellationToken);
             if (resp.Error != null)
             {
                 throw new AcmeRequestException(
@@ -118,13 +125,15 @@ namespace Certes
         /// The order context created.
         /// </returns>
         /// <exception cref="ArgumentException">If <paramref name="replacedCertificateId"/> is empty or malformed.</exception>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         public static Task<IOrderContext> NewReplacementOrder(
             this IAcmeContext context,
             IList<string> identifiers,
             string replacedCertificateId,
             DateTimeOffset? notBefore = null,
-            DateTimeOffset? notAfter = null)
-            => context.NewReplacementOrder(ToIdentifiers(identifiers), replacedCertificateId, notBefore, notAfter);
+            DateTimeOffset? notAfter = null,
+            CancellationToken cancellationToken = default)
+            => context.NewReplacementOrder(ToIdentifiers(identifiers), replacedCertificateId, notBefore, notAfter, cancellationToken);
 
         /// <summary>
         /// Creates a new order with explicitly typed identifiers (for example, IP addresses per RFC 8738)
@@ -137,19 +146,21 @@ namespace Certes
         /// <param name="notAfter">The value of not after field for the certificate.</param>
         /// <returns>The order context created.</returns>
         /// <exception cref="ArgumentException">An identifier or <paramref name="replacedCertificateId"/> is empty or malformed.</exception>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         public static async Task<IOrderContext> NewReplacementOrder(
             this IAcmeContext context,
             IList<Identifier> identifiers,
             string replacedCertificateId,
             DateTimeOffset? notBefore = null,
-            DateTimeOffset? notAfter = null)
+            DateTimeOffset? notAfter = null,
+            CancellationToken cancellationToken = default)
         {
             ValidateCertificateId(replacedCertificateId, nameof(replacedCertificateId));
             var body = CreateOrderBody(identifiers, notBefore, notAfter);
             body.Replaces = replacedCertificateId;
 
-            var endpoint = await context.GetResourceUri(d => d.NewOrder);
-            var order = await context.HttpClient.Post<Order>(context, endpoint, body, true);
+            var endpoint = await context.GetResourceUri(d => d.NewOrder, false, cancellationToken);
+            var order = await context.HttpClient.Post<Order>(context, endpoint, body, true, cancellationToken);
             return new OrderContext(context, order.Location);
         }
 
@@ -162,15 +173,17 @@ namespace Certes
         /// <param name="notAfter">The value of not after field for the certificate.</param>
         /// <returns>The order context created.</returns>
         /// <exception cref="ArgumentException">An identifier is missing, empty, or not a valid IP address for type <see cref="IdentifierType.Ip"/>.</exception>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         public static async Task<IOrderContext> NewOrder(
             this IAcmeContext context,
             IList<Identifier> identifiers,
             DateTimeOffset? notBefore = null,
-            DateTimeOffset? notAfter = null)
+            DateTimeOffset? notAfter = null,
+            CancellationToken cancellationToken = default)
         {
             var body = CreateOrderBody(identifiers, notBefore, notAfter);
-            var endpoint = await context.GetResourceUri(d => d.NewOrder);
-            var order = await context.HttpClient.Post<Order>(context, endpoint, body, true);
+            var endpoint = await context.GetResourceUri(d => d.NewOrder, false, cancellationToken);
+            var order = await context.HttpClient.Post<Order>(context, endpoint, body, true, cancellationToken);
             return new OrderContext(context, order.Location);
         }
 
@@ -194,6 +207,7 @@ namespace Certes
         /// <exception cref="ArgumentException">The profile is empty or not advertised, or the replacement ID is malformed.</exception>
         /// <exception cref="NotSupportedException">The server does not advertise profiles or a new-order endpoint.</exception>
         /// <exception cref="AcmeRequestException">The server rejects the order, for example with invalidProfile.</exception>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         public static Task<IOrderContext> NewOrderWithProfile(
             this IAcmeContext context,
             IList<string> identifiers,
@@ -201,8 +215,9 @@ namespace Certes
             DateTimeOffset? notBefore = null,
             DateTimeOffset? notAfter = null,
             string replacedCertificateId = null,
-            bool allowUnadvertisedProfile = false)
-            => context.NewOrderWithProfile(ToIdentifiers(identifiers), profile, notBefore, notAfter, replacedCertificateId, allowUnadvertisedProfile);
+            bool allowUnadvertisedProfile = false,
+            CancellationToken cancellationToken = default)
+            => context.NewOrderWithProfile(ToIdentifiers(identifiers), profile, notBefore, notAfter, replacedCertificateId, allowUnadvertisedProfile, cancellationToken);
 
         /// <summary>
         /// Creates an order with explicitly typed identifiers using an advertised certificate profile.
@@ -219,6 +234,7 @@ namespace Certes
         /// <exception cref="ArgumentException">The profile, an identifier, or the replacement ID is empty or malformed, or the profile is not advertised.</exception>
         /// <exception cref="NotSupportedException">The server does not advertise profiles or a new-order endpoint.</exception>
         /// <exception cref="AcmeRequestException">The server rejects the order, for example with invalidProfile.</exception>
+        /// <param name="cancellationToken">Cancels this operation.</param>
         public static async Task<IOrderContext> NewOrderWithProfile(
             this IAcmeContext context,
             IList<Identifier> identifiers,
@@ -226,7 +242,8 @@ namespace Certes
             DateTimeOffset? notBefore = null,
             DateTimeOffset? notAfter = null,
             string replacedCertificateId = null,
-            bool allowUnadvertisedProfile = false)
+            bool allowUnadvertisedProfile = false,
+            CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(profile))
             {
@@ -242,7 +259,8 @@ namespace Certes
             body.Profile = profile;
             body.Replaces = replacedCertificateId;
 
-            var directory = await context.GetDirectory();
+            cancellationToken.ThrowIfCancellationRequested();
+            var directory = await context.GetDirectory(cancellationToken);
             var profiles = directory.Meta?.Profiles;
             if (profiles == null || profiles.Count == 0 || directory.NewOrder == null)
             {
@@ -254,7 +272,7 @@ namespace Certes
                 throw new ArgumentException("The certificate profile is not advertised by this server.", nameof(profile));
             }
 
-            var order = await context.HttpClient.Post<Order>(context, directory.NewOrder, body, true);
+            var order = await context.HttpClient.Post<Order>(context, directory.NewOrder, body, true, cancellationToken);
             return new OrderContext(context, order.Location);
         }
 

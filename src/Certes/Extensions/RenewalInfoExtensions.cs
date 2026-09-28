@@ -18,8 +18,8 @@ namespace Certes
         /// <param name="certificateChain">The certificate chain.</param>
         /// <returns>
         /// The certificate identifier, for use with
-        /// <see cref="IAcmeContextExtensions.GetRenewalInfo(IAcmeContext, string)"/> and
-        /// <see cref="IAcmeContextExtensions.NewReplacementOrder(IAcmeContext, System.Collections.Generic.IList{string}, string, System.DateTimeOffset?, System.DateTimeOffset?)"/>.
+        /// <see cref="IAcmeContextExtensions.GetRenewalInfo"/> and
+        /// <see cref="IAcmeContextExtensions.NewReplacementOrder(IAcmeContext, System.Collections.Generic.IList{string}, string, System.DateTimeOffset?, System.DateTimeOffset?, System.Threading.CancellationToken)"/>.
         /// </returns>
         /// <exception cref="ArgumentNullException">If <paramref name="certificateChain"/> is <c>null</c>.</exception>
         /// <exception cref="AcmeException">If the certificate has no authority key identifier.</exception>
@@ -39,8 +39,8 @@ namespace Certes
         /// <param name="certificate">The certificate.</param>
         /// <returns>
         /// The certificate identifier, for use with
-        /// <see cref="IAcmeContextExtensions.GetRenewalInfo(IAcmeContext, string)"/> and
-        /// <see cref="IAcmeContextExtensions.NewReplacementOrder(IAcmeContext, System.Collections.Generic.IList{string}, string, System.DateTimeOffset?, System.DateTimeOffset?)"/>.
+        /// <see cref="IAcmeContextExtensions.GetRenewalInfo"/> and
+        /// <see cref="IAcmeContextExtensions.NewReplacementOrder(IAcmeContext, System.Collections.Generic.IList{string}, string, System.DateTimeOffset?, System.DateTimeOffset?, System.Threading.CancellationToken)"/>.
         /// </returns>
         /// <exception cref="ArgumentNullException">If <paramref name="certificate"/> is <c>null</c>.</exception>
         /// <exception cref="AcmeException">If the certificate has no authority key identifier.</exception>

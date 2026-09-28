@@ -26,7 +26,7 @@ namespace Certes.Acme
                 .Returns(1);
             ctxMock
                 .Setup(c => c.Sign(It.IsAny<object>(),  It.IsAny<Uri>()))
-                .Callback((object payload, Uri loc) =>
+                .Callback((object payload, Uri loc, System.Threading.CancellationToken _) =>
                 {
                     Assert.Null(payload);
                     Assert.Equal(location, loc);
@@ -35,7 +35,7 @@ namespace Certes.Acme
 
             httpMock
                 .Setup(m => m.Post<Account>(location, It.IsAny<JwsPayload>()))
-                .Callback((Uri _, object o) =>
+                .Callback((Uri _, object o, System.Threading.CancellationToken _) =>
                 {
                     var p = (JwsPayload)o;
                     Assert.Equal(expectedPayload.Payload, p.Payload);
@@ -51,7 +51,7 @@ namespace Certes.Acme
             location = new Uri("http://acme.d/acct/2");
             httpMock
                 .Setup(m => m.Post<Account>(location, It.IsAny<JwsPayload>()))
-                .Callback((Uri _, object o) =>
+                .Callback((Uri _, object o, System.Threading.CancellationToken _) =>
                 {
                     var p = (JwsPayload)o;
                     Assert.Equal(expectedPayload.Payload, p.Payload);

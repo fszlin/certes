@@ -41,6 +41,9 @@ asset supports existing consumers; .NET 10 is the development and CLI baseline.
 
 ## Upgrade guide
 
+Development toward v5 introduces optional cancellation tokens on core async APIs.
+This is a binary/interface breaking change; see the [v5 migration guide](docs/v5-upgrade.md).
+
 If you automate `dotnet-certes`, review these changes before upgrading:
 
 - CLI runtime now requires .NET 10.

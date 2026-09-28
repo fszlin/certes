@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Certes.Acme
 {
@@ -26,6 +27,7 @@ namespace Certes.Acme
         /// Gets the ACME resource.
         /// </summary>
         /// <returns>The resource entity.</returns>
-        Task<T> Resource();
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        Task<T> Resource(CancellationToken cancellationToken = default);
     }
 }

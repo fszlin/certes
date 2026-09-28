@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Threading;
 
 namespace Certes.Acme
 {
@@ -35,6 +36,7 @@ namespace Certes.Acme
         /// Acknowledges the ACME server the challenge is ready for validation.
         /// </summary>
         /// <returns>The challenge.</returns>
-        Task<Resource.Challenge> Validate();
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        Task<Resource.Challenge> Validate(CancellationToken cancellationToken = default);
     }
 }

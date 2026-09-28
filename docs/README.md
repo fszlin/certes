@@ -12,6 +12,9 @@ for development guidance.
 
 ## Usage
 
+For the development v5 API, see [cancellation and migration guidance](v5-upgrade.md).
+Released v4 packages do not expose the cancellation parameters.
+
 Install [Certes](https://www.nuget.org/packages/Certes/) nuget package into your project:
 ```PowerShell
 Install-Package Certes

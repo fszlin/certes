@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Pkcs;
@@ -26,9 +27,10 @@ namespace Certes
         /// <returns>
         /// The order finalized.
         /// </returns>
-        public static async Task<Order> Finalize(this IOrderContext context, CsrInfo csr, IKey key)
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        public static async Task<Order> Finalize(this IOrderContext context, CsrInfo csr, IKey key, CancellationToken cancellationToken = default)
         {
-            var builder = await context.CreateCsr(key);
+            var builder = await context.CreateCsr(key, cancellationToken);
 
             foreach (var (name, value) in csr.Fields)
             {
@@ -47,7 +49,8 @@ namespace Certes
                 }
             }
 
-            return await context.Finalize(builder.Generate());
+            cancellationToken.ThrowIfCancellationRequested();
+            return await context.Finalize(builder.Generate(), cancellationToken);
         }
 
         /// <summary>
@@ -56,10 +59,12 @@ namespace Certes
         /// <param name="context">The order context.</param>
         /// <param name="key">The private key.</param>
         /// <returns>The CSR.</returns>
-        public static async Task<CertificationRequestBuilder> CreateCsr(this IOrderContext context, IKey key)
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        public static async Task<CertificationRequestBuilder> CreateCsr(this IOrderContext context, IKey key, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var builder = new CertificationRequestBuilder(key);
-            var order = await context.Resource();
+            var order = await context.Resource(cancellationToken);
             foreach (var identifier in order.Identifiers)
             {
                 builder.SubjectAlternativeNames.Add(identifier.Value);
@@ -83,8 +88,9 @@ namespace Certes
         /// <returns>
         /// The certificate generated.
         /// </returns>
-        public static async Task<CertificateChain> Generate(this IOrderContext context, CsrInfo csr, IKey key, string preferredChain = null, int retryCount = DefaultRetryCount)
-            => await Generate(context, csr, key, preferredChain, retryCount, Task.Delay);
+        /// <param name="cancellationToken">Cancels requests and polling delays.</param>
+        public static async Task<CertificateChain> Generate(this IOrderContext context, CsrInfo csr, IKey key, string preferredChain = null, int retryCount = DefaultRetryCount, CancellationToken cancellationToken = default)
+            => await Generate(context, csr, key, preferredChain, retryCount, Task.Delay, cancellationToken);
 
         internal static async Task<CertificateChain> Generate(
             IOrderContext context,
@@ -92,9 +98,11 @@ namespace Certes
             IKey key,
             string preferredChain,
             int retryCount,
-            Func<TimeSpan, Task> delay)
+            Func<TimeSpan, CancellationToken, Task> delay,
+            CancellationToken cancellationToken)
         {
-            var order = await context.Resource();
+            cancellationToken.ThrowIfCancellationRequested();
+            var order = await context.Resource(cancellationToken);
             if (order.Status != OrderStatus.Ready &&
                 order.Status != OrderStatus.Pending)
             {
@@ -104,8 +112,9 @@ namespace Certes
             retryCount = Math.Max(retryCount, 0);
             while (order?.Status == OrderStatus.Pending && retryCount-- > 0)
             {
-                await delay(TimeSpan.FromSeconds(Math.Min(Math.Max(context.RetryAfter, 1), MaxRetryAfterSeconds)));
-                order = await context.Resource();
+                await delay(TimeSpan.FromSeconds(Math.Min(Math.Max(context.RetryAfter, 1), MaxRetryAfterSeconds)), cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                order = await context.Resource(cancellationToken);
             }
 
             if (order?.Status != OrderStatus.Ready)
@@ -115,12 +124,14 @@ namespace Certes
                     order?.Status?.ToString() ?? "Unknown"));
             }
 
-            order = await context.Finalize(csr, key);
+            cancellationToken.ThrowIfCancellationRequested();
+            order = await context.Finalize(csr, key, cancellationToken);
 
             while ((order == null || order.Status == OrderStatus.Pending || order.Status == OrderStatus.Processing) && retryCount-- > 0)
             {
-                await delay(TimeSpan.FromSeconds(Math.Min(Math.Max(context.RetryAfter, 1), MaxRetryAfterSeconds)));
-                order = await context.Resource();
+                await delay(TimeSpan.FromSeconds(Math.Min(Math.Max(context.RetryAfter, 1), MaxRetryAfterSeconds)), cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                order = await context.Resource(cancellationToken);
             }
 
             if (order?.Status != OrderStatus.Valid)
@@ -128,7 +139,8 @@ namespace Certes
                 throw new AcmeException(Strings.ErrorFinalizeFailed);
             }
 
-            return await context.Download(preferredChain);
+            cancellationToken.ThrowIfCancellationRequested();
+            return await context.Download(preferredChain, cancellationToken);
         }
 
         /// <summary>
@@ -138,17 +150,20 @@ namespace Certes
         /// <param name="value">The identifier value.</param>
         /// <param name="type">The identifier type.</param>
         /// <returns>The authorization found.</returns>
-        public static async Task<IAuthorizationContext> Authorization(this IOrderContext context, string value, IdentifierType type = IdentifierType.Dns)
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        public static async Task<IAuthorizationContext> Authorization(this IOrderContext context, string value, IdentifierType type = IdentifierType.Dns, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var wildcard = value.StartsWith("*.");
             if (wildcard)
             {
                 value = value.Substring(2);
             }
 
-            foreach (var authzCtx in await context.Authorizations())
+            foreach (var authzCtx in await context.Authorizations(cancellationToken))
             {
-                var authz = await authzCtx.Resource();
+                cancellationToken.ThrowIfCancellationRequested();
+                var authz = await authzCtx.Resource(cancellationToken);
                 if (authz.Identifier.Type == type &&
                     wildcard == authz.Wildcard.GetValueOrDefault() &&
                     IdentifierValueEquals(type, authz.Identifier.Value, value))

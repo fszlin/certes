@@ -77,17 +77,19 @@ namespace Certes.Acme
         /// <typeparam name="T"></typeparam>
         /// <param name="uri">The URI.</param>
         /// <returns></returns>
-        public async Task<AcmeHttpResponse<T>> Get<T>(Uri uri)
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        public async Task<AcmeHttpResponse<T>> Get<T>(Uri uri, CancellationToken cancellationToken = default)
         {
-            var msg = new HttpRequestMessage
+            cancellationToken.ThrowIfCancellationRequested();
+            using var msg = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
                 RequestUri = uri,
             };
 
             AddUserAgentHeader(msg);
-            using var response = await Http.SendAsync(msg);
-            return await ProcessResponse<T>(response, uri);
+            using var response = await Http.SendAsync(msg, cancellationToken);
+            return await ProcessResponse<T>(response, uri, cancellationToken);
         }
 
         /// <summary>
@@ -97,14 +99,16 @@ namespace Certes.Acme
         /// <param name="uri">The URI.</param>
         /// <param name="payload">The payload.</param>
         /// <returns></returns>
-        public async Task<AcmeHttpResponse<T>> Post<T>(Uri uri, object payload)
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        public async Task<AcmeHttpResponse<T>> Post<T>(Uri uri, object payload, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var payloadJson = JsonSerializer.Serialize(payload, jsonSettings);
             var content = new StringContent(payloadJson, Encoding.UTF8, MimeJoseJson);
             // boulder will reject the request if sending charset=utf-8
             content.Headers.ContentType.CharSet = null;
 
-            var msg = new HttpRequestMessage
+            using var msg = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 RequestUri = uri,
@@ -112,8 +116,8 @@ namespace Certes.Acme
             };
 
             AddUserAgentHeader(msg);
-            using var response = await Http.SendAsync(msg);
-            return await ProcessResponse<T>(response, uri);
+            using var response = await Http.SendAsync(msg, cancellationToken);
+            return await ProcessResponse<T>(response, uri, cancellationToken);
         }
 
         /// <summary>
@@ -122,12 +126,14 @@ namespace Certes.Acme
         /// <returns>
         /// The nonce.
         /// </returns>
-        public async Task<string> ConsumeNonce()
+        public async Task<string> ConsumeNonce(CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var nonce = Interlocked.Exchange(ref this.nonce, null);
             while (nonce == null)
             {
-                await FetchNonce();
+                cancellationToken.ThrowIfCancellationRequested();
+                await FetchNonce(cancellationToken);
                 nonce = Interlocked.Exchange(ref this.nonce, null);
             }
 
@@ -180,8 +186,11 @@ namespace Certes.Acme
             return links;
         }
 
-        private async Task<AcmeHttpResponse<T>> ProcessResponse<T>(HttpResponseMessage response, Uri requestedUri)
+        private async Task<AcmeHttpResponse<T>> ProcessResponse<T>(HttpResponseMessage response, Uri requestedUri, CancellationToken cancellationToken)
         {
+            // SendAsync uses ResponseContentRead, so the body is buffered under the
+            // request token even on netstandard2.0, whose string-read API has no token.
+            cancellationToken.ThrowIfCancellationRequested();
             var location = response.Headers.Location;
             var resource = default(T);
             var error = default(AcmeError);
@@ -227,22 +236,24 @@ namespace Certes.Acme
                 }
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
             return new AcmeHttpResponse<T>(location, resource, links, error, retryafter);
         }
 
-        private async Task FetchNonce()
+        private async Task FetchNonce(CancellationToken cancellationToken)
         {
-            newNonceUri = newNonceUri ?? (await Get<Directory>(directoryUri)).Resource.NewNonce;
+            newNonceUri = newNonceUri ?? (await Get<Directory>(directoryUri, cancellationToken)).Resource.NewNonce;
 
-            var msg = new HttpRequestMessage
+            using var msg = new HttpRequestMessage
             {
                 RequestUri = newNonceUri,
                 Method = HttpMethod.Head,
             };
 
             AddUserAgentHeader(msg);
-            var response = await Http.SendAsync(msg);
+            using var response = await Http.SendAsync(msg, cancellationToken);
 
+            cancellationToken.ThrowIfCancellationRequested();
             if (!response.Headers.TryGetValues("Replay-Nonce", out var values))
             {
                 throw new AcmeException(Strings.ErrorFetchNonce);
