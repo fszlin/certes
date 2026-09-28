@@ -17,6 +17,7 @@ namespace Certes
         /// </summary>
         /// <param name="account">The account task.</param>
         /// <param name="cancellationToken">Cancels waiting for the account task and deactivation.</param>
+        /// <remarks>If the wait is cancelled, the supplied task continues. The caller must observe its eventual result or exception.</remarks>
         /// <returns>The account deactivated.</returns>
         public static async Task<Account> Deactivate(
             this Task<IAccountContext> account, CancellationToken cancellationToken = default)
@@ -31,6 +32,7 @@ namespace Certes
         /// </summary>
         /// <param name="account">The account.</param>
         /// <param name="cancellationToken">Cancels waiting for the account task, not the task itself.</param>
+        /// <remarks>If the wait is cancelled, the supplied task continues. The caller must observe its eventual result or exception.</remarks>
         /// <returns>The location URI.</returns>
         public static async Task<Uri> Location(this Task<IAccountContext> account, CancellationToken cancellationToken = default)
             => (await WaitForAccount(account, cancellationToken)).Location;

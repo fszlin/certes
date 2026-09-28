@@ -18,6 +18,145 @@ namespace Certes
         private static readonly Uri AccountUri = new Uri("https://acme.test/account/1");
 
         [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TransportPreservesReceivedResponseAfterLateCancellation(bool post)
+        {
+            using var cancellation = new CancellationTokenSource();
+            using var http = new HttpClient(new Handler(async (_, _) =>
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{\"status\":\"valid\"}", System.Text.Encoding.UTF8, "application/json"),
+                };
+                response.Headers.Location = AccountUri;
+                await response.Content.LoadIntoBufferAsync();
+                cancellation.Cancel();
+                return response;
+            }));
+            var client = new AcmeHttpClient(DirectoryUri, http);
+            var result = post
+                ? await client.Post<Order>(DirectoryUri, new { }, cancellation.Token)
+                : await client.Get<Order>(DirectoryUri, cancellation.Token);
+            Assert.True(cancellation.IsCancellationRequested);
+            Assert.Equal(AccountUri, result.Location);
+            Assert.Equal(OrderStatus.Valid, result.Resource.Status);
+        }
+
+        [Theory]
+        [InlineData("account")]
+        [InlineData("order")]
+        [InlineData("finalize")]
+        [InlineData("key-change")]
+        public async Task StateChangingOperationsPreserveSuccessfulResponse(string operation)
+        {
+            using var cancellation = new CancellationTokenSource();
+            var token = cancellation.Token;
+            var endpoint = new Uri("https://acme.test/operation");
+            var location = new Uri("https://acme.test/result/1");
+            var transport = new Mock<IAcmeHttpClient>(MockBehavior.Strict);
+            var directory = new Directory(endpoint, AccountUri, endpoint, endpoint, endpoint, null);
+            transport.Setup(c => c.Get<Directory>(DirectoryUri, token)).ReturnsAsync(
+                new AcmeHttpResponse<Directory>(DirectoryUri, directory, null, null));
+            transport.Setup(c => c.ConsumeNonce(token)).ReturnsAsync("nonce");
+            transport.Setup(c => c.Post<Account>(AccountUri, It.IsAny<object>(), token)).ReturnsAsync(
+                new AcmeHttpResponse<Account>(AccountUri, new Account(), null, null));
+            var context = new AcmeContext(DirectoryUri, Helper.GetKeyV2(), transport.Object);
+            var returnedAccount = new Account();
+            var returnedOrder = new Order { Status = OrderStatus.Valid };
+
+            if (operation == "account")
+            {
+                transport.Setup(c => c.Post<Account>(AccountUri, It.IsAny<object>(), token))
+                    .Callback(() => cancellation.Cancel()).ReturnsAsync(
+                        new AcmeHttpResponse<Account>(location, returnedAccount, null, null));
+                var result = await context.NewAccount("test@example.test", cancellationToken: token);
+                Assert.Equal(location, result.Location);
+                Assert.Same(result, await context.Account());
+            }
+            else if (operation == "key-change")
+            {
+                transport.Setup(c => c.Post<Account>(endpoint, It.IsAny<object>(), token))
+                    .Callback(() => cancellation.Cancel()).ReturnsAsync(
+                        new AcmeHttpResponse<Account>(AccountUri, returnedAccount, null, null));
+                var newKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
+                Assert.Same(returnedAccount, await context.ChangeKey(newKey, token));
+                Assert.Same(newKey, context.AccountKey);
+            }
+            else
+            {
+                transport.Setup(c => c.Post<Order>(endpoint, It.IsAny<object>(), token))
+                    .Callback(() => cancellation.Cancel()).ReturnsAsync(
+                        new AcmeHttpResponse<Order>(location, returnedOrder, null, null, 17));
+                if (operation == "order")
+                {
+                    Assert.Equal(location, (await context.NewOrder(new[] { "example.test" }, cancellationToken: token)).Location);
+                }
+                else
+                {
+                    transport.Setup(c => c.Post<Order>(location, It.IsAny<object>(), token)).ReturnsAsync(
+                        new AcmeHttpResponse<Order>(location, new Order { Finalize = endpoint }, null, null));
+                    var order = context.Order(location);
+                    Assert.Same(returnedOrder, await order.Finalize(new byte[] { 1 }, token));
+                    Assert.Equal(17, order.RetryAfter);
+                }
+            }
+            Assert.True(cancellation.IsCancellationRequested);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task CancellationBetweenSigningAndSendPreventsPost(bool signer)
+        {
+            using var cancellation = new CancellationTokenSource();
+            var token = cancellation.Token;
+            var transport = new Mock<IAcmeHttpClient>(MockBehavior.Strict);
+            Task pending;
+            if (signer)
+            {
+                transport.Setup(c => c.ConsumeNonce(token)).Callback(() => cancellation.Cancel()).ReturnsAsync("nonce");
+                pending = transport.Object.Post<Account>(new JwsSigner(Helper.GetKeyV2()), AccountUri, new { }, true, 1, token);
+            }
+            else
+            {
+                var context = new Mock<IAcmeContext>(MockBehavior.Strict);
+                context.Setup(c => c.Sign(It.IsAny<object>(), AccountUri, token))
+                    .Callback(() => cancellation.Cancel()).ReturnsAsync(new JwsPayload());
+                pending = transport.Object.Post<Account>(context.Object, AccountUri, new { }, true, token);
+            }
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+            transport.Verify(c => c.Post<Account>(It.IsAny<Uri>(), It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task ReceivedTerminalErrorsAreNotReplacedByCancellation(bool signer)
+        {
+            using var cancellation = new CancellationTokenSource();
+            var token = cancellation.Token;
+            var error = new AcmeError { Status = HttpStatusCode.BadRequest, Type = "urn:ietf:params:acme:error:malformed" };
+            var transport = new Mock<IAcmeHttpClient>(MockBehavior.Strict);
+            transport.Setup(c => c.Post<Account>(AccountUri, It.IsAny<object>(), token))
+                .Callback(() => cancellation.Cancel()).ReturnsAsync(new AcmeHttpResponse<Account>(AccountUri, null, null, error));
+            Task pending;
+            if (signer)
+            {
+                transport.Setup(c => c.ConsumeNonce(token)).ReturnsAsync("nonce");
+                pending = transport.Object.Post<Account>(new JwsSigner(Helper.GetKeyV2()), AccountUri, new { }, true, 1, token);
+            }
+            else
+            {
+                var context = new Mock<IAcmeContext>(MockBehavior.Strict);
+                context.SetupGet(c => c.BadNonceRetryCount).Returns(1);
+                context.Setup(c => c.Sign(It.IsAny<object>(), AccountUri, token)).ReturnsAsync(new JwsPayload());
+                pending = transport.Object.Post<Account>(context.Object, AccountUri, new { }, true, token);
+            }
+            Assert.Same(error, (await Assert.ThrowsAsync<AcmeRequestException>(() => pending)).Error);
+        }
+
+        [Theory]
         [InlineData("get")]
         [InlineData("post")]
         [InlineData("nonce-directory")]

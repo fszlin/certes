@@ -35,7 +35,17 @@ propagates without being translated into an ACME protocol error.
 
 Cancellation does not roll back requests already accepted by the CA. An account,
 order, revocation, or key-change request may have taken effect even if the caller
-observes cancellation. Reconcile server state before retrying state-changing work.
+observes cancellation while the request is in flight. Reconcile server state
+before retrying state-changing work; an order URL lost in flight may not be
+recoverable if the CA does not support listing orders.
+
+Once the transport returns a complete response, a late cancellation does not
+discard it: account/order creation returns the location, finalization returns its
+order resource, and a successful key change updates the local account key.
+Terminal ACME errors are likewise preserved. Cancellation is checked before
+sending and before another retry, poll, page, or download request. Multi-step
+operations such as `Generate` may still cancel before the next step; keep the
+order context to resume or inspect the order afterward.
 Tokens apply to individual operations, not the lifetime of the reusable context.
 Pre-cancelled account/directory lookups cancel even when the value is cached;
 cancelled fetches do not cache a cancelled task.
@@ -57,6 +67,8 @@ cancelled fetches do not cache a cancelled task.
   `accountTask.Deactivate(token)` cancel their wait for the supplied task; they
   cannot cancel a task already started without that token. Also pass the token
   to `acme.Account(token)`. Deactivation is not started after a cancelled wait.
+  The caller retains ownership of the supplied task and should observe its eventual
+  result or exception, even after cancelling the helper's wait.
 - Synchronous methods such as `Order(Uri)`, key factories, and certificate export
   retain their signatures. Library target frameworks and runtime dependency
   minimums are unchanged by this API migration.

@@ -71,6 +71,7 @@ namespace Certes.Acme
 
             cancellationToken.ThrowIfCancellationRequested();
             var payload = await context.Sign(entity, location, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             var response = await client.Post<T>(location, payload, cancellationToken);
             var retryCount = context.BadNonceRetryCount;
             while (response.Error?.Status == System.Net.HttpStatusCode.BadRequest &&
@@ -79,10 +80,10 @@ namespace Certes.Acme
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 payload = await context.Sign(entity, location, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
                 response = await client.Post<T>(location, payload, cancellationToken);
             }
 
-            cancellationToken.ThrowIfCancellationRequested();
             if (ensureSuccessStatusCode && response.Error != null)
             {
                 throw new AcmeRequestException(
@@ -120,6 +121,7 @@ namespace Certes.Acme
         {
             cancellationToken.ThrowIfCancellationRequested();
             var payload = jwsSigner.Sign(entity, url: location, nonce: await client.ConsumeNonce(cancellationToken));
+            cancellationToken.ThrowIfCancellationRequested();
             var response = await client.Post<T>(location, payload, cancellationToken);
 
             while (response.Error?.Status == System.Net.HttpStatusCode.BadRequest &&
@@ -128,10 +130,10 @@ namespace Certes.Acme
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 payload = jwsSigner.Sign(entity, url: location, nonce: await client.ConsumeNonce(cancellationToken));
+                cancellationToken.ThrowIfCancellationRequested();
                 response = await client.Post<T>(location, payload, cancellationToken);
             }
 
-            cancellationToken.ThrowIfCancellationRequested();
             if (ensureSuccessStatusCode && response.Error != null)
             {
                 throw new AcmeRequestException(

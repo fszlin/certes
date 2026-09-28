@@ -89,7 +89,7 @@ namespace Certes.Acme
 
             AddUserAgentHeader(msg);
             using var response = await Http.SendAsync(msg, cancellationToken);
-            return await ProcessResponse<T>(response, uri, cancellationToken);
+            return await ProcessResponse<T>(response, uri);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Certes.Acme
 
             AddUserAgentHeader(msg);
             using var response = await Http.SendAsync(msg, cancellationToken);
-            return await ProcessResponse<T>(response, uri, cancellationToken);
+            return await ProcessResponse<T>(response, uri);
         }
 
         /// <summary>
@@ -186,11 +186,12 @@ namespace Certes.Acme
             return links;
         }
 
-        private async Task<AcmeHttpResponse<T>> ProcessResponse<T>(HttpResponseMessage response, Uri requestedUri, CancellationToken cancellationToken)
+        private async Task<AcmeHttpResponse<T>> ProcessResponse<T>(HttpResponseMessage response, Uri requestedUri)
         {
             // SendAsync uses ResponseContentRead, so the body is buffered under the
             // request token even on netstandard2.0, whose string-read API has no token.
-            cancellationToken.ThrowIfCancellationRequested();
+            // Once received, preserve the response even if cancellation races with
+            // completion: state-changing responses may contain unrecoverable URLs.
             var location = response.Headers.Location;
             var resource = default(T);
             var error = default(AcmeError);
@@ -236,7 +237,6 @@ namespace Certes.Acme
                 }
             }
 
-            cancellationToken.ThrowIfCancellationRequested();
             return new AcmeHttpResponse<T>(location, resource, links, error, retryafter);
         }
 
@@ -253,7 +253,6 @@ namespace Certes.Acme
             AddUserAgentHeader(msg);
             using var response = await Http.SendAsync(msg, cancellationToken);
 
-            cancellationToken.ThrowIfCancellationRequested();
             if (!response.Headers.TryGetValues("Replay-Nonce", out var values))
             {
                 throw new AcmeException(Strings.ErrorFetchNonce);
