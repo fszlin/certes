@@ -27,7 +27,7 @@ jobs:
       package-version: ${{ steps.version.outputs.package-version }}
       prerelease: ${{ steps.version.outputs.prerelease }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -174,7 +174,7 @@ jobs:
           dotnet list src/Certes.Cli/Certes.Cli.csproj package --vulnerable --include-transitive --no-restore
           dotnet list src/Certes.Cli/Certes.Cli.csproj package --deprecated --include-transitive --no-restore
       - name: Upload release artifacts
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: packages-${{ steps.version.outputs.package-version }}
           path: |
@@ -183,7 +183,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Upload release notes
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: release-notes-${{ steps.version.outputs.package-version }}
           path: artifacts/release-notes/release-notes.md
@@ -213,7 +213,7 @@ jobs:
           dotnet-version: 10.0.x
       - name: Get temporary NuGet API key
         id: nuget-login
-        uses: NuGet/login@ebc737b6fc418a6ca0073cf116ec8dc156d8b81e # v1.2.0
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
         with:
           user: ${{ secrets.NUGET_USER }}
       - name: Publish packages
