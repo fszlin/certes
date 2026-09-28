@@ -160,7 +160,8 @@ focused tests when appropriate, then run checks relevant to the affected surface
 ### Integration tests
 
 Unit-test coverage is collected in the Linux build job using the pinned local
-`dotnet-coverage` tool, independently of the test projects. Both test projects
+`dotnet-coverage` tool, independently of the test projects, and the pinned
+ReportGenerator tool produces Markdown/HTML reports. Both test projects
 have removed `coverlet.collector`. The Actions job summary and
 `unit-coverage-net10-linux` artifact report library/CLI line and branch coverage;
 no percentage gate is enforced. See [scripts/Coverage/README.md](scripts/Coverage/README.md)

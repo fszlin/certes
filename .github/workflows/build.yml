@@ -53,7 +53,7 @@ jobs:
         if: runner.os != 'Linux'
         # Reuses the preceding build: keep configuration, target, and SkipSigning aligned.
         run: dotnet test test/Certes.Tests/Certes.Tests.csproj -f net10.0 -p:SkipSigning=true --no-build --no-restore
-      - name: Restore coverage tool
+      - name: Restore coverage tools
         if: runner.os == 'Linux'
         run: dotnet tool restore
       - name: Run offline unit tests with coverage (.NET 10)
@@ -65,7 +65,10 @@ jobs:
           "dotnet test test/Certes.Tests/Certes.Tests.csproj -f net10.0 -p:SkipSigning=true --no-build --no-restore"
       - name: Summarize unit-test coverage
         if: runner.os == 'Linux'
-        run: dotnet run --file scripts/Coverage/Summary.cs -- artifacts/coverage/coverage.cobertura.xml
+        run: |
+          dotnet reportgenerator -reports:artifacts/coverage/coverage.cobertura.xml -targetdir:artifacts/coverage/report '-reporttypes:Html;MarkdownSummaryGithub'
+          printf '%s\n\n' '## Offline unit coverage (.NET 10, Linux)' 'Debug library/CLI builds; excludes integration tests and other targets. Informational only, with no percentage gate.' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/coverage/report/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload unit-test coverage
         if: runner.os == 'Linux' && !cancelled()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
