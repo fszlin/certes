@@ -22,11 +22,10 @@ The current checkout still targets:
 | Library | `net10.0`, `net8.0`, `netstandard2.0` |
 | CLI | `net10.0` |
 | Unit and integration tests | `net10.0`, `net462` |
-| Azure Functions test helper | `net7.0` |
 
 Development and the CLI now use .NET 10 LTS. CI installs the latest `10.0.x` SDK
 and logs the resolved version.
-The unused Functions helper remains on out-of-support .NET 7 pending retirement.
+The legacy Azure Functions test helper has been retired; integration tests use local Pebble.
 Targets describe this checkout, not necessarily the latest published packages.
 
 The library retains .NET Standard 2.0 compatibility assets; consumers on .NET 8/9
