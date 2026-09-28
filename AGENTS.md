@@ -28,6 +28,7 @@ current task. Keep this guide accurate when commands, targets, or blockers chang
 | `.github/workflows/build.yml` | Cross-platform compilation and unit tests, package smoke checks |
 | `.github/workflows/codeql.yml` | C# and GitHub Actions static security analysis |
 | `scripts/PackageSmoke/` | Consumer of the locally packed library; not a solution project |
+| `scripts/Coverage/` | .NET 10/Linux unit coverage settings, summary, and local commands |
 | `scripts/Pebble/` | Pinned container stack, readiness probe, and local integration instructions |
 | `.github/workflows/release.yml` | Tag-driven package release workflow |
 
@@ -157,6 +158,14 @@ Always report which runtime was used. Use `--filter FullyQualifiedName~<TestClas
 focused tests when appropriate, then run checks relevant to the affected surface.
 
 ### Integration tests
+
+Unit-test coverage is collected in the Linux build job using the pinned local
+`dotnet-coverage` tool, independently of the test projects. Both test projects
+have removed `coverlet.collector`. The Actions job summary and
+`unit-coverage-net10-linux` artifact report library/CLI line and branch coverage;
+no percentage gate is enforced. See [scripts/Coverage/README.md](scripts/Coverage/README.md)
+for local commands and coverage limits. After changing collection, verify a
+nonempty report for both shipping assemblies and preservation of test failures.
 
 ```sh
 docker compose -f scripts/Pebble/compose.yml up -d

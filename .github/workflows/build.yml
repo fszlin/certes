@@ -50,8 +50,32 @@ jobs:
       - name: Compile both test projects (all test targets)
         run: dotnet build test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -p:SkipSigning=true
       - name: Run offline unit tests (.NET 10)
+        if: runner.os != 'Linux'
         # Reuses the preceding build: keep configuration, target, and SkipSigning aligned.
         run: dotnet test test/Certes.Tests/Certes.Tests.csproj -f net10.0 -p:SkipSigning=true --no-build --no-restore
+      - name: Restore coverage tool
+        if: runner.os == 'Linux'
+        run: dotnet tool restore
+      - name: Run offline unit tests with coverage (.NET 10)
+        if: runner.os == 'Linux'
+        run: >-
+          dotnet coverage collect
+          --settings scripts/Coverage/settings.xml
+          --output artifacts/coverage/coverage.cobertura.xml --output-format cobertura
+          "dotnet test test/Certes.Tests/Certes.Tests.csproj -f net10.0 -p:SkipSigning=true --no-build --no-restore"
+      - name: Summarize unit-test coverage
+        if: runner.os == 'Linux'
+        run: |
+          python3 -B -m unittest discover -s scripts/Coverage
+          python3 scripts/Coverage/summary.py artifacts/coverage/coverage.cobertura.xml
+      - name: Upload unit-test coverage
+        if: runner.os == 'Linux' && !cancelled()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: unit-coverage-net10-linux
+          path: artifacts/coverage/
+          if-no-files-found: error
+          retention-days: 14
       - name: Record verification scope
         shell: bash
         run: |

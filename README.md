@@ -92,6 +92,8 @@ before preparing a contribution or release.
 The [GitHub Actions workflow](.github/workflows/build.yml) checks
 cross-platform compilation, the full offline unit suite, package smoke
 consumption, and local Pebble integration. Tests run directly on .NET 10.
+The Linux build also reports [unit-test coverage](scripts/Coverage/README.md)
+in its job summary and downloadable Cobertura artifact.
 The [CodeQL workflow](.github/workflows/codeql.yml) adds static security analysis
 for C# and GitHub Actions on pull requests, pushes to `main`, and weekly.
 Legacy build/release automation is disabled. Releases use the approval-gated,
