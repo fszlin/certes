@@ -54,8 +54,8 @@ appropriate guide when behavior changes; avoid duplicating long usage examples.
   Routine major-version updates for NuGet and GitHub Actions are also ignored;
   plan those migrations explicitly. Weekly patch/minor updates remain enabled
   outside the core runtime exclusions. SemVer ignore rules do not suppress
-  security updates. Pre-1.0 minor releases can still break APIs; Spectre updates
-  remain separate from the routine group for that reason.
+  security updates. Pre-1.0 minor releases can still break APIs; routine Spectre
+  updates are deferred to the v5 CLI/cancellation migration (#405).
 - Public API changes must account for interfaces, extension methods, downstream
   implementers, serialization, and all retained target frameworks. Explain
   intended breaking changes rather than introducing them incidentally.
@@ -73,6 +73,9 @@ appropriate guide when behavior changes; avoid duplicating long usage examples.
 
 ## Branching and releases
 
+- v4.1.0 is released. v4.x is maintenance-only for security fixes and reported
+  regressions. The 5.0.0 milestone tracks cancellation (#299) and the coordinated
+  Spectre CLI migration (#405); Native AOT (#313) remains unscheduled.
 - Use short-lived branches for focused tasks, based on current `main`. Examples:
   `docs/revival-guide`, `build/net10`, `test/offline-fixtures`,
   `fix/order-polling`, and `deps/bouncycastle`. Always rebase or merge from the
