@@ -55,7 +55,7 @@ appropriate guide when behavior changes; avoid duplicating long usage examples.
   plan those migrations explicitly. Weekly patch/minor updates remain enabled
   outside the core runtime exclusions. SemVer ignore rules do not suppress
   security updates. Pre-1.0 minor releases can still break APIs; routine Spectre
-  updates are deferred to the v5 CLI/cancellation migration (#405).
+  updates remain excluded and require deliberate review after the v5 migration (#405).
 - Public API changes must account for interfaces, extension methods, downstream
   implementers, serialization, and all retained target frameworks. Explain
   intended breaking changes rather than introducing them incidentally.
@@ -316,7 +316,9 @@ were updated after the .NET 10 migration:
   only. Core async APIs in the v5 development tree accept final optional
   cancellation tokens, propagated through HTTP, retries and polling (#299).
   See `docs/v5-upgrade.md` for the binary/interface migration and cancellation
-  semantics. CLI cancellation wiring remains part of #405.
+  semantics. The v5 CLI uses Spectre 0.55.0 with asynchronous dispatch and Ctrl+C
+  cancellation (exit 130); accepted account/finalization results retain generated
+  keys before stopping. See the upgrade guide for persistence and recovery semantics.
 
 Recheck these observations before using them as the basis for a change. Remove
 or revise each entry when fixed, and update the root README's baseline/status

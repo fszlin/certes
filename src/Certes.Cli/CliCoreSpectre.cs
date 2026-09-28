@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
@@ -46,14 +47,19 @@ namespace Certes.Cli
         /// <summary>
         /// Runs the CLI using Spectre for parsing and dispatch.
         /// </summary>
-        public async Task<bool> Run(string[] args)
+        public async Task<bool> Run(string[] args, CancellationToken cancellationToken = default)
+            => await RunWithExitCode(args, cancellationToken) == 0;
+
+        internal async Task<int> RunWithExitCode(string[] args, CancellationToken cancellationToken = default)
         {
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var app = new CommandApp();
                 app.Configure(config =>
                 {
                     config.SetApplicationName("certes");
+                    config.PropagateExceptions();
 
                     config.Settings.StrictParsing = false;
                     config.Settings.ConvertFlagsToRemainingArguments = true;
@@ -64,14 +70,19 @@ namespace Certes.Cli
                     ConfigureCertificateBranch(config);
                 });
 
-                var result = app.Run(args);
-                return result == 0;
+                var result = await app.RunAsync(args, cancellationToken);
+                return result == 0 ? 0 : 1;
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                consoleLogger.Info("Operation cancelled.");
+                return 130;
             }
             catch (Exception ex)
             {
                 consoleLogger.Error(ex.Message);
                 consoleLogger.Debug(ex);
-                return false;
+                return 1;
             }
         }
 
@@ -79,12 +90,12 @@ namespace Certes.Cli
         {
             config.AddBranch(CommandGroup.Server.Command, branch =>
             {
-                branch.AddAsyncDelegate<ServerSetSettings>("set", async (_, settings) =>
+                branch.AddAsyncDelegate<ServerSetSettings>("set", async (_, settings, cancellationToken) =>
                 {
                     var ctx = contextFactory.Invoke(settings.NewServer, null);
                     consoleLogger.Debug("Loading directory from '{0}'", settings.NewServer);
-                    var directory = await ctx.GetDirectory();
-                    await userSettings.SetDefaultServer(settings.NewServer);
+                    var directory = await ctx.GetDirectory(cancellationToken);
+                    await userSettings.SetDefaultServer(settings.NewServer, cancellationToken);
 
                     WriteJson(new
                     {
@@ -95,12 +106,12 @@ namespace Certes.Cli
                     return 0;
                 }).WithDescription(Strings.HelpCommandServerSet);
 
-                branch.AddAsyncDelegate<ServerShowSettings>("show", async (_, settings) =>
+                branch.AddAsyncDelegate<ServerShowSettings>("show", async (_, settings, cancellationToken) =>
                 {
-                    var serverUri = settings.Server ?? await userSettings.GetDefaultServer();
+                    var serverUri = settings.Server ?? await userSettings.GetDefaultServer(cancellationToken);
                     var ctx = contextFactory.Invoke(serverUri, null);
                     consoleLogger.Debug("Loading directory from '{0}'", serverUri);
-                    var directory = await ctx.GetDirectory();
+                    var directory = await ctx.GetDirectory(cancellationToken);
 
                     WriteJson(new
                     {
@@ -117,78 +128,77 @@ namespace Certes.Cli
         {
             config.AddBranch(CommandGroup.Account.Command, branch =>
             {
-                branch.AddAsyncDelegate<AccountNewSettings>("new", async (_, settings) =>
+                branch.AddAsyncDelegate<AccountNewSettings>("new", async (_, settings, cancellationToken) =>
                 {
-                    var account = await ReadAccountKey(settings.Server, settings.KeyPath);
+                    var account = await ReadAccountKey(settings.Server, cancellationToken, settings.KeyPath);
                     var key = account.Key ?? KeyFactory.NewKey(KeyAlgorithm.ES256);
 
                     consoleLogger.Debug("Creating new account on '{0}'.", account.Server);
                     var acme = contextFactory.Invoke(account.Server, key);
-                    var acctCtx = await acme.NewAccount(settings.Email, true);
+                    var acctCtx = await acme.NewAccount(settings.Email, true, cancellationToken: cancellationToken);
+
+                    // Once the CA accepted the account, persist its key even if
+                    // cancellation raced with the response. Do not lose credentials.
 
                     if (!string.IsNullOrWhiteSpace(settings.OutPath))
                     {
                         consoleLogger.Debug("Saving new account key to '{0}'.", settings.OutPath);
-                        await fileUtil.WriteAllText(settings.OutPath, key.ToPem());
+                        await fileUtil.WriteAllText(settings.OutPath, key.ToPem(), CancellationToken.None);
                     }
                     else
                     {
                         consoleLogger.Debug("Saving new account key to user settings.");
-                        await userSettings.SetAccountKey(account.Server, key);
+                        await userSettings.SetAccountKey(account.Server, key, CancellationToken.None);
                     }
 
-                    WriteJson(new
-                    {
-                        location = acctCtx.Location,
-                        resource = await acctCtx.Resource(),
-                    });
+                    await WriteCreatedResource(acctCtx, cancellationToken);
 
                     return 0;
                 }).WithDescription(Strings.HelpCommandAccountNew);
 
-                branch.AddAsyncDelegate<AccountSetSettings>("set", async (_, settings) =>
+                branch.AddAsyncDelegate<AccountSetSettings>("set", async (_, settings, cancellationToken) =>
                 {
-                    var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, required: true);
+                    var (serverUri, key) = await ReadAccountKey(settings.Server, cancellationToken, settings.KeyPath, required: true);
 
                     consoleLogger.Debug("Setting account for '{0}'.", serverUri);
                     var acme = contextFactory.Invoke(serverUri, key);
-                    var acctCtx = await acme.Account();
-                    await userSettings.SetAccountKey(serverUri, key);
+                    var acctCtx = await acme.Account(cancellationToken);
+                    await userSettings.SetAccountKey(serverUri, key, cancellationToken);
 
                     WriteJson(new
                     {
                         location = acctCtx.Location,
-                        resource = await acctCtx.Resource(),
+                        resource = await acctCtx.Resource(cancellationToken),
                     });
 
                     return 0;
                 }).WithDescription(Strings.HelpCommandAccountSet);
 
-                branch.AddAsyncDelegate<AccountShowSettings>("show", async (_, settings) =>
+                branch.AddAsyncDelegate<AccountShowSettings>("show", async (_, settings, cancellationToken) =>
                 {
-                    var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, fallbackToSettings: true, required: true);
+                    var (serverUri, key) = await ReadAccountKey(settings.Server, cancellationToken, settings.KeyPath, fallbackToSettings: true, required: true);
 
                     consoleLogger.Debug("Loading account from '{0}'.", serverUri);
                     var acme = contextFactory.Invoke(serverUri, key);
-                    var acctCtx = await acme.Account();
+                    var acctCtx = await acme.Account(cancellationToken);
 
                     WriteJson(new
                     {
                         location = acctCtx.Location,
-                        resource = await acctCtx.Resource(),
+                        resource = await acctCtx.Resource(cancellationToken),
                     });
 
                     return 0;
                 }).WithDescription(Strings.HelpCommandAccountShow);
 
-                branch.AddAsyncDelegate<AccountUpdateSettings>("update", async (_, settings) =>
+                branch.AddAsyncDelegate<AccountUpdateSettings>("update", async (_, settings, cancellationToken) =>
                 {
-                    var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, fallbackToSettings: true, required: true);
+                    var (serverUri, key) = await ReadAccountKey(settings.Server, cancellationToken, settings.KeyPath, fallbackToSettings: true, required: true);
 
                     consoleLogger.Debug("Updating account on '{0}'.", serverUri);
                     var acme = contextFactory.Invoke(serverUri, key);
-                    var acctCtx = await acme.Account();
-                    var account = await acctCtx.Update(new[] { $"mailto://{settings.Email}" }, true);
+                    var acctCtx = await acme.Account(cancellationToken);
+                    var account = await acctCtx.Update(new[] { $"mailto://{settings.Email}" }, true, cancellationToken);
 
                     WriteJson(new
                     {
@@ -203,21 +213,23 @@ namespace Certes.Cli
 
         private async Task<(Uri Server, IKey Key)> ReadAccountKey(
             Uri server,
+            CancellationToken cancellationToken,
             string keyPath = null,
             bool fallbackToSettings = false,
             bool required = false)
         {
-            var serverUri = server ?? await userSettings.GetDefaultServer();
+            cancellationToken.ThrowIfCancellationRequested();
+            var serverUri = server ?? await userSettings.GetDefaultServer(cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(keyPath))
             {
                 consoleLogger.Debug("Load account key form '{0}'.", keyPath);
-                var pem = await fileUtil.ReadAllText(keyPath);
+                var pem = await fileUtil.ReadAllText(keyPath, cancellationToken);
                 return (serverUri, KeyFactory.FromPem(pem));
             }
 
             var key = fallbackToSettings
-                ? await userSettings.GetAccountKey(serverUri)
+                ? await userSettings.GetAccountKey(serverUri, cancellationToken)
                 : null;
 
             if (required && key == null)
@@ -230,9 +242,9 @@ namespace Certes.Cli
 
         // Orders created from plain strings may contain IP identifiers (RFC 8738), so fall back
         // to an IP lookup, which matches by address, when no DNS authorization matches.
-        private static async Task<IAuthorizationContext> FindAuthorization(IOrderContext orderCtx, string value)
-            => await orderCtx.Authorization(value)
-                ?? await orderCtx.Authorization(value, IdentifierType.Ip)
+        private static async Task<IAuthorizationContext> FindAuthorization(IOrderContext orderCtx, string value, CancellationToken cancellationToken)
+            => await orderCtx.Authorization(value, cancellationToken: cancellationToken)
+                ?? await orderCtx.Authorization(value, IdentifierType.Ip, cancellationToken)
                 ?? throw new CertesCliException(string.Format(Strings.ErrorIdentifierNotAvailable, value));
 
         private static string ParseChallengeType(string value)
@@ -248,45 +260,41 @@ namespace Certes.Cli
         {
             config.AddBranch(CommandGroup.Order.Command, branch =>
             {
-                branch.AddAsyncDelegate<OrderNewSettings>("new", async (_, settings) =>
+                branch.AddAsyncDelegate<OrderNewSettings>("new", async (_, settings, cancellationToken) =>
                 {
-                    var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, fallbackToSettings: true);
+                    var (serverUri, key) = await ReadAccountKey(settings.Server, cancellationToken, settings.KeyPath, fallbackToSettings: true);
                     consoleLogger.Debug("Creating order from '{0}'.", serverUri);
 
                     var acme = contextFactory.Invoke(serverUri, key);
                     // Empty values are rejected in OrderNewSettings.Validate, so null means "not supplied".
                     var orderCtx =
                         settings.Profile != null
-                            ? await acme.NewOrderWithProfile(settings.Domains, settings.Profile, replacedCertificateId: settings.Replaces)
+                            ? await acme.NewOrderWithProfile(settings.Domains, settings.Profile, replacedCertificateId: settings.Replaces, cancellationToken: cancellationToken)
                         : settings.Replaces != null
-                            ? await acme.NewReplacementOrder(settings.Domains, settings.Replaces)
-                        : await acme.NewOrder(settings.Domains);
+                            ? await acme.NewReplacementOrder(settings.Domains, settings.Replaces, cancellationToken: cancellationToken)
+                        : await acme.NewOrder(settings.Domains, cancellationToken: cancellationToken);
 
-                    WriteJson(new
-                    {
-                        location = orderCtx.Location,
-                        resource = await orderCtx.Resource(),
-                    });
+                    await WriteCreatedResource(orderCtx, cancellationToken);
 
                     return 0;
                 }).WithDescription(Strings.HelpCommandOrderNew);
 
-                branch.AddAsyncDelegate<OrderListSettings>("list", async (_, settings) =>
+                branch.AddAsyncDelegate<OrderListSettings>("list", async (_, settings, cancellationToken) =>
                 {
-                    var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, fallbackToSettings: true);
+                    var (serverUri, key) = await ReadAccountKey(settings.Server, cancellationToken, settings.KeyPath, fallbackToSettings: true);
                     consoleLogger.Debug("Loading orders from '{0}'.", serverUri);
 
                     var acme = contextFactory.Invoke(serverUri, key);
-                    var acctCtx = await acme.Account();
-                    var orderListCtx = await acctCtx.Orders();
+                    var acctCtx = await acme.Account(cancellationToken);
+                    var orderListCtx = await acctCtx.Orders(cancellationToken);
                     var orderList = new List<object>();
 
-                    foreach (var orderCtx in await orderListCtx.Orders())
+                    foreach (var orderCtx in await orderListCtx.Orders(cancellationToken))
                     {
                         orderList.Add(new
                         {
                             location = orderCtx.Location,
-                            resource = await orderCtx.Resource(),
+                            resource = await orderCtx.Resource(cancellationToken),
                         });
                     }
 
@@ -294,9 +302,9 @@ namespace Certes.Cli
                     return 0;
                 }).WithDescription(Strings.HelpCommandOrderList);
 
-                branch.AddAsyncDelegate<OrderShowSettings>("show", async (_, settings) =>
+                branch.AddAsyncDelegate<OrderShowSettings>("show", async (_, settings, cancellationToken) =>
                 {
-                    var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, fallbackToSettings: true);
+                    var (serverUri, key) = await ReadAccountKey(settings.Server, cancellationToken, settings.KeyPath, fallbackToSettings: true);
                     consoleLogger.Debug("Loading order from '{0}'.", serverUri);
 
                     var acme = contextFactory.Invoke(serverUri, key);
@@ -305,25 +313,25 @@ namespace Certes.Cli
                     WriteJson(new
                     {
                         location = orderCtx.Location,
-                        resource = await orderCtx.Resource(),
+                        resource = await orderCtx.Resource(cancellationToken),
                     });
 
                     return 0;
                 }).WithDescription(Strings.HelpCommandOrderShow);
 
-                branch.AddAsyncDelegate<OrderAuthzSettings>("authz", async (_, settings) =>
+                branch.AddAsyncDelegate<OrderAuthzSettings>("authz", async (_, settings, cancellationToken) =>
                 {
-                    var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, fallbackToSettings: true);
+                    var (serverUri, key) = await ReadAccountKey(settings.Server, cancellationToken, settings.KeyPath, fallbackToSettings: true);
                     var type = ParseChallengeType(settings.ChallengeType);
 
                     consoleLogger.Debug("Loading authz from '{0}'.", serverUri);
                     var acme = contextFactory.Invoke(serverUri, key);
                     var orderCtx = acme.Order(settings.OrderId);
-                    var authzCtx = await FindAuthorization(orderCtx, settings.Domain);
-                    var challengeCtx = await authzCtx.Challenge(type)
+                    var authzCtx = await FindAuthorization(orderCtx, settings.Domain, cancellationToken);
+                    var challengeCtx = await authzCtx.Challenge(type, cancellationToken)
                         ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, type));
 
-                    var challenge = await challengeCtx.Resource();
+                    var challenge = await challengeCtx.Resource(cancellationToken);
                     if (string.Equals(type, ChallengeTypes.Dns01, StringComparison.OrdinalIgnoreCase))
                     {
                         WriteJson(new
@@ -359,20 +367,20 @@ namespace Certes.Cli
                     return 0;
                 }).WithDescription(Strings.HelpCommandOrderAuthz);
 
-                branch.AddAsyncDelegate<OrderValidateSettings>("validate", async (_, settings) =>
+                branch.AddAsyncDelegate<OrderValidateSettings>("validate", async (_, settings, cancellationToken) =>
                 {
-                    var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, fallbackToSettings: true);
+                    var (serverUri, key) = await ReadAccountKey(settings.Server, cancellationToken, settings.KeyPath, fallbackToSettings: true);
                     var type = ParseChallengeType(settings.ChallengeType);
 
                     consoleLogger.Debug("Validating authz on '{0}'.", serverUri);
                     var acme = contextFactory.Invoke(serverUri, key);
                     var orderCtx = acme.Order(settings.OrderId);
-                    var authzCtx = await FindAuthorization(orderCtx, settings.Domain);
-                    var challengeCtx = await authzCtx.Challenge(type)
+                    var authzCtx = await FindAuthorization(orderCtx, settings.Domain, cancellationToken);
+                    var challengeCtx = await authzCtx.Challenge(type, cancellationToken)
                         ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, settings.ChallengeType));
 
                     consoleLogger.Debug("Validating challenge '{0}'.", challengeCtx.Location);
-                    var challenge = await challengeCtx.Validate();
+                    var challenge = await challengeCtx.Validate(cancellationToken);
 
                     WriteJson(new
                     {
@@ -383,22 +391,22 @@ namespace Certes.Cli
                     return 0;
                 }).WithDescription(Strings.HelpCommandOrderValidate);
 
-                branch.AddAsyncDelegate<OrderFinalizeSettings>("finalize", async (_, settings) =>
+                branch.AddAsyncDelegate<OrderFinalizeSettings>("finalize", async (_, settings, cancellationToken) =>
                 {
-                    var (serverUri, key) = await ReadAccountKey(settings.Server, settings.KeyPath, fallbackToSettings: true);
-                    var providedKey = await ReadKey(settings.PrivateKey, "CERTES_CERT_KEY");
+                    var (serverUri, key) = await ReadAccountKey(settings.Server, cancellationToken, settings.KeyPath, fallbackToSettings: true);
+                    var providedKey = await ReadKey(settings.PrivateKey, "CERTES_CERT_KEY", cancellationToken);
                     var certificateKey = providedKey ?? KeyFactory.NewKey(settings.KeyAlgorithm);
 
                     consoleLogger.Debug("Finalizing order from '{0}'.", serverUri);
                     var acme = contextFactory.Invoke(serverUri, key);
                     var orderCtx = acme.Order(settings.OrderId);
-                    var csr = await orderCtx.CreateCsr(certificateKey);
+                    var csr = await orderCtx.CreateCsr(certificateKey, cancellationToken);
                     if (!string.IsNullOrWhiteSpace(settings.Dn))
                     {
                         csr.AddName(settings.Dn);
                     }
 
-                    var order = await orderCtx.Finalize(csr.Generate());
+                    var order = await orderCtx.Finalize(csr.Generate(), cancellationToken);
 
                     if (string.IsNullOrWhiteSpace(settings.OutPath) && providedKey == null)
                     {
@@ -413,7 +421,9 @@ namespace Certes.Cli
                     {
                         if (providedKey == null)
                         {
-                            await fileUtil.WriteAllText(settings.OutPath, certificateKey.ToPem());
+                            // Preserve a generated key after successful finalization,
+                            // even if cancellation raced with the CA response.
+                            await fileUtil.WriteAllText(settings.OutPath, certificateKey.ToPem(), CancellationToken.None);
                         }
 
                         WriteJson(new
@@ -432,9 +442,9 @@ namespace Certes.Cli
         {
             config.AddBranch(CommandGroup.Certificate.Command, branch =>
             {
-                branch.AddAsyncDelegate<CertificatePemSettings>("pem", async (_, settings) =>
+                branch.AddAsyncDelegate<CertificatePemSettings>("pem", async (_, settings, cancellationToken) =>
                 {
-                    var (location, cert) = await DownloadCertificate(settings.OrderId, settings.PreferredChain, settings.Server, settings.KeyPath);
+                    var (location, cert) = await DownloadCertificate(settings.OrderId, settings.PreferredChain, settings.Server, settings.KeyPath, cancellationToken);
 
                     if (string.IsNullOrWhiteSpace(settings.OutPath))
                     {
@@ -451,7 +461,7 @@ namespace Certes.Cli
                     else
                     {
                         consoleLogger.Debug("Saving certificate to '{0}'.", settings.OutPath);
-                        await fileUtil.WriteAllText(settings.OutPath, cert.ToPem());
+                        await fileUtil.WriteAllText(settings.OutPath, cert.ToPem(), cancellationToken);
 
                         WriteJson(new
                         {
@@ -462,16 +472,16 @@ namespace Certes.Cli
                     return 0;
                 }).WithDescription(Strings.HelpCommandCertificatePem);
 
-                branch.AddAsyncDelegate<CertificateRenewalInfoSettings>("renewal-info", async (_, settings) =>
+                branch.AddAsyncDelegate<CertificateRenewalInfoSettings>("renewal-info", async (_, settings, cancellationToken) =>
                 {
-                    var (serverUri, _) = await ReadAccountKey(settings.Server);
+                    var (serverUri, _) = await ReadAccountKey(settings.Server, cancellationToken);
                     consoleLogger.Debug("Loading certificate from '{0}'.", settings.CertPath);
-                    var chain = new CertificateChain(await fileUtil.ReadAllText(settings.CertPath));
+                    var chain = new CertificateChain(await fileUtil.ReadAllText(settings.CertPath, cancellationToken));
                     var certificateId = chain.GetRenewalInfoCertificateId();
 
                     consoleLogger.Debug("Loading renewal information from '{0}'.", serverUri);
                     var acme = contextFactory.Invoke(serverUri, null);
-                    var info = await acme.GetRenewalInfo(certificateId);
+                    var info = await acme.GetRenewalInfo(certificateId, cancellationToken);
 
                     WriteJson(new
                     {
@@ -484,10 +494,10 @@ namespace Certes.Cli
                     return 0;
                 }).WithDescription(Strings.HelpCommandCertificateRenewalInfo);
 
-                branch.AddAsyncDelegate<CertificatePfxSettings>("pfx", async (_, settings) =>
+                branch.AddAsyncDelegate<CertificatePfxSettings>("pfx", async (_, settings, cancellationToken) =>
                 {
-                    var (location, cert) = await DownloadCertificate(settings.OrderId, settings.PreferredChain, settings.Server, settings.KeyPath);
-                    var privKey = await ReadKey(settings.PrivateKey, "CERTES_CERT_KEY");
+                    var (location, cert) = await DownloadCertificate(settings.OrderId, settings.PreferredChain, settings.Server, settings.KeyPath, cancellationToken);
+                    var privKey = await ReadKey(settings.PrivateKey, "CERTES_CERT_KEY", cancellationToken);
                     if (privKey == null)
                     {
                         throw new CertesCliException(Strings.ErrorNoPrivateKey);
@@ -507,7 +517,7 @@ namespace Certes.Cli
 
                     if (!string.IsNullOrWhiteSpace(settings.Issuer))
                     {
-                        var issuerPem = await fileUtil.ReadAllText(settings.Issuer);
+                        var issuerPem = await fileUtil.ReadAllText(settings.Issuer, cancellationToken);
                         pfxBuilder.AddIssuers(Encoding.UTF8.GetBytes(issuerPem));
                     }
 
@@ -523,7 +533,7 @@ namespace Certes.Cli
                     else
                     {
                         consoleLogger.Debug("Saving certificate to '{0}'.", settings.OutPath);
-                        await fileUtil.WriteAllBytes(settings.OutPath, pfx);
+                        await fileUtil.WriteAllBytes(settings.OutPath, pfx, cancellationToken);
 
                         WriteJson(new
                         {
@@ -536,20 +546,20 @@ namespace Certes.Cli
             });
         }
 
-        private async Task<(Uri Location, CertificateChain Cert)> DownloadCertificate(Uri orderUri, string preferredChain, Uri server, string keyPath)
+        private async Task<(Uri Location, CertificateChain Cert)> DownloadCertificate(Uri orderUri, string preferredChain, Uri server, string keyPath, CancellationToken cancellationToken)
         {
-            var (serverUri, key) = await ReadAccountKey(server, keyPath, fallbackToSettings: true, required: true);
+            var (serverUri, key) = await ReadAccountKey(server, cancellationToken, keyPath, fallbackToSettings: true, required: true);
 
             consoleLogger.Debug("Downloading certificate from '{0}'.", serverUri);
             var acme = contextFactory.Invoke(serverUri, key);
             var orderCtx = acme.Order(orderUri);
-            var order = await orderCtx.Resource();
+            var order = await orderCtx.Resource(cancellationToken);
             if (order.Status != OrderStatus.Valid)
             {
                 throw new CertesCliException(string.Format(Strings.ErrorExportInvalidOrder, order.Status));
             }
 
-            return (order.Certificate, await orderCtx.Download(preferredChain));
+            return (order.Certificate, await orderCtx.Download(preferredChain, cancellationToken));
         }
 
         private static void WriteJson(object value)
@@ -557,11 +567,30 @@ namespace Certes.Cli
             Console.WriteLine(JsonSerializer.Serialize(value, jsonSerializerSettings));
         }
 
-        private async Task<IKey> ReadKey(string keyPath, string environmentVariableName)
+        private static async Task WriteCreatedResource<T>(IResourceContext<T> context, CancellationToken cancellationToken)
         {
+            T resource;
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                resource = await context.Resource(cancellationToken);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // Creation succeeded; retain the only recovery handle even when
+                // cancellation prevents the follow-up resource lookup.
+                WriteJson(new { location = context.Location });
+                throw;
+            }
+            WriteJson(new { location = context.Location, resource });
+        }
+
+        private async Task<IKey> ReadKey(string keyPath, string environmentVariableName, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
             if (!string.IsNullOrWhiteSpace(keyPath))
             {
-                return KeyFactory.FromPem(await fileUtil.ReadAllText(keyPath));
+                return KeyFactory.FromPem(await fileUtil.ReadAllText(keyPath, cancellationToken));
             }
 
             var keyData = environmentVariables.GetVar(environmentVariableName);

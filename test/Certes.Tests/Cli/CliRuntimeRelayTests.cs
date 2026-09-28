@@ -85,6 +85,64 @@ namespace Certes.Cli
             Assert.Contains("--legacy-encryption", StripAnsi(result.StdOut));
         }
 
+        [Fact]
+        public async Task UnknownCommandReturnsFailureExitCode()
+        {
+            var result = await RunCli("unknown-command");
+            Assert.Equal(1, result.ExitCode);
+        }
+
+        [Fact]
+        public async Task CtrlCStopsInFlightRequestOnLinux()
+        {
+            // Console signal delivery is verified on Linux; cancellation-token
+            // dispatch and exit-code tests run on every CLI test platform.
+            if (!OperatingSystem.IsLinux()) return;
+
+            using var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0);
+            listener.Start();
+            var port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port;
+            var testOutput = new DirectoryInfo(AppContext.BaseDirectory);
+            var cliDll = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,
+                "../../../../../src/Certes.Cli/bin", testOutput.Parent.Name, testOutput.Name, "dotnet-certes.dll"));
+            var start = new ProcessStartInfo("dotnet")
+            {
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+            };
+            foreach (var arg in new[] { cliDll, "server", "show", "--server", $"http://127.0.0.1:{port}/directory" })
+            {
+                start.ArgumentList.Add(arg);
+            }
+            using var process = Process.Start(start);
+            var stdout = process.StandardOutput.ReadToEndAsync();
+            var stderr = process.StandardError.ReadToEndAsync();
+            try
+            {
+                // The request proves Main registered its handler before sending.
+                using var connection = await listener.AcceptTcpClientAsync().WaitAsync(TimeSpan.FromSeconds(10));
+                using var signal = Process.Start(new ProcessStartInfo("/bin/kill")
+                {
+                    ArgumentList = { "-INT", process.Id.ToString() },
+                    UseShellExecute = false,
+                });
+                await signal.WaitForExitAsync();
+                Assert.Equal(0, signal.ExitCode);
+                await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(10));
+                Assert.Equal(130, process.ExitCode);
+                Assert.Contains("Operation cancelled.", await stdout + await stderr);
+            }
+            finally
+            {
+                if (!process.HasExited)
+                {
+                    process.Kill(entireProcessTree: true);
+                    await process.WaitForExitAsync();
+                }
+            }
+        }
+
         private static async Task<(int ExitCode, string StdOut, string StdErr)> RunCli(params string[] args)
         {
             // The test output is test/Certes.Tests/bin/<configuration>/<tfm>/; use the

@@ -73,5 +73,28 @@ cancelled fetches do not cache a cancelled task.
   retain their signatures. Library target frameworks and runtime dependency
   minimums are unchanged by this API migration.
 
-The Spectre CLI migration and command-line cancellation wiring are tracked
-separately in [#405](https://github.com/fszlin/certes/issues/405).
+## CLI cancellation and Spectre migration
+
+The v5 CLI uses Spectre.Console.Cli 0.55.0 and asynchronous command dispatch.
+Command names, options, and JSON result shapes are retained. Ctrl+C requests
+cooperative cancellation of the active command, including settings/key reads,
+HTTP requests, authorization lookups, order-list pages, and certificate downloads.
+The console handler is removed when the invocation finishes.
+
+Exit codes are **0** for success, **1** for parsing/operation errors, and **130**
+when the invocation is cancelled. An HTTP timeout or unrelated cancellation is
+an operation error (1), not a user cancellation. Cancellation prints
+`Operation cancelled.` without a stack trace. Synchronous key generation and
+PFX construction are not interruptible mid-operation.
+
+After successful account creation or order finalization, saving a generated key
+is deliberately not cancelled: credentials needed to recover the operation must
+not be discarded. File writes remain atomic and retain owner-only Unix permissions.
+Ordinary cancellable writes stop before replacement and clean up their temporary
+file. A completed replacement or successful finalization can still report success
+if cancellation arrives too late to stop it.
+
+If account/order creation succeeds but cancellation prevents the follow-up resource
+lookup, the CLI emits JSON containing the returned `location` and exits 130.
+Retain this URL to inspect the account/order later. A request cancelled before a
+response arrives still has the in-flight uncertainty described above.

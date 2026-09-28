@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 using Certes.Acme;
 using Certes.Json;
 using System.Text.Json;
@@ -29,25 +30,25 @@ namespace Certes.Cli.Settings
             settingsFilepath = new Lazy<string>(ReadSettingsFilepath);
         }
 
-        public async Task SetDefaultServer(Uri serverUri)
+        public async Task SetDefaultServer(Uri serverUri, CancellationToken cancellationToken = default)
         {
-            var settings = await LoadUserSettings();
+            var settings = await LoadUserSettings(cancellationToken);
 
             settings.DefaultServer = serverUri;
             var json = JsonSerializer.Serialize(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllText(settingsFilepath.Value, json);
+            await fileUtil.WriteAllText(settingsFilepath.Value, json, cancellationToken);
         }
 
-        public async Task<Uri> GetDefaultServer()
+        public async Task<Uri> GetDefaultServer(CancellationToken cancellationToken = default)
         {
-            var settings = await LoadUserSettings();
+            var settings = await LoadUserSettings(cancellationToken);
 
             return settings.DefaultServer ?? WellKnownServers.LetsEncryptV2;
         }
 
-        public async Task SetAccountKey(Uri serverUri, IKey key)
+        public async Task SetAccountKey(Uri serverUri, IKey key, CancellationToken cancellationToken = default)
         {
-            var settings = await LoadUserSettings();
+            var settings = await LoadUserSettings(cancellationToken);
             if (settings.Servers == null)
             {
                 settings.Servers = new AcmeSettings[0];
@@ -63,11 +64,12 @@ namespace Certes.Cli.Settings
             serverSetting.Key = key.ToDer();
             settings.Servers = servers;
             var json = JsonSerializer.Serialize(settings, JsonUtil.CreateSettings());
-            await fileUtil.WriteAllText(settingsFilepath.Value, json);
+            await fileUtil.WriteAllText(settingsFilepath.Value, json, cancellationToken);
         }
 
-        public async Task<IKey> GetAccountKey(Uri serverUri)
+        public async Task<IKey> GetAccountKey(Uri serverUri, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             // env settings overwrites user settings
             var envKey = environment.GetVar("CERTES_ACME_ACCOUNT_KEY");
             if (envKey != null)
@@ -75,15 +77,16 @@ namespace Certes.Cli.Settings
                 return KeyFactory.FromDer(Convert.FromBase64String(envKey));
             }
 
-            var settings = await LoadUserSettings();
+            var settings = await LoadUserSettings(cancellationToken);
             var serverSetting = settings.Servers?.FirstOrDefault(s => s.ServerUri == serverUri);
             var der = serverSetting?.Key;
             return der == null ? null : KeyFactory.FromDer(der);
         }
 
-        private async Task<Model> LoadUserSettings()
+        private async Task<Model> LoadUserSettings(CancellationToken cancellationToken)
         {
-            var json = await fileUtil.ReadAllText(settingsFilepath.Value);
+            cancellationToken.ThrowIfCancellationRequested();
+            var json = await fileUtil.ReadAllText(settingsFilepath.Value, cancellationToken);
             return json == null ?
                 new Model() :
                 JsonSerializer.Deserialize<Model>(json, JsonUtil.CreateSettings());
