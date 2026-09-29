@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Experimental DNS-PERSIST-01 interactive challenge support targeting
+  `draft-ietf-acme-dns-persist-02`: `DnsPersist()`, `GetDnsPersistRecord()`,
+  issuer metadata, domain-bound hashed account URIs, and single-record TXT
+  chunking. The CLI accepts `dns-persist` with explicit wildcard policy,
+  expiration, and issuer selection. Pinned Pebble's older draft is rejected;
+  current-draft CA issuance remains unverified. This is not in `5.0.0-beta.1`.
+
 ## [5.0.0-beta.1] - 2026-09-28
 First v5 prerelease, focused on cancellable library operations and CLI commands.
 DNS-PERSIST-01 is not included. See the
