@@ -14,6 +14,8 @@ for development guidance.
 
 For the development v5 API, see [cancellation and migration guidance](v5-upgrade.md).
 Released v4 packages do not expose the cancellation parameters.
+The v5 tree also includes experimental [persistent DNS authorization](APIv2.md#persistent-dns-authorization-v5-development)
+for the -02 draft; see its server compatibility limits before use.
 
 Install [Certes](https://www.nuget.org/packages/Certes/) nuget package into your project:
 ```PowerShell
