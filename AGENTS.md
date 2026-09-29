@@ -320,6 +320,14 @@ were updated after the .NET 10 migration:
   cancellation (exit 130). Explicit key-output files are saved before account
   creation/finalization requests; a second Ctrl+C permits force termination.
   See the upgrade guide for persistence and recovery limits without explicit output.
+- Experimental DNS-PERSIST-01 support targets `draft-ietf-acme-dns-persist-02`:
+  `DnsPersist`, `GetDnsPersistRecord`, directory/challenge issuer metadata, and
+  CLI `dns-persist` record output with explicit wildcard policy and expiration.
+  The helper generates SHA-256 domain-bound hashed account URIs and single-record
+  TXT chunks. Pebble 2.10.1 implements an incompatible older cleartext-account
+  draft; its integration test verifies rejection before acknowledgment, not
+  issuance. Current-draft CA interoperability remains unverified. See
+  `docs/APIv2.md#persistent-dns-authorization-v5-development` before extending it.
 
 Recheck these observations before using them as the basis for a change. Remove
 or revise each entry when fixed, and update the root README's baseline/status
