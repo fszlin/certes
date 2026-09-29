@@ -3,13 +3,15 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Certes.Cli
 {
     internal class FileUtil : IFileUtil
     {
-        public async Task<string> ReadAllText(string path)
+        public async Task<string> ReadAllText(string path, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (!File.Exists(path))
             {
                 return null;
@@ -19,16 +21,17 @@ namespace Certes.Cli
             {
                 using (var reader = new StreamReader(stream))
                 {
-                    return await reader.ReadToEndAsync();
+                    return await reader.ReadToEndAsync(cancellationToken);
                 }
             }
         }
 
-        public Task WriteAllText(string path, string text)
-            => WriteAllBytes(path, Encoding.UTF8.GetBytes(text));
+        public Task WriteAllText(string path, string text, CancellationToken cancellationToken = default)
+            => WriteAllBytes(path, Encoding.UTF8.GetBytes(text), cancellationToken);
 
-        public async Task WriteAllBytes(string path, byte[] data)
+        public async Task WriteAllBytes(string path, byte[] data, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var fullPath = Path.GetFullPath(path);
             var dir = Path.GetDirectoryName(fullPath);
             if (!Directory.Exists(dir))
@@ -42,7 +45,7 @@ namespace Certes.Cli
             {
                 using (var stream = File.Create(tempPath, 4096, FileOptions.WriteThrough))
                 {
-                    await stream.WriteAsync(data, 0, data.Length);
+                    await stream.WriteAsync(data, 0, data.Length, cancellationToken);
                 }
 
                 // Set restrictive permissions on Unix-like systems before moving to final location
@@ -53,6 +56,7 @@ namespace Certes.Cli
                 }
 
                 // Atomic rename: on Unix, move replaces atomically; on Windows, use Replace
+                cancellationToken.ThrowIfCancellationRequested();
                 if (File.Exists(fullPath))
                 {
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

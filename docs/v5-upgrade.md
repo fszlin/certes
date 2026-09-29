@@ -73,5 +73,43 @@ cancelled fetches do not cache a cancelled task.
   retain their signatures. Library target frameworks and runtime dependency
   minimums are unchanged by this API migration.
 
-The Spectre CLI migration and command-line cancellation wiring are tracked
-separately in [#405](https://github.com/fszlin/certes/issues/405).
+## CLI cancellation and Spectre migration
+
+The v5 CLI uses Spectre.Console.Cli 0.55.0 and asynchronous command dispatch.
+Command names, options, and JSON result shapes are retained. Ctrl+C requests
+cooperative cancellation of the active command, including settings/key reads,
+HTTP requests, authorization lookups, order-list pages, and certificate downloads.
+The console handler is removed when the invocation finishes. The first Ctrl+C
+requests cancellation; a second allows immediate process termination. SIGTERM
+is not handled cooperatively in this version.
+
+Exit codes are **0** for success, **1** for parsing/operation errors, and **130**
+when the invocation is cancelled. An HTTP timeout or unrelated cancellation is
+an operation error (1), not a user cancellation. Cancellation prints
+`Operation cancelled.` without a stack trace. Synchronous key generation and
+PFX construction are not interruptible mid-operation.
+
+With an explicit `--out` path, `account new` saves its account key before sending
+the creation request, and `order finalize` saves a newly generated certificate key
+before sending the CSR. A write failure or cancellation before saving prevents
+the request. The file remains if the request later fails or is cancelled; it may
+contain a key the CA never accepted. Existing output files are atomically replaced
+before sending, so use a dedicated path and retain the saved key for retries.
+
+Without `--out`, a newly generated account key is saved to user settings only after
+creation succeeds, to avoid overwriting an existing account key on a failed request.
+That post-success write deliberately ignores cancellation. A generated certificate
+key destined for stdout is likewise emitted only after finalization succeeds.
+These two paths can still lose a generated key if cancellation interrupts an
+in-flight request the CA accepted. For recoverability, use `--out` or supply an
+already-persisted key. Force termination can interrupt persistence too.
+
+File writes remain atomic and retain owner-only Unix permissions.
+Ordinary cancellable writes stop before replacement and clean up their temporary
+file. A completed replacement or successful finalization can still report success
+if cancellation arrives too late to stop it.
+
+If account/order creation succeeds but cancellation prevents the follow-up resource
+lookup, the CLI emits JSON containing the returned `location` and exits 130.
+Retain this URL to inspect the account/order later. A request cancelled before a
+response arrives still has the in-flight uncertainty described above.

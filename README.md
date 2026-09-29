@@ -127,7 +127,9 @@ Passing unit tests do not establish current CA interoperability.
   feature work remains for v4.
 - **v5:** [cancellation support (#299)](https://github.com/fszlin/certes/issues/299)
   and the coordinated [Spectre CLI migration (#405)](https://github.com/fszlin/certes/issues/405).
-  Routine Spectre version updates are deferred; security updates remain enabled.
+  The development CLI uses Spectre 0.55.0 and supports Ctrl+C cancellation
+  (exit 130). Routine Spectre version updates require deliberate review;
+  security updates remain enabled.
 - **Unscheduled:** [Native AOT support (#313)](https://github.com/fszlin/certes/issues/313),
   pending investigation.
 

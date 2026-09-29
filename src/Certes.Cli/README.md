@@ -6,6 +6,13 @@ accounts, orders and challenges, and exports issued certificates as PEM or PFX.
 
 Requires the .NET 10 runtime.
 
+## v5 development: cancellation
+
+The development CLI supports Ctrl+C cancellation and exits with code 130 for a
+cancelled invocation (0 for success, 1 for other failures). See the
+[v5 upgrade guide](https://github.com/fszlin/certes/blob/main/docs/v5-upgrade.md#cli-cancellation-and-spectre-migration)
+for completion races, credential persistence, and recovery behavior.
+
 ## New in 4.1
 
 - Select a certificate profile with `order new --profile`, and associate a

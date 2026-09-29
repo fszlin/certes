@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using NLog;
@@ -13,10 +14,22 @@ namespace Certes.Cli
         internal static async Task<int> Main(string[] args)
         {
             ConfigureConsoleLogger();
-            var container = ConfigureContainer();
-
-            var succeed = await container.Resolve<CliCoreSpectre>().Run(args);
-            return succeed ? 0 : 1;
+            using var container = ConfigureContainer();
+            using var cancellation = new CancellationTokenSource();
+            var interruptCount = 0;
+            ConsoleCancelEventHandler cancel = (_, e) =>
+            {
+                e.Cancel = CancelInvocation(cancellation, ref interruptCount);
+            };
+            Console.CancelKeyPress += cancel;
+            try
+            {
+                return await container.Resolve<CliCoreSpectre>().RunWithExitCode(args, cancellation.Token);
+            }
+            finally
+            {
+                Console.CancelKeyPress -= cancel;
+            }
         }
 
         internal static IContainer ConfigureContainer()
@@ -29,6 +42,14 @@ namespace Certes.Cli
             builder.RegisterType<AcmeContext>().As<IAcmeContext>();
 
             return builder.Build();
+        }
+
+        internal static bool CancelInvocation(CancellationTokenSource cancellation, ref int interruptCount)
+        {
+            // A second interrupt restores the console's default termination.
+            if (Interlocked.Increment(ref interruptCount) > 1) return false;
+            cancellation.Cancel();
+            return true;
         }
 
         private static void ConfigureConsoleLogger()
