@@ -3,6 +3,53 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [5.0.0-beta.1] - 2026-09-28
+First v5 prerelease, focused on cancellable library operations and CLI commands.
+DNS-PERSIST-01 is not included. See the
+[v5 upgrade guide](https://github.com/fszlin/certes/blob/v5.0.0-beta.1/docs/v5-upgrade.md)
+before upgrading. Public-CA interoperability has not been re-verified for this
+prerelease; automated issuance checks use the local Pebble test CA.
+
+### Breaking changes
+- Core asynchronous interfaces, implementations, and convenience extensions now
+  accept a final optional `CancellationToken`. This replaces the old signatures:
+  recompile consumers and update custom implementations, mocks, callbacks, and
+  method-group delegates. Most ordinary calls continue to compile unchanged.
+  Library target frameworks and runtime dependency minimums are unchanged.
+
+### Added
+- Cancellation throughout ACME discovery, HTTP requests, bad-nonce retries,
+  authorization lookups, order pagination, alternate-chain downloads, and polling
+  delays ([#299](https://github.com/fszlin/certes/issues/299)). Cancellation is
+  cooperative and does not interrupt synchronous cryptographic operations or roll
+  back requests already accepted by a CA.
+- CLI Ctrl+C cancellation with exit code **130**; success remains **0** and
+  parsing/operation errors remain **1**. A second Ctrl+C permits immediate process
+  termination. HTTP timeouts remain operation errors, not user cancellations.
+
+### Changed
+- Upgrade the CLI to Spectre.Console.Cli 0.55.0 and asynchronous dispatch
+  ([#405](https://github.com/fszlin/certes/issues/405)), preserving command names,
+  options, and normal JSON result shapes.
+- With explicit `--out`, `account new` saves the account key before requesting
+  account creation, and `order finalize` saves a newly generated certificate key
+  before sending the CSR. Existing output files are atomically replaced before
+  sending; the saved file remains even when the subsequent request fails or is
+  cancelled. Use dedicated output paths and retain the keys for recovery.
+- When account/order creation succeeds but cancellation stops the follow-up
+  resource lookup, the CLI emits the returned `location` in JSON and exits 130.
+  Requests cancelled before a response arrives still require reconciliation with
+  the CA. Without explicit key output, in-flight cancellation can still lose a
+  generated key; see the upgrade guide for persistence and recovery limits.
+- Refresh CLI/build/test dependencies and add Linux unit-coverage reporting and
+  CodeQL analysis. Retire the obsolete Azure Functions integration-test helper;
+  integration tests use local Pebble.
+
+### Fixed
+- Preserve complete ACME responses and terminal protocol errors when cancellation
+  arrives late, including account/order locations and successful account key
+  changes. Cancelled discovery does not cache a cancelled task.
+
 ## [4.1.0] - 2026-09-27
 ### Added
 - IP address identifiers (RFC 8738): `IdentifierType.Ip`, and `NewOrder`,
