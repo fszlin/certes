@@ -1,6 +1,7 @@
-# Upgrading to v5 (development)
+# Upgrading to v5 (prerelease)
 
-v5 is under development; these changes are not in the released v4.1.0 package.
+These changes are included in `5.0.0-beta.1`, the first v5 prerelease, and are not
+in the stable v4.1.0 package. DNS-PERSIST-01 is not included in this beta.
 
 ## Cancellation API change
 

@@ -6,6 +6,23 @@ TLS-ALPN-01 challenges, and exports issued certificates as PEM or PFX.
 
 Supported targets: `net10.0`, `net8.0` and `netstandard2.0`.
 
+## New in 5.0.0-beta.1
+
+Core async APIs now accept an optional `CancellationToken`, propagated through
+HTTP requests, retries, pagination, downloads, and polling. **Recompile consumers**:
+the additional parameter changes binary signatures. Custom interface
+implementations, mocks, and method-group delegates also need updating.
+
+Cancellation does not roll back requests accepted by a CA or interrupt synchronous
+cryptographic work. See the
+[v5 upgrade guide](https://github.com/fszlin/certes/blob/v5.0.0-beta.1/docs/v5-upgrade.md)
+for migration and recovery details. This is a prerelease; DNS-PERSIST-01 is not
+included, and public-CA interoperability has not been re-verified for this beta.
+
+```sh
+dotnet add package Certes --version 5.0.0-beta.1
+```
+
 ## New in 4.1
 
 - ACME Renewal Information (ARI, RFC 9773): retrieve suggested renewal windows

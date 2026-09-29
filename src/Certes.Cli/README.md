@@ -6,12 +6,21 @@ accounts, orders and challenges, and exports issued certificates as PEM or PFX.
 
 Requires the .NET 10 runtime.
 
-## v5 development: cancellation
+## New in 5.0.0-beta.1
 
-The development CLI supports Ctrl+C cancellation and exits with code 130 for a
-cancelled invocation (0 for success, 1 for other failures). See the
-[v5 upgrade guide](https://github.com/fszlin/certes/blob/main/docs/v5-upgrade.md#cli-cancellation-and-spectre-migration)
-for completion races, credential persistence, and recovery behavior.
+The CLI uses Spectre.Console.Cli 0.55.0 with asynchronous dispatch and Ctrl+C
+cancellation. A cancelled invocation exits with code 130 (0 for success, 1 for
+other failures). A second Ctrl+C permits immediate termination.
+
+With explicit `--out`, account creation and certificate finalization save generated
+keys before sending the request. Existing output files are atomically replaced;
+the file remains if the request fails or is cancelled. Use dedicated paths and
+retain those keys. See the
+[v5 upgrade guide](https://github.com/fszlin/certes/blob/v5.0.0-beta.1/docs/v5-upgrade.md#cli-cancellation-and-spectre-migration)
+for completion races and recovery limits without explicit key output.
+
+This is a prerelease; DNS-PERSIST-01 is not included, and public-CA interoperability
+has not been re-verified for this beta.
 
 ## New in 4.1
 
@@ -31,7 +40,7 @@ complete workflow.
 ## Getting started
 
 ```sh
-dotnet tool install --global dotnet-certes
+dotnet tool install --global dotnet-certes --version 5.0.0-beta.1
 certes --help
 ```
 
