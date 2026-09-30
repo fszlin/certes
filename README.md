@@ -43,6 +43,9 @@ asset supports existing consumers; .NET 10 is the development and CLI baseline.
 
 Development toward v5 introduces optional cancellation tokens on core async APIs.
 This is a binary/interface breaking change; see the [v5 migration guide](docs/v5-upgrade.md).
+The v5 tree also adds experimental [DNS-PERSIST-01 draft -02 support](docs/APIv2.md#persistent-dns-authorization-v5-development)
+with hashed account records. Successful CA interoperability is not yet verified;
+the pinned Pebble implements an incompatible earlier draft.
 
 If you automate `dotnet-certes`, review these changes before upgrading:
 

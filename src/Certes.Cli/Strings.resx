@@ -145,7 +145,7 @@
     <value>Preferred root certificate.</value>
   </data>
   <data name="HelpChallengeType" xml:space="preserve">
-    <value>The challenge type, http or dns.</value>
+    <value>The challenge type: http, dns, tls-alpn or dns-persist.</value>
   </data>
   <data name="HelpCommandAccount" xml:space="preserve">
     <value>Manage ACME accounts.</value>

@@ -108,7 +108,8 @@ the SSL certificate. The ACME server may send varies challenges
 for each domain, such as `DNS`, `HTTP`, and `TLS-ALPN`, and we
 can fullfill any one of them.
 
-> For wildcard domains, currently only `DNS` challenge is accepted.
+> For wildcard domains, use `dns`, or `dns-persist` with an explicitly enabled
+> wildcard policy when the server supports that draft challenge.
 
 ### Setup for Challenges
 
@@ -131,6 +132,35 @@ The output will contain the `TXT` record value.
   "resource": "..."
 }
 ```
+
+#### Persistent DNS challenge (v5 development)
+
+On a server offering **draft-ietf-acme-dns-persist-02**, generate a persistent record:
+
+```PowerShell
+certes order authz <order-url> example.com dns-persist
+certes order authz <order-url> '*.example.com' dns-persist --wildcard-policy
+```
+
+The JSON includes `dnsName`, `dnsTxt`, `dnsTxtChunks`, and `dnsZoneFileValue`, plus
+the challenge location/resource. Publish **one** TXT record using `dnsName` and
+`dnsTxt`; for zone files use the already quoted `dnsZoneFileValue`. Multiple chunks
+belong to the same record. After propagation:
+
+```PowerShell
+certes order validate <order-url> example.com dns-persist
+```
+
+Optional `--issuer-domain-name <NAME>` selects one of the challenge's advertised
+identities. `--persist-until <UNIX_SECONDS>` sets a future expiration.
+`--wildcard-policy` explicitly authorizes the base domain, wildcards and subdomains;
+without it only the specific name is authorized. These options apply to `authz`
+with `dns-persist` only. `dns-persist-01` is also accepted.
+
+Keep the TXT record for future renewals; this command does not publish or remove
+DNS records. The record uses a hashed account URI, not a challenge token.
+Pinned Pebble 2.10.1's older format is rejected, and successful Let's Encrypt
+issuance has not been verified. See [draft compatibility and library usage](APIv2.md#persistent-dns-authorization-v5-development).
 
 #### HTTP-01 challenge
  To get token and thumbprint value for `HTTP-01` challenge:
@@ -166,8 +196,8 @@ carries the SHA-256 digest of `keyAuthz` in the critical acmeIdentifier extensio
 (RFC 8737). The CLI does not produce that certificate; the library's
 `IKey.TlsAlpnCertificate` helper can.
 
-Challenge types are `dns`, `http` and `tls-alpn`; `dns-01`, `http-01` and
-`tls-alpn-01` are accepted too.
+Challenge types are `dns`, `http`, `tls-alpn` and `dns-persist`; their full
+`-01` names are accepted too.
 
 ### Completing Challenges
 
@@ -256,4 +286,3 @@ reasonable range such as one minute to one day. No account key is needed.
 Certificate lifetimes are shrinking (Let's Encrypt: 64 days from February 2027,
 45 days from February 2028), so scheduling renewals from the suggested window is
 more reliable than renewing a fixed number of days before expiry.
-
