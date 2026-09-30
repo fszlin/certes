@@ -28,6 +28,7 @@ current task. Keep this guide accurate when commands, targets, or blockers chang
 | `.github/workflows/build.yml` | Cross-platform compilation and unit tests, package smoke checks |
 | `.github/workflows/codeql.yml` | C# and GitHub Actions static security analysis |
 | `scripts/PackageSmoke/` | Consumer of the locally packed library; not a solution project |
+| `scripts/StagingVerification/` | Opt-in published-package Let's Encrypt staging check; requires Cloudflare DNS credentials |
 | `scripts/Coverage/` | .NET 10/Linux unit coverage settings and local commands |
 | `scripts/Pebble/` | Pinned container stack, readiness probe, and local integration instructions |
 | `.github/workflows/release.yml` | Tag-driven package release workflow |
@@ -209,6 +210,16 @@ Keep unit tests network-independent: `CertificateFixture` generates
 an ephemeral root/intermediate/leaf chain and matching key locally. The network
 helper belongs only to the integration-test project. Restoring NuGet packages
 still requires a package source/cache; offline execution refers to the tests.
+
+### Public-CA staging verification
+
+The opt-in `scripts/StagingVerification/` harness consumes a published Certes
+package and uses a Cloudflare-managed test domain for Let's Encrypt staging
+DNS-01 issuance, certificate export, and advertised profile/ARI checks. It is
+not run in CI and needs `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ZONE_ID`, and
+`ACME_TEST_DOMAIN`. See [scripts/StagingVerification/README.md](scripts/StagingVerification/README.md)
+for the run command, cleanup limits, and exact verification scope. Do not
+confuse a successful harness build with CA interoperability.
 
 ### Dependency checks
 

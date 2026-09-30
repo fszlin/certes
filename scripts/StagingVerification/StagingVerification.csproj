@@ -11,7 +11,7 @@
     <PackageReference Include="Certes" Version="$(CERTES_PACKAGE_VERSION)" />
   </ItemGroup>
 
-  <Target Name="RequireSmokePackageVersion" BeforeTargets="CollectPackageReferences">
+  <Target Name="RequireStagingPackageVersion" BeforeTargets="CollectPackageReferences">
     <Error Condition="'$(CERTES_PACKAGE_VERSION)' == ''" Text="Set CERTES_PACKAGE_VERSION to the release version before restoring or running this project." />
   </Target>
 </Project>

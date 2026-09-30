@@ -127,6 +127,7 @@ internal static class Program
             var resource = await authorization.Resource(token);
             if (resource.Status == AuthorizationStatus.Valid)
             {
+                Console.Error.WriteLine($"Reusing an already valid authorization for {Domain} ({profile ?? "default"}); DNS-01 not repeated.");
                 continue;
             }
 

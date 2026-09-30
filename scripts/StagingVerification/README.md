@@ -4,9 +4,10 @@ This opt-in harness consumes a **published** Certes package and requests certifi
 from Let's Encrypt staging using DNS-01. Use a disposable test hostname in a
 Cloudflare-managed zone. It creates a new account in memory on every run and
 deletes the TXT records it creates when the process exits normally (including
-after an error). If the process is killed, inspect `_acme-challenge` records in
-the zone and remove leftovers manually. Do not run against a production ACME
-directory.
+after an error). If the process is killed, or Cloudflare creates a record but
+the response with its ID is lost, cleanup cannot identify that record. Inspect
+`_acme-challenge` records in the zone and remove leftovers manually. Do not run
+against a production ACME directory.
 
 From the repository root with the .NET 10 SDK installed:
 
@@ -30,6 +31,9 @@ feature it exercises fails; a missing advertised feature is reported and skipped
 The harness checks default RSA issuance, SANs, PFX key/certificate round-trip,
 and, if advertised, an ES256 `shortlived` profile issuance and ARI lookup plus
 creation of a replacement order. It does **not** issue the replacement order's
-certificate, validate public trust, or test DNS-PERSIST-01. Save the console
+certificate; this leaves a pending order at the staging CA. Let's Encrypt may
+reuse an already valid authorization on the second order, in which case DNS-01
+is not repeated (the harness logs this). It does not validate public trust or
+test DNS-PERSIST-01. Save the console
 output and package version when recording CA interoperability results; a build
 alone is not a staging verification.
