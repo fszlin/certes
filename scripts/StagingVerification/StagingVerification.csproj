@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
-    <RestoreSources>$(MSBuildThisFileDirectory)../../artifacts/packages;https://api.nuget.org/v3/index.json</RestoreSources>
+    <RestoreSources>https://api.nuget.org/v3/index.json</RestoreSources>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
