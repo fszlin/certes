@@ -174,7 +174,7 @@ jobs:
           dotnet list src/Certes.Cli/Certes.Cli.csproj package --vulnerable --include-transitive --no-restore
           dotnet list src/Certes.Cli/Certes.Cli.csproj package --deprecated --include-transitive --no-restore
       - name: Upload release artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: packages-${{ steps.version.outputs.package-version }}
           path: |
@@ -183,7 +183,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Upload release notes
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-notes-${{ steps.version.outputs.package-version }}
           path: artifacts/release-notes/release-notes.md
