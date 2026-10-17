@@ -49,7 +49,7 @@ root, which is fetched at startup and supplied to the existing export APIs.
 
 ## Scope and troubleshooting
 
-The 18 integration cases cover account discovery/update/deactivation/key change,
+The integration cases cover account discovery/update/deactivation/key change,
 HTTP-01, DNS-01, TLS-ALPN-01, wildcard issuance, RSA/ECDSA leaf keys, certificate
 download, PEM/PFX export, revocation, failed validation, and ARI renewal information
 and replacement-order creation. Certificate profile coverage checks discovery,
@@ -65,6 +65,12 @@ authorization. Separate offline `ISignatureKeyExtensionsTests` cover Certes's
 `TlsAlpnCertificate` generator for RSA and all supported ECDSA certificate keys:
 matching public key, self-signature, DNS SAN, and the critical ACME identifier
 extension with the SHA-256 key-authorization digest.
+
+`DnsPersistTests` verifies that the library rejects Pebble 2.10.1's legacy
+DNS-PERSIST-01 draft before acknowledging validation. That server uses
+`issuer-domain-names` and plaintext account URIs; Certes implements draft -02's
+`issuerDomainNames` and hashed account URIs. This test does not verify successful
+DNS-PERSIST-01 issuance. A compatible pinned server is needed for that coverage.
 
 After production polling/nonce fixes, add a separate non-required stress job with
 delays, nonce rejection, and authorization reuse enabled before considering those

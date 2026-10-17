@@ -16,6 +16,11 @@
         public const string Dns01 = "dns-01";
 
         /// <summary>
+        /// The draft DNS persistent authorization challenge.
+        /// </summary>
+        public const string DnsPersist01 = "dns-persist-01";
+
+        /// <summary>
         /// Gets the tls-alpn-01 challenge name.
         /// </summary>
         /// <value>

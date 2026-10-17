@@ -51,7 +51,9 @@ namespace Certes.Acme
         /// <value>
         /// The key authorization string.
         /// </value>
-        public string KeyAuthz => Context.AccountKey.KeyAuthorization(Token);
+        public string KeyAuthz => Type == ChallengeTypes.DnsPersist01
+            ? throw new InvalidOperationException("dns-persist-01 uses a persistent DNS record, not a key authorization.")
+            : Context.AccountKey.KeyAuthorization(Token);
 
         /// <summary>
         /// Acknowledges the ACME server the challenge is ready for validation.
@@ -61,6 +63,13 @@ namespace Certes.Acme
         /// </returns>
         public async Task<Challenge> Validate(CancellationToken cancellationToken = default)
         {
+            if (Type == ChallengeTypes.DnsPersist01)
+            {
+                var challenge = await Resource(cancellationToken);
+                var directory = await Context.GetDirectory(cancellationToken);
+                DnsPersistExtensions.ValidateChallenge(challenge, directory.Meta);
+            }
+
             var resp = await Context.HttpClient.Post<Challenge>(Context, Location, new {}, true, cancellationToken);
             return resp.Resource;
         }

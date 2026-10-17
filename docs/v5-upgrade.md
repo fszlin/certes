@@ -1,7 +1,16 @@
 # Upgrading to v5 (prerelease)
 
-These changes are included in `5.0.0-beta.1`, the first v5 prerelease, and are not
-in the stable v4.1.0 package. DNS-PERSIST-01 is not included in this beta.
+The cancellation and CLI changes below are included in `5.0.0-beta.1`, the first
+v5 prerelease, and are not in the stable v4.1.0 package. Experimental DNS-PERSIST-01
+support is subsequent development work and is not included in beta.1.
+
+## Persistent DNS authorization (after beta.1)
+
+The library and CLI add experimental DNS-PERSIST-01 support for
+`draft-ietf-acme-dns-persist-02`. See the [API guide](APIv2.md#persistent-dns-authorization-v5-development)
+for record generation, explicit wildcard policy, and server compatibility limits.
+This draft uses hashed account URIs and is incompatible with pinned Pebble 2.10.1's
+older cleartext-account format. Current-draft issuance has not been verified.
 
 ## Cancellation API change
 

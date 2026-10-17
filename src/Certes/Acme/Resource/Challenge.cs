@@ -63,5 +63,11 @@ namespace Certes.Acme.Resource
         /// </value>
         [JsonPropertyName("token")]
         public string Token { get; set; }
+
+        /// <summary>
+        /// Gets or sets the issuer identities for dns-persist-01 (draft-ietf-acme-dns-persist-02).
+        /// </summary>
+        [JsonPropertyName("issuerDomainNames")]
+        public IList<string> IssuerDomainNames { get; set; }
     }
 }

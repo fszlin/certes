@@ -30,6 +30,15 @@ namespace Certes
             authorizationContext.Challenge(ChallengeTypes.Dns01, cancellationToken);
 
         /// <summary>
+        /// Gets the draft DNS persistent authorization challenge.
+        /// </summary>
+        /// <param name="authorizationContext">The authorization context.</param>
+        /// <param name="cancellationToken">Cancels this operation.</param>
+        /// <returns>The challenge, or <c>null</c> if it is not offered.</returns>
+        public static Task<IChallengeContext> DnsPersist(this IAuthorizationContext authorizationContext, CancellationToken cancellationToken = default) =>
+            authorizationContext.Challenge(ChallengeTypes.DnsPersist01, cancellationToken);
+
+        /// <summary>
         /// Gets the TLS ALPN challenge.
         /// </summary>
         /// <param name="authorizationContext">The authorization context.</param>

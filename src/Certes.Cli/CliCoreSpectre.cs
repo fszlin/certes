@@ -254,6 +254,7 @@ namespace Certes.Cli
             => value?.ToLowerInvariant() switch
             {
                 "dns" or "dns-01" => ChallengeTypes.Dns01,
+                "dns-persist" or "dns-persist-01" => ChallengeTypes.DnsPersist01,
                 "http" or "http-01" => ChallengeTypes.Http01,
                 "tls-alpn" or "tls-alpn-01" => ChallengeTypes.TlsAlpn01,
                 _ => throw new CertesCliException(string.Format(Strings.ErrorInvalidChallengeType, value)),
@@ -335,7 +336,24 @@ namespace Certes.Cli
                         ?? throw new CertesCliException(string.Format(Strings.ErrorChallengeNotAvailable, type));
 
                     var challenge = await challengeCtx.Resource(cancellationToken);
-                    if (string.Equals(type, ChallengeTypes.Dns01, StringComparison.OrdinalIgnoreCase))
+                    if (type == ChallengeTypes.DnsPersist01)
+                    {
+                        var record = await acme.GetDnsPersistRecord(
+                            await authzCtx.Resource(cancellationToken), challenge,
+                            settings.WildcardPolicy,
+                            settings.PersistUntil.HasValue ? DateTimeOffset.FromUnixTimeSeconds(settings.PersistUntil.Value) : null,
+                            settings.IssuerDomainName, cancellationToken);
+                        WriteJson(new
+                        {
+                            location = challengeCtx.Location,
+                            dnsName = record.Name,
+                            dnsTxt = record.Value,
+                            dnsTxtChunks = record.TextChunks,
+                            dnsZoneFileValue = record.ZoneFileValue,
+                            resource = challenge,
+                        });
+                    }
+                    else if (string.Equals(type, ChallengeTypes.Dns01, StringComparison.OrdinalIgnoreCase))
                     {
                         WriteJson(new
                         {
@@ -731,6 +749,36 @@ namespace Certes.Cli
 
         [CommandOption("--key-path|--key|-k <KEY_PATH>")]
         public string KeyPath { get; init; }
+
+        [CommandOption("--wildcard-policy")]
+        [Description("For dns-persist: authorize the base domain, wildcards and subdomains.")]
+        public bool WildcardPolicy { get; init; }
+
+        [CommandOption("--persist-until <UNIX_SECONDS>")]
+        [Description("For dns-persist: expire the record at this Unix timestamp.")]
+        public long? PersistUntil { get; init; }
+
+        [CommandOption("--issuer-domain-name <NAME>")]
+        [Description("For dns-persist: select an issuer identity advertised by the challenge.")]
+        public string IssuerDomainName { get; init; }
+
+        public override ValidationResult Validate()
+        {
+            if ((WildcardPolicy || PersistUntil.HasValue || IssuerDomainName != null) &&
+                !string.Equals(ChallengeType, "dns-persist", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(ChallengeType, ChallengeTypes.DnsPersist01, StringComparison.OrdinalIgnoreCase))
+            {
+                return ValidationResult.Error("Persistent DNS options require the dns-persist challenge type.");
+            }
+
+            if (PersistUntil.HasValue && (PersistUntil.Value <= DateTimeOffset.UtcNow.ToUnixTimeSeconds() ||
+                PersistUntil.Value > DateTimeOffset.MaxValue.ToUnixTimeSeconds()))
+            {
+                return ValidationResult.Error("--persist-until must be a future Unix timestamp within the supported date range.");
+            }
+
+            return ValidationResult.Success();
+        }
     }
 
     internal sealed class OrderValidateSettings : CommandSettings

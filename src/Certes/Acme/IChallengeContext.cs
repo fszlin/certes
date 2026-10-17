@@ -20,7 +20,7 @@ namespace Certes.Acme
         /// Gets the token.
         /// </summary>
         /// <value>
-        /// The token.
+        /// The token, or <c>null</c> for tokenless challenges such as dns-persist-01.
         /// </value>
         string Token { get; }
 
@@ -30,6 +30,7 @@ namespace Certes.Acme
         /// <value>
         /// The key authorization string.
         /// </value>
+        /// <exception cref="System.InvalidOperationException">dns-persist-01 has no key authorization.</exception>
         string KeyAuthz { get; }
 
         /// <summary>

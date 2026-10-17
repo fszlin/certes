@@ -269,6 +269,65 @@ Retrieve authorization by URI.
 var authz = await context.Authorization(authzUri);
 ```
  
+## Persistent DNS authorization (v5 development)
+
+Certes supports the interactive challenge flow from
+[draft-ietf-acme-dns-persist-02](https://www.ietf.org/archive/id/draft-ietf-acme-dns-persist-02.html).
+This is an evolving draft, not an RFC. It uses a domain-bound hashed account URI,
+the challenge's `issuerDomainNames`, and directory `meta.accountHashPrefix`.
+
+```C#
+var authz = await order.Authorization("example.com", cancellationToken: cancellationToken);
+var authorization = await authz.Resource(cancellationToken);
+if (authorization.Status != AuthorizationStatus.Valid)
+{
+    var challenge = await authz.DnsPersist(cancellationToken)
+        ?? throw new NotSupportedException("The server did not offer dns-persist-01.");
+    var record = await context.GetDnsPersistRecord(
+        authorization, await challenge.Resource(cancellationToken),
+        persistUntil: DateTimeOffset.UtcNow.AddDays(30),
+        cancellationToken: cancellationToken);
+
+    // Publish one TXT record at record.Name with record.Value, then wait for DNS propagation.
+    // For zone files, use record.Name + ". IN TXT " + record.ZoneFileValue.
+    await challenge.Validate(cancellationToken);
+    // Poll the authorization until valid before finalizing the order.
+}
+```
+
+`GetDnsPersistRecord` uses the current account key and account location, and checks
+the challenge's issuer list against available directory issuer/CAA identities.
+The default issuer is the first challenge identity; select another with
+`issuerDomainName`. The record contains a SHA-256 hash binding the normalized DNS
+name, account public-key thumbprint, and exact account URL. It contains neither a
+per-challenge token nor a plaintext account URL. IP identifiers are rejected.
+
+For a wildcard authorization, explicitly pass `wildcardPolicy: true`. That adds
+`policy=wildcard`, authorizing the base domain **and its wildcards and subdomains**;
+it is never enabled implicitly. Without it, only the specific DNS name is authorized.
+`persistUntil` is optional; omitted records have no explicit expiration. Past
+expirations are rejected. Keep a successfully provisioned record for subsequent
+renewals, and remove it when that persistent authorization is no longer wanted.
+
+`record.Value` is the raw value for DNS APIs. `record.TextChunks` splits it into
+ASCII strings of at most 255 octets; these belong to **one** TXT record, not separate
+records. `record.ZoneFileValue` supplies escaped, quoted chunks for a zone file.
+Certes generates the record but does not publish DNS, monitor expiration, or
+implement delegated pre-provisioning. Those workflows must implement the draft's
+account proof and provisioning requirements separately.
+
+`IChallengeContext.Token` is null for this challenge, and `KeyAuthz` throws
+`InvalidOperationException`. Use the record helper instead. `Validate` checks
+the current challenge and directory metadata before posting `{}`.
+
+**Interoperability limit:** Pebble 2.10.1 implements an older draft with
+`issuer-domain-names` and plaintext account URIs; Certes rejects it rather than
+silently generating an old-format record. On September 28, 2026, the Let's Encrypt
+staging directory did not advertise the -02 metadata. Offline tests check the
+draft's published hash vector and wire behavior; the pinned Pebble test checks
+legacy-draft rejection, not successful DNS-PERSIST-01 issuance. Public-CA
+interoperability has not been verified.
+
 ## Challenges
  
 Retrieve challenges of the authorzation. 

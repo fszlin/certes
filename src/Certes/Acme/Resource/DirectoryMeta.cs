@@ -54,6 +54,18 @@ namespace Certes.Acme.Resource
         public IDictionary<string, string> Profiles { get; }
 
         /// <summary>
+        /// Gets the persistent DNS issuer identities advertised by the server.
+        /// </summary>
+        [JsonPropertyName("issuerDomainNames")]
+        public IList<string> IssuerDomainNames { get; }
+
+        /// <summary>
+        /// Gets the exact URI prefix for hashed dns-persist-01 account identifiers.
+        /// </summary>
+        [JsonPropertyName("accountHashPrefix")]
+        public string AccountHashPrefix { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DirectoryMeta"/> class.
         /// </summary>
         /// <param name="termsOfService">The terms of service.</param>
@@ -77,13 +89,35 @@ namespace Certes.Acme.Resource
         /// <param name="caaIdentities">The CAA identities.</param>
         /// <param name="externalAccountRequired">Whether external account binding is required.</param>
         /// <param name="profiles">The advertised profile names and descriptions.</param>
-        [JsonConstructor]
         public DirectoryMeta(
             Uri termsOfService,
             Uri website,
             IList<string> caaIdentities,
             bool? externalAccountRequired,
             IDictionary<string, string> profiles)
+            : this(termsOfService, website, caaIdentities, externalAccountRequired, profiles, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes directory metadata including draft DNS persistent authorization support.
+        /// </summary>
+        /// <param name="termsOfService">The terms of service.</param>
+        /// <param name="website">The website.</param>
+        /// <param name="caaIdentities">The CAA identities.</param>
+        /// <param name="externalAccountRequired">Whether external account binding is required.</param>
+        /// <param name="profiles">The advertised certificate profiles.</param>
+        /// <param name="issuerDomainNames">The persistent DNS issuer identities.</param>
+        /// <param name="accountHashPrefix">The exact hashed account URI prefix.</param>
+        [JsonConstructor]
+        public DirectoryMeta(
+            Uri termsOfService,
+            Uri website,
+            IList<string> caaIdentities,
+            bool? externalAccountRequired,
+            IDictionary<string, string> profiles,
+            IList<string> issuerDomainNames,
+            string accountHashPrefix)
         {
             TermsOfService = termsOfService;
             Website = website;
@@ -93,6 +127,8 @@ namespace Certes.Acme.Resource
             ExternalAccountRequired = externalAccountRequired;
             Profiles = profiles == null ? null : new ReadOnlyDictionary<string, string>(
                 new Dictionary<string, string>(profiles, StringComparer.Ordinal));
+            IssuerDomainNames = issuerDomainNames == null ? null : new ReadOnlyCollection<string>(issuerDomainNames);
+            AccountHashPrefix = accountHashPrefix;
         }
     }
 }
